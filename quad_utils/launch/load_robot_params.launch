@@ -1,5 +1,5 @@
 <launch>
-    <arg name="robot_type" default="spirit"/>
+    <arg name="robot_type" default="vision60"/>
 
     <rosparam command="load" file="$(find quad_utils)/config/topics_robot.yaml" />
     <param name="enable_statistics" type="bool" value="true" />
@@ -20,5 +20,11 @@
         <rosparam command="load" file="$(find quad_utils)/config/a1.yaml" />
         <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
         <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
+    </group>
+
+    <group if="$(eval arg('robot_type') == 'vision60')">
+        <rosparam command="load" file="$(find quad_utils)/config/vision60.yaml" />
+        <param name="robot_description_sdf" textfile="$(find vision60_description)/sdf_mesh/vision60.sdf" />
+        <param name="robot_description" command="cat $(find vision60_description)/urdf/vision60.urdf" />
     </group>
 </launch>

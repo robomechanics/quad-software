@@ -1,0 +1,528 @@
+<?xml version="1.0"?>
+
+<!-- 
+MIT License (modified)
+
+Copyright (c) 2018 Ghost Robotics
+Authors:
+Avik De <avik@ghostrobotics.io>
+Tom Jacobs <tom.jacobs@ghostrobotics.io>
+Vasileios Vasilopoulos <v.vasilo@ghostrobotics.io>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this **file** (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE. 
+-->
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="vision60">
+
+	<!-- Define parameters -->
+	<xacro:property name="pi" value="3.14159265359"/>
+	<xacro:property name="bodyLength" value="0.88"/>
+	<xacro:property name="bodyWidth" value="0.25"/>
+	<xacro:property name="bodyHeight" value="0.19"/>
+	<xacro:property name="bodyMass" value="12"/>
+	<xacro:property name="upperLegMass" value="0.625"/>
+	<xacro:property name="lowerLegMass" value="0.2"/>
+	<xacro:property name="toeMass" value="0.15"/>
+	<xacro:property name="upperLegLength" value="0.25"/>
+	<xacro:property name="upperLegWidth" value="0.044"/>
+	<xacro:property name="upperLegHeight" value="0.060"/>
+	<xacro:property name="lowerLegLength" value="0.28"/>
+	<xacro:property name="lowerLegRadius" value="0.011"/>
+	<xacro:property name="lowerLegAttachLinkLength" value="0.0355"/>
+	<xacro:property name="podMass" value="2.75"/>
+	<xacro:property name="podLength" value="0.195"/>
+	<xacro:property name="podWidth" value="0.170"/>
+	<xacro:property name="podHeight" value="0.1"/>
+	<xacro:property name="dPodAxisToEdge" value="0.046"/>
+	<xacro:property name="dx" value="0.325"/>
+	<xacro:property name="dy" value="0.1575"/>
+	<xacro:property name="toeRadius" value="0.03"/>
+	<xacro:property name="toeOffset" value="0.0106"/>
+	<xacro:property name="toeStiffness" value="30000.0"/>
+	<xacro:property name="toeDamping" value="1000.0"/>
+	<xacro:property name="toeSpinningFriction" value="0.3"/>
+	<xacro:property name="toeFriction" value="20.0"/>
+	<xacro:property name="toeLateralFriction" value="10.0"/>
+	<xacro:property name="abKinLimit" value="0.43"/>
+	<xacro:property name="abSpeedLimit" value="8.6"/>
+	<xacro:property name="abEffortLimit" value="375"/>
+	<xacro:property name="jointSpeedLimit" value="30"/>
+	<xacro:property name="jointEffortLimit" value="87.5"/>
+
+	<!-- Body -->
+	<link name="body">
+		<visual>
+			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<geometry>
+				<box size="${bodyLength} ${bodyWidth} ${bodyHeight}"/>
+			</geometry>
+		</visual>
+
+		<inertial>
+			<mass value="${bodyMass}"/>
+			<!-- Uniform box -->
+			<inertia ixx="0.0986"  ixy="0"  ixz="0" iyy="0.8105" iyz="0" izz="0.8369" />
+		</inertial>
+
+		<!-- Just copy geometry for collision -->
+		<collision>
+			<geometry>
+				<box size="0.05 ${bodyWidth} ${bodyHeight}"/>
+			</geometry>
+		</collision>
+	</link>
+	<gazebo reference="body">
+    	<material>Gazebo/BlackTransparent</material>
+  	</gazebo>
+
+	<!-- Define our leg macro -->
+	<xacro:macro name="leg" params="suffix left front hipJointName kneeJointName abductionJointName hipJointLowerLimit hipJointUpperLimit">
+
+		<!-- Hip motor -->
+		<link name="hip${suffix}">
+			<visual>
+				<origin rpy="${pi/2} 0 0" xyz="0.0 ${left * (dPodAxisToEdge - podWidth/2) + left*0.15*0.0} 0"/>
+				<geometry>
+					<box size="${podLength} ${podHeight} ${podWidth}"/>
+				</geometry>
+			</visual>
+			
+			<collision>
+				<origin rpy="${pi/2} 0 0" xyz="0.0 ${left * (dPodAxisToEdge - podWidth/2)} 0"/>
+				<geometry>
+					<box size="${podLength} ${podHeight} ${podWidth}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${podMass}"/>
+				<inertia ixx="0.00891458"  ixy="0"  ixz="0" iyy="0.0100573" iyz="0" izz="0.01533698" />
+			</inertial>
+		</link>	
+		<gazebo reference="hip${suffix}">
+    		<material>Gazebo/Purple</material>
+  		</gazebo>
+
+		<!-- Abduction joint. Joint names are: 8 9 10 11 -->
+		<joint name="${abductionJointName}" type="revolute">
+			<parent link="body"/>
+			<child link="hip${suffix}"/>
+			<axis xyz="1 0 0"/>
+			<origin xyz="${front * dx} ${left * dy} 0"/>
+			<limit effort="${abEffortLimit}" velocity="${abSpeedLimit}" lower="${-abKinLimit}" upper="${abKinLimit}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+		<!-- Transmission elements required for Gazebo -->
+		<transmission name="transmission_${abductionJointName}">
+    		<type>transmission_interface/SimpleTransmission</type>
+    		<joint name="${abductionJointName}">
+      			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    		</joint>
+    		<actuator name="motor_${abductionJointName}">
+      			<hardwareInterface>EffortJointInterface</hardwareInterface>
+      			<mechanicalReduction>1</mechanicalReduction>
+    		</actuator>
+  		</transmission>
+
+		<!-- Upper leg -->
+		<link name="upper${suffix}">
+			<visual>
+				<origin rpy="0 0 0" xyz="-${upperLegLength/2} ${left*0.2*0.0} 0"/>
+				<geometry>
+					<box size="${upperLegLength} ${upperLegWidth} ${upperLegHeight}"/>
+				</geometry>
+			</visual>
+			
+			<collision>
+				<origin rpy="0 0 0" xyz="-${upperLegLength/2} 0 0"/>
+				<geometry>
+					<box size="${upperLegLength} ${upperLegWidth} ${upperLegHeight}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${upperLegMass}"/>
+				<inertia ixx="0.0003125"  ixy="0" ixz="0" iyy="0.0040625" iyz="0" izz="0.0040625" />
+			</inertial>
+		</link>
+		<gazebo reference="upper${suffix}">
+    		<material>Gazebo/Blue</material>
+  		</gazebo>
+
+		<!-- Hip joint. (Motor to upper leg). Joint names are: 0 2 4 6 -->
+		<joint name="${hipJointName}" type="revolute">
+			<parent link="hip${suffix}"/>
+			<child link="upper${suffix}"/>
+			<axis xyz="0 -1 0"/>
+			<origin xyz="0 ${left * (dPodAxisToEdge + upperLegWidth/2)} 0"/> <!--  rpy="0 -0.3 0" -->
+			<limit effort="${jointEffortLimit}" velocity="${jointSpeedLimit}" lower="${-pi}" upper="${pi}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+		<!-- Transmission elements required for Gazebo -->
+		<transmission name="transmission_${hipJointName}">
+    		<type>transmission_interface/SimpleTransmission</type>
+    		<joint name="${hipJointName}">
+      			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    		</joint>
+    		<actuator name="motor_${hipJointName}">
+      			<hardwareInterface>EffortJointInterface</hardwareInterface>
+      			<mechanicalReduction>1</mechanicalReduction>
+    		</actuator>
+  		</transmission>
+
+		<!-- Lower leg -->
+		<link name="lower${suffix}">
+			<visual>
+				<origin rpy="0 ${pi/2} 0" xyz="${lowerLegLength/2} 0 -${lowerLegAttachLinkLength}"/>
+				<geometry>
+					<cylinder length="${lowerLegLength}" radius="${lowerLegRadius}"/>
+				</geometry>
+			</visual>
+			
+			<collision>
+				<origin rpy="0 ${pi/2} 0" xyz="${lowerLegLength/2} 0 -${lowerLegAttachLinkLength}"/>
+				<geometry>
+					<cylinder length="${lowerLegLength}" radius="${lowerLegRadius}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${lowerLegMass}"/>
+				<inertia ixx="0.00131075"  ixy="0"  ixz="0" iyy="0.00131075" iyz="0" izz="0.0001" />
+			</inertial>
+		</link>
+		<gazebo reference="lower${suffix}">
+    		<material>Gazebo/Black</material>
+  		</gazebo>
+
+		<!-- Knee joint. Joint names are: 1 3 5 7 -->
+		<joint name="${kneeJointName}" type="revolute">
+			<parent link="upper${suffix}"/>
+			<child link="lower${suffix}"/>
+			<axis xyz="0 1 0"/>
+			<origin xyz="-${upperLegLength} 0 0"/> <!--rpy="0 0.5 0"-->
+			<limit effort="${jointEffortLimit}" velocity="${jointSpeedLimit}" lower="0" upper="${pi}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+		<!-- Transmission elements required for Gazebo -->
+		<transmission name="transmission_${kneeJointName}">
+    		<type>transmission_interface/SimpleTransmission</type>
+    		<joint name="${kneeJointName}">
+      			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    		</joint>
+    		<actuator name="motor_${kneeJointName}">
+      			<hardwareInterface>EffortJointInterface</hardwareInterface>
+      			<mechanicalReduction>1</mechanicalReduction>
+    		</actuator>
+  		</transmission>
+
+		<!-- Toe -->
+		<link name="toe${suffix}">
+			<visual>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<sphere radius="${toeRadius}"/>
+				</geometry>
+			</visual>
+			
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<sphere radius="${toeRadius}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${toeMass}"/>
+				<inertia ixx="0.000025"  ixy="0"  ixz="0" iyy="0.000025" iyz="0" izz="0.000025" />
+			</inertial>
+		</link>
+		<gazebo reference="toe${suffix}">
+    		<material>Gazebo/DarkGray</material>
+			<collision>
+				<surface>
+					<bounce>
+						<restitution_coefficient>0</restitution_coefficient>
+						<threshold>1e+06</threshold>
+					</bounce>
+					<friction>
+						<torsional>
+							<coefficient>${toeSpinningFriction}</coefficient>
+						</torsional>
+						<ode>
+							<mu>${toeFriction}</mu>
+							<mu2>${toeLateralFriction}</mu2>
+						</ode>
+						<bullet>
+							<rolling_friction>${toeSpinningFriction}</rolling_friction>
+							<friction2>${toeLateralFriction}</friction2>
+						</bullet>
+					</friction>
+					<contact>
+						<bullet>
+							<kp>${toeStiffness}</kp>
+							<kd>${toeDamping}</kd>
+						</bullet>
+						<ode>
+							<kp>${toeStiffness}</kp>
+							<kd>${toeDamping}</kd>
+						</ode>
+					</contact>
+				</surface>
+			</collision>
+  		</gazebo>
+		
+		<joint name="jtoe${suffix}" type="fixed">
+			<parent link="lower${suffix}"/>
+			<child link="toe${suffix}"/>
+			<origin xyz="${lowerLegLength} 0 -${lowerLegAttachLinkLength + toeOffset}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+	</xacro:macro>
+
+
+	<!-- red new legs -->
+	<!-- TODO: clean this, it should be part of main leg macro -->
+
+		<!-- Define our leg macro -->
+	<xacro:macro name="red_leg" params="suffix left front hipJointName kneeJointName abductionJointName hipJointLowerLimit hipJointUpperLimit">
+
+		<!-- Hip motor -->
+		<link name="hip${suffix}">
+			<visual>
+				<origin rpy="${pi/2} 0 0" xyz="0.0 ${left * (dPodAxisToEdge - podWidth/2) + left*0.15*0.0} 0"/>
+				<geometry>
+					<box size="${podLength} ${podHeight} ${podWidth}"/>
+				</geometry>
+			</visual>
+			
+			<collision>
+				<origin rpy="${pi/2} 0 0" xyz="0.0 ${left * (dPodAxisToEdge - podWidth/2)} 0"/>
+				<geometry>
+					<box size="${podLength} ${podHeight} ${podWidth}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${podMass}"/>
+				<inertia ixx="0.00891458"  ixy="0"  ixz="0" iyy="0.0100573" iyz="0" izz="0.01533698" />
+			</inertial>
+		</link>	
+		<gazebo reference="hip${suffix}">
+    		<material>Gazebo/Red</material>
+  		</gazebo>
+
+		<!-- Abduction joint. Joint names are: 8 9 10 11 -->
+		<joint name="${abductionJointName}" type="revolute">
+			<parent link="body"/>
+			<child link="hip${suffix}"/>
+			<axis xyz="1 0 0"/>
+			<origin xyz="${front * dx} ${left * dy} 0"/>
+			<limit effort="${abEffortLimit}" velocity="${abSpeedLimit}" lower="${-abKinLimit}" upper="${abKinLimit}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+		<!-- Transmission elements required for Gazebo -->
+		<transmission name="transmission_${abductionJointName}">
+    		<type>transmission_interface/SimpleTransmission</type>
+    		<joint name="${abductionJointName}">
+      			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    		</joint>
+    		<actuator name="motor_${abductionJointName}">
+      			<hardwareInterface>EffortJointInterface</hardwareInterface>
+      			<mechanicalReduction>1</mechanicalReduction>
+    		</actuator>
+  		</transmission>
+
+		<!-- Upper leg -->
+		<link name="upper${suffix}">
+			<visual>
+				<origin rpy="0 0 0" xyz="-${upperLegLength/2} ${left*0.2*0.0} 0"/>
+				<geometry>
+					<box size="${upperLegLength} ${upperLegWidth} ${upperLegHeight}"/>
+				</geometry>
+			</visual>
+			
+			<collision>
+				<origin rpy="0 0 0" xyz="-${upperLegLength/2} 0 0"/>
+				<geometry>
+					<box size="${upperLegLength} ${upperLegWidth} ${upperLegHeight}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${upperLegMass}"/>
+				<inertia ixx="0.0003125"  ixy="0" ixz="0" iyy="0.0040625" iyz="0" izz="0.0040625" />
+			</inertial>
+		</link>
+		<gazebo reference="upper${suffix}">
+    		<material>Gazebo/Blue</material>
+  		</gazebo>
+
+		<!-- Hip joint. (Motor to upper leg). Joint names are: 0 2 4 6 -->
+		<joint name="${hipJointName}" type="revolute">
+			<parent link="hip${suffix}"/>
+			<child link="upper${suffix}"/>
+			<axis xyz="0 -1 0"/>
+			<origin xyz="0 ${left * (dPodAxisToEdge + upperLegWidth/2)} 0"/> <!--  rpy="0 -0.3 0" -->
+			<limit effort="${jointEffortLimit}" velocity="${jointSpeedLimit}" lower="${-pi}" upper="${pi}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+		<!-- Transmission elements required for Gazebo -->
+		<transmission name="transmission_${hipJointName}">
+    		<type>transmission_interface/SimpleTransmission</type>
+    		<joint name="${hipJointName}">
+      			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    		</joint>
+    		<actuator name="motor_${hipJointName}">
+      			<hardwareInterface>EffortJointInterface</hardwareInterface>
+      			<mechanicalReduction>1</mechanicalReduction>
+    		</actuator>
+  		</transmission>
+
+		<!-- Lower leg -->
+		<link name="lower${suffix}">
+			<visual>
+				<origin rpy="0 ${pi/2} 0" xyz="${lowerLegLength/2} 0 -${lowerLegAttachLinkLength}"/>
+				<geometry>
+					<cylinder length="${lowerLegLength}" radius="${lowerLegRadius}"/>
+				</geometry>
+			</visual>
+			
+			<collision>
+				<origin rpy="0 ${pi/2} 0" xyz="${lowerLegLength/2} 0 -${lowerLegAttachLinkLength}"/>
+				<geometry>
+					<cylinder length="${lowerLegLength}" radius="${lowerLegRadius}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${lowerLegMass}"/>
+				<inertia ixx="0.00131075"  ixy="0"  ixz="0" iyy="0.00131075" iyz="0" izz="0.0001" />
+			</inertial>
+		</link>
+		<gazebo reference="lower${suffix}">
+    		<material>Gazebo/Black</material>
+  		</gazebo>
+
+		<!-- Knee joint. Joint names are: 1 3 5 7 -->
+		<joint name="${kneeJointName}" type="revolute">
+			<parent link="upper${suffix}"/>
+			<child link="lower${suffix}"/>
+			<axis xyz="0 1 0"/>
+			<origin xyz="-${upperLegLength} 0 0"/> <!--rpy="0 0.5 0"-->
+			<limit effort="${jointEffortLimit}" velocity="${jointSpeedLimit}" lower="0" upper="${pi}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+		<!-- Transmission elements required for Gazebo -->
+		<transmission name="transmission_${kneeJointName}">
+    		<type>transmission_interface/SimpleTransmission</type>
+    		<joint name="${kneeJointName}">
+      			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    		</joint>
+    		<actuator name="motor_${kneeJointName}">
+      			<hardwareInterface>EffortJointInterface</hardwareInterface>
+      			<mechanicalReduction>1</mechanicalReduction>
+    		</actuator>
+  		</transmission>
+
+		<!-- Toe -->
+		<link name="toe${suffix}">
+			<visual>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<sphere radius="${toeRadius}"/>
+				</geometry>
+			</visual>
+			
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<sphere radius="${toeRadius}"/>
+				</geometry>
+			</collision>
+
+			<inertial>
+				<mass value="${toeMass}"/>
+				<inertia ixx="0.000025"  ixy="0"  ixz="0" iyy="0.000025" iyz="0" izz="0.000025" />
+			</inertial>
+		</link>
+		<gazebo reference="toe${suffix}">
+    		<material>Gazebo/DarkGray</material>
+			<collision>
+				<surface>
+					<bounce>
+						<restitution_coefficient>0</restitution_coefficient>
+						<threshold>1e+06</threshold>
+					</bounce>
+					<friction>
+						<torsional>
+							<coefficient>${toeSpinningFriction}</coefficient>
+						</torsional>
+						<ode>
+							<mu>${toeFriction}</mu>
+							<mu2>${toeLateralFriction}</mu2>
+						</ode>
+						<bullet>
+							<rolling_friction>${toeSpinningFriction}</rolling_friction>
+							<friction2>${toeLateralFriction}</friction2>
+						</bullet>
+					</friction>
+					<contact>
+						<bullet>
+							<kp>${toeStiffness}</kp>
+							<kd>${toeDamping}</kd>
+						</bullet>
+						<ode>
+							<kp>${toeStiffness}</kp>
+							<kd>${toeDamping}</kd>
+						</ode>
+					</contact>
+				</surface>
+			</collision>
+  		</gazebo>
+		
+		<joint name="jtoe${suffix}" type="fixed">
+			<parent link="lower${suffix}"/>
+			<child link="toe${suffix}"/>
+			<origin xyz="${lowerLegLength} 0 -${lowerLegAttachLinkLength + toeOffset}"/>
+			<dynamics damping="0.0" friction="0.0"/>
+		</joint>
+
+	</xacro:macro>
+
+	<!-- Our four legs -->
+	<xacro:red_leg suffix="0" hipJointName="0" kneeJointName="1" abductionJointName="8" front="1" left="1" hipJointLowerLimit="${-pi/2}" hipJointUpperLimit="${3*pi/2}"/>
+ 	<xacro:leg suffix="1" hipJointName="2" kneeJointName="3" abductionJointName="9" front="-1" left="1" hipJointLowerLimit="${-pi}" hipJointUpperLimit="${pi}"/>
+ 	<xacro:red_leg suffix="2" hipJointName="4" kneeJointName="5" abductionJointName="10" front="1" left="-1" hipJointLowerLimit="${-pi/2}" hipJointUpperLimit="${3*pi/2}"/>
+ 	<xacro:leg suffix="3" hipJointName="6" kneeJointName="7" abductionJointName="11" front="-1" left="-1" hipJointLowerLimit="${-pi}" hipJointUpperLimit="${pi}"/>
+
+	 <!-- Add ros_control plugin -->
+	<gazebo>
+  		<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+    		<robotNamespace>/vision60</robotNamespace>
+  		</plugin>
+	</gazebo>
+</robot>

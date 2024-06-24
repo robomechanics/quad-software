@@ -1,5 +1,5 @@
 <launch>
-    <arg name="robot_type" default="spirit"/>
+    <arg name="robot_type" default="vision60"/>
     <arg name="load_robot_params" default="false"/>
 
     <rosparam command="load" file="$(find global_body_planner)/global_body_planner.yaml" />
@@ -28,6 +28,11 @@
     <group if="$(eval arg('robot_type') == 'a1')">
         <param name="robot_description_sdf" textfile="$(find a1_description)/sdf_mesh/a1.sdf" />
         <param name="robot_description" command="cat $(find a1_description)/urdf/a1.urdf" />
+    </group>
+
+    <group if="$(eval arg('robot_type') == 'vision60')">
+        <param name="robot_description_sdf" textfile="$(find vision60_description)/sdf_mesh/vision60.sdf" />
+        <param name="robot_description" command="cat $(find vision60_description)/urdf/vision60.urdf" />
     </group>
 
     <group if="$(arg load_robot_params)">
