@@ -20,12 +20,12 @@ pcl_grid_map_extraction:
   downsampling:
     is_downsample_cloud: true
     voxel_size:
-      x: 0.02
+      x: 0.02 # 0.02 for all
       y: 0.02
       z: 0.02 
   grid_map:
     min_num_points_per_cell: 4
-    resolution: 0.1
+    resolution: 0.1 #0.1
 
     
        

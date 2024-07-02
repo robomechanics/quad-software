@@ -1,12 +1,12 @@
 <launch>
   <arg name="robot_type" default="spirit" />
   <arg name="multiple_robots" default="false" />
-  <arg name="gui" default="false" />
+  <arg name="gui" default="true" />
   <arg name="paused" default="false" />
   <arg name="controller" default="inverse_dynamics" />
   <arg name="live_plot" default="false" />
   <arg name="dash" default="false" />
-  <arg name="world" default="single_beam_03m_width" />
+  <arg name="world" default="single_beam_long_reduction" />
   <arg name="logging" default="false" />
   <param name="/use_sim_time" value="true" />
 

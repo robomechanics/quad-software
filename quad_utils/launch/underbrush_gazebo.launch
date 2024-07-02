@@ -4,7 +4,7 @@
   <arg name="paused"          default="false"/>
   <arg name="controller"      default="underbrush"/>
   <arg name="live_plot"       default="false"/>
-  <arg name="world"           default="slope_20_hole"/>
+  <arg name="world"           default="single_beam_long_reduction"/>
   <arg name="robot_type"      default="spirit_rotors"/>
 
   <include file="$(find quad_utils)/launch/quad_gazebo.launch" >
