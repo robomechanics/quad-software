@@ -1,4 +1,4 @@
-function processLog(varargin)
+function processLogEKF(varargin)
 % processLog Process a quad data log file to generate figures
 %   processLog uses the default 'quad_log_current' file name to
 %   yield a data structure containing select topic data. If this bag does
@@ -151,174 +151,174 @@ if bSave
     saveas(gcf, fullfile(plotDir, 'Velocity.png'));
 end
 
-figure(3)
-t = tiledlayout(4,1);
-nexttile
-% subplot(3,1,1);
-hold on
-plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,1), 'b-','LineWidth',2)
-plot(stateEstimate.time, stateEstimate.orientationQuat(:,1), 'r-', 'LineWidth',2)
-% xlim([2 7])
-% ylim([-3 3])
-title("W Orientation")
-legend("Ground Truth", "State Estimate")
-grid on
-nexttile
-% subplot(3,1,2);
-hold on
-plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,2), 'b', 'LineWidth',2 )
-plot(stateEstimate.time, stateEstimate.orientationQuat(:,2), 'r-' , 'LineWidth',2)
-% xlim([2 7])
-% ylim([-1.5 1.5])
-title("X Orientation")
-legend("Ground Truth", "State Estimate")
-grid on
-nexttile
-% subplot(3,1,3);
-hold on
-plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,3), 'b-','LineWidth',2)
-plot(stateEstimate.time, stateEstimate.orientationQuat(:,3), 'r-','LineWidth',2)
-% xlim([2 7])
-% ylim([-1.5 1.5])
-title("Y Orientation")
-legend("Ground Truth", "State Estimate")
-grid on
-nexttile
-
-hold on
-plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,4), 'b-','LineWidth',2)
-plot(stateEstimate.time, stateEstimate.orientationQuat(:,4), 'r-','LineWidth',2)
-% xlim([2 7])
-% ylim([-1.5 1.5])
-title("Z Orientation")
-legend("Ground Truth", "State Estimate")
-grid on
-
-xlabel(t, "Time (s)")
-
-if bSave
-    saveas(gcf, fullfile(plotDir, 'Orientation.png'));
-end
-
-figure(4)
-t = tiledlayout(3,1);
-nexttile
-% subplot(3,1,1);
-hold on
-plot(stateGroundTruth.time, stateGroundTruth.orientationRPY(:,1), 'b-','LineWidth',2)
-plot(stateEstimate.time, stateEstimate.orientationRPY(:,1), 'r-', 'LineWidth',2)
-% xlim([2 7])
-% ylim([-3 3])
-title("Roll")
-legend("Ground Truth", "State Estimate")
-grid on
-nexttile
-% subplot(3,1,2);
-hold on
-plot(stateGroundTruth.time, stateGroundTruth.orientationRPY(:,2), 'b', 'LineWidth',2 )
-plot(stateEstimate.time, stateEstimate.orientationRPY(:,2), 'r-' , 'LineWidth',2)
-% xlim([2 7])
-% ylim([-1.5 1.5])
-title("Pitch")
-legend("Ground Truth", "State Estimate")
-grid on
-nexttile
-% subplot(3,1,3);
-hold on
-plot(stateGroundTruth.time, stateGroundTruth.orientationRPY(:,3), 'b-','LineWidth',2)
-plot(stateEstimate.time, stateEstimate.orientationRPY(:,3), 'r-','LineWidth',2)
-% xlim([2 7])
-% ylim([-1.5 1.5])
-title("Yaw")
-legend("Ground Truth", "State Estimate")
-grid on
-
-xlabel(t, "Time (s)")
-
-if bSave
-    saveas(gcf, fullfile(plotDir, 'RPY.png'));
-end
-
-figure(5)
-t = tiledlayout(3,1);
-nexttile
-% subplot(3,1,1);
-hold on
-plot(stateGroundTruth.time, stateGroundTruth.angularVelocity(:,1), 'b-','LineWidth',2)
-plot(stateEstimate.time, stateEstimate.angularVelocity(:,1), 'r-', 'LineWidth',2)
-% xlim([2 7])
-% ylim([-3 3])
-title("Angular Vel X")
-legend("Ground Truth", "State Estimate")
-grid on
-nexttile
-% subplot(3,1,2);
-hold on
-plot(stateGroundTruth.time, stateGroundTruth.angularVelocity(:,2), 'b', 'LineWidth',2 )
-plot(stateEstimate.time, stateEstimate.angularVelocity(:,2), 'r-' , 'LineWidth',2)
-% xlim([2 7])
-% ylim([-1.5 1.5])
-title("Angular Vel Y")
-legend("Ground Truth", "State Estimate")
-grid on
-nexttile
-% subplot(3,1,3);
-hold on
-plot(stateGroundTruth.time, stateGroundTruth.angularVelocity(:,3), 'b-','LineWidth',2)
-plot(stateEstimate.time, stateEstimate.angularVelocity(:,3), 'r-','LineWidth',2)
-% xlim([2 7])
-% ylim([-1.5 1.5])
-title("Angular Vel Z")
-legend("Ground Truth", "State Estimate")
-grid on
-
-xlabel(t, "Time (s)")
-
-if bSave
-    saveas(gcf, fullfile(plotDir, 'AngVel.png'));
-end
-
-
-
-%% Plot the data
-
-% Plot the state
-% stateFigs = [];
-% if ~isempty(stateGroundTruth)
-%     [stateFigs] = plotState(stateGroundTruth,tWindowStates,'-', bTitles, stateFigs);
-% end
-% if ~isempty(stateTrajectory)
-%     [stateFigs] = plotState(stateTrajectory,tWindowStates, ':', bTitles, stateFigs);
-% end
-% if ~isempty(stateEstimate)
-%     [stateFigs] = plotState(stateEstimate,tWindowStates, '--', bTitles, stateFigs);
-% end
-
-% Plot the control
-% controlFigs = [];
-% if ~isempty(stateGRFs)
-%     controlFigs = plotControl(stateGRFs,tWindowControl,'-', bTitles, controlFigs);
-% end
-% if ~isempty(controlGRFs)
-%     controlFigs = plotControl(controlGRFs,tWindowControl,':', bTitles,controlFigs);
-% end
-
-% Plot local plan information if desired
-% localPlanFigs = [];
-% if bPlotLocalPlanInfo && ~isempty(localPlan)
-%     localPlanFigs = plotLocalPlan(localPlan,tWindowLocalPlan,'-', bTitles,localPlanFigs);
-% end
-
-% Add figures to array
-% figArray = [stateFigs, controlFigs, localPlanFigs];
-
-%% Save the logs and figures in one directory
-% logDir = [];
+% figure(3)
+% t = tiledlayout(4,1);
+% nexttile
+% % subplot(3,1,1);
+% hold on
+% plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,1), 'b-','LineWidth',2)
+% plot(stateEstimate.time, stateEstimate.orientationQuat(:,1), 'r-', 'LineWidth',2)
+% % xlim([2 7])
+% % ylim([-3 3])
+% title("W Orientation")
+% legend("Ground Truth", "State Estimate")
+% grid on
+% nexttile
+% % subplot(3,1,2);
+% hold on
+% plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,2), 'b', 'LineWidth',2 )
+% plot(stateEstimate.time, stateEstimate.orientationQuat(:,2), 'r-' , 'LineWidth',2)
+% % xlim([2 7])
+% % ylim([-1.5 1.5])
+% title("X Orientation")
+% legend("Ground Truth", "State Estimate")
+% grid on
+% nexttile
+% % subplot(3,1,3);
+% hold on
+% plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,3), 'b-','LineWidth',2)
+% plot(stateEstimate.time, stateEstimate.orientationQuat(:,3), 'r-','LineWidth',2)
+% % xlim([2 7])
+% % ylim([-1.5 1.5])
+% title("Y Orientation")
+% legend("Ground Truth", "State Estimate")
+% grid on
+% nexttile
+% 
+% hold on
+% plot(stateGroundTruth.time, stateGroundTruth.orientationQuat(:,4), 'b-','LineWidth',2)
+% plot(stateEstimate.time, stateEstimate.orientationQuat(:,4), 'r-','LineWidth',2)
+% % xlim([2 7])
+% % ylim([-1.5 1.5])
+% title("Z Orientation")
+% legend("Ground Truth", "State Estimate")
+% grid on
+% 
+% xlabel(t, "Time (s)")
+% 
 % if bSave
-%     logDir = saveLog(trialName, figArray);
+%     saveas(gcf, fullfile(plotDir, 'Orientation.png'));
 % end
-
-%% Animate and save
+% 
+% figure(4)
+% t = tiledlayout(3,1);
+% nexttile
+% % subplot(3,1,1);
+% hold on
+% plot(stateGroundTruth.time, stateGroundTruth.orientationRPY(:,1), 'b-','LineWidth',2)
+% plot(stateEstimate.time, stateEstimate.orientationRPY(:,1), 'r-', 'LineWidth',2)
+% % xlim([2 7])
+% % ylim([-3 3])
+% title("Roll")
+% legend("Ground Truth", "State Estimate")
+% grid on
+% nexttile
+% % subplot(3,1,2);
+% hold on
+% plot(stateGroundTruth.time, stateGroundTruth.orientationRPY(:,2), 'b', 'LineWidth',2 )
+% plot(stateEstimate.time, stateEstimate.orientationRPY(:,2), 'r-' , 'LineWidth',2)
+% % xlim([2 7])
+% % ylim([-1.5 1.5])
+% title("Pitch")
+% legend("Ground Truth", "State Estimate")
+% grid on
+% nexttile
+% % subplot(3,1,3);
+% hold on
+% plot(stateGroundTruth.time, stateGroundTruth.orientationRPY(:,3), 'b-','LineWidth',2)
+% plot(stateEstimate.time, stateEstimate.orientationRPY(:,3), 'r-','LineWidth',2)
+% % xlim([2 7])
+% % ylim([-1.5 1.5])
+% title("Yaw")
+% legend("Ground Truth", "State Estimate")
+% grid on
+% 
+% xlabel(t, "Time (s)")
+% 
+% if bSave
+%     saveas(gcf, fullfile(plotDir, 'RPY.png'));
+% end
+% 
+% figure(5)
+% t = tiledlayout(3,1);
+% nexttile
+% % subplot(3,1,1);
+% hold on
+% plot(stateGroundTruth.time, stateGroundTruth.angularVelocity(:,1), 'b-','LineWidth',2)
+% plot(stateEstimate.time, stateEstimate.angularVelocity(:,1), 'r-', 'LineWidth',2)
+% % xlim([2 7])
+% % ylim([-3 3])
+% title("Angular Vel X")
+% legend("Ground Truth", "State Estimate")
+% grid on
+% nexttile
+% % subplot(3,1,2);
+% hold on
+% plot(stateGroundTruth.time, stateGroundTruth.angularVelocity(:,2), 'b', 'LineWidth',2 )
+% plot(stateEstimate.time, stateEstimate.angularVelocity(:,2), 'r-' , 'LineWidth',2)
+% % xlim([2 7])
+% % ylim([-1.5 1.5])
+% title("Angular Vel Y")
+% legend("Ground Truth", "State Estimate")
+% grid on
+% nexttile
+% % subplot(3,1,3);
+% hold on
+% plot(stateGroundTruth.time, stateGroundTruth.angularVelocity(:,3), 'b-','LineWidth',2)
+% plot(stateEstimate.time, stateEstimate.angularVelocity(:,3), 'r-','LineWidth',2)
+% % xlim([2 7])
+% % ylim([-1.5 1.5])
+% title("Angular Vel Z")
+% legend("Ground Truth", "State Estimate")
+% grid on
+% 
+% xlabel(t, "Time (s)")
+% 
+% if bSave
+%     saveas(gcf, fullfile(plotDir, 'AngVel.png'));
+% end
+% 
+% 
+% 
+% %% Plot the data
+% 
+% % Plot the state
+% % stateFigs = [];
+% % if ~isempty(stateGroundTruth)
+% %     [stateFigs] = plotState(stateGroundTruth,tWindowStates,'-', bTitles, stateFigs);
+% % end
+% % if ~isempty(stateTrajectory)
+% %     [stateFigs] = plotState(stateTrajectory,tWindowStates, ':', bTitles, stateFigs);
+% % end
+% % if ~isempty(stateEstimate)
+% %     [stateFigs] = plotState(stateEstimate,tWindowStates, '--', bTitles, stateFigs);
+% % end
+% 
+% % Plot the control
+% % controlFigs = [];
+% % if ~isempty(stateGRFs)
+% %     controlFigs = plotControl(stateGRFs,tWindowControl,'-', bTitles, controlFigs);
+% % end
+% % if ~isempty(controlGRFs)
+% %     controlFigs = plotControl(controlGRFs,tWindowControl,':', bTitles,controlFigs);
+% % end
+% 
+% % Plot local plan information if desired
+% % localPlanFigs = [];
+% % if bPlotLocalPlanInfo && ~isempty(localPlan)
+% %     localPlanFigs = plotLocalPlan(localPlan,tWindowLocalPlan,'-', bTitles,localPlanFigs);
+% % end
+% 
+% % Add figures to array
+% % figArray = [stateFigs, controlFigs, localPlanFigs];
+% 
+% %% Save the logs and figures in one directory
+% % logDir = [];
+% % if bSave
+% %     logDir = saveLog(trialName, figArray);
+% % end
+% 
+% %% Animate and save
 
 % if bAnimate
 %     robot_path = '../../quad_simulator/spirit_description/urdf/spirit.urdf';

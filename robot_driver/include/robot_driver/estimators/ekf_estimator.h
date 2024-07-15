@@ -34,7 +34,8 @@ class EKFEstimator : public StateEstimator {
   EKFEstimator();
 
   void init(ros::NodeHandle& nh);
-  bool updateOnce(quad_msgs::RobotState& last_robot_state_msg_, int& control_mode_);
+  bool updateOnce(quad_msgs::RobotState& last_robot_state_msg_,
+                  int& control_mode_);
 
   /**
    * @brief Calls ros spinOnce and pubs data at set frequency
@@ -137,16 +138,16 @@ class EKFEstimator : public StateEstimator {
    */
   void update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
               const Eigen::VectorXd& vk, const Eigen::VectorXd& wk,
-              const Eigen::Quaterniond& qk,
-              const Eigen::Matrix3d& R_w_imu);
+              const Eigen::Quaterniond& qk, const Eigen::Matrix3d& R_w_imu);
 
   /**
    * @brief Function to set initial robot state for ekf state estimator
    */
   void setInitialState(quad_msgs::RobotState& last_robot_state_msg_);
 
-  // void updateAngVel(const double& dt, Eigen::Quaterniond& q, 
-  //                   Eigen::Vector3d& last_rpy, const Eigen::VectorXd& wk, Eigen::Vector3d& ang_vel);
+  // void updateAngVel(const double& dt, Eigen::Quaterniond& q,
+  //                   Eigen::Vector3d& last_rpy, const Eigen::VectorXd& wk,
+  //                   Eigen::Vector3d& ang_vel);
 
   Eigen::VectorXd quaternionDynamics(const Eigen::VectorXd& w,
                                      const Eigen::VectorXd& q);
@@ -168,10 +169,20 @@ class EKFEstimator : public StateEstimator {
    */
   Eigen::MatrixXd calcRodrigues(const double& dt, const Eigen::VectorXd& w,
                                 const int& sub);
-
   /**
    * @brief set sensor noise
    */
+
+  /**
+   * @brief compute the adjoint for converting jacobian matrix from world frame
+   * ot body frame
+   * @param[in]
+   *
+   * @return Eigen::MatrixXd
+   */
+  Eigen::Matrix3d rpyToRotationMatrix(double roll, double pitch, double yaw);
+  void transformJacobianToBodyFrame(const Eigen::VectorXd& state,
+                                    Eigen::MatrixXd& jacobian);
   void setNoise();
 
   // number of states position (3 * 1) + velocity (3 * 1) + quaternion (4 * 1) +
@@ -248,6 +259,9 @@ class EKFEstimator : public StateEstimator {
   // last state vector (28 * 1)
   Eigen::VectorXd last_X;
 
+  // last covariance matrix
+  Eigen::MatrixXd last_P;
+
   // prediction state vector (28 * 1)
   Eigen::VectorXd X_pre;
 
@@ -286,21 +300,17 @@ class EKFEstimator : public StateEstimator {
   // measurement covariance matrix (12 * 12)
   Eigen::MatrixXd R;
 
-  // foot forward kinematics vector (24*1)
-  Eigen::VectorXd foot_state;
-
-  // foot contact state vector(4*1)
+  // foot contact state vector(4*1), (1 - contact, 0 - in air)
   Eigen::VectorXd foot_contact_states;
 
-  // error measurement displacement vector (18 * 1)
+  // error measurement displacement vector (18*1)
   Eigen::Matrix<double, num_measure, 1> error_y;
 
-  // measurement Generated from Leg Kinematics (18 * 1)
+  // measurement Generated from Leg Kinematics (18*1)
   Eigen::VectorXd y;
 
+  // quaternion measurement from IMU (4*1)
   Eigen::VectorXd q;
-
-  Eigen::Vector3d last_rpy;
 
   // previous time variable
   ros::Time last_time;
@@ -341,30 +351,36 @@ class EKFEstimator : public StateEstimator {
 
   int counter = 0;
 
-  // noise term
-  // noise in accelerometer
+  // noise terms
+  // noise in accelerometer (imu process position)
   double na_;
+  // noise in imu process velocity
+  double nv_;
   // noise in gyro
   double ng_;
   // bias in accelerometer
   double ba_;
   // bias in gyro
   double bg_;
-  // noise in feet
+  // noise in imu process foot position
   double nf_;
-  // noise in forward kinematics
+  // noise in update encoder forward kinematics
   double nfk_;
-  // noise in encoder
+  // noise in update encoder velocity
   double ne_;
+   // noise in update measurement foot height
+  double nfh_;
   // initial covariance value
   double P0_;
   // weight on foot contact value
   double contact_w_;
-  // Innovation Norm Threshold, Reject Measurement Update if too large
+  // Innovation Norm Threshold, Outlier Rejection for Measurement Update
   double thresh_out;
-  // initialized the estimator
+  // Toe Radius of Each Foot
+  double foot_radius;
+  // Binary Flag denoting estimator initialization
   bool initialized = true;
-  bool planning = false;
+  // Binary switch for Ground Truth Subscriber for Debugging Purposes
   bool debug = true;
 
   std::string robot_name_;
