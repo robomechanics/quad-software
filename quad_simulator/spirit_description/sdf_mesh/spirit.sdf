@@ -1308,6 +1308,15 @@ SOFTWARE.
       <child>imu::link</child>
       <parent>body</parent>
     </joint>
+    <!-- Include Depth Camera sensor -->
+    <include>
+      <uri>model://depth_camera_model</uri>
+      <pose>0 0 0 0 0 0</pose> <!-- Adjust the pose as needed -->
+    </include>
+    <joint name="depth_camera_joint" type="fixed">
+      <child>depth_camera_model::depth_camera_link</child>
+      <parent>body</parent>
+    </joint>
     <!-- Setup ros control -->
     <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
       <controlPeriod>0.002</controlPeriod>
