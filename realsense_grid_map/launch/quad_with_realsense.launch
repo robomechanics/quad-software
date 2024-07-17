@@ -6,6 +6,9 @@
         <param name="enable_imu" type="bool" value="true"/>
         <param name="pointcloud.enable" type="bool" value="true"/>
     </node>
+    
+    <!-- Spawn the robot with the depth camera -->
+    <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-file $(find quad_simulator)/other/sensor_description/depth_camera/model.sdf -sdf -model depth_camera_model" />
 
     <!-- Launch the realsense_grid_map_node -->
     <node name="realsense_grid_map_node" pkg="realsense_grid_map" type="realsense_grid_map_node" output="screen"/>
