@@ -12,7 +12,7 @@ grid_map_filters:
     params:
       input_layer: z
       output_layer: z_inpainted
-      radius: 0.4
+      radius: 0.1
 
   # Reduce noise with a radial blurring filter.
   - name: mean_in_radius
@@ -20,7 +20,7 @@ grid_map_filters:
     params:
       input_layer: z_inpainted
       output_layer: z_smooth
-      radius: 0.2
+      radius: 0.05
 
   # Compute surface normals.
   - name: surface_normals
@@ -28,7 +28,7 @@ grid_map_filters:
     params:
       input_layer: z_inpainted
       output_layers_prefix: normal_vectors_
-      radius: 0.15
+      radius: 0.1
       normal_vector_positive_axis: z
 
   # Compute smooth surface normals.
@@ -37,7 +37,7 @@ grid_map_filters:
     params:
       input_layer: z_smooth
       output_layers_prefix: smooth_normal_vectors_
-      radius: 0.4
+      radius: 0.2
       normal_vector_positive_axis: z
 
   # Compute slope from surface normal.
@@ -88,7 +88,7 @@ grid_map_filters:
     params:
       input_layer: traversability_hole_mask
       output_layer: traversability_hole_mask_filtered
-      radius: 0.075
+      radius: 0.01
 
     # Set lower threshold on traversability hole mask.
   - name: traversability_hole_mask_lower_threshold
@@ -152,4 +152,5 @@ grid_map_filters:
       condition_layer: traversability_mask
       output_layer: traversability_mask
       lower_threshold: 0.5 # Note - for now must match /local_footstep_planner/foothold_obj_threshold
-      set_to: 0.0
+      set_to: 0
+
