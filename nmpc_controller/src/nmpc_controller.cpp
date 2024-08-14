@@ -331,6 +331,7 @@ bool NMPCController::computePlan(
     mynlp_->warm_start_ = false;
     require_init_ = true;
     ROS_WARN_STREAM("NMPC solving fail");
+    ROS_INFO_STREAM("Current Pose" << initial_state);
     return false;
   }
 }
