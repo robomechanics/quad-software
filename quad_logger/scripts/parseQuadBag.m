@@ -24,7 +24,7 @@ else
 end
 
 % Specify the path
-filepath = ['../bags/', trialName,'.bag'];
+filepath = ['../bags/BeamWalking2/', trialName,'.bag'];
 if ~(exist(filepath,'file'))
     disp([filepath, ' does not exist, using UI to specify path']);
     [fileName,pathname] = uigetfile('.bag', 'Select a Bag');
@@ -41,7 +41,7 @@ bag = rosbag(filepath);
 stateEstimateData = readMessages(select(bag,'Topic',['/', namespace, 'state/estimate']),'DataFormat','struct');
 stateEstimate = struct;
 if isempty(stateEstimateData)
-    warning('No data on state estimate topic');
+    % warning('No data on state estimate topic');
 else
     stateEstimate.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateEstimateData, 'UniformOutput', 0));
     
@@ -100,7 +100,7 @@ end
 stateTrajectoryData = readMessages(select(bag,'Topic',['/', namespace, 'state/trajectory']),'DataFormat','struct');
 stateTrajectory = struct;
 if isempty(stateTrajectoryData)
-    warning('No data on trajectory topic');
+    % warning('No data on trajectory topic');
 else
     
     stateTrajectory.time = cell2mat(cellfun(@(m) double(m.Header.Stamp.Sec) + double(m.Header.Stamp.Nsec)*1E-9, stateTrajectoryData, 'UniformOutput', 0));
