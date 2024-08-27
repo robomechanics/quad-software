@@ -206,7 +206,7 @@ NMPCController::NMPCController(ros::NodeHandle &nh, int robot_id) {
 
   app_->Options()->SetStringValue("print_timing_statistics", "no");
   app_->Options()->SetStringValue("linear_solver", "ma27");
-  app_->Options()->SetIntegerValue("print_level", 0);  // default=0, verbose=5
+  app_->Options()->SetIntegerValue("print_level", 5);  // default=0, verbose=5
   app_->Options()->SetNumericValue("ma57_pre_alloc", 1.5);
   app_->Options()->SetStringValue("fixed_variable_treatment",
                                   "make_parameter_nodual");
@@ -331,7 +331,6 @@ bool NMPCController::computePlan(
     mynlp_->warm_start_ = false;
     require_init_ = true;
     ROS_WARN_STREAM("NMPC solving fail");
-    ROS_INFO_STREAM("Current Pose" << initial_state);
     return false;
   }
 }

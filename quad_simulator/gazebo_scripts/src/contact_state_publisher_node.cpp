@@ -12,5 +12,4 @@ int main(int argc, char** argv) {
   contact_state_publisher.spin();
 
   return 0;
-
 }
