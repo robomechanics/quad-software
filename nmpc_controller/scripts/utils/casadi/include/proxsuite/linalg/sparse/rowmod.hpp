@@ -5,8 +5,9 @@
 #ifndef PROXSUITE_LINALG_SPARSE_LDLT_ROWMOD_HPP
 #define PROXSUITE_LINALG_SPARSE_LDLT_ROWMOD_HPP
 
-#include "proxsuite/linalg/sparse/update.hpp"
 #include <algorithm>
+
+#include "proxsuite/linalg/sparse/update.hpp"
 
 namespace proxsuite {
 namespace linalg {
@@ -20,18 +21,13 @@ namespace sparse {
  * @param max_nnz : upper bound of non zero counts over the columns of the
  * matrix. n is always a valid value.
  */
-template<typename T, typename I>
-auto
-delete_row_req( //
-  proxsuite::linalg::veg::Tag<T> /*tag*/,
-  proxsuite::linalg::veg::Tag<I> /*tag*/,
-  isize n,
-  isize max_nnz) noexcept -> proxsuite::linalg::veg::dynstack::StackReq
-{
+template <typename T, typename I>
+auto delete_row_req(  //
+    proxsuite::linalg::veg::Tag<T> /*tag*/,
+    proxsuite::linalg::veg::Tag<I> /*tag*/, isize n,
+    isize max_nnz) noexcept -> proxsuite::linalg::veg::dynstack::StackReq {
   return sparse::rank1_update_req(proxsuite::linalg::veg::Tag<T>{},
-                                  proxsuite::linalg::veg::Tag<I>{},
-                                  n,
-                                  true,
+                                  proxsuite::linalg::veg::Tag<I>{}, n, true,
                                   max_nnz);
 }
 
@@ -47,21 +43,16 @@ delete_row_req( //
  * @param pos position of the row and column to be deleted
  * @param stack is the memory stack
  */
-template<typename T, typename I>
-auto
-delete_row(MatMut<T, I> ld,
-           I* etree,
-           I const* perm_inv,
-           isize pos,
-           DynStackMut stack) noexcept(false) -> MatMut<T, I>
-{
+template <typename T, typename I>
+auto delete_row(MatMut<T, I> ld, I* etree, I const* perm_inv, isize pos,
+                DynStackMut stack) noexcept(false) -> MatMut<T, I> {
   // step 1: delete row k from each column
   VEG_ASSERT(!ld.is_compressed());
 
   // we're actually deleting perm_inv[k], so that k is deleted in the permuted
   // matrix
   usize permuted_pos =
-    perm_inv == nullptr ? usize(pos) : util::zero_extend(perm_inv[pos]);
+      perm_inv == nullptr ? usize(pos) : util::zero_extend(perm_inv[pos]);
 
   auto petree = etree;
   I* pldi = ld.row_indices_mut();
@@ -73,7 +64,7 @@ delete_row(MatMut<T, I> ld,
     auto col_end = ld.col_end(j);
     // search for the first row in column j greater than or equal to k
     auto it =
-      std::lower_bound(pldi + col_start, pldi + col_end, I(permuted_pos));
+        std::lower_bound(pldi + col_start, pldi + col_end, I(permuted_pos));
 
     // if an element was found, and it is equal to k
     if ((it != (pldi + col_end)) && *it == I(permuted_pos)) {
@@ -110,19 +101,16 @@ delete_row(MatMut<T, I> ld,
 
   // step 3: perform rank update
   isize len = isize(util::zero_extend(ld.nnz_per_col()[permuted_pos])) - 1;
-  ld = sparse::rank1_update<T, I>( //
-    ld,
-    etree,
-    static_cast<I const*>(nullptr),
-    VecRef<T, I>{
-      from_raw_parts,
-      ld.nrows(),
-      len,
-      pldi + ld.col_start(permuted_pos) + 1,
-      pldx + ld.col_start(permuted_pos) + 1,
-    },
-    d_old,
-    stack);
+  ld = sparse::rank1_update<T, I>(  //
+      ld, etree, static_cast<I const*>(nullptr),
+      VecRef<T, I>{
+          from_raw_parts,
+          ld.nrows(),
+          len,
+          pldi + ld.col_start(permuted_pos) + 1,
+          pldx + ld.col_start(permuted_pos) + 1,
+      },
+      d_old, stack);
   // step 4: delete col k_
   ld.nnz_per_col_mut()[permuted_pos] = 1;
   petree[permuted_pos] = I(-1);
@@ -138,28 +126,21 @@ delete_row(MatMut<T, I> ld,
  * @param max_nnz : upper bound of non zero counts over the columns of the
  * matrix. n is always a valid value.
  */
-template<typename T, typename I>
-auto
-add_row_req( //
-  proxsuite::linalg::veg::Tag<T> /*tag*/,
-  proxsuite::linalg::veg::Tag<I> /*tag*/,
-  isize n,
-  bool id_perm,
-  isize nnz,
-  isize max_nnz) noexcept -> proxsuite::linalg::veg::dynstack::StackReq
-{
+template <typename T, typename I>
+auto add_row_req(  //
+    proxsuite::linalg::veg::Tag<T> /*tag*/,
+    proxsuite::linalg::veg::Tag<I> /*tag*/, isize n, bool id_perm, isize nnz,
+    isize max_nnz) noexcept -> proxsuite::linalg::veg::dynstack::StackReq {
   using proxsuite::linalg::veg::dynstack::StackReq;
-  auto numerical_work = StackReq{ n * isize{ sizeof(T) }, isize{ alignof(T) } };
+  auto numerical_work = StackReq{n * isize{sizeof(T)}, isize{alignof(T)}};
   auto permuted_indices =
-    StackReq{ (id_perm ? 0 : nnz) * isize{ sizeof(I) }, isize{ alignof(I) } };
-  auto pattern_diff = StackReq{ n * isize{ sizeof(I) }, isize{ alignof(I) } };
+      StackReq{(id_perm ? 0 : nnz) * isize{sizeof(I)}, isize{alignof(I)}};
+  auto pattern_diff = StackReq{n * isize{sizeof(I)}, isize{alignof(I)}};
   auto merge =
-    merge_second_col_into_first_req(proxsuite::linalg::veg::Tag<I>{}, n);
+      merge_second_col_into_first_req(proxsuite::linalg::veg::Tag<I>{}, n);
   auto update = sparse::rank1_update_req(proxsuite::linalg::veg::Tag<T>{},
-                                         proxsuite::linalg::veg::Tag<I>{},
-                                         n,
-                                         true,
-                                         max_nnz);
+                                         proxsuite::linalg::veg::Tag<I>{}, n,
+                                         true, max_nnz);
 
   auto req = numerical_work;
   req = req & permuted_indices;
@@ -185,16 +166,11 @@ add_row_req( //
  * @param diag_element : diagonal element of the added row and column
  * @param stack is the memory stack
  */
-template<typename T, typename I>
-auto
-add_row(MatMut<T, I> ld,
-        I* etree,
-        I const* perm_inv,
-        isize pos,
-        VecRef<T, I> new_col,
-        proxsuite::linalg::veg::DoNotDeduce<T> diag_element,
-        DynStackMut stack) noexcept(false) -> MatMut<T, I>
-{
+template <typename T, typename I>
+auto add_row(MatMut<T, I> ld, I* etree, I const* perm_inv, isize pos,
+             VecRef<T, I> new_col,
+             proxsuite::linalg::veg::DoNotDeduce<T> diag_element,
+             DynStackMut stack) noexcept(false) -> MatMut<T, I> {
   VEG_ASSERT(!ld.is_compressed());
   bool id_perm = perm_inv == nullptr;
   auto zx = util::zero_extend;
@@ -213,16 +189,16 @@ add_row(MatMut<T, I> ld,
     // allocate workspace for numerical step, storage for the k-th row and k-th
     // column of the new matrix
     auto _lx2_storage = stack.make_new_for_overwrite(
-      proxsuite::linalg::veg::Tag<T>{}, ld.nrows());
+        proxsuite::linalg::veg::Tag<T>{}, ld.nrows());
     auto plx2_storage = _lx2_storage.ptr_mut();
 
     // allocate workspace for permuted row indices of the new column if
     // necessary
     auto _new_col_permuted_indices = stack.make_new_for_overwrite(
-      proxsuite::linalg::veg::Tag<I>{}, id_perm ? isize(0) : new_col.nnz());
+        proxsuite::linalg::veg::Tag<I>{}, id_perm ? isize(0) : new_col.nnz());
 
     auto new_col_permuted_indices =
-      id_perm ? new_col.row_indices() : _new_col_permuted_indices.ptr();
+        id_perm ? new_col.row_indices() : _new_col_permuted_indices.ptr();
 
     // copy and sort permuted row indices
     if (!id_perm) {
@@ -237,9 +213,9 @@ add_row(MatMut<T, I> ld,
 
     // allocate workspace for non-zero pattern of k-th row
     auto _l12_nnz_pattern = stack.make_new_for_overwrite(
-      proxsuite::linalg::veg::Tag<I>{}, isize(permuted_pos));
+        proxsuite::linalg::veg::Tag<I>{}, isize(permuted_pos));
     auto _difference = stack.make_new_for_overwrite(
-      proxsuite::linalg::veg::Tag<I>{}, ld.nrows() - isize(permuted_pos));
+        proxsuite::linalg::veg::Tag<I>{}, ld.nrows() - isize(permuted_pos));
     auto pdifference = _difference.ptr_mut();
 
     auto pl12_nnz_pattern = _l12_nnz_pattern.ptr_mut();
@@ -318,23 +294,20 @@ add_row(MatMut<T, I> ld,
       // update the pattern of the k-th column of L, with that of the bottom
       // part of the j-th column of L, ignoring the elements less than or equal
       // to k
-      VEG_BIND(auto,
-               (_, new_current_col, computed_difference),
-               sparse::merge_second_col_into_first(
-                 pdifference,
-                 static_cast<T*>(nullptr),
-                 pldi + (zx(pldp[permuted_pos]) + 1),
-                 isize(zx(pldp[permuted_pos + 1]) - zx(pldp[permuted_pos])) - 1,
-                 pldnz[permuted_pos] - 1,
-                 {
-                   unsafe,
-                   from_raw_parts,
-                   pldi + (zx(pldp[j]) + 1),
-                   isize(zx(pldnz[j])) - 1,
-                 },
-                 I(permuted_pos),
-                 false,
-                 stack));
+      VEG_BIND(
+          auto, (_, new_current_col, computed_difference),
+          sparse::merge_second_col_into_first(
+              pdifference, static_cast<T*>(nullptr),
+              pldi + (zx(pldp[permuted_pos]) + 1),
+              isize(zx(pldp[permuted_pos + 1]) - zx(pldp[permuted_pos])) - 1,
+              pldnz[permuted_pos] - 1,
+              {
+                  unsafe,
+                  from_raw_parts,
+                  pldi + (zx(pldp[j]) + 1),
+                  isize(zx(pldnz[j])) - 1,
+              },
+              I(permuted_pos), false, stack));
       (void)_;
       (void)new_current_col;
 
@@ -370,7 +343,7 @@ add_row(MatMut<T, I> ld,
 
       // find the first element greater than k
       auto it =
-        std::lower_bound(pldi + col_start, pldi + col_end, I(permuted_pos));
+          std::lower_bound(pldi + col_start, pldi + col_end, I(permuted_pos));
 
       // if it is the first element, update the elimination tree so that k is
       // the new parent of column j
@@ -380,19 +353,16 @@ add_row(MatMut<T, I> ld,
 
       // shift the row indices  up by one position to provide enough space for
       // the new element
-      std::memmove( //
-        it + 1,
-        it,
-        usize((pldi + col_end) - it) * sizeof(I));
+      std::memmove(  //
+          it + 1, it, usize((pldi + col_end) - it) * sizeof(I));
 
       VEG_CHECK_CONCEPT(trivially_copyable<T>);
 
       // shift the values  up by one position to provide enough space for the
       // new element
-      std::memmove( //
-        pldx + (it - pldi) + 1,
-        pldx + (it - pldi),
-        usize((pldi + col_end) - it) * sizeof(T));
+      std::memmove(  //
+          pldx + (it - pldi) + 1, pldx + (it - pldi),
+          usize((pldi + col_end) - it) * sizeof(T));
 
       // insert the new row index k
       *it = I(permuted_pos);
@@ -421,23 +391,20 @@ add_row(MatMut<T, I> ld,
 
   isize len = isize(util::zero_extend(ld.nnz_per_col()[permuted_pos])) - 1;
   // perform the rank update with the newly added column
-  ld = sparse::rank1_update<T, I>(ld,
-                                  etree,
-                                  static_cast<I const*>(nullptr),
+  ld = sparse::rank1_update<T, I>(ld, etree, static_cast<I const*>(nullptr),
                                   VecRef<T, I>{
-                                    from_raw_parts,
-                                    ld.nrows(),
-                                    len,
-                                    pldi + ld.col_start(permuted_pos) + 1,
-                                    pldx + ld.col_start(permuted_pos) + 1,
+                                      from_raw_parts,
+                                      ld.nrows(),
+                                      len,
+                                      pldi + ld.col_start(permuted_pos) + 1,
+                                      pldx + ld.col_start(permuted_pos) + 1,
                                   },
-                                  -diag_element,
-                                  stack);
+                                  -diag_element, stack);
 
   return ld;
 }
-} // namespace sparse
-} // namespace linalg
-} // namespace proxsuite
+}  // namespace sparse
+}  // namespace linalg
+}  // namespace proxsuite
 
 #endif /* end of include guard PROXSUITE_LINALG_SPARSE_LDLT_ROWMOD_HPP */

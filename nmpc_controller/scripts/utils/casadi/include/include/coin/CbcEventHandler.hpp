@@ -67,49 +67,50 @@ class CbcModel;
   The general pattern for usage is as follows:
   <ol>
     <li> Create a CbcEventHandler object. This will be initialised with a set
-	 of default actions for every recognised event.
+         of default actions for every recognised event.
 
     <li> Attach the event handler to the CbcModel object.
 
     <li> When execution reaches the point where an event occurs, call the
-	 event handler as CbcEventHandler::event(the event). The return value
-	 will specify what the code should do in response to the event.
+         event handler as CbcEventHandler::event(the event). The return value
+         will specify what the code should do in response to the event.
   </ol>
 
   The return value associated with an event can be changed at any time.
 */
 
 class CbcEventHandler {
-
-public:
+ public:
   /*! \brief Events known to cbc */
 
   enum CbcEvent { /*! Processing of the current node is complete. */
-    node = 200,
-    /*! A tree status interval has arrived. */
-    treeStatus,
-    /*! A solution has been found. */
-    solution,
-    /*! A heuristic solution has been found. */
-    heuristicSolution,
-    /*! A solution will be found unless user takes action (first check). */
-    beforeSolution1,
-    /*! A solution will be found unless user takes action (thorough check). */
-    beforeSolution2,
-    /*! After failed heuristic. */
-    afterHeuristic,
-    /*! On entry to small branch and bound. */
-    smallBranchAndBound,
-    /*! After a pass of heuristic. */
-    heuristicPass,
-    /*! When converting constraints to cuts. */
-    convertToCuts,
-    /*! Having generated cuts, allows user to think. */
-    generatedCuts,
-    /*! End of search. */
-    endSearch,
-    /*! Just before starting branching i.e. after root cuts. */
-    afterRootCuts
+                  node = 200,
+                  /*! A tree status interval has arrived. */
+                  treeStatus,
+                  /*! A solution has been found. */
+                  solution,
+                  /*! A heuristic solution has been found. */
+                  heuristicSolution,
+                  /*! A solution will be found unless user takes action (first
+                     check). */
+                  beforeSolution1,
+                  /*! A solution will be found unless user takes action
+                     (thorough check). */
+                  beforeSolution2,
+                  /*! After failed heuristic. */
+                  afterHeuristic,
+                  /*! On entry to small branch and bound. */
+                  smallBranchAndBound,
+                  /*! After a pass of heuristic. */
+                  heuristicPass,
+                  /*! When converting constraints to cuts. */
+                  convertToCuts,
+                  /*! Having generated cuts, allows user to think. */
+                  generatedCuts,
+                  /*! End of search. */
+                  endSearch,
+                  /*! Just before starting branching i.e. after root cuts. */
+                  afterRootCuts
   };
 
   /*! \brief Action codes returned by the event handler.
@@ -118,27 +119,29 @@ public:
     */
 
   enum CbcAction { /*! Continue --- no action required. */
-    noAction = -1,
-    /*! Stop --- abort the current run at the next opportunity. */
-    stop = 0,
-    /*! Restart --- restart branch-and-cut search; do not undo root node
-        processing.
-        */
-    restart,
-    /*! RestartRoot --- undo root node and start branch-and-cut afresh. */
-    restartRoot,
-    /*! Add special cuts. */
-    addCuts,
-    /*! Pretend solution never happened. */
-    killSolution,
-    /*! Take action on modified data. */
-    takeAction
+                   noAction = -1,
+                   /*! Stop --- abort the current run at the next opportunity.
+                    */
+                   stop = 0,
+                   /*! Restart --- restart branch-and-cut search; do not undo
+                      root node processing.
+                       */
+                   restart,
+                   /*! RestartRoot --- undo root node and start branch-and-cut
+                      afresh. */
+                   restartRoot,
+                   /*! Add special cuts. */
+                   addCuts,
+                   /*! Pretend solution never happened. */
+                   killSolution,
+                   /*! Take action on modified data. */
+                   takeAction
 
   };
 
   /*! \brief Data type for event/action pairs */
 
-  typedef std::map< CbcEvent, CbcAction > eaMapPair;
+  typedef std::map<CbcEvent, CbcAction> eaMapPair;
 
   /*! \name Event Processing */
   //@{
@@ -191,29 +194,19 @@ public:
 
   /*! \brief Set model. */
 
-  inline void setModel(CbcModel *model)
-  {
-    model_ = model;
-  }
+  inline void setModel(CbcModel *model) { model_ = model; }
 
   /*! \brief Get model. */
 
-  inline const CbcModel *getModel() const
-  {
-    return model_;
-  }
+  inline const CbcModel *getModel() const { return model_; }
 
   /*! \brief Set the default action */
 
-  inline void setDfltAction(CbcAction action)
-  {
-    dfltAction_ = action;
-  }
+  inline void setDfltAction(CbcAction action) { dfltAction_ = action; }
 
   /*! \brief Set the action code associated with an event */
 
-  inline void setAction(CbcEvent event, CbcAction action)
-  {
+  inline void setAction(CbcEvent event, CbcAction action) {
     if (eaMap_ == 0) {
       eaMap_ = new eaMapPair;
     }
@@ -222,7 +215,7 @@ public:
 
   //@}
 
-protected:
+ protected:
   /*! \name Data members
 
        Protected (as opposed to private) to allow access by derived classes.
@@ -247,4 +240,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

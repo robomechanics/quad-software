@@ -7,30 +7,24 @@
 
 #include <cmath>
 
-//Small class for rational numbers
+// Small class for rational numbers
 class CoinRational {
-
-public:
+ public:
   long getDenominator() { return denominator_; }
   long getNumerator() { return numerator_; }
 
-  CoinRational()
-    : numerator_(0)
-    , denominator_(1) {};
+  CoinRational() : numerator_(0), denominator_(1) {};
 
-  CoinRational(long n, long d)
-    : numerator_(n)
-    , denominator_(d) {};
+  CoinRational(long n, long d) : numerator_(n), denominator_(d) {};
 
-  CoinRational(double val, double maxdelta, long maxdnom)
-  {
+  CoinRational(double val, double maxdelta, long maxdnom) {
     if (!nearestRational_(val, maxdelta, maxdnom)) {
       numerator_ = 0;
       denominator_ = 1;
     }
   };
 
-private:
+ private:
   long numerator_;
   long denominator_;
 
@@ -40,4 +34,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

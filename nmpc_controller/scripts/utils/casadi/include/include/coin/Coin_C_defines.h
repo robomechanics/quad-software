@@ -63,17 +63,20 @@ typedef void Clp_Simplex;
 /** typedef for user call back.
  The cvec are constructed so don't need to be const*/
 #if COIN_BIG_INDEX == 0
-typedef void(COINLINKAGE_CB *clp_callback)(Clp_Simplex *model, int msgno, int ndouble,
-  const double *dvec, int nint, const int *ivec,
-  int nchar, char **cvec);
+typedef void(COINLINKAGE_CB *clp_callback)(Clp_Simplex *model, int msgno,
+                                           int ndouble, const double *dvec,
+                                           int nint, const int *ivec, int nchar,
+                                           char **cvec);
 #elif COIN_BIG_INDEX == 1
-typedef void(COINLINKAGE_CB *clp_callback)(Clp_Simplex *model, int msgno, int ndouble,
-  const double *dvec, int nint, const long *ivec,
-  int nchar, char **cvec);
+typedef void(COINLINKAGE_CB *clp_callback)(Clp_Simplex *model, int msgno,
+                                           int ndouble, const double *dvec,
+                                           int nint, const long *ivec,
+                                           int nchar, char **cvec);
 #else
-typedef void(COINLINKAGE_CB *clp_callback)(Clp_Simplex *model, int msgno, int ndouble,
-  const double *dvec, int nint, const long long *ivec,
-  int nchar, char **cvec);
+typedef void(COINLINKAGE_CB *clp_callback)(Clp_Simplex *model, int msgno,
+                                           int ndouble, const double *dvec,
+                                           int nint, const long long *ivec,
+                                           int nchar, char **cvec);
 #endif
 #endif
 /** User does not need to see structure of model but C++ code does */
@@ -97,7 +100,7 @@ typedef struct {
   CbcModel *model_;
   CbcSolverUsefulData *cbcData;
   Cbc_MessageHandler *handler_;
-  std::vector< std::string > cmdargs_;
+  std::vector<std::string> cmdargs_;
   char relax_;
 
   // cache for columns
@@ -117,20 +120,23 @@ typedef void Cbc_Model;
 #ifndef COIN_NO_SBB
 /** typedef for user call back.
  The cvec are constructed so don't need to be const*/
-typedef void(COINLINKAGE_CB *sbb_callback)(Sbb_Model *model, int msgno, int ndouble,
-  const double *dvec, int nint, const int *ivec,
-  int nchar, char **cvec);
+typedef void(COINLINKAGE_CB *sbb_callback)(Sbb_Model *model, int msgno,
+                                           int ndouble, const double *dvec,
+                                           int nint, const int *ivec, int nchar,
+                                           char **cvec);
 
-typedef void(COINLINKAGE_CB *cbc_callback)(Cbc_Model *model, int msgno, int ndouble,
-  const double *dvec, int nint, const int *ivec,
-  int nchar, char **cvec);
+typedef void(COINLINKAGE_CB *cbc_callback)(Cbc_Model *model, int msgno,
+                                           int ndouble, const double *dvec,
+                                           int nint, const int *ivec, int nchar,
+                                           char **cvec);
 
-/** typedef for cbc cut callback osiSolver needs to be an OsiSolverInterface object,
- * osiCuts is an OsiCuts object and appdata is a pointer that will be passed to the cut 
- * generation, you can use it to point to a data structure with information about the original problem, 
- * for instance
+/** typedef for cbc cut callback osiSolver needs to be an OsiSolverInterface
+ *object, osiCuts is an OsiCuts object and appdata is a pointer that will be
+ *passed to the cut generation, you can use it to point to a data structure with
+ *information about the original problem, for instance
  **/
-typedef void(COINLINKAGE_CB *cbc_cut_callback)(void *osiSolver, void *osiCuts, void *appdata);
+typedef void(COINLINKAGE_CB *cbc_cut_callback)(void *osiSolver, void *osiCuts,
+                                               void *appdata);
 #endif
 #if COIN_BIG_INDEX == 0
 typedef int CoinBigIndex;
@@ -146,4 +152,4 @@ typedef long long CoinBigIndex;
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

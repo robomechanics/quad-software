@@ -1,22 +1,24 @@
 //
 //    MIT No Attribution
 //
-//    Copyright (C) 2010-2023 Joel Andersson, Joris Gillis, Moritz Diehl, KU Leuven.
+//    Copyright (C) 2010-2023 Joel Andersson, Joris Gillis, Moritz Diehl, KU
+//    Leuven.
 //
-//    Permission is hereby granted, free of charge, to any person obtaining a copy of this
-//    software and associated documentation files (the "Software"), to deal in the Software
-//    without restriction, including without limitation the rights to use, copy, modify,
-//    merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-//    permit persons to whom the Software is furnished to do so.
+//    Permission is hereby granted, free of charge, to any person obtaining a
+//    copy of this software and associated documentation files (the "Software"),
+//    to deal in the Software without restriction, including without limitation
+//    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+//    and/or sell copies of the Software, and to permit persons to whom the
+//    Software is furnished to do so.
 //
-//    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-//    INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-//    PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-//    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-//    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-//    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+//    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+//    DEALINGS IN THE SOFTWARE.
 //
-
 
 // C-REPLACE "fmin" "casadi_fmin"
 // C-REPLACE "fmax" "casadi_fmax"
@@ -28,7 +30,7 @@
 // C-REPLACE "casadi_qp_data<T1>" "struct casadi_qp_data"
 
 // SYMBOL "qrqp_prob"
-template<typename T1>
+template <typename T1>
 struct casadi_qrqp_prob {
   const casadi_qp_prob<T1>* qp;
   // Sparsity patterns
@@ -49,7 +51,7 @@ struct casadi_qrqp_prob {
 // C-REPLACE "casadi_qrqp_prob<T1>" "struct casadi_qrqp_prob"
 
 // SYMBOL "qrqp_setup"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_setup(casadi_qrqp_prob<T1>* p) {
   p->dmin = std::numeric_limits<T1>::min();
   p->inf = std::numeric_limits<T1>::infinity();
@@ -68,7 +70,7 @@ typedef enum {
 } casadi_qrqp_flag_t;
 
 // SYMBOL "qrqp_data"
-template<typename T1>
+template <typename T1>
 struct casadi_qrqp_data {
   // Problem structure
   const casadi_qrqp_prob<T1>* prob;
@@ -84,7 +86,7 @@ struct casadi_qrqp_data {
   // Numeric QR factorization
   T1 *nz_at, *nz_kkt, *beta, *nz_v, *nz_r;
   // Message buffer
-  const char *msg;
+  const char* msg;
   // Message index
   casadi_int msg_ind;
   // Stepsize
@@ -108,71 +110,87 @@ struct casadi_qrqp_data {
 };
 // C-REPLACE "casadi_qrqp_data<T1>" "struct casadi_qrqp_data"
 
-
 // SYMBOL "qrqp_work"
-template<typename T1>
-void casadi_qrqp_work(const casadi_qrqp_prob<T1>* p, casadi_int* sz_arg, casadi_int* sz_res,
-    casadi_int* sz_iw, casadi_int* sz_w) {
+template <typename T1>
+void casadi_qrqp_work(const casadi_qrqp_prob<T1>* p, casadi_int* sz_arg,
+                      casadi_int* sz_res, casadi_int* sz_iw, casadi_int* sz_w) {
   // Local variables
   casadi_int nnz_a, nnz_kkt, nnz_v, nnz_r;
   casadi_qp_work(p->qp, sz_arg, sz_res, sz_iw, sz_w);
   // Get matrix number of nonzeros
-  nnz_a = p->qp->sp_a[2+p->qp->sp_a[1]];
-  nnz_kkt = p->sp_kkt[2+p->sp_kkt[1]];
-  nnz_v = p->sp_v[2+p->sp_v[1]];
-  nnz_r = p->sp_r[2+p->sp_r[1]];
+  nnz_a = p->qp->sp_a[2 + p->qp->sp_a[1]];
+  nnz_kkt = p->sp_kkt[2 + p->sp_kkt[1]];
+  nnz_v = p->sp_v[2 + p->sp_v[1]];
+  nnz_r = p->sp_r[2 + p->sp_r[1]];
   // Temporary work vectors
-  *sz_w = casadi_max(*sz_w, p->qp->nz); // casadi_project, tau memory
-  *sz_iw = casadi_max(*sz_iw, p->qp->nz); // casadi_trans, tau type, allzero
-  *sz_w = casadi_max(*sz_w, 2*p->qp->nz); // casadi_qr
+  *sz_w = casadi_max(*sz_w, p->qp->nz);      // casadi_project, tau memory
+  *sz_iw = casadi_max(*sz_iw, p->qp->nz);    // casadi_trans, tau type, allzero
+  *sz_w = casadi_max(*sz_w, 2 * p->qp->nz);  // casadi_qr
   // Persistent work vectors
-  *sz_w += nnz_kkt; // kkt
-  *sz_w += p->qp->nz; // z=[xk,gk]
-  *sz_w += p->qp->nz; // lbz
-  *sz_w += p->qp->nz; // ubz
-  *sz_w += p->qp->nz; // lam
-  *sz_w += p->qp->nz; // dz
-  *sz_w += p->qp->nz; // dlam
-  *sz_w += casadi_max(nnz_v+nnz_r, nnz_kkt); // [v,r] or trans(kkt)
-  *sz_w += p->qp->nz; // beta
-  *sz_w += nnz_a; // trans(a)
-  *sz_w += p->qp->nx; // infeas
-  *sz_w += p->qp->nx; // tinfeas
-  *sz_w += p->qp->nz; // sens
-  *sz_iw += p->qp->nz; // neverzero
-  *sz_iw += p->qp->nz; // neverupper
-  *sz_iw += p->qp->nz; // neverlower
-  *sz_iw += p->qp->nz; // lincomb
+  *sz_w += nnz_kkt;                             // kkt
+  *sz_w += p->qp->nz;                           // z=[xk,gk]
+  *sz_w += p->qp->nz;                           // lbz
+  *sz_w += p->qp->nz;                           // ubz
+  *sz_w += p->qp->nz;                           // lam
+  *sz_w += p->qp->nz;                           // dz
+  *sz_w += p->qp->nz;                           // dlam
+  *sz_w += casadi_max(nnz_v + nnz_r, nnz_kkt);  // [v,r] or trans(kkt)
+  *sz_w += p->qp->nz;                           // beta
+  *sz_w += nnz_a;                               // trans(a)
+  *sz_w += p->qp->nx;                           // infeas
+  *sz_w += p->qp->nx;                           // tinfeas
+  *sz_w += p->qp->nz;                           // sens
+  *sz_iw += p->qp->nz;                          // neverzero
+  *sz_iw += p->qp->nz;                          // neverupper
+  *sz_iw += p->qp->nz;                          // neverlower
+  *sz_iw += p->qp->nz;                          // lincomb
 }
 
 // SYMBOL "qrqp_init"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_init(casadi_qrqp_data<T1>* d, casadi_int** iw, T1** w) {
   // Local variables
   casadi_int nnz_a, nnz_kkt, nnz_v, nnz_r;
   const casadi_qrqp_prob<T1>* p = d->prob;
   // Get matrix number of nonzeros
-  nnz_a = p->qp->sp_a[2+p->qp->sp_a[1]];
-  nnz_kkt = p->sp_kkt[2+p->sp_kkt[1]];
-  nnz_v = p->sp_v[2+p->sp_v[1]];
-  nnz_r = p->sp_r[2+p->sp_r[1]];
-  d->nz_kkt = *w; *w += nnz_kkt;
-  d->z = *w; *w += p->qp->nz;
-  d->lbz = *w; *w += p->qp->nz;
-  d->ubz = *w; *w += p->qp->nz;
-  d->lam = *w; *w += p->qp->nz;
-  d->dz = *w; *w += p->qp->nz;
-  d->dlam = *w; *w += p->qp->nz;
-  d->nz_v = *w; *w += casadi_max(nnz_v+nnz_r, nnz_kkt);
-  d->beta = *w; *w += p->qp->nz;
-  d->nz_at = *w; *w += nnz_a;
-  d->infeas = *w; *w += p->qp->nx;
-  d->tinfeas = *w; *w += p->qp->nx;
-  d->sens = *w; *w += p->qp->nz;
-  d->neverzero = *iw; *iw += p->qp->nz;
-  d->neverupper = *iw; *iw += p->qp->nz;
-  d->neverlower = *iw; *iw += p->qp->nz;
-  d->lincomb = *iw; *iw += p->qp->nz;
+  nnz_a = p->qp->sp_a[2 + p->qp->sp_a[1]];
+  nnz_kkt = p->sp_kkt[2 + p->sp_kkt[1]];
+  nnz_v = p->sp_v[2 + p->sp_v[1]];
+  nnz_r = p->sp_r[2 + p->sp_r[1]];
+  d->nz_kkt = *w;
+  *w += nnz_kkt;
+  d->z = *w;
+  *w += p->qp->nz;
+  d->lbz = *w;
+  *w += p->qp->nz;
+  d->ubz = *w;
+  *w += p->qp->nz;
+  d->lam = *w;
+  *w += p->qp->nz;
+  d->dz = *w;
+  *w += p->qp->nz;
+  d->dlam = *w;
+  *w += p->qp->nz;
+  d->nz_v = *w;
+  *w += casadi_max(nnz_v + nnz_r, nnz_kkt);
+  d->beta = *w;
+  *w += p->qp->nz;
+  d->nz_at = *w;
+  *w += nnz_a;
+  d->infeas = *w;
+  *w += p->qp->nx;
+  d->tinfeas = *w;
+  *w += p->qp->nx;
+  d->sens = *w;
+  *w += p->qp->nz;
+  d->neverzero = *iw;
+  *iw += p->qp->nz;
+  d->neverupper = *iw;
+  *iw += p->qp->nz;
+  d->neverlower = *iw;
+  *iw += p->qp->nz;
+  d->lincomb = *iw;
+  *iw += p->qp->nz;
   d->w = *w;
   d->iw = *iw;
 
@@ -180,7 +198,7 @@ void casadi_qrqp_init(casadi_qrqp_data<T1>* d, casadi_int** iw, T1** w) {
 }
 
 // SYMBOL "qrqp_reset"
-template<typename T1>
+template <typename T1>
 int casadi_qrqp_reset(casadi_qrqp_data<T1>* d) {
   // Local variables
   casadi_int i;
@@ -190,7 +208,7 @@ int casadi_qrqp_reset(casadi_qrqp_data<T1>* d) {
   d->tau = 0.;
   d->sing = 0;
   // Correct lam if needed, determine permitted signs
-  for (i=0; i<p->qp->nz; ++i) {
+  for (i = 0; i < p->qp->nz; ++i) {
     // Permitted signs for lam
     d->neverzero[i] = d->lbz[i] == d->ubz[i];
     d->neverupper[i] = d->ubz[i] == p->inf;
@@ -200,11 +218,12 @@ int casadi_qrqp_reset(casadi_qrqp_data<T1>* d) {
     if (!d->neverzero[i] && fabs(d->lam[i]) < p->min_lam) d->lam[i] = 0.;
     // Prevent illegal active sets
     if (d->neverzero[i] && d->lam[i] == 0.) {
-      d->lam[i] = d->neverupper[i]
-                || d->z[i]-d->lbz[i] <= d->ubz[i]-d->z[i] ? -p->dmin : p->dmin;
-    } else if (d->neverupper[i] && d->lam[i]>0.) {
+      d->lam[i] = d->neverupper[i] || d->z[i] - d->lbz[i] <= d->ubz[i] - d->z[i]
+                      ? -p->dmin
+                      : p->dmin;
+    } else if (d->neverupper[i] && d->lam[i] > 0.) {
       d->lam[i] = d->neverzero[i] ? -p->dmin : 0.;
-    } else if (d->neverlower[i] && d->lam[i]<0.) {
+    } else if (d->neverlower[i] && d->lam[i] < 0.) {
       d->lam[i] = d->neverzero[i] ? p->dmin : 0.;
     }
   }
@@ -222,33 +241,33 @@ int casadi_qrqp_reset(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_pr"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_pr(casadi_qrqp_data<T1>* d) {
   // Calculate largest constraint violation
   casadi_int i;
   const casadi_qrqp_prob<T1>* p = d->prob;
   d->pr = 0;
   d->ipr = -1;
-  for (i=0; i<p->qp->nz; ++i) {
-    if (d->z[i] > d->ubz[i]+d->pr) {
-      d->pr = d->z[i]-d->ubz[i];
+  for (i = 0; i < p->qp->nz; ++i) {
+    if (d->z[i] > d->ubz[i] + d->pr) {
+      d->pr = d->z[i] - d->ubz[i];
       d->ipr = i;
-    } else if (d->z[i] < d->lbz[i]-d->pr) {
-      d->pr = d->lbz[i]-d->z[i];
+    } else if (d->z[i] < d->lbz[i] - d->pr) {
+      d->pr = d->lbz[i] - d->z[i];
       d->ipr = i;
     }
   }
 }
 
 // SYMBOL "qrqp_du"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_du(casadi_qrqp_data<T1>* d) {
   // Calculate largest constraint violation
   casadi_int i;
   const casadi_qrqp_prob<T1>* p = d->prob;
   d->du = 0;
   d->idu = -1;
-  for (i=0; i<p->qp->nx; ++i) {
+  for (i = 0; i < p->qp->nx; ++i) {
     if (d->infeas[i] > d->du) {
       d->du = d->infeas[i];
       d->idu = i;
@@ -260,7 +279,7 @@ void casadi_qrqp_du(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_du_check"
-template<typename T1>
+template <typename T1>
 int casadi_qrqp_du_check(casadi_qrqp_data<T1>* d, casadi_int i) {
   // Local variables
   casadi_int k;
@@ -271,19 +290,20 @@ int casadi_qrqp_du_check(casadi_qrqp_data<T1>* d, casadi_int i) {
   at_colind = p->sp_at + 2;
   at_row = at_colind + p->qp->na + 1;
   // Maximum infeasibility from setting from setting lam[i]=0
-  if (i<p->qp->nx) {
-    new_du = fabs(d->infeas[i]-d->lam[i]);
+  if (i < p->qp->nx) {
+    new_du = fabs(d->infeas[i] - d->lam[i]);
   } else {
     new_du = 0.;
-    for (k=at_colind[i-p->qp->nx]; k<at_colind[i-p->qp->nx+1]; ++k) {
-      new_du = fmax(new_du, fabs(d->infeas[at_row[k]]-d->nz_at[k]*d->lam[i]));
+    for (k = at_colind[i - p->qp->nx]; k < at_colind[i - p->qp->nx + 1]; ++k) {
+      new_du =
+          fmax(new_du, fabs(d->infeas[at_row[k]] - d->nz_at[k] * d->lam[i]));
     }
   }
   return new_du <= d->du;
 }
 
 // SYMBOL "qrqp_du_index"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_du_index(casadi_qrqp_data<T1>* d) {
   // Try to improve dual feasibility by removing a constraint
   // Local variables
@@ -335,7 +355,7 @@ void casadi_qrqp_du_index(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_pr_index"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_pr_index(casadi_qrqp_data<T1>* d) {
   // Try to improve primal feasibility by adding a constraint
   if (d->lam[d->ipr] == 0.) {
@@ -356,41 +376,44 @@ void casadi_qrqp_pr_index(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_kkt"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_kkt(casadi_qrqp_data<T1>* d) {
   // Local variables
   casadi_int i, k;
   const casadi_int *h_colind, *h_row, *a_colind, *a_row, *at_colind, *at_row,
-                   *kkt_colind, *kkt_row;
+      *kkt_colind, *kkt_row;
   const casadi_qrqp_prob<T1>* p = d->prob;
   // Extract sparsities
-  a_row = (a_colind = p->qp->sp_a+2) + p->qp->nx + 1;
-  at_row = (at_colind = p->sp_at+2) + p->qp->na + 1;
-  h_row = (h_colind = p->qp->sp_h+2) + p->qp->nx + 1;
-  kkt_row = (kkt_colind = p->sp_kkt+2) + p->qp->nz + 1;
+  a_row = (a_colind = p->qp->sp_a + 2) + p->qp->nx + 1;
+  at_row = (at_colind = p->sp_at + 2) + p->qp->na + 1;
+  h_row = (h_colind = p->qp->sp_h + 2) + p->qp->nx + 1;
+  kkt_row = (kkt_colind = p->sp_kkt + 2) + p->qp->nz + 1;
   // Reset w to zero
   casadi_clear(d->w, p->qp->nz);
   // Loop over rows of the (transposed) KKT
-  for (i=0; i<p->qp->nz; ++i) {
+  for (i = 0; i < p->qp->nz; ++i) {
     // Copy row of KKT to w
-    if (i<p->qp->nx) {
-      if (d->lam[i]==0) {
-        for (k=h_colind[i]; k<h_colind[i+1]; ++k) d->w[h_row[k]] = d->qp->h[k];
-        for (k=a_colind[i]; k<a_colind[i+1]; ++k) d->w[p->qp->nx+a_row[k]] = d->qp->a[k];
+    if (i < p->qp->nx) {
+      if (d->lam[i] == 0) {
+        for (k = h_colind[i]; k < h_colind[i + 1]; ++k)
+          d->w[h_row[k]] = d->qp->h[k];
+        for (k = a_colind[i]; k < a_colind[i + 1]; ++k)
+          d->w[p->qp->nx + a_row[k]] = d->qp->a[k];
       } else {
         d->w[i] = 1.;
       }
     } else {
-      if (d->lam[i]==0) {
+      if (d->lam[i] == 0) {
         d->w[i] = -1.;
       } else {
-        for (k=at_colind[i-p->qp->nx]; k<at_colind[i-p->qp->nx+1]; ++k) {
+        for (k = at_colind[i - p->qp->nx]; k < at_colind[i - p->qp->nx + 1];
+             ++k) {
           d->w[at_row[k]] = d->nz_at[k];
         }
       }
     }
     // Copy row to KKT, zero out w
-    for (k=kkt_colind[i]; k<kkt_colind[i+1]; ++k) {
+    for (k = kkt_colind[i]; k < kkt_colind[i + 1]; ++k) {
       d->nz_kkt[k] = d->w[kkt_row[k]];
       d->w[kkt_row[k]] = 0;
     }
@@ -398,24 +421,26 @@ void casadi_qrqp_kkt(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_kkt_vector"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_kkt_vector(casadi_qrqp_data<T1>* d, T1* kkt_i, casadi_int i) {
   // Local variables
   casadi_int k;
   const casadi_int *h_colind, *h_row, *a_colind, *a_row, *at_colind, *at_row;
   const casadi_qrqp_prob<T1>* p = d->prob;
   // Extract sparsities
-  a_row = (a_colind = p->qp->sp_a+2) + p->qp->nx + 1;
-  at_row = (at_colind = p->sp_at+2) + p->qp->na + 1;
-  h_row = (h_colind = p->qp->sp_h+2) + p->qp->nx + 1;
+  a_row = (a_colind = p->qp->sp_a + 2) + p->qp->nx + 1;
+  at_row = (at_colind = p->sp_at + 2) + p->qp->na + 1;
+  h_row = (h_colind = p->qp->sp_h + 2) + p->qp->nx + 1;
   // Reset kkt_i to zero
   casadi_clear(kkt_i, p->qp->nz);
   // Copy sparse entries
-  if (i<p->qp->nx) {
-    for (k=h_colind[i]; k<h_colind[i+1]; ++k) kkt_i[h_row[k]] = d->qp->h[k];
-    for (k=a_colind[i]; k<a_colind[i+1]; ++k) kkt_i[p->qp->nx+a_row[k]] = d->qp->a[k];
+  if (i < p->qp->nx) {
+    for (k = h_colind[i]; k < h_colind[i + 1]; ++k)
+      kkt_i[h_row[k]] = d->qp->h[k];
+    for (k = a_colind[i]; k < a_colind[i + 1]; ++k)
+      kkt_i[p->qp->nx + a_row[k]] = d->qp->a[k];
   } else {
-    for (k=at_colind[i-p->qp->nx]; k<at_colind[i-p->qp->nx+1]; ++k) {
+    for (k = at_colind[i - p->qp->nx]; k < at_colind[i - p->qp->nx + 1]; ++k) {
       kkt_i[at_row[k]] = -d->nz_at[k];
     }
   }
@@ -424,7 +449,7 @@ void casadi_qrqp_kkt_vector(casadi_qrqp_data<T1>* d, T1* kkt_i, casadi_int i) {
 }
 
 // SYMBOL "qrqp_kkt_dot"
-template<typename T1>
+template <typename T1>
 T1 casadi_qrqp_kkt_dot(casadi_qrqp_data<T1>* d, const T1* v, casadi_int i) {
   // Local variables
   casadi_int k;
@@ -439,10 +464,12 @@ T1 casadi_qrqp_kkt_dot(casadi_qrqp_data<T1>* d, const T1* v, casadi_int i) {
   r = v[i];
   // Scalar product with the sparse entries
   if (i < p->qp->nx) {
-    for (k=h_colind[i]; k<h_colind[i+1]; ++k) r -= v[h_row[k]] * d->qp->h[k];
-    for (k=a_colind[i]; k<a_colind[i+1]; ++k) r -= v[p->qp->nx+a_row[k]] * d->qp->a[k];
+    for (k = h_colind[i]; k < h_colind[i + 1]; ++k)
+      r -= v[h_row[k]] * d->qp->h[k];
+    for (k = a_colind[i]; k < a_colind[i + 1]; ++k)
+      r -= v[p->qp->nx + a_row[k]] * d->qp->a[k];
   } else {
-    for (k=at_colind[i-p->qp->nx]; k<at_colind[i-p->qp->nx+1]; ++k) {
+    for (k = at_colind[i - p->qp->nx]; k < at_colind[i - p->qp->nx + 1]; ++k) {
       r += v[at_row[k]] * d->nz_at[k];
     }
   }
@@ -450,17 +477,17 @@ T1 casadi_qrqp_kkt_dot(casadi_qrqp_data<T1>* d, const T1* v, casadi_int i) {
 }
 
 // SYMBOL "qrqp_kkt_residual"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_kkt_residual(casadi_qrqp_data<T1>* d, T1* r) {
   casadi_int i;
   const casadi_qrqp_prob<T1>* p = d->prob;
-  for (i=0; i<p->qp->nz; ++i) {
-    if (d->lam[i]>0.) {
-      r[i] = d->ubz[i]-d->z[i];
-    } else if (d->lam[i]<0.) {
-      r[i] = d->lbz[i]-d->z[i];
-    } else if (i<p->qp->nx) {
-      r[i] = d->lam[i]-d->infeas[i];
+  for (i = 0; i < p->qp->nz; ++i) {
+    if (d->lam[i] > 0.) {
+      r[i] = d->ubz[i] - d->z[i];
+    } else if (d->lam[i] < 0.) {
+      r[i] = d->lbz[i] - d->z[i];
+    } else if (i < p->qp->nx) {
+      r[i] = d->lam[i] - d->infeas[i];
     } else {
       r[i] = d->lam[i];
     }
@@ -468,7 +495,7 @@ void casadi_qrqp_kkt_residual(casadi_qrqp_data<T1>* d, T1* r) {
 }
 
 // SYMBOL "qrqp_zero_blocking"
-template<typename T1>
+template <typename T1>
 int casadi_qrqp_zero_blocking(casadi_qrqp_data<T1>* d) {
   // Local variables
   casadi_int i;
@@ -494,7 +521,7 @@ int casadi_qrqp_zero_blocking(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_primal_blocking"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_primal_blocking(casadi_qrqp_data<T1>* d) {
   // Local variables
   casadi_int i;
@@ -507,7 +534,7 @@ void casadi_qrqp_primal_blocking(casadi_qrqp_data<T1>* d) {
   }
   // Loop over all primal variables
   for (i = 0; i < p->qp->nz; ++i) {
-    if (d->dz[i] == 0.) continue; // Skip zero steps
+    if (d->dz[i] == 0.) continue;  // Skip zero steps
     // Trial primal step
     trial_z = d->z[i] + d->tau * d->dz[i];
     if (d->dz[i] < 0 && trial_z < d->lbz[i] - d->epr) {
@@ -530,36 +557,36 @@ void casadi_qrqp_primal_blocking(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_dual_breakpoints"
-template<typename T1>
+template <typename T1>
 casadi_int casadi_qrqp_dual_breakpoints(casadi_qrqp_data<T1>* d, T1* tau_list,
-                                      casadi_int* ind_list, T1 tau) {
+                                        casadi_int* ind_list, T1 tau) {
   // Local variables
   casadi_int i, n_tau, loc, next_ind, tmp_ind, j;
   T1 trial_lam, new_tau, next_tau, tmp_tau;
   const casadi_qrqp_prob<T1>* p = d->prob;
   // Dual feasibility is piecewise linear. Start with one interval [0,tau]:
   tau_list[0] = tau;
-  ind_list[0] = -1; // no associated index
+  ind_list[0] = -1;  // no associated index
   n_tau = 1;
   // Find the taus corresponding to lam crossing zero and insert into list
-  for (i=0; i<p->qp->nz; ++i) {
-    if (d->dlam[i]==0.) continue; // Skip zero steps
-    if (d->lam[i]==0.) continue; // Skip inactive constraints
+  for (i = 0; i < p->qp->nz; ++i) {
+    if (d->dlam[i] == 0.) continue;  // Skip zero steps
+    if (d->lam[i] == 0.) continue;   // Skip inactive constraints
     // Trial dual step
-    trial_lam = d->lam[i] + tau*d->dlam[i];
+    trial_lam = d->lam[i] + tau * d->dlam[i];
     // Skip if no sign change
-    if (d->lam[i]>0 ? trial_lam>=0 : trial_lam<=0) continue;
+    if (d->lam[i] > 0 ? trial_lam >= 0 : trial_lam <= 0) continue;
     // Location of the sign change
-    new_tau = -d->lam[i]/d->dlam[i];
+    new_tau = -d->lam[i] / d->dlam[i];
     // Where to insert the w[i]
-    for (loc=0; loc<n_tau-1; ++loc) {
-      if (new_tau<tau_list[loc]) break;
+    for (loc = 0; loc < n_tau - 1; ++loc) {
+      if (new_tau < tau_list[loc]) break;
     }
     // Insert element
     n_tau++;
-    next_tau=new_tau;
-    next_ind=i;
-    for (j=loc; j<n_tau; ++j) {
+    next_tau = new_tau;
+    next_ind = i;
+    for (j = loc; j < n_tau; ++j) {
       tmp_tau = tau_list[j];
       tau_list[j] = next_tau;
       next_tau = tmp_tau;
@@ -572,7 +599,7 @@ casadi_int casadi_qrqp_dual_breakpoints(casadi_qrqp_data<T1>* d, T1* tau_list,
 }
 
 // SYMBOL "qrqp_dual_blocking"
-template<typename T1>
+template <typename T1>
 casadi_int casadi_qrqp_dual_blocking(casadi_qrqp_data<T1>* d) {
   // Local variables
   casadi_int i, n_tau, j, k, du_index;
@@ -580,36 +607,36 @@ casadi_int casadi_qrqp_dual_blocking(casadi_qrqp_data<T1>* d) {
   const casadi_int *at_colind, *at_row;
   const casadi_qrqp_prob<T1>* p = d->prob;
   // Extract sparsities
-  at_row = (at_colind = p->sp_at+2) + p->qp->na + 1;
+  at_row = (at_colind = p->sp_at + 2) + p->qp->na + 1;
   // Dual feasibility is piecewise linear in tau. Get the intervals:
   n_tau = casadi_qrqp_dual_breakpoints(d, d->w, d->iw, d->tau);
   // No dual blocking yet
   du_index = -1;
   // How long step can we take without exceeding e?
   tau_k = 0.;
-  for (j=0; j<n_tau; ++j) {
+  for (j = 0; j < n_tau; ++j) {
     // Distance to the next tau (may be zero)
     dtau = d->w[j] - tau_k;
     // Check if maximum dual infeasibility gets exceeded
-    for (k=0; k<p->qp->nx; ++k) {
+    for (k = 0; k < p->qp->nx; ++k) {
       // Get infeasibility and infeasibility tangent
-      infeas  = d->infeas[k];
-      tinfeas  = d->tinfeas[k];
+      infeas = d->infeas[k];
+      tinfeas = d->tinfeas[k];
       // Make sure tinfeas>0
-      if (fabs(tinfeas)<1e-14) {
+      if (fabs(tinfeas) < 1e-14) {
         // Skip
         continue;
-      } else if (tinfeas<0) {
+      } else if (tinfeas < 0) {
         // Switch signs
         infeas *= -1;
         tinfeas *= -1;
       }
       // Tentative new infeasibility
-      new_infeas = infeas + dtau*tinfeas;
+      new_infeas = infeas + dtau * tinfeas;
       // Does infeasibility get exceeded
       if (new_infeas > d->edu) {
         // Sign change and exceeded
-        tau1 = fmax(tau_k, tau_k + (d->edu - infeas)/tinfeas);
+        tau1 = fmax(tau_k, tau_k + (d->edu - infeas) / tinfeas);
         if (tau1 < d->tau) {
           // Enforce dual blocking constraint
           d->tau = tau1;
@@ -620,22 +647,23 @@ casadi_int casadi_qrqp_dual_blocking(casadi_qrqp_data<T1>* d) {
     // Update infeasibility
     casadi_axpy(p->qp->nx, fmin(d->tau - tau_k, dtau), d->tinfeas, d->infeas);
     // Stop here if dual blocking constraint
-    if (du_index>=0) return du_index;
+    if (du_index >= 0) return du_index;
     // Continue to the next tau
     tau_k = d->w[j];
     // Get component, break if last
     i = d->iw[j];
-    if (i<0) break;
+    if (i < 0) break;
     // Update sign or tinfeas
     if (!d->neverzero[i]) {
       // lam becomes zero, update the infeasibility tangent
-      if (i<p->qp->nx) {
+      if (i < p->qp->nx) {
         // Set a lam_x to zero
         d->tinfeas[i] -= d->dlam[i];
       } else {
         // Set a lam_a to zero
-        for (k=at_colind[i-p->qp->nx]; k<at_colind[i-p->qp->nx+1]; ++k) {
-          d->tinfeas[at_row[k]] -= d->nz_at[k]*d->dlam[i];
+        for (k = at_colind[i - p->qp->nx]; k < at_colind[i - p->qp->nx + 1];
+             ++k) {
+          d->tinfeas[at_row[k]] -= d->nz_at[k] * d->dlam[i];
         }
       }
     }
@@ -644,33 +672,40 @@ casadi_int casadi_qrqp_dual_blocking(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_take_step"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_take_step(casadi_qrqp_data<T1>* d) {
   // Local variables
   casadi_int i;
   const casadi_qrqp_prob<T1>* p = d->prob;
   // Get current sign
-  for (i=0; i<p->qp->nz; ++i) d->iw[i] = d->lam[i]>0. ? 1 : d->lam[i]<0 ? -1 : 0;
+  for (i = 0; i < p->qp->nz; ++i)
+    d->iw[i] = d->lam[i] > 0. ? 1 : d->lam[i] < 0 ? -1 : 0;
   // Take primal-dual step
   casadi_axpy(p->qp->nz, d->tau, d->dz, d->z);
   casadi_axpy(p->qp->nz, d->tau, d->dlam, d->lam);
   // Update sign
-  for (i=0; i<p->qp->nz; ++i) {
+  for (i = 0; i < p->qp->nz; ++i) {
     // Allow sign changes for certain components
-    if (d->neverzero[i] && (d->iw[i]<0 ? d->lam[i]>0 : d->lam[i]<0)) {
-      d->iw[i]=-d->iw[i];
+    if (d->neverzero[i] && (d->iw[i] < 0 ? d->lam[i] > 0 : d->lam[i] < 0)) {
+      d->iw[i] = -d->iw[i];
     }
     // Ensure correct sign
     switch (d->iw[i]) {
-      case -1: d->lam[i] = fmin(d->lam[i], -p->dmin); break;
-      case  1: d->lam[i] = fmax(d->lam[i],  p->dmin); break;
-      case  0: d->lam[i] = 0.; break;
+      case -1:
+        d->lam[i] = fmin(d->lam[i], -p->dmin);
+        break;
+      case 1:
+        d->lam[i] = fmax(d->lam[i], p->dmin);
+        break;
+      case 0:
+        d->lam[i] = 0.;
+        break;
     }
   }
 }
 
 // SYMBOL "qrqp_flip_check"
-template<typename T1>
+template <typename T1>
 int casadi_qrqp_flip_check(casadi_qrqp_data<T1>* d) {
   const casadi_qrqp_prob<T1>* p = d->prob;
   // Calculate the difference between unenforced and enforced column index
@@ -679,23 +714,24 @@ int casadi_qrqp_flip_check(casadi_qrqp_data<T1>* d) {
   if (d->sign == 0) casadi_scal(p->qp->nz, -1., d->dlam);
   // Try to find a linear combination of the new columns
   casadi_qr_solve(d->dlam, 1, 0, p->sp_v, d->nz_v, p->sp_r, d->nz_r, d->beta,
-    p->prinv, p->pc, d->w);
+                  p->prinv, p->pc, d->w);
   // If dlam[index]!=1, new columns must be linearly independent
-  if (fabs(d->dlam[d->index]-1.) >= 1e-12) return 0;
+  if (fabs(d->dlam[d->index] - 1.) >= 1e-12) return 0;
   // Next, find a linear combination of the new rows
   casadi_clear(d->dz, p->qp->nz);
   d->dz[d->index] = 1;
   casadi_qr_solve(d->dz, 1, 1, p->sp_v, d->nz_v, p->sp_r, d->nz_r, d->beta,
-    p->prinv, p->pc, d->w);
+                  p->prinv, p->pc, d->w);
   // Normalize dlam, dz
-  casadi_scal(p->qp->nz, 1./sqrt(casadi_dot(p->qp->nz, d->dlam, d->dlam)), d->dlam);
-  casadi_scal(p->qp->nz, 1./sqrt(casadi_dot(p->qp->nz, d->dz, d->dz)), d->dz);
+  casadi_scal(p->qp->nz, 1. / sqrt(casadi_dot(p->qp->nz, d->dlam, d->dlam)),
+              d->dlam);
+  casadi_scal(p->qp->nz, 1. / sqrt(casadi_dot(p->qp->nz, d->dz, d->dz)), d->dz);
   // KKT system will be singular
   return 1;
 }
 
 // SYMBOL "qrqp_factorize"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_factorize(casadi_qrqp_data<T1>* d) {
   const casadi_qrqp_prob<T1>* p = d->prob;
   // Do we already have a search direction due to lost singularity?
@@ -706,33 +742,38 @@ void casadi_qrqp_factorize(casadi_qrqp_data<T1>* d) {
   // Construct the KKT matrix
   casadi_qrqp_kkt(d);
   // QR factorization
-  casadi_qr(p->sp_kkt, d->nz_kkt, d->w, p->sp_v, d->nz_v, p->sp_r,
-            d->nz_r, d->beta, p->prinv, p->pc);
+  casadi_qr(p->sp_kkt, d->nz_kkt, d->w, p->sp_v, d->nz_v, p->sp_r, d->nz_r,
+            d->beta, p->prinv, p->pc);
   // Check singularity
-  d->sing = casadi_qr_singular(&d->mina, &d->imina, d->nz_r, p->sp_r, p->pc, 1e-12);
+  d->sing =
+      casadi_qr_singular(&d->mina, &d->imina, d->nz_r, p->sp_r, p->pc, 1e-12);
 }
 
 // SYMBOL "qrqp_expand_step"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_expand_step(casadi_qrqp_data<T1>* d) {
   // Local variables
   casadi_int i;
   const casadi_qrqp_prob<T1>* p = d->prob;
   // Calculate change in Lagrangian gradient
   casadi_clear(d->dlam, p->qp->nx);
-  casadi_mv(d->qp->h, p->qp->sp_h, d->dz, d->dlam, 0); // gradient of the objective
-  casadi_mv(d->qp->a, p->qp->sp_a, d->dz + p->qp->nx, d->dlam, 1); // gradient of the Lagrangian
+  casadi_mv(d->qp->h, p->qp->sp_h, d->dz, d->dlam,
+            0);  // gradient of the objective
+  casadi_mv(d->qp->a, p->qp->sp_a, d->dz + p->qp->nx, d->dlam,
+            1);  // gradient of the Lagrangian
   // Step in lam[:nx]
   casadi_scal(p->qp->nx, -1., d->dlam);
   // For inactive constraints, lam(x) step is zero
-  for (i = 0; i < p->qp->nx; ++i) if (d->lam[i] == 0.) d->dlam[i] = 0.;
+  for (i = 0; i < p->qp->nx; ++i)
+    if (d->lam[i] == 0.) d->dlam[i] = 0.;
   // Step in lam[nx:]
-  casadi_copy(d->dz+p->qp->nx, p->qp->na, d->dlam + p->qp->nx);
+  casadi_copy(d->dz + p->qp->nx, p->qp->na, d->dlam + p->qp->nx);
   // Step in z[nx:]
   casadi_clear(d->dz + p->qp->nx, p->qp->na);
   casadi_mv(d->qp->a, p->qp->sp_a, d->dz, d->dz + p->qp->nx, 0);
   // Avoid steps that are nonzero due to numerics
-  for (i = 0; i < p->qp->nz; ++i) if (fabs(d->dz[i]) < 1e-14) d->dz[i] = 0.;
+  for (i = 0; i < p->qp->nz; ++i)
+    if (fabs(d->dz[i]) < 1e-14) d->dz[i] = 0.;
   // Tangent of the dual infeasibility at tau=0
   casadi_clear(d->tinfeas, p->qp->nx);
   casadi_mv(d->qp->h, p->qp->sp_h, d->dz, d->tinfeas, 0);
@@ -741,11 +782,11 @@ void casadi_qrqp_expand_step(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "casadi_qrqp_pr_direction"
-template<typename T1>
+template <typename T1>
 int casadi_qrqp_pr_direction(casadi_qrqp_data<T1>* d) {
   casadi_int i;
   const casadi_qrqp_prob<T1>* p = d->prob;
-  for (i=0; i<p->qp->nz; ++i) {
+  for (i = 0; i < p->qp->nz; ++i) {
     if (d->lbz[i] - d->z[i] >= d->epr) {
       // Prevent further violation of lower bound
       if (d->dz[i] < 0 || d->dlam[i] > 0) return 1;
@@ -758,11 +799,11 @@ int casadi_qrqp_pr_direction(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "casadi_qrqp_du_direction"
-template<typename T1>
+template <typename T1>
 int casadi_qrqp_du_direction(casadi_qrqp_data<T1>* d) {
   casadi_int i;
   const casadi_qrqp_prob<T1>* p = d->prob;
-  for (i=0; i<p->qp->nx; ++i) {
+  for (i = 0; i < p->qp->nx; ++i) {
     // Prevent further increase in dual infeasibility
     if (d->infeas[i] <= -d->edu && d->tinfeas[i] < -1e-12) {
       return 1;
@@ -774,8 +815,9 @@ int casadi_qrqp_du_direction(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_enforceable"
-template<typename T1>
-int casadi_qrqp_enforceable(casadi_qrqp_data<T1>* d, casadi_int i, casadi_int s) {
+template <typename T1>
+int casadi_qrqp_enforceable(casadi_qrqp_data<T1>* d, casadi_int i,
+                            casadi_int s) {
   // Local variables
   casadi_int k;
   const casadi_int *at_colind, *at_row;
@@ -786,10 +828,10 @@ int casadi_qrqp_enforceable(casadi_qrqp_data<T1>* d, casadi_int i, casadi_int s)
   at_colind = p->sp_at + 2;
   at_row = at_colind + p->qp->na + 1;
   // Can we set lam[i] := s*DMIN without exceeding edu?
-  if (i<p->qp->nx) {
+  if (i < p->qp->nx) {
     return (s < 0) == (d->infeas[i] > 0);
   } else {
-    for (k=at_colind[i-p->qp->nx]; k<at_colind[i-p->qp->nx+1]; ++k) {
+    for (k = at_colind[i - p->qp->nx]; k < at_colind[i - p->qp->nx + 1]; ++k) {
       if (d->nz_at[k] > 0) {
         if ((s > 0) == (d->infeas[at_row[k]] > 0)) return 0;
       } else if (d->nz_at[k] < 0) {
@@ -802,7 +844,7 @@ int casadi_qrqp_enforceable(casadi_qrqp_data<T1>* d, casadi_int i, casadi_int s)
 
 // SYMBOL "qrqp_singular_step"
 // C-REPLACE "static_cast<T1*>(0)" "0"
-template<typename T1>
+template <typename T1>
 int casadi_qrqp_singular_step(casadi_qrqp_data<T1>* d) {
   // Local variables
   T1 tau_test, tau;
@@ -814,7 +856,8 @@ int casadi_qrqp_singular_step(casadi_qrqp_data<T1>* d) {
     if (!d->has_search_dir) {
       casadi_qr_colcomb(d->dlam, d->nz_r, p->sp_r, p->pc, 1e-12, k);
     }
-    for (i = 0; i < p->qp->nz; ++i) if (fabs(d->dlam[i]) >= 1e-12) d->lincomb[i]++;
+    for (i = 0; i < p->qp->nz; ++i)
+      if (fabs(d->dlam[i]) >= 1e-12) d->lincomb[i]++;
   }
 
   if (d->has_search_dir) {
@@ -823,24 +866,26 @@ int casadi_qrqp_singular_step(casadi_qrqp_data<T1>* d) {
   } else {
     // QR factorization of the transpose
     casadi_trans(d->nz_kkt, p->sp_kkt, d->nz_v, p->sp_kkt, d->iw);
-    nnz_kkt = p->sp_kkt[2+p->qp->nz]; // kkt_colind[nz]
+    nnz_kkt = p->sp_kkt[2 + p->qp->nz];  // kkt_colind[nz]
     casadi_copy(d->nz_v, nnz_kkt, d->nz_kkt);
     casadi_qr(p->sp_kkt, d->nz_kkt, d->w, p->sp_v, d->nz_v, p->sp_r, d->nz_r,
               d->beta, p->prinv, p->pc);
     // For all nullspace vectors
-    nk = casadi_qr_singular(static_cast<T1*>(0), 0, d->nz_r, p->sp_r, p->pc, 1e-12);
+    nk = casadi_qr_singular(static_cast<T1*>(0), 0, d->nz_r, p->sp_r, p->pc,
+                            1e-12);
   }
   // Best flip
   best_k = best_neg = -1;
   tau = p->inf;
-  for (k=0; k<nk; ++k) {
+  for (k = 0; k < nk; ++k) {
     if (!d->has_search_dir) {
       // Get a linear combination of the rows in kkt
       casadi_qr_colcomb(d->dz, d->nz_r, p->sp_r, p->pc, 1e-12, k);
     }
     // Which constraints can be flipped in order to increase rank?
-    for (i=0; i<p->qp->nz; ++i) {
-      d->iw[i] = d->lincomb[i] && fabs(casadi_qrqp_kkt_dot(d, d->dz, i)) > 1e-12;
+    for (i = 0; i < p->qp->nz; ++i) {
+      d->iw[i] =
+          d->lincomb[i] && fabs(casadi_qrqp_kkt_dot(d, d->dz, i)) > 1e-12;
     }
     // Calculate step, dz and dlam
     casadi_qrqp_expand_step(d);
@@ -857,29 +902,30 @@ int casadi_qrqp_singular_step(casadi_qrqp_data<T1>* d) {
       // Make sure dual infeasibility doesn't exceed limits
       if (casadi_qrqp_du_direction(d)) continue;
       // Loop over potential active set changes
-      for (i=0; i<p->qp->nz; ++i) {
+      for (i = 0; i < p->qp->nz; ++i) {
         // Skip if no rank increase
         if (!d->iw[i]) continue;
         // Enforced or not?
-        if (d->lam[i]==0.) {
-          if (d->z[i] <= d->ubz[i] && (d->z[i] >= d->lbz[i] ?
-              d->dz[i] < -1e-12 : d->dz[i] > 1e-12)) {
+        if (d->lam[i] == 0.) {
+          if (d->z[i] <= d->ubz[i] &&
+              (d->z[i] >= d->lbz[i] ? d->dz[i] < -1e-12 : d->dz[i] > 1e-12)) {
             // Enforce lower bound?
-            if (!d->neverlower[i]
-                && (tau_test = (d->lbz[i] - d->z[i]) / d->dz[i]) < tau
-                && casadi_qrqp_enforceable(d, i, -1)) {
+            if (!d->neverlower[i] &&
+                (tau_test = (d->lbz[i] - d->z[i]) / d->dz[i]) < tau &&
+                casadi_qrqp_enforceable(d, i, -1)) {
               tau = tau_test;
               d->r_index = i;
               d->r_sign = -1;
               best_k = k;
               best_neg = neg;
             }
-          } else if (d->z[i] >= d->lbz[i] && (d->z[i] <= d->ubz[i] ?
-              d->dz[i] > 1e-12 : d->dz[i] < -1e-12)) {
+          } else if (d->z[i] >= d->lbz[i] &&
+                     (d->z[i] <= d->ubz[i] ? d->dz[i] > 1e-12
+                                           : d->dz[i] < -1e-12)) {
             // Enforce upper bound?
-            if (!d->neverupper[i]
-                && (tau_test = (d->ubz[i] - d->z[i]) / d->dz[i]) < tau
-                && casadi_qrqp_enforceable(d, i, 1)) {
+            if (!d->neverupper[i] &&
+                (tau_test = (d->ubz[i] - d->z[i]) / d->dz[i]) < tau &&
+                casadi_qrqp_enforceable(d, i, 1)) {
               tau = tau_test;
               d->r_index = i;
               d->r_sign = 1;
@@ -922,7 +968,7 @@ int casadi_qrqp_singular_step(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_calc_step"
-template<typename T1>
+template <typename T1>
 int casadi_qrqp_calc_step(casadi_qrqp_data<T1>* d) {
   // Local variables
   const casadi_qrqp_prob<T1>* p = d->prob;
@@ -943,7 +989,7 @@ int casadi_qrqp_calc_step(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_calc_sens"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_calc_sens(casadi_qrqp_data<T1>* d, casadi_int i) {
   // Local variables
   const casadi_qrqp_prob<T1>* p = d->prob;
@@ -956,39 +1002,40 @@ void casadi_qrqp_calc_sens(casadi_qrqp_data<T1>* d, casadi_int i) {
 }
 
 // SYMBOL "qrqp_calc_dependent"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_calc_dependent(casadi_qrqp_data<T1>* d) {
   // Local variables
   casadi_int i;
   T1 r;
   const casadi_qrqp_prob<T1>* p = d->prob;
   // Calculate f
-  d->f = casadi_bilin(d->qp->h, p->qp->sp_h, d->z, d->z)/2.
-       + casadi_dot(p->qp->nx, d->z, d->qp->g);
+  d->f = casadi_bilin(d->qp->h, p->qp->sp_h, d->z, d->z) / 2. +
+         casadi_dot(p->qp->nx, d->z, d->qp->g);
   // Calculate z[nx:]
-  casadi_clear(d->z+p->qp->nx, p->qp->na);
-  casadi_mv(d->qp->a, p->qp->sp_a, d->z, d->z+p->qp->nx, 0);
+  casadi_clear(d->z + p->qp->nx, p->qp->na);
+  casadi_mv(d->qp->a, p->qp->sp_a, d->z, d->z + p->qp->nx, 0);
   // Calculate gradient of the Lagrangian
   casadi_copy(d->qp->g, p->qp->nx, d->infeas);
   casadi_mv(d->qp->h, p->qp->sp_h, d->z, d->infeas, 0);
-  casadi_mv(d->qp->a, p->qp->sp_a, d->lam+p->qp->nx, d->infeas, 1);
-  // Calculate lam[:nx] without changing the sign accidentally, dual infeasibility
-  for (i=0; i<p->qp->nx; ++i) {
+  casadi_mv(d->qp->a, p->qp->sp_a, d->lam + p->qp->nx, d->infeas, 1);
+  // Calculate lam[:nx] without changing the sign accidentally, dual
+  // infeasibility
+  for (i = 0; i < p->qp->nx; ++i) {
     // No change if zero
-    if (d->lam[i]==0) continue;
+    if (d->lam[i] == 0) continue;
     // lam[i] with no sign restrictions
     r = -d->infeas[i];
-    if (d->lam[i]>0) {
+    if (d->lam[i] > 0) {
       if (d->neverzero[i] && !d->neverlower[i]) {
-        d->lam[i] = r==0 ? p->dmin : r; // keep sign if r==0
+        d->lam[i] = r == 0 ? p->dmin : r;  // keep sign if r==0
       } else {
-        d->lam[i] = fmax(r, p->dmin); // no sign change
+        d->lam[i] = fmax(r, p->dmin);  // no sign change
       }
     } else {
       if (d->neverzero[i] && !d->neverupper[i]) {
-        d->lam[i] = r==0 ? -p->dmin : r; // keep sign if r==0
+        d->lam[i] = r == 0 ? -p->dmin : r;  // keep sign if r==0
       } else {
-        d->lam[i] = fmin(r, -p->dmin); // no sign change
+        d->lam[i] = fmin(r, -p->dmin);  // no sign change
       }
     }
     // Update dual infeasibility
@@ -1005,7 +1052,7 @@ void casadi_qrqp_calc_dependent(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_linesearch"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_linesearch(casadi_qrqp_data<T1>* d) {
   // Local variables
   casadi_int du_index;
@@ -1029,7 +1076,7 @@ void casadi_qrqp_linesearch(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_flip"
-template<typename T1>
+template <typename T1>
 void casadi_qrqp_flip(casadi_qrqp_data<T1>* d) {
   // Local variables
   const casadi_qrqp_prob<T1>* p = d->prob;
@@ -1067,14 +1114,14 @@ void casadi_qrqp_flip(casadi_qrqp_data<T1>* d) {
     // Detect singularity before it happens and get nullspace vectors
     if (!d->sing) d->has_search_dir = casadi_qrqp_flip_check(d);
     // Perform the active-set change
-    d->lam[d->index] = d->sign==0 ? 0 : d->sign > 0 ? p->dmin : -p->dmin;
+    d->lam[d->index] = d->sign == 0 ? 0 : d->sign > 0 ? p->dmin : -p->dmin;
     // Recalculate primal and dual infeasibility
     casadi_qrqp_calc_dependent(d);
   }
 }
 
 // SYMBOL "qrqp_prepare"
-template<typename T1>
+template <typename T1>
 int casadi_qrqp_prepare(casadi_qrqp_data<T1>* d) {
   // Local variables
   const casadi_qrqp_prob<T1>* p = d->prob;
@@ -1107,7 +1154,7 @@ int casadi_qrqp_prepare(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_iterate"
-template<typename T1>
+template <typename T1>
 int casadi_qrqp_iterate(casadi_qrqp_data<T1>* d) {
   // Reset message flag
   d->msg = 0;
@@ -1125,14 +1172,16 @@ int casadi_qrqp_iterate(casadi_qrqp_data<T1>* d) {
 }
 
 // SYMBOL "qrqp_print_header"
-template<typename T1>
-int casadi_qrqp_print_header(casadi_qrqp_data<T1>* d, char* buf, size_t buf_sz) {
+template <typename T1>
+int casadi_qrqp_print_header(casadi_qrqp_data<T1>* d, char* buf,
+                             size_t buf_sz) {
 #ifdef CASADI_SNPRINTF
   int flag;
   // Print to string
-  flag = CASADI_SNPRINTF(buf, buf_sz, "%5s %5s %9s %9s %5s %9s %5s %9s %5s %9s  %4s",
-          "Iter", "Sing", "fk", "|pr|", "con", "|du|", "var",
-          "min_R", "con", "last_tau", "Note");
+  flag = CASADI_SNPRINTF(buf, buf_sz,
+                         "%5s %5s %9s %9s %5s %9s %5s %9s %5s %9s  %4s", "Iter",
+                         "Sing", "fk", "|pr|", "con", "|du|", "var", "min_R",
+                         "con", "last_tau", "Note");
   // Check if error
   if (flag < 0) {
     d->status = QP_PRINTING_ERROR;
@@ -1146,8 +1195,9 @@ int casadi_qrqp_print_header(casadi_qrqp_data<T1>* d, char* buf, size_t buf_sz) 
 }
 
 // SYMBOL "qrqp_print_colcomb"
-template<typename T1>
-int casadi_qrqp_print_colcomb(casadi_qrqp_data<T1>* d, char* buf, size_t buf_sz, casadi_int j) {
+template <typename T1>
+int casadi_qrqp_print_colcomb(casadi_qrqp_data<T1>* d, char* buf, size_t buf_sz,
+                              casadi_int j) {
 #ifdef CASADI_SNPRINTF
   casadi_int num_size, n_print, i, k, buf_offset, val;
   size_t b;
@@ -1156,42 +1206,42 @@ int casadi_qrqp_print_colcomb(casadi_qrqp_data<T1>* d, char* buf, size_t buf_sz,
 
   // Determine max printing size
   num_size = 1;
-  val = p->qp->nz-1;
+  val = p->qp->nz - 1;
   while (val) {
-    val/=10;
+    val /= 10;
     num_size++;
   }
 
-  if (buf_sz<=4) return 1;
+  if (buf_sz <= 4) return 1;
 
   // How many numbers can be printed?
   // Need some extra space for '...'
   // and null
-  n_print = (buf_sz-4)/num_size;
+  n_print = (buf_sz - 4) / num_size;
 
   // Clear buffer
-  for (b=0;b<buf_sz;++b) buf[b]=' ';
+  for (b = 0; b < buf_sz; ++b) buf[b] = ' ';
 
   buf_offset = 0;
-  for (i=0;i<p->qp->nz;++i) {
+  for (i = 0; i < p->qp->nz; ++i) {
     if (fabs(d->dlam[i]) >= 1e-12) {
-      if (n_print==0) {
-        buf[buf_sz-4] = '.';
-        buf[buf_sz-3] = '.';
-        buf[buf_sz-2] = '.';
-        buf[buf_sz-1] = '\0';
+      if (n_print == 0) {
+        buf[buf_sz - 4] = '.';
+        buf[buf_sz - 3] = '.';
+        buf[buf_sz - 2] = '.';
+        buf[buf_sz - 1] = '\0';
         return 1;
       }
       n_print--;
-      CASADI_SNPRINTF(buf+buf_offset, num_size, "%d", static_cast<int>(i));
+      CASADI_SNPRINTF(buf + buf_offset, num_size, "%d", static_cast<int>(i));
       // Clear null chars
-      for (k=0;k<num_size;++k) {
-        if (buf[buf_offset+k]=='\0') buf[buf_offset+k] = ' ';
+      for (k = 0; k < num_size; ++k) {
+        if (buf[buf_offset + k] == '\0') buf[buf_offset + k] = ' ';
       }
       buf_offset += num_size;
     }
   }
-  buf[buf_sz-1] = '\0';
+  buf[buf_sz - 1] = '\0';
 #else
   if (buf_sz) buf[0] = '\0';
 #endif
@@ -1200,16 +1250,17 @@ int casadi_qrqp_print_colcomb(casadi_qrqp_data<T1>* d, char* buf, size_t buf_sz,
 }
 
 // SYMBOL "qrqp_print_iteration"
-template<typename T1>
-int casadi_qrqp_print_iteration(casadi_qrqp_data<T1>* d, char* buf, int buf_sz) {
+template <typename T1>
+int casadi_qrqp_print_iteration(casadi_qrqp_data<T1>* d, char* buf,
+                                int buf_sz) {
 #ifdef CASADI_SNPRINTF
   int flag;
   // Print iteration data without note to string
-  flag = CASADI_SNPRINTF(buf, buf_sz,
-    "%5d %5d %9.2g %9.2g %5d %9.2g %5d %9.2g %5d %9.2g  ",
-    static_cast<int>(d->iter), static_cast<int>(d->sing), d->f, d->pr,
-    static_cast<int>(d->ipr), d->du, static_cast<int>(d->idu),
-    d->mina, static_cast<int>(d->imina), d->tau);
+  flag = CASADI_SNPRINTF(
+      buf, buf_sz, "%5d %5d %9.2g %9.2g %5d %9.2g %5d %9.2g %5d %9.2g  ",
+      static_cast<int>(d->iter), static_cast<int>(d->sing), d->f, d->pr,
+      static_cast<int>(d->ipr), d->du, static_cast<int>(d->idu), d->mina,
+      static_cast<int>(d->imina), d->tau);
   // Check if error
   if (flag < 0) {
     d->status = QP_PRINTING_ERROR;
@@ -1221,7 +1272,8 @@ int casadi_qrqp_print_iteration(casadi_qrqp_data<T1>* d, char* buf, int buf_sz) 
   // Print iteration note, if any
   if (d->msg) {
     if (d->msg_ind > -2) {
-      flag = CASADI_SNPRINTF(buf, buf_sz, "%s, i=%d", d->msg, static_cast<int>(d->msg_ind));
+      flag = CASADI_SNPRINTF(buf, buf_sz, "%s, i=%d", d->msg,
+                             static_cast<int>(d->msg_ind));
     } else {
       flag = CASADI_SNPRINTF(buf, buf_sz, "%s", d->msg);
     }

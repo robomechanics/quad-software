@@ -18,8 +18,7 @@
 */
 
 class ClpSolve {
-
-public:
+ public:
   /** enums for solve function */
   enum SolveType {
     useDual = 0,
@@ -44,9 +43,8 @@ public:
   /// Default constructor
   ClpSolve();
   /// Constructor when you really know what you are doing
-  ClpSolve(SolveType method, PresolveType presolveType,
-    int numberPasses, int options[6],
-    int extraInfo[6], int independentOptions[3]);
+  ClpSolve(SolveType method, PresolveType presolveType, int numberPasses,
+           int options[6], int extraInfo[6], int independentOptions[3]);
   /// Generates code for above constructor
   void generateCpp(FILE *fp);
   /// Copy constructor.
@@ -70,36 +68,36 @@ public:
          which:
          0 - startup in Dual  (nothing if basis exists).:
                       0 - no basis
-       	   1 - crash
-       	   2 - use initiative about idiot! but no crash
+           1 - crash
+           2 - use initiative about idiot! but no crash
          1 - startup in Primal (nothing if basis exists):
                       0 - use initiative
-       	   1 - use crash
-       	   2 - use idiot and look at further info
-       	   3 - use sprint and look at further info
-       	   4 - use all slack
-       	   5 - use initiative but no idiot
-       	   6 - use initiative but no sprint
-       	   7 - use initiative but no crash
+           1 - use crash
+           2 - use idiot and look at further info
+           3 - use sprint and look at further info
+           4 - use all slack
+           5 - use initiative but no idiot
+           6 - use initiative but no sprint
+           7 - use initiative but no crash
                       8 - do allslack or idiot
                       9 - do allslack or sprint
-       	   10 - slp before
-       	   11 - no nothing and primal(0)
+           10 - slp before
+           11 - no nothing and primal(0)
          2 - interrupt handling - 0 yes, 1 no (for threadsafe)
          3 - whether to make +- 1matrix - 0 yes, 1 no
          4 - for barrier
                       0 - dense cholesky
-       	   1 - Wssmp allowing some long columns
-       	   2 - Wssmp not allowing long columns
-       	   3 - Wssmp using KKT
+           1 - Wssmp allowing some long columns
+           2 - Wssmp not allowing long columns
+           3 - Wssmp using KKT
                       4 - Using Florida ordering
-       	   8 - bit set to do scaling
-       	   16 - set to be aggressive with gamma/delta?
+           8 - bit set to do scaling
+           16 - set to be aggressive with gamma/delta?
                       32 - Use KKT
          5 - for presolve
                       1 - switch off dual stuff
          6 - extra switches
-                      
+
      */
   void setSpecialOption(int which, int value, int extraInfo = -1);
   int getSpecialOption(int which) const;
@@ -117,174 +115,124 @@ public:
   /** Say to return at once if infeasible,
          default is to solve */
   void setInfeasibleReturn(bool trueFalse);
-  inline bool infeasibleReturn() const
-  {
-    return independentOptions_[0] != 0;
-  }
+  inline bool infeasibleReturn() const { return independentOptions_[0] != 0; }
   /// Whether we want to do dual part of presolve
-  inline bool doDual() const
-  {
-    return (independentOptions_[1] & 1) == 0;
-  }
-  inline void setDoDual(bool doDual_)
-  {
+  inline bool doDual() const { return (independentOptions_[1] & 1) == 0; }
+  inline void setDoDual(bool doDual_) {
     if (doDual_)
       independentOptions_[1] &= ~1;
     else
       independentOptions_[1] |= 1;
   }
   /// Whether we want to do singleton part of presolve
-  inline bool doSingleton() const
-  {
-    return (independentOptions_[1] & 2) == 0;
-  }
-  inline void setDoSingleton(bool doSingleton_)
-  {
+  inline bool doSingleton() const { return (independentOptions_[1] & 2) == 0; }
+  inline void setDoSingleton(bool doSingleton_) {
     if (doSingleton_)
       independentOptions_[1] &= ~2;
     else
       independentOptions_[1] |= 2;
   }
   /// Whether we want to do doubleton part of presolve
-  inline bool doDoubleton() const
-  {
-    return (independentOptions_[1] & 4) == 0;
-  }
-  inline void setDoDoubleton(bool doDoubleton_)
-  {
+  inline bool doDoubleton() const { return (independentOptions_[1] & 4) == 0; }
+  inline void setDoDoubleton(bool doDoubleton_) {
     if (doDoubleton_)
       independentOptions_[1] &= ~4;
     else
       independentOptions_[1] |= 4;
   }
   /// Whether we want to do tripleton part of presolve
-  inline bool doTripleton() const
-  {
-    return (independentOptions_[1] & 8) == 0;
-  }
-  inline void setDoTripleton(bool doTripleton_)
-  {
+  inline bool doTripleton() const { return (independentOptions_[1] & 8) == 0; }
+  inline void setDoTripleton(bool doTripleton_) {
     if (doTripleton_)
       independentOptions_[1] &= ~8;
     else
       independentOptions_[1] |= 8;
   }
   /// Whether we want to do tighten part of presolve
-  inline bool doTighten() const
-  {
-    return (independentOptions_[1] & 16) == 0;
-  }
-  inline void setDoTighten(bool doTighten_)
-  {
+  inline bool doTighten() const { return (independentOptions_[1] & 16) == 0; }
+  inline void setDoTighten(bool doTighten_) {
     if (doTighten_)
       independentOptions_[1] &= ~16;
     else
       independentOptions_[1] |= 16;
   }
   /// Whether we want to do forcing part of presolve
-  inline bool doForcing() const
-  {
-    return (independentOptions_[1] & 32) == 0;
-  }
-  inline void setDoForcing(bool doForcing_)
-  {
+  inline bool doForcing() const { return (independentOptions_[1] & 32) == 0; }
+  inline void setDoForcing(bool doForcing_) {
     if (doForcing_)
       independentOptions_[1] &= ~32;
     else
       independentOptions_[1] |= 32;
   }
   /// Whether we want to do impliedfree part of presolve
-  inline bool doImpliedFree() const
-  {
+  inline bool doImpliedFree() const {
     return (independentOptions_[1] & 64) == 0;
   }
-  inline void setDoImpliedFree(bool doImpliedfree)
-  {
+  inline void setDoImpliedFree(bool doImpliedfree) {
     if (doImpliedfree)
       independentOptions_[1] &= ~64;
     else
       independentOptions_[1] |= 64;
   }
   /// Whether we want to do dupcol part of presolve
-  inline bool doDupcol() const
-  {
-    return (independentOptions_[1] & 128) == 0;
-  }
-  inline void setDoDupcol(bool doDupcol_)
-  {
+  inline bool doDupcol() const { return (independentOptions_[1] & 128) == 0; }
+  inline void setDoDupcol(bool doDupcol_) {
     if (doDupcol_)
       independentOptions_[1] &= ~128;
     else
       independentOptions_[1] |= 128;
   }
   /// Whether we want to do duprow part of presolve
-  inline bool doDuprow() const
-  {
-    return (independentOptions_[1] & 256) == 0;
-  }
-  inline void setDoDuprow(bool doDuprow_)
-  {
+  inline bool doDuprow() const { return (independentOptions_[1] & 256) == 0; }
+  inline void setDoDuprow(bool doDuprow_) {
     if (doDuprow_)
       independentOptions_[1] &= ~256;
     else
       independentOptions_[1] |= 256;
   }
   /// Whether we want to do singleton column part of presolve
-  inline bool doSingletonColumn() const
-  {
+  inline bool doSingletonColumn() const {
     return (independentOptions_[1] & 512) == 0;
   }
-  inline void setDoSingletonColumn(bool doSingleton_)
-  {
+  inline void setDoSingletonColumn(bool doSingleton_) {
     if (doSingleton_)
       independentOptions_[1] &= ~512;
     else
       independentOptions_[1] |= 512;
   }
   /// Whether we want to kill small substitutions
-  inline bool doKillSmall() const
-  {
+  inline bool doKillSmall() const {
     return (independentOptions_[1] & 8192) == 0;
   }
-  inline void setDoKillSmall(bool doKill)
-  {
+  inline void setDoKillSmall(bool doKill) {
     if (doKill)
       independentOptions_[1] &= ~8192;
     else
       independentOptions_[1] |= 8192;
   }
   /// Set whole group
-  inline int presolveActions() const
-  {
+  inline int presolveActions() const {
     return independentOptions_[1] & 0xffffff;
   }
-  inline void setPresolveActions(int action)
-  {
-    independentOptions_[1] = (independentOptions_[1] & 0xff000000) | (action & 0xffffff);
+  inline void setPresolveActions(int action) {
+    independentOptions_[1] =
+        (independentOptions_[1] & 0xff000000) | (action & 0xffffff);
   }
   /// Largest column for substitution (normally 3)
-  inline int substitution() const
-  {
-    return independentOptions_[2];
-  }
-  inline void setSubstitution(int value)
-  {
-    independentOptions_[2] = value;
-  }
-  inline void setIndependentOption(int type, int value)
-  {
+  inline int substitution() const { return independentOptions_[2]; }
+  inline void setSubstitution(int value) { independentOptions_[2] = value; }
+  inline void setIndependentOption(int type, int value) {
     independentOptions_[type] = value;
   }
-  inline int independentOption(int type) const
-  {
+  inline int independentOption(int type) const {
     return independentOptions_[type];
   }
   //@}
 
   ////////////////// data //////////////////
-private:
+ private:
   /**@name data.
-     */
+   */
   //@{
   /// Solve type
   SolveType method_;
@@ -300,7 +248,7 @@ private:
          0 - if set return from clpsolve if infeasible
          1 - To be copied over to presolve options
          2 - max substitution level
-	 If Dantzig Wolfe/benders 0 is number blocks, 2 is #passes (notional)
+         If Dantzig Wolfe/benders 0 is number blocks, 2 is #passes (notional)
      */
   int independentOptions_[3];
   //@}
@@ -308,8 +256,7 @@ private:
 
 /// For saving extra information to see if looping.
 class ClpSimplexProgress {
-
-public:
+ public:
   /**@name Constructors and destructor and copy */
   //@{
   /// Default constructor
@@ -358,58 +305,25 @@ public:
   /// clears all iteration numbers (to switch off panic)
   void clearIterationNumbers();
   /// Odd state
-  inline void newOddState()
-  {
-    oddState_ = -oddState_ - 1;
-  }
-  inline void endOddState()
-  {
-    oddState_ = abs(oddState_);
-  }
-  inline void clearOddState()
-  {
-    oddState_ = 0;
-  }
-  inline int oddState() const
-  {
-    return oddState_;
-  }
+  inline void newOddState() { oddState_ = -oddState_ - 1; }
+  inline void endOddState() { oddState_ = abs(oddState_); }
+  inline void clearOddState() { oddState_ = 0; }
+  inline int oddState() const { return oddState_; }
   /// number of bad times
-  inline int badTimes() const
-  {
-    return numberBadTimes_;
-  }
-  inline void clearBadTimes()
-  {
-    numberBadTimes_ = 0;
-  }
+  inline int badTimes() const { return numberBadTimes_; }
+  inline void clearBadTimes() { numberBadTimes_ = 0; }
   /// number of really bad times
-  inline int reallyBadTimes() const
-  {
-    return numberReallyBadTimes_;
-  }
-  inline void incrementReallyBadTimes()
-  {
-    numberReallyBadTimes_++;
-  }
+  inline int reallyBadTimes() const { return numberReallyBadTimes_; }
+  inline void incrementReallyBadTimes() { numberReallyBadTimes_++; }
   /// number of times flagged
-  inline int timesFlagged() const
-  {
-    return numberTimesFlagged_;
-  }
-  inline void clearTimesFlagged()
-  {
-    numberTimesFlagged_ = 0;
-  }
-  inline void incrementTimesFlagged()
-  {
-    numberTimesFlagged_++;
-  }
+  inline int timesFlagged() const { return numberTimesFlagged_; }
+  inline void clearTimesFlagged() { numberTimesFlagged_ = 0; }
+  inline void incrementTimesFlagged() { numberTimesFlagged_++; }
 
   //@}
   /**@name Data  */
 #define CLP_PROGRESS 5
-  //#define CLP_PROGRESS_WEIGHT 10
+  // #define CLP_PROGRESS_WEIGHT 10
   //@{
   /// Objective values
   double objective_[CLP_PROGRESS];
@@ -433,7 +347,7 @@ public:
   double initialWeight_;
 #define CLP_CYCLE 12
   /// For cycle checking
-  //double obj_[CLP_CYCLE];
+  // double obj_[CLP_CYCLE];
   int in_[CLP_CYCLE];
   int out_[CLP_CYCLE];
   char way_[CLP_CYCLE];
@@ -467,8 +381,7 @@ public:
 #include "AbcCommon.hpp"
 /// For saving extra information to see if looping.
 class AbcSimplexProgress : public ClpSimplexProgress {
-
-public:
+ public:
   /**@name Constructors and destructor and copy */
   //@{
   /// Default constructor
@@ -502,4 +415,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -18,16 +18,16 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_FMU_HPP
 #define CASADI_FMU_HPP
 
-#include "shared_object.hpp"
 #include "printable.hpp"
+#include "shared_object.hpp"
 #include "sparsity.hpp"
 
 /// \cond INTERNAL
@@ -43,7 +43,7 @@ struct InputStruct;
 class FmuInternal;
 
 /// Which C API
-enum class FmuApi {FMI2, NUMEL};
+enum class FmuApi { FMI2, NUMEL };
 
 /// Convert to string
 CASADI_EXPORT std::string to_string(FmuApi v);
@@ -56,24 +56,23 @@ CASADI_EXPORT std::string to_string(FmuApi v);
     \date 2023
 
     \identifier{26s} */
-class CASADI_EXPORT Fmu
-  : public SharedObject,
-    public SWIG_IF_ELSE(PrintableCommon, Printable<Fmu>) {
+class CASADI_EXPORT Fmu : public SharedObject,
+                          public SWIG_IF_ELSE(PrintableCommon, Printable<Fmu>) {
  public:
   /** \brief Get type name
 
       \identifier{26t} */
-  static std::string type_name() {return "Fmu";}
+  static std::string type_name() { return "Fmu"; }
 
   /// Default constructor
   Fmu();
 
   /// Importer factory
   Fmu(const std::string& name, FmuApi api, const DaeBuilderInternal* dae,
-    const std::vector<std::string>& scheme_in,
-    const std::vector<std::string>& scheme_out,
-    const std::map<std::string, std::vector<size_t>>& scheme,
-    const std::vector<std::string>& aux);
+      const std::vector<std::string>& scheme_in,
+      const std::vector<std::string>& scheme_out,
+      const std::map<std::string, std::vector<size_t>>& scheme,
+      const std::vector<std::string>& aux);
 
   /** \brief Name of the instance
 
@@ -134,7 +133,8 @@ class CASADI_EXPORT Fmu
   bool has_ad() const;
 
   // Get Jacobian sparsity for a subset of inputs and outputs
-  Sparsity jac_sparsity(const std::vector<size_t>& osub, const std::vector<size_t>& isub) const;
+  Sparsity jac_sparsity(const std::vector<size_t>& osub,
+                        const std::vector<size_t>& isub) const;
 
   // Get Jacobian sparsity for an output/input pair
   Sparsity jac_sparsity(size_t oind, size_t iind) const {
@@ -142,7 +142,8 @@ class CASADI_EXPORT Fmu
   }
 
   // Get Hessian sparsity for a subset of inputs
-  Sparsity hess_sparsity(const std::vector<size_t>& r, const std::vector<size_t>& c) const;
+  Sparsity hess_sparsity(const std::vector<size_t>& r,
+                         const std::vector<size_t>& c) const;
 
   // Get Jacobian sparsity for an input/input pair
   Sparsity hess_sparsity(size_t r, size_t c) const {
@@ -170,17 +171,19 @@ class CASADI_EXPORT Fmu
   void get(FmuMemory* m, size_t ind, double* value) const;
 
   // Set seed
-  void set_seed(FmuMemory* m, casadi_int nseed, const casadi_int* id, const double* v) const;
+  void set_seed(FmuMemory* m, casadi_int nseed, const casadi_int* id,
+                const double* v) const;
 
   // Request the calculation of a sensitivity
   void request_sens(FmuMemory* m, casadi_int nsens, const casadi_int* id,
-    const casadi_int* wrt_id) const;
+                    const casadi_int* wrt_id) const;
 
   // Calculate directional derivatives
   int eval_derivative(FmuMemory* m, bool independent_seeds) const;
 
   // Get calculated derivatives
-  void get_sens(FmuMemory* m, casadi_int nsens, const casadi_int* id, double* v) const;
+  void get_sens(FmuMemory* m, casadi_int nsens, const casadi_int* id,
+                double* v) const;
 
   // Set all forward seeds for a single input
   void set_fwd(FmuMemory* m, size_t ind, const double* v) const;
@@ -195,21 +198,22 @@ class CASADI_EXPORT Fmu
 
       \identifier{26y} */
   void get_stats(FmuMemory* m, Dict* stats,
-    const std::vector<std::string>& name_in, const InputStruct* in) const;
+                 const std::vector<std::string>& name_in,
+                 const InputStruct* in) const;
 
   /// \cond INTERNAL
 #ifndef SWIG
-    /** \brief  Create from node
+  /** \brief  Create from node
 
-        \identifier{27c} */
-    static Fmu create(FmuInternal* node);
-#endif // SWIG
+      \identifier{27c} */
+  static Fmu create(FmuInternal* node);
+#endif  // SWIG
   /// \endcond
 
   /** \brief Serialize an object
 
       \identifier{27d} */
-  void serialize(SerializingStream &s) const;
+  void serialize(SerializingStream& s) const;
 
   /** \brief Deserialize with type disambiguation
 
@@ -217,8 +221,8 @@ class CASADI_EXPORT Fmu
   static Fmu deserialize(DeserializingStream& s);
 };
 
-} // namespace casadi
+}  // namespace casadi
 
 /// \endcond
 
-#endif // CASADI_FMU_HPP
+#endif  // CASADI_FMU_HPP

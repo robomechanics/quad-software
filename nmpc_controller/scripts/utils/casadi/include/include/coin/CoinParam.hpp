@@ -13,9 +13,9 @@
     \brief Declaration of a class for command line parameters.
 */
 
-#include <vector>
-#include <string>
 #include <cstdio>
+#include <string>
+#include <vector>
 
 /*! \class CoinParam
     \brief A base class for `keyword value' command line parameters.
@@ -40,7 +40,7 @@
   include:
   <ul>
     <li> Support for common parameter types with numeric, string, or
-	 keyword values.
+         keyword values.
     <li> Support for short and long help messages.
     <li> Pointers to `push' and `pull' functions as described above.
     <li> Command line parsing and keyword matching.
@@ -73,8 +73,7 @@
 */
 
 class CoinParam {
-
-public:
+ public:
   /*! \name Subtypes */
   //@{
 
@@ -86,16 +85,18 @@ public:
       <li> Integer and double numeric parameters, with upper and lower bounds.
       <li> String parameters that take an arbitrary string value.
       <li> Keyword parameters that take a defined set of string (value-keyword)
-	   values. Value-keywords are associated with integers in the order in
-	   which they are added, starting from zero.
+           values. Value-keywords are associated with integers in the order in
+           which they are added, starting from zero.
     </ul>
   */
-  typedef enum { coinParamInvalid = 0,
+  typedef enum {
+    coinParamInvalid = 0,
     coinParamAct,
     coinParamInt,
     coinParamDbl,
     coinParamStr,
-    coinParamKwd } CoinParamType;
+    coinParamKwd
+  } CoinParamType;
 
   /*! \brief Type declaration for push and pull functions.
 
@@ -120,22 +121,20 @@ public:
   CoinParam();
 
   /*! \brief Constructor for a parameter with a double value
-  
+
     The default value is 0.0. Be careful to clearly indicate that \p lower and
     \p upper are real (double) values to distinguish this constructor from the
     constructor for an integer parameter.
   */
-  CoinParam(std::string name, std::string help,
-    double lower, double upper, double dflt = 0.0,
-    bool display = true);
+  CoinParam(std::string name, std::string help, double lower, double upper,
+            double dflt = 0.0, bool display = true);
 
   /*! \brief Constructor for a parameter with an integer value
-  
+
     The default value is 0.
   */
-  CoinParam(std::string name, std::string help,
-    int lower, int upper, int dflt = 0,
-    bool display = true);
+  CoinParam(std::string name, std::string help, int lower, int upper,
+            int dflt = 0, bool display = true);
 
   /*! \brief Constructor for a parameter with keyword values
 
@@ -151,8 +150,8 @@ public:
     for \p dflt can be any value, as long as it will be valid once all
     value-keywords have been added.
   */
-  CoinParam(std::string name, std::string help,
-    std::string firstValue, int dflt, bool display = true);
+  CoinParam(std::string name, std::string help, std::string firstValue,
+            int dflt, bool display = true);
 
   /*! \brief Constructor for a string parameter
 
@@ -162,13 +161,12 @@ public:
     example, use std::string("default") instead of simply "default", or use a
     variable of type std::string.
   */
-  CoinParam(std::string name, std::string help,
-    std::string dflt, bool display = true);
+  CoinParam(std::string name, std::string help, std::string dflt,
+            bool display = true);
 
   /*! \brief Constructor for an action parameter */
 
-  CoinParam(std::string name, std::string help,
-    bool display = true);
+  CoinParam(std::string name, std::string help, bool display = true);
 
   /*! \brief Copy constructor */
 
@@ -196,34 +194,34 @@ public:
   void appendKwd(std::string kwd);
 
   /*! \brief Return the integer associated with the specified value-keyword
-  
+
     Returns -1 if no value-keywords match the specified string.
   */
   int kwdIndex(std::string kwd) const;
 
   /*! \brief Return the value-keyword that is the current value of the
-	     keyword parameter
+             keyword parameter
   */
   std::string kwdVal() const;
 
   /*! \brief Set the value of the keyword parameter using the integer
-	     associated with a value-keyword.
-  
+             associated with a value-keyword.
+
     If \p printIt is true, the corresponding value-keyword string will be
     echoed to std::cout.
   */
   void setKwdVal(int value, bool printIt = false);
 
   /*! \brief Set the value of the keyword parameter using a value-keyword
-	     string.
-  
+             string.
+
     The given string will be tested against the set of value-keywords for
     the parameter using the shortest match rules.
   */
   void setKwdVal(const std::string value);
 
   /*! \brief Prints the set of value-keywords defined for this keyword
-	     parameter
+             parameter
   */
   void printKwds() const;
 
@@ -260,7 +258,7 @@ public:
   inline std::string shortHelp() const { return (shortHelp_); }
 
   /*! \brief Add a long help message to a parameter
-  
+
     See printLongHelp() for a description of how messages are broken into
     lines.
   */
@@ -299,15 +297,14 @@ public:
 
   /*! \brief Set the parameter keyword (name) string */
 
-  inline void setName(std::string name)
-  {
+  inline void setName(std::string name) {
     name_ = name;
     processName();
   }
 
   /*! \brief Check if the specified string matches the parameter keyword (name)
-	     string
-  
+             string
+
     Returns 1 if the string matches and meets the minimum match length,
     2 if the string matches but doesn't meet the minimum match length,
     and 0 if the string doesn't match. Matches are \e not case-sensitive.
@@ -315,8 +312,8 @@ public:
   int matches(std::string input) const;
 
   /*! \brief Return the parameter keyword (name) string formatted to show
-	     the minimum match length
-  
+             the minimum match length
+
     For example, if the parameter name was defined as allow!ableGap, the
     string returned by matchName would be allow(ableGap).
   */
@@ -352,7 +349,7 @@ public:
 
   //@}
 
-private:
+ private:
   /*! \name Private methods */
   //@{
 
@@ -373,7 +370,7 @@ private:
   size_t lengthName_;
 
   /*! \brief  Minimum length required to declare a match for the parameter
-	      name.
+              name.
   */
   size_t lengthMatch_;
 
@@ -399,10 +396,10 @@ private:
   std::string strValue_;
 
   /// Set of valid value-keywords for a keyword parameter
-  std::vector< std::string > definedKwds_;
+  std::vector<std::string> definedKwds_;
 
   /*! \brief Current value for a keyword parameter (index into #definedKwds_)
-  */
+   */
   int currentKwd_;
 
   /// Push function
@@ -425,7 +422,7 @@ private:
 /*! \relatesalso CoinParam
     \brief A type for a parameter vector.
 */
-typedef std::vector< CoinParam * > CoinParamVec;
+typedef std::vector<CoinParam *> CoinParamVec;
 
 /*! \relatesalso CoinParam
     \brief A stream output function for a CoinParam object.
@@ -463,7 +460,7 @@ bool isInteractive();
 
 /*! \relatesalso CoinParam
       \brief Attempt to read a string from the input.
-      
+
       \p argc and \p argv are used only if isCommandLine() would return true.
       If \p valid is supplied, it will be set to 0 if a string is parsed
       without error, 2 if no field is present.
@@ -472,7 +469,7 @@ std::string getStringField(int argc, const char *argv[], int *valid);
 
 /*! \relatesalso CoinParam
       \brief Attempt to read an integer from the input.
-      
+
       \p argc and \p argv are used only if isCommandLine() would return true.
       If \p valid is supplied, it will be set to 0 if an integer is parsed
       without error, 1 if there's a parse error, and 2 if no field is present.
@@ -481,7 +478,7 @@ int getIntField(int argc, const char *argv[], int *valid);
 
 /*! \relatesalso CoinParam
       \brief Attempt to read a real (double) from the input.
-      
+
       \p argc and \p argv are used only if isCommandLine() would return true.
       If \p valid is supplied, it will be set to 0 if a real number is parsed
       without error, 1 if there's a parse error, and 2 if no field is present.
@@ -490,8 +487,8 @@ double getDoubleField(int argc, const char *argv[], int *valid);
 
 /*! \relatesalso CoinParam
       \brief Scan a parameter vector for parameters whose keyword (name) string
-	     matches \p name using minimal match rules.
-      
+             matches \p name using minimal match rules.
+
        \p matchNdx is set to the index of the last parameter that meets the
        minimal match criteria (but note there should be at most one matching
        parameter if the parameter vector is properly configured). \p shortCnt
@@ -500,8 +497,8 @@ double getDoubleField(int argc, const char *argv[], int *valid);
        value is the number of matches satisfying the minimal match requirement
        (should be 0 or 1 in a properly configured vector).
   */
-int matchParam(const CoinParamVec &paramVec, std::string name,
-  int &matchNdx, int &shortCnt);
+int matchParam(const CoinParamVec &paramVec, std::string name, int &matchNdx,
+               int &shortCnt);
 
 /*! \relatesalso CoinParam
       \brief Get the next command keyword (name)
@@ -520,7 +517,7 @@ int matchParam(const CoinParamVec &paramVec, std::string name,
     <ul>
       <li> A stand-alone `-' is forced to `stdin'.
       <li> A stand-alone '--' is returned as a word; interpretation is up to
-	   the client.
+           the client.
       <li> A prefix of '-' or '--' is stripped from the string.
     </ul>
     If the result is the string `stdin', command processing shifts to
@@ -533,12 +530,12 @@ int matchParam(const CoinParamVec &paramVec, std::string name,
     interactive mode.
   */
 
-std::string getCommand(int argc, const char *argv[],
-  const std::string prompt, std::string *pfx = 0);
+std::string getCommand(int argc, const char *argv[], const std::string prompt,
+                       std::string *pfx = 0);
 
 /*! \relatesalso CoinParam
       \brief Look up the command keyword (name) in the parameter vector.
-      	     Print help if requested.
+             Print help if requested.
 
     In the most straightforward use, \p name is a string without `?', and the
     value returned is the index in \p paramVec of the single parameter that
@@ -555,26 +552,26 @@ std::string getCommand(int argc, const char *argv[],
     If provided as parameters, on return
     <ul>
       <li> \p matchCnt will be set to the number of matches meeting the
-	   minimal match requirement
+           minimal match requirement
       <li> \p shortCnt will be set to the number of matches that did not
-	   meet the miminal match requirement
+           meet the miminal match requirement
       <li> \p queryCnt will be set to the number of '?' characters at the
-	   end of the name
+           end of the name
     </ul>
 
     The return values are:
     <ul>
       <li> >0: index in \p paramVec of the single unique match for \p name
       <li> -1: a query was detected (one or more '?' characters at the end
-	       of \p name
+               of \p name
       <li> -2: one or more short matches, not a query
       <li> -3: no matches, not a query
       <li> -4: multiple matches meeting the minimal match requirement
-	       (configuration error)
+               (configuration error)
     </ul>
   */
-int lookupParam(std::string name, CoinParamVec &paramVec,
-  int *matchCnt = 0, int *shortCnt = 0, int *queryCnt = 0);
+int lookupParam(std::string name, CoinParamVec &paramVec, int *matchCnt = 0,
+                int *shortCnt = 0, int *queryCnt = 0);
 
 /*! \relatesalso CoinParam
       \brief Utility to print a long message as filled lines of text
@@ -587,13 +584,13 @@ void printIt(const char *msg);
 
 /*! \relatesalso CoinParam
       \brief Utility routine to print help given a short match or explicit
-	     request for help.
+             request for help.
 
       The two really are related, in that a query (a string that ends with
       one or more `?' characters) will often result in a short match. The
       routine expects that \p name matches a single parameter, and does not
       look for multiple matches.
-      
+
       If called with \p matchNdx < 0, the routine will look up \p name in \p
       paramVec and print the full name from the parameter. If called with \p
       matchNdx > 0, it just prints the name from the specified parameter.  If
@@ -601,7 +598,8 @@ void printIt(const char *msg);
       is printed.
 
   */
-void shortOrHelpOne(CoinParamVec &paramVec, int matchNdx, std::string name, int numQuery);
+void shortOrHelpOne(CoinParamVec &paramVec, int matchNdx, std::string name,
+                    int numQuery);
 
 /*! \relatesalso CoinParam
       \brief Utility routine to print help given multiple matches.
@@ -611,8 +609,7 @@ void shortOrHelpOne(CoinParamVec &paramVec, int matchNdx, std::string name, int 
       the name asks for long help (contains two or more '?' characters),
       short help is printed for each matching name.
   */
-void shortOrHelpMany(CoinParamVec &paramVec,
-  std::string name, int numQuery);
+void shortOrHelpMany(CoinParamVec &paramVec, std::string name, int numQuery);
 
 /*! \relatesalso CoinParam
       \brief Print a generic `how to use the command interface' help message.
@@ -623,8 +620,8 @@ void printGenericHelp();
 
 /*! \relatesalso CoinParam
       \brief Utility routine to print help messages for one or more
-	     parameters.
-    
+             parameters.
+
     Intended as a utility to implement explicit `help' commands. Help will be
     printed for all parameters in \p paramVec from \p firstParam to \p
     lastParam, inclusive. If \p shortHelp is true, short help messages will
@@ -634,11 +631,10 @@ void printGenericHelp();
     imperfect attempt at indentation.
   */
 void printHelp(CoinParamVec &paramVec, int firstParam, int lastParam,
-  std::string prefix,
-  bool shortHelp, bool longHelp, bool hidden);
-}
+               std::string prefix, bool shortHelp, bool longHelp, bool hidden);
+}  // namespace CoinParamUtils
 
 #endif /* CoinParam_H */
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

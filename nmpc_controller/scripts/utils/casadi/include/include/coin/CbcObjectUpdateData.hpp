@@ -12,18 +12,13 @@
 /*  This stores data so an object can be updated
  */
 class CbcObjectUpdateData {
-
-public:
+ public:
   /// Default Constructor
   CbcObjectUpdateData();
 
   /// Useful constructor
-  CbcObjectUpdateData(CbcObject *object,
-    int way,
-    double change,
-    int status,
-    int intDecrease_,
-    double branchingValue);
+  CbcObjectUpdateData(CbcObject *object, int way, double change, int status,
+                      int intDecrease_, double branchingValue);
 
   /// Copy constructor
   CbcObjectUpdateData(const CbcObjectUpdateData &);
@@ -34,7 +29,7 @@ public:
   /// Destructor
   virtual ~CbcObjectUpdateData();
 
-public:
+ public:
   /// data
 
   /// Object
@@ -60,4 +55,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

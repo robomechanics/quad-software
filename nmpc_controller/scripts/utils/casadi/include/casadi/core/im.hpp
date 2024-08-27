@@ -18,7 +18,8 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
 
@@ -30,23 +31,23 @@
 
 namespace casadi {
 
-  /// Is the IM a Slice
-  bool CASADI_EXPORT is_slice(const IM& x, bool ind1=false);
+/// Is the IM a Slice
+bool CASADI_EXPORT is_slice(const IM& x, bool ind1 = false);
 
-  ///  Convert IM to Slice
-  Slice CASADI_EXPORT to_slice(const IM& x, bool ind1=false);
+///  Convert IM to Slice
+Slice CASADI_EXPORT to_slice(const IM& x, bool ind1 = false);
 
-  template<>
-  Dict CASADI_EXPORT IM::info() const;
-  template<>
-  void CASADI_EXPORT IM::to_file(const std::string& filename,
-    const Sparsity& sp, const casadi_int* nonzeros,
-    const std::string& format_hint);
+template <>
+Dict CASADI_EXPORT IM::info() const;
+template <>
+void CASADI_EXPORT IM::to_file(const std::string& filename, const Sparsity& sp,
+                               const casadi_int* nonzeros,
+                               const std::string& format_hint);
 
 #ifndef CASADI_IM_INSTANTIATOR_CPP
-  extern template class Matrix<casadi_int>;
-#endif // CASADI_IM_INSTANTIATOR_CPP
+extern template class Matrix<casadi_int>;
+#endif  // CASADI_IM_INSTANTIATOR_CPP
 
-} // namespace casadi
+}  // namespace casadi
 
-#endif // CASADI_IM_HPP
+#endif  // CASADI_IM_HPP

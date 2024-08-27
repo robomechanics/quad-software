@@ -3,14 +3,14 @@
 // Corporation and others.  All Rights Reserved.
 // This code is licensed under the terms of the Eclipse Public License (EPL).
 
-//Edwin 11/25/09 carved out of CbcCutGenerator
+// Edwin 11/25/09 carved out of CbcCutGenerator
 
 #ifndef CbcCutModifier_H
 #define CbcCutModifier_H
 
-#include "OsiSolverInterface.hpp"
-#include "OsiCuts.hpp"
 #include "CglCutGenerator.hpp"
+#include "OsiCuts.hpp"
+#include "OsiSolverInterface.hpp"
 
 class CbcModel;
 class OsiRowCut;
@@ -25,7 +25,7 @@ class OsiRowCutDebugger;
 */
 
 class CbcCutModifier {
-public:
+ public:
   /// Default Constructor
   CbcCutModifier();
 
@@ -50,10 +50,10 @@ public:
   /// Create C++ lines to get to current state
   virtual void generateCpp(FILE *) {}
 
-protected:
+ protected:
 };
 
-#endif //CbcCutModifier_H
+#endif  // CbcCutModifier_H
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

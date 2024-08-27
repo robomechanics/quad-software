@@ -12,7 +12,8 @@
 
 namespace Eigen {
 
-/** \cpp11 \returns an expression of the coefficient-wise betainc(\a x, \a a, \a b) to the given tensors.
+/** \cpp11 \returns an expression of the coefficient-wise betainc(\a x, \a a, \a
+ * b) to the given tensors.
  *
  * This function computes the regularized incomplete beta function (integral).
  *
@@ -28,6 +29,6 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE const
       a, b, x, internal::scalar_betainc_op<typename XDerived::Scalar>());
 }
 
-} // end namespace Eigen
+}  // end namespace Eigen
 
-#endif // EIGEN_CXX11_TENSOR_TENSOR_GLOBAL_FUNCTIONS_H
+#endif  // EIGEN_CXX11_TENSOR_TENSOR_GLOBAL_FUNCTIONS_H

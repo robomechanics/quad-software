@@ -10,12 +10,12 @@
 #include "CoinWarmStart.hpp"
 #include "CoinWarmStartVector.hpp"
 
-//#############################################################################
+// #############################################################################
 
 /** WarmStart information that is only a dual vector */
 
 class CoinWarmStartDual : public virtual CoinWarmStart {
-public:
+ public:
   /// return the size of the dual vector
   inline int size() const { return dual_.size(); }
   /// return a pointer to the array of duals
@@ -24,25 +24,17 @@ public:
   /** Assign the dual vector to be the warmstart information. In this method
        the object assumes ownership of the pointer and upon return "dual" will
        be a NULL pointer. If copying is desirable use the constructor. */
-  inline void assignDual(int size, double *&dual)
-  {
+  inline void assignDual(int size, double *&dual) {
     dual_.assignVector(size, dual);
   }
 
   CoinWarmStartDual() {}
 
-  CoinWarmStartDual(int size, const double *dual)
-    : dual_(size, dual)
-  {
-  }
+  CoinWarmStartDual(int size, const double *dual) : dual_(size, dual) {}
 
-  CoinWarmStartDual(const CoinWarmStartDual &rhs)
-    : dual_(rhs.dual_)
-  {
-  }
+  CoinWarmStartDual(const CoinWarmStartDual &rhs) : dual_(rhs.dual_) {}
 
-  CoinWarmStartDual &operator=(const CoinWarmStartDual &rhs)
-  {
+  CoinWarmStartDual &operator=(const CoinWarmStartDual &rhs) {
     if (this != &rhs) {
       dual_ = rhs.dual_;
     }
@@ -50,10 +42,7 @@ public:
   }
 
   /** `Virtual constructor' */
-  virtual CoinWarmStart *clone() const
-  {
-    return new CoinWarmStartDual(*this);
-  }
+  virtual CoinWarmStart *clone() const { return new CoinWarmStartDual(*this); }
 
   virtual ~CoinWarmStartDual() {}
 
@@ -61,14 +50,14 @@ public:
   //@{
 
   /*! \brief Generate a `diff' that can convert the warm start passed as a
-	     parameter to the warm start specified by \c this.
+             parameter to the warm start specified by \c this.
 
     The capabilities are limited: the basis passed as a parameter can be no
     larger than the basis pointed to by \c this.
   */
 
-  virtual CoinWarmStartDiff *
-  generateDiff(const CoinWarmStart *const oldCWS) const;
+  virtual CoinWarmStartDiff *generateDiff(
+      const CoinWarmStart *const oldCWS) const;
 
   /*! \brief Apply \p diff to this warm start.
 
@@ -85,12 +74,12 @@ protected:
 
   //@}
 
-private:
+ private:
   ///@name Private data members
-  CoinWarmStartVector< double > dual_;
+  CoinWarmStartVector<double> dual_;
 };
 
-//#############################################################################
+// #############################################################################
 
 /*! \class CoinWarmStartDualDiff
     \brief A `diff' between two CoinWarmStartDual objects
@@ -104,20 +93,18 @@ private:
   CoinWarmStartDual::generateDiff() and CoinWarmStartDual::applyDiff().
 
   The actual data structure is a pair of vectors, #diffNdxs_ and #diffVals_.
-    
+
 */
 
 class CoinWarmStartDualDiff : public virtual CoinWarmStartDiff {
-public:
+ public:
   /*! \brief `Virtual constructor' */
-  virtual CoinWarmStartDiff *clone() const
-  {
+  virtual CoinWarmStartDiff *clone() const {
     return new CoinWarmStartDualDiff(*this);
   }
 
   /*! \brief Assignment */
-  virtual CoinWarmStartDualDiff &operator=(const CoinWarmStartDualDiff &rhs)
-  {
+  virtual CoinWarmStartDualDiff &operator=(const CoinWarmStartDualDiff &rhs) {
     if (this != &rhs) {
       diff_ = rhs.diff_;
     }
@@ -127,20 +114,17 @@ public:
   /*! \brief Destructor */
   virtual ~CoinWarmStartDualDiff() {}
 
-protected:
+ protected:
   /*! \brief Default constructor
-  
+
     This is protected (rather than private) so that derived classes can
     see it when they make <i>their</i> default constructor protected or
     private.
   */
-  CoinWarmStartDualDiff()
-    : diff_()
-  {
-  }
+  CoinWarmStartDualDiff() : diff_() {}
 
   /*! \brief Copy constructor
-  
+
     For convenience when copying objects containing CoinWarmStartDualDiff
     objects. But consider whether you should be using #clone() to retain
     polymorphism.
@@ -149,32 +133,26 @@ protected:
     see it when the make <i>their</i> copy constructor protected or
     private.
   */
-  CoinWarmStartDualDiff(const CoinWarmStartDualDiff &rhs)
-    : diff_(rhs.diff_)
-  {
-  }
+  CoinWarmStartDualDiff(const CoinWarmStartDualDiff &rhs) : diff_(rhs.diff_) {}
 
-private:
-  friend CoinWarmStartDiff *
-  CoinWarmStartDual::generateDiff(const CoinWarmStart *const oldCWS) const;
-  friend void
-  CoinWarmStartDual::applyDiff(const CoinWarmStartDiff *const diff);
+ private:
+  friend CoinWarmStartDiff *CoinWarmStartDual::generateDiff(
+      const CoinWarmStart *const oldCWS) const;
+  friend void CoinWarmStartDual::applyDiff(const CoinWarmStartDiff *const diff);
 
   /*! \brief Standard constructor */
   CoinWarmStartDualDiff(int sze, const unsigned int *const diffNdxs,
-    const double *const diffVals)
-    : diff_(sze, diffNdxs, diffVals)
-  {
-  }
+                        const double *const diffVals)
+      : diff_(sze, diffNdxs, diffVals) {}
 
   /*!
       \brief The difference in the dual vector is simply the difference in a
       vector.
   */
-  CoinWarmStartVectorDiff< double > diff_;
+  CoinWarmStartVectorDiff<double> diff_;
 };
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

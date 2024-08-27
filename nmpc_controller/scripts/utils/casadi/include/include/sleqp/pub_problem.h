@@ -2,7 +2,6 @@
 #define SLEQP_PUB_PROBLEM_H
 
 #include "sleqp/export.h"
-
 #include "sleqp/pub_func.h"
 #include "sleqp/pub_settings.h"
 #include "sparse/pub_mat.h"
@@ -64,14 +63,10 @@ typedef struct SleqpProblem SleqpProblem;
  * @param[in] settings    Settings (`NULL` for default settings)
  *
  **/
-SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
-sleqp_problem_create_simple(SleqpProblem** star,
-                            SleqpFunc* func,
-                            const SleqpVec* var_lb,
-                            const SleqpVec* var_ub,
-                            const SleqpVec* general_lb,
-                            const SleqpVec* general_ub,
-                            SleqpSettings* settings);
+SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE sleqp_problem_create_simple(
+    SleqpProblem** star, SleqpFunc* func, const SleqpVec* var_lb,
+    const SleqpVec* var_ub, const SleqpVec* general_lb,
+    const SleqpVec* general_ub, SleqpSettings* settings);
 
 /**
  * Creates a new problem with linear coefficients.
@@ -92,113 +87,94 @@ sleqp_problem_create_simple(SleqpProblem** star,
  *
  **/
 SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
-sleqp_problem_create(SleqpProblem** star,
-                     SleqpFunc* func,
-                     const SleqpVec* var_lb,
-                     const SleqpVec* var_ub,
-                     const SleqpVec* genereal_lb,
-                     const SleqpVec* genereal_ub,
-                     const SleqpMat* linear_coeffs,
-                     const SleqpVec* linear_lb,
-                     const SleqpVec* linear_ub,
-                     SleqpSettings* settings);
+sleqp_problem_create(SleqpProblem** star, SleqpFunc* func,
+                     const SleqpVec* var_lb, const SleqpVec* var_ub,
+                     const SleqpVec* genereal_lb, const SleqpVec* genereal_ub,
+                     const SleqpMat* linear_coeffs, const SleqpVec* linear_lb,
+                     const SleqpVec* linear_ub, SleqpSettings* settings);
 
 /**
  * Returns the total number \f$ m \f$ of constraints (both general and
  * linear) of the problem.
  **/
-SLEQP_EXPORT int
-sleqp_problem_num_cons(const SleqpProblem* problem);
+SLEQP_EXPORT int sleqp_problem_num_cons(const SleqpProblem* problem);
 
 /**
  * Returns the total number \f$ m_{\lin} \f$ of linear constraints of
  * the problem.
  **/
-SLEQP_EXPORT int
-sleqp_problem_num_lin_cons(const SleqpProblem* problem);
+SLEQP_EXPORT int sleqp_problem_num_lin_cons(const SleqpProblem* problem);
 
 /**
  * Returns the total number \f$ m_{\nonlin} \f$ of general constraints
  * of the problem.
  **/
-SLEQP_EXPORT int
-sleqp_problem_num_gen_cons(const SleqpProblem* problem);
+SLEQP_EXPORT int sleqp_problem_num_gen_cons(const SleqpProblem* problem);
 
 /**
  * Returns the function, composed of the objective \f$ f \f$ and the
  * general constraints \f$ c_{\nonlin} \f$ associated with the
  * problem.
  **/
-SLEQP_EXPORT SleqpFunc*
-sleqp_problem_func(SleqpProblem* problem);
+SLEQP_EXPORT SleqpFunc* sleqp_problem_func(SleqpProblem* problem);
 
 /**
  * Returns the number \f$ n \f$ of variables of the problem.
  **/
-SLEQP_EXPORT int
-sleqp_problem_num_vars(const SleqpProblem* problem);
+SLEQP_EXPORT int sleqp_problem_num_vars(const SleqpProblem* problem);
 
 /**
  * Returns the lower bounds \f$ l_x \f$ of the variables
  * with respect to the problem.
  **/
-SLEQP_EXPORT SleqpVec*
-sleqp_problem_vars_lb(SleqpProblem* problem);
+SLEQP_EXPORT SleqpVec* sleqp_problem_vars_lb(SleqpProblem* problem);
 
 /**
  * Returns the lower bounds \f$ u_x \f$ of the variables
  * with respect to the problem.
  **/
-SLEQP_EXPORT SleqpVec*
-sleqp_problem_vars_ub(SleqpProblem* problem);
+SLEQP_EXPORT SleqpVec* sleqp_problem_vars_ub(SleqpProblem* problem);
 
 /**
  * Returns the lower bounds \f$ l_{\nonlin} \f$ of the general
  * constraints \f$ c_{\nonlin} \f$ of the problem.
  **/
-SLEQP_EXPORT SleqpVec*
-sleqp_problem_general_lb(SleqpProblem* problem);
+SLEQP_EXPORT SleqpVec* sleqp_problem_general_lb(SleqpProblem* problem);
 
 /**
  * Returns the upper bounds \f$ l_{\nonlin} \f$ of the general
  * constraints \f$ c_{\nonlin} \f$ of the problem.
  **/
-SLEQP_EXPORT SleqpVec*
-sleqp_problem_general_ub(SleqpProblem* problem);
+SLEQP_EXPORT SleqpVec* sleqp_problem_general_ub(SleqpProblem* problem);
 
 /**
  * Returns the linear coefficient matrix \f$ A \f$ of the problem.
  **/
-SLEQP_EXPORT SleqpMat*
-sleqp_problem_linear_coeffs(SleqpProblem* problem);
+SLEQP_EXPORT SleqpMat* sleqp_problem_linear_coeffs(SleqpProblem* problem);
 
 /**
  * Returns the upper bounds \f$ l_{\lin} \f$ of the linear
  * constraints of the problem.
  **/
-SLEQP_EXPORT SleqpVec*
-sleqp_problem_linear_lb(SleqpProblem* problem);
+SLEQP_EXPORT SleqpVec* sleqp_problem_linear_lb(SleqpProblem* problem);
 
 /**
  * Returns the upper bounds \f$ u_{\lin} \f$ of the linear
  * constraints of the problem.
  **/
-SLEQP_EXPORT SleqpVec*
-sleqp_problem_linear_ub(SleqpProblem* problem);
+SLEQP_EXPORT SleqpVec* sleqp_problem_linear_ub(SleqpProblem* problem);
 
 /**
  * Returns the lower bounds \f$ l \f$ of the
  * constraints \f$ c \f$ of the problem.
  **/
-SLEQP_EXPORT SleqpVec*
-sleqp_problem_cons_lb(SleqpProblem* problem);
+SLEQP_EXPORT SleqpVec* sleqp_problem_cons_lb(SleqpProblem* problem);
 
 /**
  * Returns the upper bounds \f$ u \f$ of the
  * constraints \f$ c \f$ of the problem.
  **/
-SLEQP_EXPORT SleqpVec*
-sleqp_problem_cons_ub(SleqpProblem* problem);
+SLEQP_EXPORT SleqpVec* sleqp_problem_cons_ub(SleqpProblem* problem);
 
 SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
 sleqp_problem_capture(SleqpProblem* problem);

@@ -7,11 +7,10 @@
 #ifndef __IPTYPES_HPP__
 #define __IPTYPES_HPP__
 
-#include "IpoptConfig.h"
 #include "IpTypes.h"
+#include "IpoptConfig.h"
 
-namespace Ipopt
-{
+namespace Ipopt {
 
 /** Type of all numbers */
 typedef ipnumber Number;
@@ -25,6 +24,6 @@ typedef ipindex Index;
 IPOPT_DEPRECATED
 typedef int Int;
 
-} // namespace Ipopt
+}  // namespace Ipopt
 
 #endif

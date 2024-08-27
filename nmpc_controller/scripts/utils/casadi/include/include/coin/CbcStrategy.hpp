@@ -12,11 +12,11 @@ class CbcNodeInfo;
 class CbcNode;
 class CoinWarmStartDiff;
 
-//#############################################################################
+// #############################################################################
 /** Strategy base class */
 
 class CbcStrategy {
-public:
+ public:
   // Default Constructor
   CbcStrategy();
 
@@ -34,39 +34,26 @@ public:
   /// Other stuff e.g. strong branching and preprocessing
   virtual void setupOther(CbcModel &model) = 0;
   /// Set model depth (i.e. how nested)
-  inline void setNested(int depth)
-  {
-    depth_ = depth;
-  }
+  inline void setNested(int depth) { depth_ = depth; }
   /// Get model depth (i.e. how nested)
-  inline int getNested() const
-  {
-    return depth_;
-  }
+  inline int getNested() const { return depth_; }
   /// Say preProcessing done
-  inline void setPreProcessState(int state)
-  {
-    preProcessState_ = state;
-  }
+  inline void setPreProcessState(int state) { preProcessState_ = state; }
   /// See what sort of preprocessing was done
-  inline int preProcessState() const
-  {
-    return preProcessState_;
-  }
+  inline int preProcessState() const { return preProcessState_; }
   /// Pre-processing object
-  inline CglPreProcess *process() const
-  {
-    return process_;
-  }
+  inline CglPreProcess *process() const { return process_; }
   /// Delete pre-processing object to save memory
   void deletePreProcess();
   /// Return a new Full node information pointer (descendant of CbcFullNodeInfo)
-  virtual CbcNodeInfo *fullNodeInfo(CbcModel *model, int numberRowsAtContinuous) const;
-  /// Return a new Partial node information pointer (descendant of CbcPartialNodeInfo)
-  virtual CbcNodeInfo *partialNodeInfo(CbcModel *model, CbcNodeInfo *parent, CbcNode *owner,
-    int numberChangedBounds, const int *variables,
-    const double *boundChanges,
-    const CoinWarmStartDiff *basisDiff) const;
+  virtual CbcNodeInfo *fullNodeInfo(CbcModel *model,
+                                    int numberRowsAtContinuous) const;
+  /// Return a new Partial node information pointer (descendant of
+  /// CbcPartialNodeInfo)
+  virtual CbcNodeInfo *partialNodeInfo(
+      CbcModel *model, CbcNodeInfo *parent, CbcNode *owner,
+      int numberChangedBounds, const int *variables, const double *boundChanges,
+      const CoinWarmStartDiff *basisDiff) const;
   /// Create C++ lines to get to current state
   virtual void generateCpp(FILE *) {}
   /** After a CbcModel::resolve this can return a status
@@ -77,11 +64,11 @@ public:
     */
   virtual int status(CbcModel *model, CbcNodeInfo *parent, int whereFrom);
 
-private:
+ private:
   /// Illegal Assignment operator
   CbcStrategy &operator=(const CbcStrategy &rhs);
 
-protected:
+ protected:
   // Data
   /// Model depth
   int depth_;
@@ -99,24 +86,18 @@ protected:
  */
 
 class CbcStrategyNull : public CbcStrategy {
-public:
+ public:
   // Default Constructor
   CbcStrategyNull() {}
 
   // Copy constructor
-  CbcStrategyNull(const CbcStrategyNull &rhs)
-    : CbcStrategy(rhs)
-  {
-  }
+  CbcStrategyNull(const CbcStrategyNull &rhs) : CbcStrategy(rhs) {}
 
   // Destructor
   ~CbcStrategyNull() {}
 
   /// Clone
-  virtual CbcStrategy *clone() const
-  {
-    return new CbcStrategyNull(*this);
-  }
+  virtual CbcStrategy *clone() const { return new CbcStrategyNull(*this); }
 
   /// Setup cut generators
   virtual void setupCutGenerators(CbcModel &) {}
@@ -127,9 +108,9 @@ public:
   /// Other stuff e.g. strong branching
   virtual void setupOther(CbcModel &) {}
 
-protected:
+ protected:
   // Data
-private:
+ private:
   /// Illegal Assignment operator
   CbcStrategyNull &operator=(const CbcStrategyNull &rhs);
 };
@@ -138,12 +119,10 @@ private:
  */
 
 class CbcStrategyDefault : public CbcStrategy {
-public:
+ public:
   // Default Constructor
-  CbcStrategyDefault(int cutsOnlyAtRoot = 1,
-    int numberStrong = 5,
-    int numberBeforeTrust = 0,
-    int printLevel = 0);
+  CbcStrategyDefault(int cutsOnlyAtRoot = 1, int numberStrong = 5,
+                     int numberBeforeTrust = 0, int printLevel = 0);
 
   // Copy constructor
   CbcStrategyDefault(const CbcStrategyDefault &);
@@ -163,25 +142,18 @@ public:
   /// Other stuff e.g. strong branching
   virtual void setupOther(CbcModel &model);
   /// Set up preProcessing - see below
-  inline void setupPreProcessing(int desired = 1, int passes = 10)
-  {
+  inline void setupPreProcessing(int desired = 1, int passes = 10) {
     desiredPreProcess_ = desired;
     preProcessPasses_ = passes;
   }
   /// See what sort of preprocessing wanted
-  inline int desiredPreProcess() const
-  {
-    return desiredPreProcess_;
-  }
+  inline int desiredPreProcess() const { return desiredPreProcess_; }
   /// See how many passes wanted
-  inline int preProcessPasses() const
-  {
-    return preProcessPasses_;
-  }
+  inline int preProcessPasses() const { return preProcessPasses_; }
   /// Create C++ lines to get to current state
   virtual void generateCpp(FILE *fp);
 
-protected:
+ protected:
   // Data
 
   // Whether to do cuts only at root (-1 -> switch off totally)
@@ -208,7 +180,7 @@ protected:
   /// Number of pre-processing passes
   int preProcessPasses_;
 
-private:
+ private:
   /// Illegal Assignment operator
   CbcStrategyDefault &operator=(const CbcStrategyDefault &rhs);
 };
@@ -217,12 +189,11 @@ private:
  */
 
 class CbcStrategyDefaultSubTree : public CbcStrategy {
-public:
+ public:
   // Default Constructor
   CbcStrategyDefaultSubTree(CbcModel *parent = NULL, int cutsOnlyAtRoot = 1,
-    int numberStrong = 5,
-    int numberBeforeTrust = 0,
-    int printLevel = 0);
+                            int numberStrong = 5, int numberBeforeTrust = 0,
+                            int printLevel = 0);
 
   // Copy constructor
   CbcStrategyDefaultSubTree(const CbcStrategyDefaultSubTree &);
@@ -242,7 +213,7 @@ public:
   /// Other stuff e.g. strong branching
   virtual void setupOther(CbcModel &model);
 
-protected:
+ protected:
   // Data
   // Parent model
   CbcModel *parentModel_;
@@ -258,7 +229,7 @@ protected:
   // Print level 0 little, 1 medium
   int printLevel_;
 
-private:
+ private:
   /// Illegal Assignment operator
   CbcStrategyDefaultSubTree &operator=(const CbcStrategyDefaultSubTree &rhs);
 };
@@ -266,4 +237,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -9,8 +9,7 @@
 
 #include "IpAlgStrategy.hpp"
 
-namespace Ipopt
-{
+namespace Ipopt {
 
 /** Abstract base class for objects responsible for updating the
  *  Hessian information.
@@ -19,55 +18,45 @@ namespace Ipopt
  *  derivatives from the NLP, or by a quasi-Newton Option.  The
  *  result is put into the W field in IpData.
  */
-class IPOPTLIB_EXPORT HessianUpdater: public AlgorithmStrategyObject
-{
-public:
-   /**@name Constructors/Destructors */
-   ///@{
-   /** Default Constructor */
-   HessianUpdater()
-   { }
+class IPOPTLIB_EXPORT HessianUpdater : public AlgorithmStrategyObject {
+ public:
+  /**@name Constructors/Destructors */
+  ///@{
+  /** Default Constructor */
+  HessianUpdater() {}
 
-   /** Destructor */
-   virtual ~HessianUpdater()
-   { }
-   ///@}
+  /** Destructor */
+  virtual ~HessianUpdater() {}
+  ///@}
 
-   /** overloaded from AlgorithmStrategyObject */
-   virtual bool InitializeImpl(
-      const OptionsList& options,
-      const std::string& prefix
-   ) = 0;
+  /** overloaded from AlgorithmStrategyObject */
+  virtual bool InitializeImpl(const OptionsList& options,
+                              const std::string& prefix) = 0;
 
-   /** Update the Hessian based on the current information in IpData,
-    *  and possibly on information from previous calls.
-    */
-   virtual void UpdateHessian() = 0;
+  /** Update the Hessian based on the current information in IpData,
+   *  and possibly on information from previous calls.
+   */
+  virtual void UpdateHessian() = 0;
 
-private:
-   /**@name Default Compiler Generated Methods
-    * (Hidden to avoid implicit creation/calling).
-    *
-    * These methods are not implemented and
-    * we do not want the compiler to implement
-    * them for us, so we declare them private
-    * and do not define them. This ensures that
-    * they will not be implicitly created/called.
-    */
-   ///@{
-   /** Copy Constructor */
-   HessianUpdater(
-      const HessianUpdater&
-   );
+ private:
+  /**@name Default Compiler Generated Methods
+   * (Hidden to avoid implicit creation/calling).
+   *
+   * These methods are not implemented and
+   * we do not want the compiler to implement
+   * them for us, so we declare them private
+   * and do not define them. This ensures that
+   * they will not be implicitly created/called.
+   */
+  ///@{
+  /** Copy Constructor */
+  HessianUpdater(const HessianUpdater&);
 
-   /** Default Assignment Operator */
-   void operator=(
-      const HessianUpdater&
-   );
-   ///@}
-
+  /** Default Assignment Operator */
+  void operator=(const HessianUpdater&);
+  ///@}
 };
 
-} // namespace Ipopt
+}  // namespace Ipopt
 
 #endif

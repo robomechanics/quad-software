@@ -8,12 +8,10 @@ namespace proxsuite {
 namespace linalg {
 namespace veg {
 namespace _detail {
-struct NoDefaultCtor
-{
+struct NoDefaultCtor {
   NoDefaultCtor() = delete;
 };
-struct NoMoveAssign
-{
+struct NoMoveAssign {
   NoMoveAssign() = default;
   ~NoMoveAssign() = default;
   NoMoveAssign(NoMoveAssign const&) = default;
@@ -21,8 +19,7 @@ struct NoMoveAssign
   auto operator=(NoMoveAssign const&) -> NoMoveAssign& = default;
   auto operator=(NoMoveAssign&&) -> NoMoveAssign& = delete;
 };
-struct NoCopyAssign
-{
+struct NoCopyAssign {
   NoCopyAssign() = default;
   ~NoCopyAssign() = default;
   NoCopyAssign(NoCopyAssign const&) = default;
@@ -30,8 +27,7 @@ struct NoCopyAssign
   auto operator=(NoCopyAssign const&) -> NoCopyAssign& = delete;
   auto operator=(NoCopyAssign&&) -> NoCopyAssign& = default;
 };
-struct NoMoveCtor
-{
+struct NoMoveCtor {
   NoMoveCtor() = default;
   ~NoMoveCtor() = default;
   NoMoveCtor(NoMoveCtor const&) = default;
@@ -39,8 +35,7 @@ struct NoMoveCtor
   auto operator=(NoMoveCtor const&) -> NoMoveCtor& = default;
   auto operator=(NoMoveCtor&&) -> NoMoveCtor& = default;
 };
-struct NoCopyCtor
-{
+struct NoCopyCtor {
   NoCopyCtor() = default;
   ~NoCopyCtor() = default;
   NoCopyCtor(NoCopyCtor const&) = delete;
@@ -49,8 +44,7 @@ struct NoCopyCtor
   auto operator=(NoCopyCtor&&) -> NoCopyCtor& = default;
 };
 
-struct NoMove
-{
+struct NoMove {
   NoMove() = default;
   ~NoMove() = default;
   NoMove(NoMove const&) = default;
@@ -58,8 +52,7 @@ struct NoMove
   auto operator=(NoMove const&) -> NoMove& = default;
   auto operator=(NoMove&&) -> NoMove& = delete;
 };
-struct NoCopy
-{
+struct NoCopy {
   NoCopy() = default;
   ~NoCopy() = default;
   NoCopy(NoCopy const&) = delete;
@@ -68,10 +61,10 @@ struct NoCopy
   auto operator=(NoCopy&&) -> NoCopy& = default;
 };
 
-} // namespace _detail
-} // namespace veg
-} // namespace linalg
-} // namespace proxsuite
+}  // namespace _detail
+}  // namespace veg
+}  // namespace linalg
+}  // namespace proxsuite
 
 #include "proxsuite/linalg/veg/internal/epilogue.hpp"
 #endif /* end of include guard VEG_DELETE_SPECIAL_MEMBERS_HPP_2HKRCVWUS */

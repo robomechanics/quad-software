@@ -45,7 +45,7 @@
 #ifndef EXT_DEP
 #define ON 1
 #define OFF 0
-#if ON==ON
+#if ON == ON
 #define EXT_DEP
 #endif
 #undef ON
@@ -55,7 +55,7 @@
 #ifndef BLAS_API
 #define ON 1
 #define OFF 0
-#if ON==ON
+#if ON == ON
 #define BLAS_API
 #endif
 #undef ON
@@ -65,7 +65,7 @@
 #ifndef FORTRAN_BLAS_API
 #define ON 1
 #define OFF 0
-#if OFF==ON
+#if OFF == ON
 #define FORTRAN_BLAS_API
 #endif
 #undef ON

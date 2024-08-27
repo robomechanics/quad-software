@@ -9,15 +9,15 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //
-// The algorithm below is a reimplementation of former \src\LU\Inverse_SSE.h using PacketMath.
-// inv(M) = M#/|M|, where inv(M), M# and |M| denote the inverse of M,
-// adjugate of M and determinant of M respectively. M# is computed block-wise
-// using specific formulae. For proof, see:
+// The algorithm below is a reimplementation of former \src\LU\Inverse_SSE.h
+// using PacketMath. inv(M) = M#/|M|, where inv(M), M# and |M| denote the
+// inverse of M, adjugate of M and determinant of M respectively. M# is computed
+// block-wise using specific formulae. For proof, see:
 // https://lxjk.github.io/2017/09/03/Fast-4x4-Matrix-Inverse-with-SSE-SIMD-Explained.html
 // Variable names are adopted from \src\LU\Inverse_SSE.h.
 //
-// The SSE code for the 4x4 float and double matrix inverse in former (deprecated) \src\LU\Inverse_SSE.h
-// comes from the following Intel's library:
+// The SSE code for the 4x4 float and double matrix inverse in former
+// (deprecated) \src\LU\Inverse_SSE.h comes from the following Intel's library:
 // http://software.intel.com/en-us/articles/optimized-matrix-library-for-use-with-the-intel-pentiumr-4-processors-sse2-instructions/
 //
 // Here is the respective copyright and license statement:
@@ -35,46 +35,42 @@
 #ifndef EIGEN_INVERSE_SIZE_4_H
 #define EIGEN_INVERSE_SIZE_4_H
 
-namespace Eigen
-{
-namespace internal
-{
+namespace Eigen {
+namespace internal {
 template <typename MatrixType, typename ResultType>
-struct compute_inverse_size4<Architecture::Target, float, MatrixType, ResultType>
-{
-  enum
-  {
+struct compute_inverse_size4<Architecture::Target, float, MatrixType,
+                             ResultType> {
+  enum {
     MatrixAlignment = traits<MatrixType>::Alignment,
     ResultAlignment = traits<ResultType>::Alignment,
-    StorageOrdersMatch = (MatrixType::Flags & RowMajorBit) == (ResultType::Flags & RowMajorBit)
+    StorageOrdersMatch =
+        (MatrixType::Flags & RowMajorBit) == (ResultType::Flags & RowMajorBit)
   };
-  typedef typename conditional<(MatrixType::Flags & LinearAccessBit), MatrixType const &, typename MatrixType::PlainObject>::type ActualMatrixType;
+  typedef typename conditional<
+      (MatrixType::Flags & LinearAccessBit), MatrixType const &,
+      typename MatrixType::PlainObject>::type ActualMatrixType;
 
-  static void run(const MatrixType &mat, ResultType &result)
-  {
+  static void run(const MatrixType &mat, ResultType &result) {
     ActualMatrixType matrix(mat);
 
-    const float* data = matrix.data();
+    const float *data = matrix.data();
     const Index stride = matrix.innerStride();
-    Packet4f _L1 = ploadt<Packet4f,MatrixAlignment>(data);
-    Packet4f _L2 = ploadt<Packet4f,MatrixAlignment>(data + stride*4);
-    Packet4f _L3 = ploadt<Packet4f,MatrixAlignment>(data + stride*8);
-    Packet4f _L4 = ploadt<Packet4f,MatrixAlignment>(data + stride*12);
+    Packet4f _L1 = ploadt<Packet4f, MatrixAlignment>(data);
+    Packet4f _L2 = ploadt<Packet4f, MatrixAlignment>(data + stride * 4);
+    Packet4f _L3 = ploadt<Packet4f, MatrixAlignment>(data + stride * 8);
+    Packet4f _L4 = ploadt<Packet4f, MatrixAlignment>(data + stride * 12);
 
     // Four 2x2 sub-matrices of the input matrix
     // input = [[A, B],
     //          [C, D]]
     Packet4f A, B, C, D;
 
-    if (!StorageOrdersMatch)
-    {
+    if (!StorageOrdersMatch) {
       A = vec4f_unpacklo(_L1, _L2);
       B = vec4f_unpacklo(_L3, _L4);
       C = vec4f_unpackhi(_L1, _L2);
       D = vec4f_unpackhi(_L3, _L4);
-    }
-    else
-    {
+    } else {
       A = vec4f_movelh(_L1, _L2);
       B = vec4f_movehl(_L2, _L1);
       C = vec4f_movelh(_L3, _L4);
@@ -83,13 +79,16 @@ struct compute_inverse_size4<Architecture::Target, float, MatrixType, ResultType
 
     Packet4f AB, DC;
 
-    // AB = A# * B, where A# denotes the adjugate of A, and * denotes matrix product.
+    // AB = A# * B, where A# denotes the adjugate of A, and * denotes matrix
+    // product.
     AB = pmul(vec4f_swizzle2(A, A, 3, 3, 0, 0), B);
-    AB = psub(AB, pmul(vec4f_swizzle2(A, A, 1, 1, 2, 2), vec4f_swizzle2(B, B, 2, 3, 0, 1)));
+    AB = psub(AB, pmul(vec4f_swizzle2(A, A, 1, 1, 2, 2),
+                       vec4f_swizzle2(B, B, 2, 3, 0, 1)));
 
     // DC = D#*C
     DC = pmul(vec4f_swizzle2(D, D, 3, 3, 0, 0), C);
-    DC = psub(DC, pmul(vec4f_swizzle2(D, D, 1, 1, 2, 2), vec4f_swizzle2(C, C, 2, 3, 0, 1)));
+    DC = psub(DC, pmul(vec4f_swizzle2(D, D, 1, 1, 2, 2),
+                       vec4f_swizzle2(C, C, 2, 3, 0, 1)));
 
     // determinants of the sub-matrices
     Packet4f dA, dB, dC, dD;
@@ -135,15 +134,18 @@ struct compute_inverse_size4<Architecture::Target, float, MatrixType, ResultType
 
     // iB = C*|B| - D * (A#B)# = C*|B| - D*B#*A
     iB = pmul(D, vec4f_swizzle2(AB, AB, 3, 0, 3, 0));
-    iB = psub(iB, pmul(vec4f_swizzle2(D, D, 1, 0, 3, 2), vec4f_swizzle2(AB, AB, 2, 1, 2, 1)));
+    iB = psub(iB, pmul(vec4f_swizzle2(D, D, 1, 0, 3, 2),
+                       vec4f_swizzle2(AB, AB, 2, 1, 2, 1)));
     iB = psub(pmul(C, vec4f_duplane(dB, 0)), iB);
 
     // iC = B*|C| - A * (D#C)# = B*|C| - A*C#*D
     iC = pmul(A, vec4f_swizzle2(DC, DC, 3, 0, 3, 0));
-    iC = psub(iC, pmul(vec4f_swizzle2(A, A, 1, 0, 3, 2), vec4f_swizzle2(DC, DC, 2, 1, 2, 1)));
+    iC = psub(iC, pmul(vec4f_swizzle2(A, A, 1, 0, 3, 2),
+                       vec4f_swizzle2(DC, DC, 2, 1, 2, 1)));
     iC = psub(pmul(B, vec4f_duplane(dC, 0)), iC);
 
-    const float sign_mask[4] = {0.0f, numext::bit_cast<float>(0x80000000u), numext::bit_cast<float>(0x80000000u), 0.0f};
+    const float sign_mask[4] = {0.0f, numext::bit_cast<float>(0x80000000u),
+                                numext::bit_cast<float>(0x80000000u), 0.0f};
     const Packet4f p4f_sign_PNNP = ploadu<Packet4f>(sign_mask);
     rd = pxor(rd, p4f_sign_PNNP);
     iA = pmul(iA, rd);
@@ -154,63 +156,63 @@ struct compute_inverse_size4<Architecture::Target, float, MatrixType, ResultType
     Index res_stride = result.outerStride();
     float *res = result.data();
 
-    pstoret<float, Packet4f, ResultAlignment>(res + 0, vec4f_swizzle2(iA, iB, 3, 1, 3, 1));
-    pstoret<float, Packet4f, ResultAlignment>(res + res_stride, vec4f_swizzle2(iA, iB, 2, 0, 2, 0));
-    pstoret<float, Packet4f, ResultAlignment>(res + 2 * res_stride, vec4f_swizzle2(iC, iD, 3, 1, 3, 1));
-    pstoret<float, Packet4f, ResultAlignment>(res + 3 * res_stride, vec4f_swizzle2(iC, iD, 2, 0, 2, 0));
+    pstoret<float, Packet4f, ResultAlignment>(
+        res + 0, vec4f_swizzle2(iA, iB, 3, 1, 3, 1));
+    pstoret<float, Packet4f, ResultAlignment>(
+        res + res_stride, vec4f_swizzle2(iA, iB, 2, 0, 2, 0));
+    pstoret<float, Packet4f, ResultAlignment>(
+        res + 2 * res_stride, vec4f_swizzle2(iC, iD, 3, 1, 3, 1));
+    pstoret<float, Packet4f, ResultAlignment>(
+        res + 3 * res_stride, vec4f_swizzle2(iC, iD, 2, 0, 2, 0));
   }
 };
 
-#if !(defined EIGEN_VECTORIZE_NEON && !(EIGEN_ARCH_ARM64 && !EIGEN_APPLE_DOUBLE_NEON_BUG))
+#if !(defined EIGEN_VECTORIZE_NEON && \
+      !(EIGEN_ARCH_ARM64 && !EIGEN_APPLE_DOUBLE_NEON_BUG))
 // same algorithm as above, except that each operand is split into
 // halves for two registers to hold.
 template <typename MatrixType, typename ResultType>
-struct compute_inverse_size4<Architecture::Target, double, MatrixType, ResultType>
-{
-  enum
-  {
+struct compute_inverse_size4<Architecture::Target, double, MatrixType,
+                             ResultType> {
+  enum {
     MatrixAlignment = traits<MatrixType>::Alignment,
     ResultAlignment = traits<ResultType>::Alignment,
-    StorageOrdersMatch = (MatrixType::Flags & RowMajorBit) == (ResultType::Flags & RowMajorBit)
+    StorageOrdersMatch =
+        (MatrixType::Flags & RowMajorBit) == (ResultType::Flags & RowMajorBit)
   };
-  typedef typename conditional<(MatrixType::Flags & LinearAccessBit),
-                               MatrixType const &,
-                               typename MatrixType::PlainObject>::type
-      ActualMatrixType;
+  typedef typename conditional<
+      (MatrixType::Flags & LinearAccessBit), MatrixType const &,
+      typename MatrixType::PlainObject>::type ActualMatrixType;
 
-  static void run(const MatrixType &mat, ResultType &result)
-  {
+  static void run(const MatrixType &mat, ResultType &result) {
     ActualMatrixType matrix(mat);
 
-    // Four 2x2 sub-matrices of the input matrix, each is further divided into upper and lower
-    // row e.g. A1, upper row of A, A2, lower row of A
-    // input = [[A, B],  =  [[[A1, [B1,
+    // Four 2x2 sub-matrices of the input matrix, each is further divided into
+    // upper and lower row e.g. A1, upper row of A, A2, lower row of A input =
+    // [[A, B],  =  [[[A1, [B1,
     //          [C, D]]        A2], B2]],
     //                       [[C1, [D1,
     //                         C2], D2]]]
 
     Packet2d A1, A2, B1, B2, C1, C2, D1, D2;
 
-    const double* data = matrix.data();
+    const double *data = matrix.data();
     const Index stride = matrix.innerStride();
-    if (StorageOrdersMatch)
-    {
-      A1 = ploadt<Packet2d,MatrixAlignment>(data + stride*0);
-      B1 = ploadt<Packet2d,MatrixAlignment>(data + stride*2);
-      A2 = ploadt<Packet2d,MatrixAlignment>(data + stride*4);
-      B2 = ploadt<Packet2d,MatrixAlignment>(data + stride*6);
-      C1 = ploadt<Packet2d,MatrixAlignment>(data + stride*8);
-      D1 = ploadt<Packet2d,MatrixAlignment>(data + stride*10);
-      C2 = ploadt<Packet2d,MatrixAlignment>(data + stride*12);
-      D2 = ploadt<Packet2d,MatrixAlignment>(data + stride*14);
-    }
-    else
-    {
+    if (StorageOrdersMatch) {
+      A1 = ploadt<Packet2d, MatrixAlignment>(data + stride * 0);
+      B1 = ploadt<Packet2d, MatrixAlignment>(data + stride * 2);
+      A2 = ploadt<Packet2d, MatrixAlignment>(data + stride * 4);
+      B2 = ploadt<Packet2d, MatrixAlignment>(data + stride * 6);
+      C1 = ploadt<Packet2d, MatrixAlignment>(data + stride * 8);
+      D1 = ploadt<Packet2d, MatrixAlignment>(data + stride * 10);
+      C2 = ploadt<Packet2d, MatrixAlignment>(data + stride * 12);
+      D2 = ploadt<Packet2d, MatrixAlignment>(data + stride * 14);
+    } else {
       Packet2d temp;
-      A1 = ploadt<Packet2d,MatrixAlignment>(data + stride*0);
-      C1 = ploadt<Packet2d,MatrixAlignment>(data + stride*2);
-      A2 = ploadt<Packet2d,MatrixAlignment>(data + stride*4);
-      C2 = ploadt<Packet2d,MatrixAlignment>(data + stride*6);
+      A1 = ploadt<Packet2d, MatrixAlignment>(data + stride * 0);
+      C1 = ploadt<Packet2d, MatrixAlignment>(data + stride * 2);
+      A2 = ploadt<Packet2d, MatrixAlignment>(data + stride * 4);
+      C2 = ploadt<Packet2d, MatrixAlignment>(data + stride * 6);
       temp = A1;
       A1 = vec2d_unpacklo(A1, A2);
       A2 = vec2d_unpackhi(temp, A2);
@@ -219,10 +221,10 @@ struct compute_inverse_size4<Architecture::Target, double, MatrixType, ResultTyp
       C1 = vec2d_unpacklo(C1, C2);
       C2 = vec2d_unpackhi(temp, C2);
 
-      B1 = ploadt<Packet2d,MatrixAlignment>(data + stride*8);
-      D1 = ploadt<Packet2d,MatrixAlignment>(data + stride*10);
-      B2 = ploadt<Packet2d,MatrixAlignment>(data + stride*12);
-      D2 = ploadt<Packet2d,MatrixAlignment>(data + stride*14);
+      B1 = ploadt<Packet2d, MatrixAlignment>(data + stride * 8);
+      D1 = ploadt<Packet2d, MatrixAlignment>(data + stride * 10);
+      B2 = ploadt<Packet2d, MatrixAlignment>(data + stride * 12);
+      D2 = ploadt<Packet2d, MatrixAlignment>(data + stride * 14);
 
       temp = B1;
       B1 = vec2d_unpacklo(B1, B2);
@@ -254,7 +256,8 @@ struct compute_inverse_size4<Architecture::Target, double, MatrixType, ResultTyp
 
     Packet2d DC1, DC2, AB1, AB2;
 
-    // AB = A# * B, where A# denotes the adjugate of A, and * denotes matrix product.
+    // AB = A# * B, where A# denotes the adjugate of A, and * denotes matrix
+    // product.
     AB1 = pmul(B1, vec2d_duplane(A2, 1));
     AB2 = pmul(B2, vec2d_duplane(A1, 0));
     AB1 = psub(AB1, pmul(B2, vec2d_duplane(A1, 1)));
@@ -311,8 +314,10 @@ struct compute_inverse_size4<Architecture::Target, double, MatrixType, ResultTyp
     // iB = C*|B| - D * (A#B)# = C*|B| - D*B#*A
     iB1 = pmul(D1, vec2d_swizzle2(AB2, AB1, 1));
     iB2 = pmul(D2, vec2d_swizzle2(AB2, AB1, 1));
-    iB1 = psub(iB1, pmul(vec2d_swizzle2(D1, D1, 1), vec2d_swizzle2(AB2, AB1, 2)));
-    iB2 = psub(iB2, pmul(vec2d_swizzle2(D2, D2, 1), vec2d_swizzle2(AB2, AB1, 2)));
+    iB1 =
+        psub(iB1, pmul(vec2d_swizzle2(D1, D1, 1), vec2d_swizzle2(AB2, AB1, 2)));
+    iB2 =
+        psub(iB2, pmul(vec2d_swizzle2(D2, D2, 1), vec2d_swizzle2(AB2, AB1, 2)));
     dB = vec2d_duplane(dB, 0);
     iB1 = psub(pmul(C1, dB), iB1);
     iB2 = psub(pmul(C2, dB), iB2);
@@ -320,14 +325,18 @@ struct compute_inverse_size4<Architecture::Target, double, MatrixType, ResultTyp
     // iC = B*|C| - A * (D#C)# = B*|C| - A*C#*D
     iC1 = pmul(A1, vec2d_swizzle2(DC2, DC1, 1));
     iC2 = pmul(A2, vec2d_swizzle2(DC2, DC1, 1));
-    iC1 = psub(iC1, pmul(vec2d_swizzle2(A1, A1, 1), vec2d_swizzle2(DC2, DC1, 2)));
-    iC2 = psub(iC2, pmul(vec2d_swizzle2(A2, A2, 1), vec2d_swizzle2(DC2, DC1, 2)));
+    iC1 =
+        psub(iC1, pmul(vec2d_swizzle2(A1, A1, 1), vec2d_swizzle2(DC2, DC1, 2)));
+    iC2 =
+        psub(iC2, pmul(vec2d_swizzle2(A2, A2, 1), vec2d_swizzle2(DC2, DC1, 2)));
     dC = vec2d_duplane(dC, 0);
     iC1 = psub(pmul(B1, dC), iC1);
     iC2 = psub(pmul(B2, dC), iC2);
 
-    const double sign_mask1[2] = {0.0, numext::bit_cast<double>(0x8000000000000000ull)};
-    const double sign_mask2[2] = {numext::bit_cast<double>(0x8000000000000000ull), 0.0};
+    const double sign_mask1[2] = {
+        0.0, numext::bit_cast<double>(0x8000000000000000ull)};
+    const double sign_mask2[2] = {
+        numext::bit_cast<double>(0x8000000000000000ull), 0.0};
     const Packet2d sign_PN = ploadu<Packet2d>(sign_mask1);
     const Packet2d sign_NP = ploadu<Packet2d>(sign_mask2);
     d1 = pxor(rd, sign_PN);
@@ -335,17 +344,25 @@ struct compute_inverse_size4<Architecture::Target, double, MatrixType, ResultTyp
 
     Index res_stride = result.outerStride();
     double *res = result.data();
-    pstoret<double, Packet2d, ResultAlignment>(res + 0, pmul(vec2d_swizzle2(iA2, iA1, 3), d1));
-    pstoret<double, Packet2d, ResultAlignment>(res + res_stride, pmul(vec2d_swizzle2(iA2, iA1, 0), d2));
-    pstoret<double, Packet2d, ResultAlignment>(res + 2, pmul(vec2d_swizzle2(iB2, iB1, 3), d1));
-    pstoret<double, Packet2d, ResultAlignment>(res + res_stride + 2, pmul(vec2d_swizzle2(iB2, iB1, 0), d2));
-    pstoret<double, Packet2d, ResultAlignment>(res + 2 * res_stride, pmul(vec2d_swizzle2(iC2, iC1, 3), d1));
-    pstoret<double, Packet2d, ResultAlignment>(res + 3 * res_stride, pmul(vec2d_swizzle2(iC2, iC1, 0), d2));
-    pstoret<double, Packet2d, ResultAlignment>(res + 2 * res_stride + 2, pmul(vec2d_swizzle2(iD2, iD1, 3), d1));
-    pstoret<double, Packet2d, ResultAlignment>(res + 3 * res_stride + 2, pmul(vec2d_swizzle2(iD2, iD1, 0), d2));
+    pstoret<double, Packet2d, ResultAlignment>(
+        res + 0, pmul(vec2d_swizzle2(iA2, iA1, 3), d1));
+    pstoret<double, Packet2d, ResultAlignment>(
+        res + res_stride, pmul(vec2d_swizzle2(iA2, iA1, 0), d2));
+    pstoret<double, Packet2d, ResultAlignment>(
+        res + 2, pmul(vec2d_swizzle2(iB2, iB1, 3), d1));
+    pstoret<double, Packet2d, ResultAlignment>(
+        res + res_stride + 2, pmul(vec2d_swizzle2(iB2, iB1, 0), d2));
+    pstoret<double, Packet2d, ResultAlignment>(
+        res + 2 * res_stride, pmul(vec2d_swizzle2(iC2, iC1, 3), d1));
+    pstoret<double, Packet2d, ResultAlignment>(
+        res + 3 * res_stride, pmul(vec2d_swizzle2(iC2, iC1, 0), d2));
+    pstoret<double, Packet2d, ResultAlignment>(
+        res + 2 * res_stride + 2, pmul(vec2d_swizzle2(iD2, iD1, 3), d1));
+    pstoret<double, Packet2d, ResultAlignment>(
+        res + 3 * res_stride + 2, pmul(vec2d_swizzle2(iD2, iD1, 0), d2));
   }
 };
 #endif
-} // namespace internal
-} // namespace Eigen
+}  // namespace internal
+}  // namespace Eigen
 #endif

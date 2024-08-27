@@ -3,29 +3,30 @@
 // Corporation and others.  All Rights Reserved.
 // This code is licensed under the terms of the Eclipse Public License (EPL).
 
-/* 
+/*
    Authors
-   
+
    John Forrest
 
  */
 #ifndef CoinDenseFactorization_H
 #define CoinDenseFactorization_H
 
+#include <cassert>
 #include <iostream>
 #include <string>
-#include <cassert>
-#include "CoinTypes.hpp"
-#include "CoinIndexedVector.hpp"
+
 #include "CoinFactorization.hpp"
+#include "CoinIndexedVector.hpp"
+#include "CoinTypes.hpp"
 #if COIN_FACTORIZATION_DENSE_CODE == 2
 #undef COIN_FACTORIZATION_DENSE_CODE
 #endif
 class CoinPackedMatrix;
-/// Abstract base class which also has some scalars so can be used from Dense or Simp
+/// Abstract base class which also has some scalars so can be used from Dense or
+/// Simp
 class CoinOtherFactorization {
-
-public:
+ public:
   /**@name Constructors and destructor and copy */
   //@{
   /// Default constructor
@@ -45,80 +46,38 @@ public:
   /**@name general stuff such as status */
   //@{
   /// Returns status
-  inline int status() const
-  {
-    return status_;
-  }
+  inline int status() const { return status_; }
   /// Sets status
-  inline void setStatus(int value)
-  {
-    status_ = value;
-  }
+  inline void setStatus(int value) { status_ = value; }
   /// Returns number of pivots since factorization
-  inline int pivots() const
-  {
-    return numberPivots_;
-  }
+  inline int pivots() const { return numberPivots_; }
   /// Sets number of pivots since factorization
-  inline void setPivots(int value)
-  {
-    numberPivots_ = value;
-  }
+  inline void setPivots(int value) { numberPivots_ = value; }
   /// Set number of Rows after factorization
-  inline void setNumberRows(int value)
-  {
-    numberRows_ = value;
-  }
+  inline void setNumberRows(int value) { numberRows_ = value; }
   /// Number of Rows after factorization
-  inline int numberRows() const
-  {
-    return numberRows_;
-  }
+  inline int numberRows() const { return numberRows_; }
   /// Total number of columns in factorization
-  inline int numberColumns() const
-  {
-    return numberColumns_;
-  }
+  inline int numberColumns() const { return numberColumns_; }
   /// Number of good columns in factorization
-  inline int numberGoodColumns() const
-  {
-    return numberGoodU_;
-  }
+  inline int numberGoodColumns() const { return numberGoodU_; }
   /// Allows change of pivot accuracy check 1.0 == none >1.0 relaxed
-  inline void relaxAccuracyCheck(double value)
-  {
-    relaxCheck_ = value;
-  }
-  inline double getAccuracyCheck() const
-  {
-    return relaxCheck_;
-  }
+  inline void relaxAccuracyCheck(double value) { relaxCheck_ = value; }
+  inline double getAccuracyCheck() const { return relaxCheck_; }
   /// Maximum number of pivots between factorizations
-  inline int maximumPivots() const
-  {
-    return maximumPivots_;
-  }
+  inline int maximumPivots() const { return maximumPivots_; }
   /// Set maximum pivots
   virtual void maximumPivots(int value);
 
   /// Pivot tolerance
-  inline double pivotTolerance() const
-  {
-    return pivotTolerance_;
-  }
+  inline double pivotTolerance() const { return pivotTolerance_; }
   void pivotTolerance(double value);
   /// Zero tolerance
-  inline double zeroTolerance() const
-  {
-    return zeroTolerance_;
-  }
+  inline double zeroTolerance() const { return zeroTolerance_; }
   void zeroTolerance(double value);
 #ifndef COIN_FAST_CODE
   /// Whether slack value is +1 or -1
-  inline double slackValue() const
-  {
-    return slackValue_;
-  }
+  inline double slackValue() const { return slackValue_; }
   void slackValue(double value);
 #endif
   /// Returns array to put basis elements in
@@ -141,18 +100,12 @@ public:
       If 4 set then values pass
       if 8 set then has iterated
   */
-  inline int solveMode() const
-  {
-    return solveMode_;
-  }
+  inline int solveMode() const { return solveMode_; }
   /** Set solve mode e.g. 0 C++ code, 1 Lapack, 2 choose
       If 4 set then values pass
       if 8 set then has iterated
   */
-  inline void setSolveMode(int value)
-  {
-    solveMode_ = value;
-  }
+  inline void setSolveMode(int value) { solveMode_ = value; }
   /// Returns true if wants tableauColumn in replaceColumn
   virtual bool wantsTableauColumn() const;
   /** Useful information for factorization
@@ -175,11 +128,8 @@ public:
   /**@name Do factorization - public */
   //@{
   /// Gets space for a factorization
-  virtual void getAreas(int numberRows,
-    int numberColumns,
-    int maximumL,
-    int maximumU)
-    = 0;
+  virtual void getAreas(int numberRows, int numberColumns, int maximumL,
+                        int maximumU) = 0;
 
   /// PreProcesses column ordered copy of basis
   virtual void preProcess() = 0;
@@ -189,7 +139,8 @@ public:
       -1 - singular - use numberGoodColumns and redo
   */
   virtual int factor() = 0;
-  /// Does post processing on valid factorization - putting variables on correct rows
+  /// Does post processing on valid factorization - putting variables on correct
+  /// rows
   virtual void postProcess(const int *sequence, int *pivotVariable) = 0;
   /// Makes a non-singular basis by replacing variables
   virtual void makeNonSingular(int *sequence, int numberColumns) = 0;
@@ -205,15 +156,13 @@ public:
       speed considerations.  You could just do this on first iteration
       after factorization and thereafter re-factorize
    partial update already in U */
-  virtual int replaceColumn(CoinIndexedVector *regionSparse,
-    int pivotRow,
-    double pivotCheck,
-    bool checkBeforeModifying = false,
-    double acceptablePivot = 1.0e-8)
-    = 0;
+  virtual int replaceColumn(CoinIndexedVector *regionSparse, int pivotRow,
+                            double pivotCheck,
+                            bool checkBeforeModifying = false,
+                            double acceptablePivot = 1.0e-8) = 0;
   //@}
 
-  /**@name various uses of factorization (return code number elements) 
+  /**@name various uses of factorization (return code number elements)
    which user may want to know about */
   //@{
   /** Updates one column (FTRAN) from regionSparse2
@@ -223,30 +172,28 @@ public:
       Note - if regionSparse2 packed on input - will be packed on output
   */
   virtual int updateColumnFT(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2,
-    bool noPermute = false)
-    = 0;
+                             CoinIndexedVector *regionSparse2,
+                             bool noPermute = false) = 0;
   /** This version has same effect as above with FTUpdate==false
       so number returned is always >=0 */
   virtual int updateColumn(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2,
-    bool noPermute = false) const = 0;
+                           CoinIndexedVector *regionSparse2,
+                           bool noPermute = false) const = 0;
   /// does FTRAN on two columns
   virtual int updateTwoColumnsFT(CoinIndexedVector *regionSparse1,
-    CoinIndexedVector *regionSparse2,
-    CoinIndexedVector *regionSparse3,
-    bool noPermute = false)
-    = 0;
+                                 CoinIndexedVector *regionSparse2,
+                                 CoinIndexedVector *regionSparse3,
+                                 bool noPermute = false) = 0;
   /** Updates one column (BTRAN) from regionSparse2
-      regionSparse starts as zero and is zero at end 
+      regionSparse starts as zero and is zero at end
       Note - if regionSparse2 packed on input - will be packed on output
   */
   virtual int updateColumnTranspose(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2) const = 0;
+                                    CoinIndexedVector *regionSparse2) const = 0;
   //@}
 
   ////////////////// data //////////////////
-protected:
+ protected:
   /**@name data */
   //@{
   /// Pivot tolerance
@@ -285,7 +232,7 @@ protected:
   int *pivotRow_;
   /** Elements of factorization and updates
       length is maxR*maxR+maxSpace
-      will always be long enough so can have nR*nR ints in maxSpace 
+      will always be long enough so can have nR*nR ints in maxSpace
   */
   CoinFactorizationDouble *elements_;
   /// Work area of numberRows_
@@ -300,14 +247,14 @@ protected:
 /** This deals with Factorization and Updates
     This is a simple dense version so other people can write a better one
 
-    I am assuming that 32 bits is enough for number of rows or columns, but CoinBigIndex
-    may be redefined to get 64 bits.
+    I am assuming that 32 bits is enough for number of rows or columns, but
+   CoinBigIndex may be redefined to get 64 bits.
  */
 
 class CoinDenseFactorization : public CoinOtherFactorization {
   friend void CoinDenseFactorizationUnitTest(const std::string &mpsDir);
 
-public:
+ public:
   /**@name Constructors and destructor and copy */
   //@{
   /// Default constructor
@@ -326,10 +273,8 @@ public:
   /**@name Do factorization - public */
   //@{
   /// Gets space for a factorization
-  virtual void getAreas(int numberRows,
-    int numberColumns,
-    int maximumL,
-    int maximumU);
+  virtual void getAreas(int numberRows, int numberColumns, int maximumL,
+                        int maximumU);
 
   /// PreProcesses column ordered copy of basis
   virtual void preProcess();
@@ -339,7 +284,8 @@ public:
       -1 - singular - use numberGoodColumns and redo
   */
   virtual int factor();
-  /// Does post processing on valid factorization - putting variables on correct rows
+  /// Does post processing on valid factorization - putting variables on correct
+  /// rows
   virtual void postProcess(const int *sequence, int *pivotVariable);
   /// Makes a non-singular basis by replacing variables
   virtual void makeNonSingular(int *sequence, int numberColumns);
@@ -348,8 +294,7 @@ public:
   /**@name general stuff such as number of elements */
   //@{
   /// Total number of elements in factorization
-  virtual inline int numberElements() const
-  {
+  virtual inline int numberElements() const {
     return numberRows_ * (numberColumns_ + numberPivots_);
   }
   /// Returns maximum absolute value in factorization
@@ -366,14 +311,13 @@ public:
       speed considerations.  You could just do this on first iteration
       after factorization and thereafter re-factorize
    partial update already in U */
-  virtual int replaceColumn(CoinIndexedVector *regionSparse,
-    int pivotRow,
-    double pivotCheck,
-    bool checkBeforeModifying = false,
-    double acceptablePivot = 1.0e-8);
+  virtual int replaceColumn(CoinIndexedVector *regionSparse, int pivotRow,
+                            double pivotCheck,
+                            bool checkBeforeModifying = false,
+                            double acceptablePivot = 1.0e-8);
   //@}
 
-  /**@name various uses of factorization (return code number elements) 
+  /**@name various uses of factorization (return code number elements)
    which user may want to know about */
   //@{
   /** Updates one column (FTRAN) from regionSparse2
@@ -383,27 +327,26 @@ public:
       Note - if regionSparse2 packed on input - will be packed on output
   */
   virtual inline int updateColumnFT(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2,
-    bool = false)
-  {
+                                    CoinIndexedVector *regionSparse2,
+                                    bool = false) {
     return updateColumn(regionSparse, regionSparse2);
   }
   /** This version has same effect as above with FTUpdate==false
       so number returned is always >=0 */
   virtual int updateColumn(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2,
-    bool noPermute = false) const;
+                           CoinIndexedVector *regionSparse2,
+                           bool noPermute = false) const;
   /// does FTRAN on two columns
   virtual int updateTwoColumnsFT(CoinIndexedVector *regionSparse1,
-    CoinIndexedVector *regionSparse2,
-    CoinIndexedVector *regionSparse3,
-    bool noPermute = false);
+                                 CoinIndexedVector *regionSparse2,
+                                 CoinIndexedVector *regionSparse3,
+                                 bool noPermute = false);
   /** Updates one column (BTRAN) from regionSparse2
-      regionSparse starts as zero and is zero at end 
+      regionSparse starts as zero and is zero at end
       Note - if regionSparse2 packed on input - will be packed on output
   */
   virtual int updateColumnTranspose(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2) const;
+                                    CoinIndexedVector *regionSparse2) const;
   //@}
   /// *** Below this user may not want to know about
 
@@ -411,18 +354,13 @@ public:
    which user may not want to know about (left over from my LP code) */
   //@{
   /// Get rid of all memory
-  inline void clearArrays()
-  {
-    gutsOfDestructor();
-  }
+  inline void clearArrays() { gutsOfDestructor(); }
   /// Returns array to put basis indices in
-  virtual inline int *indices() const
-  {
-    return reinterpret_cast< int * >(elements_ + numberRows_ * numberRows_);
+  virtual inline int *indices() const {
+    return reinterpret_cast<int *>(elements_ + numberRows_ * numberRows_);
   }
   /// Returns permute in
-  virtual inline int *permute() const
-  {
+  virtual inline int *permute() const {
     return NULL; /*pivotRow_*/
     ;
   }
@@ -436,12 +374,12 @@ public:
   void gutsOfCopy(const CoinDenseFactorization &other);
 
   //@}
-protected:
+ protected:
   /** Returns accuracy status of replaceColumn
       returns 0=OK, 1=Probably OK, 2=singular */
   int checkPivot(double saveFromU, double oldPivot) const;
   ////////////////// data //////////////////
-protected:
+ protected:
   /**@name data */
   //@{
   //@}
@@ -449,4 +387,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

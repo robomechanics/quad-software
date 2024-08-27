@@ -6,73 +6,61 @@
 #ifndef PROXSUITE_PROXQP_SPARSE_SOLVER_HPP
 #define PROXSUITE_PROXQP_SPARSE_SOLVER_HPP
 
+#include <Eigen/IterativeLinearSolvers>
 #include <chrono>
 #include <cmath>
-
+#include <iomanip>
+#include <iostream>
 #include <proxsuite/linalg/dense/core.hpp>
 #include <proxsuite/linalg/sparse/core.hpp>
 #include <proxsuite/linalg/sparse/factorize.hpp>
-#include <proxsuite/linalg/sparse/update.hpp>
 #include <proxsuite/linalg/sparse/rowmod.hpp>
+#include <proxsuite/linalg/sparse/update.hpp>
+#include <proxsuite/linalg/veg/vec.hpp>
 #include <proxsuite/proxqp/dense/views.hpp>
 #include <proxsuite/proxqp/settings.hpp>
-#include <proxsuite/linalg/veg/vec.hpp>
+#include <unsupported/Eigen/IterativeSolvers>
+
 #include "proxsuite/proxqp/results.hpp"
 #include "proxsuite/proxqp/sparse/fwd.hpp"
-#include "proxsuite/proxqp/sparse/views.hpp"
 #include "proxsuite/proxqp/sparse/model.hpp"
-#include "proxsuite/proxqp/sparse/workspace.hpp"
-#include "proxsuite/proxqp/sparse/utils.hpp"
-#include "proxsuite/proxqp/sparse/preconditioner/ruiz.hpp"
 #include "proxsuite/proxqp/sparse/preconditioner/identity.hpp"
-
-#include <iostream>
-#include <iomanip>
-#include <Eigen/IterativeLinearSolvers>
-#include <unsupported/Eigen/IterativeSolvers>
+#include "proxsuite/proxqp/sparse/preconditioner/ruiz.hpp"
+#include "proxsuite/proxqp/sparse/utils.hpp"
+#include "proxsuite/proxqp/sparse/views.hpp"
+#include "proxsuite/proxqp/sparse/workspace.hpp"
 
 namespace proxsuite {
 namespace proxqp {
 namespace sparse {
 
-template<typename T, typename I>
-void
-ldl_solve(VectorViewMut<T> sol,
-          VectorView<T> rhs,
-          isize n_tot,
-          proxsuite::linalg::sparse::MatMut<T, I> ldl,
-          Eigen::MINRES<detail::AugmentedKkt<T, I>,
-                        Eigen::Upper | Eigen::Lower,
-                        Eigen::IdentityPreconditioner>& iterative_solver,
-          bool do_ldlt,
-          proxsuite::linalg::veg::dynstack::DynStackMut stack,
-          T* ldl_values,
-          I* perm,
-          I* ldl_col_ptrs,
-          I const* perm_inv)
-{
+template <typename T, typename I>
+void ldl_solve(
+    VectorViewMut<T> sol, VectorView<T> rhs, isize n_tot,
+    proxsuite::linalg::sparse::MatMut<T, I> ldl,
+    Eigen::MINRES<detail::AugmentedKkt<T, I>, Eigen::Upper | Eigen::Lower,
+                  Eigen::IdentityPreconditioner>& iterative_solver,
+    bool do_ldlt, proxsuite::linalg::veg::dynstack::DynStackMut stack,
+    T* ldl_values, I* perm, I* ldl_col_ptrs, I const* perm_inv) {
   LDLT_TEMP_VEC_UNINIT(T, work_, n_tot, stack);
   auto rhs_e = rhs.to_eigen();
   auto sol_e = sol.to_eigen();
   auto zx = proxsuite::linalg::sparse::util::zero_extend;
 
   if (do_ldlt) {
-
     for (isize i = 0; i < n_tot; ++i) {
       work_[i] = rhs_e[isize(zx(perm[i]))];
     }
 
-    proxsuite::linalg::sparse::dense_lsolve<T, I>( //
-      { proxsuite::linalg::sparse::from_eigen, work_ },
-      ldl.as_const());
+    proxsuite::linalg::sparse::dense_lsolve<T, I>(  //
+        {proxsuite::linalg::sparse::from_eigen, work_}, ldl.as_const());
 
     for (isize i = 0; i < n_tot; ++i) {
       work_[i] /= ldl_values[isize(zx(ldl_col_ptrs[i]))];
     }
 
-    proxsuite::linalg::sparse::dense_ltsolve<T, I>( //
-      { proxsuite::linalg::sparse::from_eigen, work_ },
-      ldl.as_const());
+    proxsuite::linalg::sparse::dense_ltsolve<T, I>(  //
+        {proxsuite::linalg::sparse::from_eigen, work_}, ldl.as_const());
 
     for (isize i = 0; i < n_tot; ++i) {
       sol_e[i] = work_[isize(zx(perm_inv[i]))];
@@ -83,29 +71,18 @@ ldl_solve(VectorViewMut<T> sol,
   }
 }
 
-template<typename T, typename I>
-void
-ldl_iter_solve_noalias(
-  VectorViewMut<T> sol,
-  VectorView<T> rhs,
-  VectorView<T> init_guess,
-  Results<T> const& results,
-  Model<T, I> const& data,
-  isize n_tot,
-  proxsuite::linalg::sparse::MatMut<T, I> ldl,
-  Eigen::MINRES<detail::AugmentedKkt<T, I>,
-                Eigen::Upper | Eigen::Lower,
-                Eigen::IdentityPreconditioner>& iterative_solver,
-  bool do_ldlt,
-  proxsuite::linalg::veg::dynstack::DynStackMut stack,
-  T* ldl_values,
-  I* perm,
-  I* ldl_col_ptrs,
-  I const* perm_inv,
-  Settings<T> const& settings,
-  proxsuite::linalg::sparse::MatMut<T, I> kkt_active,
-  proxsuite::linalg::veg::SliceMut<bool> active_constraints)
-{
+template <typename T, typename I>
+void ldl_iter_solve_noalias(
+    VectorViewMut<T> sol, VectorView<T> rhs, VectorView<T> init_guess,
+    Results<T> const& results, Model<T, I> const& data, isize n_tot,
+    proxsuite::linalg::sparse::MatMut<T, I> ldl,
+    Eigen::MINRES<detail::AugmentedKkt<T, I>, Eigen::Upper | Eigen::Lower,
+                  Eigen::IdentityPreconditioner>& iterative_solver,
+    bool do_ldlt, proxsuite::linalg::veg::dynstack::DynStackMut stack,
+    T* ldl_values, I* perm, I* ldl_col_ptrs, I const* perm_inv,
+    Settings<T> const& settings,
+    proxsuite::linalg::sparse::MatMut<T, I> kkt_active,
+    proxsuite::linalg::veg::SliceMut<bool> active_constraints) {
   auto rhs_e = rhs.to_eigen();
   auto sol_e = sol.to_eigen();
 
@@ -121,14 +98,13 @@ ldl_iter_solve_noalias(
 
   for (isize solve_iter = 0; solve_iter < settings.nb_iterative_refinement;
        ++solve_iter) {
-
     auto err_x = err.head(data.dim);
     auto err_y = err.segment(data.dim, data.n_eq);
     auto err_z = err.tail(data.n_in);
 
     auto sol_x = sol_e.head(data.dim);
     auto sol_y = sol_e.segment(data.dim, data.n_eq);
-    auto sol_z = sol_e.tail(data.n_in); // removed active set condition
+    auto sol_z = sol_e.tail(data.n_in);  // removed active set condition
 
     err = -rhs_e;
 
@@ -149,16 +125,8 @@ ldl_iter_solve_noalias(
     }
     prev_err_norm = err_norm;
 
-    ldl_solve({ proxqp::from_eigen, err },
-              { proxqp::from_eigen, err },
-              n_tot,
-              ldl,
-              iterative_solver,
-              do_ldlt,
-              stack,
-              ldl_values,
-              perm,
-              ldl_col_ptrs,
+    ldl_solve({proxqp::from_eigen, err}, {proxqp::from_eigen, err}, n_tot, ldl,
+              iterative_solver, do_ldlt, stack, ldl_values, perm, ldl_col_ptrs,
               perm_inv);
 
     sol_e -= err;
@@ -188,46 +156,23 @@ ldl_iter_solve_noalias(
  * @param settings solver's settings.
  * @param kkt_active active part of the kkt.
  */
-template<typename T, typename I>
-void
-ldl_solve_in_place(
-  VectorViewMut<T> rhs,
-  VectorView<T> init_guess,
-  Results<T> const& results,
-  Model<T, I> const& data,
-  isize n_tot,
-  proxsuite::linalg::sparse::MatMut<T, I> ldl,
-  Eigen::MINRES<detail::AugmentedKkt<T, I>,
-                Eigen::Upper | Eigen::Lower,
-                Eigen::IdentityPreconditioner>& iterative_solver,
-  bool do_ldlt,
-  proxsuite::linalg::veg::dynstack::DynStackMut stack,
-  T* ldl_values,
-  I* perm,
-  I* ldl_col_ptrs,
-  I const* perm_inv,
-  Settings<T> const& settings,
-  proxsuite::linalg::sparse::MatMut<T, I> kkt_active,
-  proxsuite::linalg::veg::SliceMut<bool> active_constraints)
-{
+template <typename T, typename I>
+void ldl_solve_in_place(
+    VectorViewMut<T> rhs, VectorView<T> init_guess, Results<T> const& results,
+    Model<T, I> const& data, isize n_tot,
+    proxsuite::linalg::sparse::MatMut<T, I> ldl,
+    Eigen::MINRES<detail::AugmentedKkt<T, I>, Eigen::Upper | Eigen::Lower,
+                  Eigen::IdentityPreconditioner>& iterative_solver,
+    bool do_ldlt, proxsuite::linalg::veg::dynstack::DynStackMut stack,
+    T* ldl_values, I* perm, I* ldl_col_ptrs, I const* perm_inv,
+    Settings<T> const& settings,
+    proxsuite::linalg::sparse::MatMut<T, I> kkt_active,
+    proxsuite::linalg::veg::SliceMut<bool> active_constraints) {
   LDLT_TEMP_VEC_UNINIT(T, tmp, n_tot, stack);
-  ldl_iter_solve_noalias({ proxqp::from_eigen, tmp },
-                         rhs.as_const(),
-                         init_guess,
-                         results,
-                         data,
-                         n_tot,
-                         ldl,
-                         iterative_solver,
-                         do_ldlt,
-                         stack,
-                         ldl_values,
-                         perm,
-                         ldl_col_ptrs,
-                         perm_inv,
-                         settings,
-                         kkt_active,
-                         active_constraints);
+  ldl_iter_solve_noalias({proxqp::from_eigen, tmp}, rhs.as_const(), init_guess,
+                         results, data, n_tot, ldl, iterative_solver, do_ldlt,
+                         stack, ldl_values, perm, ldl_col_ptrs, perm_inv,
+                         settings, kkt_active, active_constraints);
   rhs.to_eigen() = tmp;
 }
 /*!
@@ -237,11 +182,9 @@ ldl_solve_in_place(
  * @param do_ldlt boolean variable for doing the ldlt (rather than MinRes
  * algorithm).
  */
-template<typename T, typename I>
-auto
-inner_reconstructed_matrix(proxsuite::linalg::sparse::MatMut<T, I> ldl)
-  -> DMat<T>
-{
+template <typename T, typename I>
+auto inner_reconstructed_matrix(proxsuite::linalg::sparse::MatMut<T, I> ldl)
+    -> DMat<T> {
   auto ldl_dense = ldl.to_eigen().toDense();
   auto l = DMat<T>(ldl_dense.template triangularView<Eigen::UnitLower>());
   auto lt = l.transpose();
@@ -258,12 +201,9 @@ inner_reconstructed_matrix(proxsuite::linalg::sparse::MatMut<T, I> ldl)
  * @param perm_inv pointer to the inverse of the permutation.
  * @param n_tot dimension of the KKT matrix
  */
-template<typename T, typename I>
-auto
-reconstructed_matrix(proxsuite::linalg::sparse::MatMut<T, I> ldl,
-                     I const* perm_inv,
-                     isize n_tot) -> DMat<T>
-{
+template <typename T, typename I>
+auto reconstructed_matrix(proxsuite::linalg::sparse::MatMut<T, I> ldl,
+                          I const* perm_inv, isize n_tot) -> DMat<T> {
   auto mat = inner_reconstructed_matrix(ldl);
   auto mat_backup = mat;
   for (isize i = 0; i < n_tot; ++i) {
@@ -286,35 +226,28 @@ reconstructed_matrix(proxsuite::linalg::sparse::MatMut<T, I> ldl,
  * @param active_constraints vector boolean precising whether the constraints
  * are active or not.
  */
-template<typename T, typename I>
-auto
-reconstruction_error(proxsuite::linalg::sparse::MatMut<T, I> ldl,
-                     I const* perm_inv,
-                     Results<T> const& results,
-                     Model<T, I> const& data,
-                     isize n_tot,
-                     proxsuite::linalg::sparse::MatMut<T, I> kkt_active,
-                     proxsuite::linalg::veg::SliceMut<bool> active_constraints)
-  -> DMat<T>
-{
+template <typename T, typename I>
+auto reconstruction_error(
+    proxsuite::linalg::sparse::MatMut<T, I> ldl, I const* perm_inv,
+    Results<T> const& results, Model<T, I> const& data, isize n_tot,
+    proxsuite::linalg::sparse::MatMut<T, I> kkt_active,
+    proxsuite::linalg::veg::SliceMut<bool> active_constraints) -> DMat<T> {
   T mu_eq_neg = -results.info.mu_eq;
   T mu_in_neg = -results.info.mu_in;
-  auto diff = DMat<T>(
-    reconstructed_matrix(ldl, perm_inv, n_tot) -
-    DMat<T>(
-      DMat<T>(kkt_active.to_eigen()).template selfadjointView<Eigen::Upper>()));
+  auto diff = DMat<T>(reconstructed_matrix(ldl, perm_inv, n_tot) -
+                      DMat<T>(DMat<T>(kkt_active.to_eigen())
+                                  .template selfadjointView<Eigen::Upper>()));
   diff.diagonal().head(data.dim).array() -= results.info.rho;
   diff.diagonal().segment(data.dim, data.n_eq).array() -= mu_eq_neg;
   for (isize i = 0; i < data.n_in; ++i) {
     diff.diagonal()[data.dim + data.n_eq + i] -=
-      active_constraints[i] ? mu_in_neg : T(1);
+        active_constraints[i] ? mu_in_neg : T(1);
   }
   return diff;
 }
 
-template<typename T>
-struct PrimalDualGradResult
-{
+template <typename T>
+struct PrimalDualGradResult {
   T a;
   T b;
   T grad;
@@ -331,53 +264,48 @@ struct PrimalDualGradResult
  * @param work solver workspace.
  * @param precond preconditioner.
  */
-template<typename T, typename I, typename P>
-void
-qp_solve(Results<T>& results,
-         Model<T, I>& data,
-         const Settings<T>& settings,
-         Workspace<T, I>& work,
-         P& precond)
-{
+template <typename T, typename I, typename P>
+void qp_solve(Results<T>& results, Model<T, I>& data,
+              const Settings<T>& settings, Workspace<T, I>& work, P& precond) {
   if (settings.compute_timings) {
     work.timer.stop();
     work.timer.start();
   }
 
   if (work.internal
-        .dirty) // the following is used when a solve has already been executed
-                // (and without any intermediary model update)
+          .dirty)  // the following is used when a solve has already been
+                   // executed (and without any intermediary model update)
   {
     proxsuite::linalg::sparse::MatMut<T, I> kkt_unscaled =
-      data.kkt_mut_unscaled();
+        data.kkt_mut_unscaled();
 
     auto kkt_top_n_rows = detail::top_rows_mut_unchecked(
-      proxsuite::linalg::veg::unsafe, kkt_unscaled, data.dim);
+        proxsuite::linalg::veg::unsafe, kkt_unscaled, data.dim);
 
     proxsuite::linalg::sparse::MatMut<T, I> H_unscaled =
-      detail::middle_cols_mut(kkt_top_n_rows, 0, data.dim, data.H_nnz);
+        detail::middle_cols_mut(kkt_top_n_rows, 0, data.dim, data.H_nnz);
 
     proxsuite::linalg::sparse::MatMut<T, I> AT_unscaled =
-      detail::middle_cols_mut(kkt_top_n_rows, data.dim, data.n_eq, data.A_nnz);
+        detail::middle_cols_mut(kkt_top_n_rows, data.dim, data.n_eq,
+                                data.A_nnz);
 
     proxsuite::linalg::sparse::MatMut<T, I> CT_unscaled =
-      detail::middle_cols_mut(
-        kkt_top_n_rows, data.dim + data.n_eq, data.n_in, data.C_nnz);
+        detail::middle_cols_mut(kkt_top_n_rows, data.dim + data.n_eq, data.n_in,
+                                data.C_nnz);
 
     SparseMat<T, I> H_triu =
-      H_unscaled.to_eigen().template triangularView<Eigen::Upper>();
+        H_unscaled.to_eigen().template triangularView<Eigen::Upper>();
     sparse::QpView<T, I> qp = {
-      { proxsuite::linalg::sparse::from_eigen, H_triu },
-      { proxsuite::linalg::sparse::from_eigen, data.g },
-      { proxsuite::linalg::sparse::from_eigen, AT_unscaled.to_eigen() },
-      { proxsuite::linalg::sparse::from_eigen, data.b },
-      { proxsuite::linalg::sparse::from_eigen, CT_unscaled.to_eigen() },
-      { proxsuite::linalg::sparse::from_eigen, data.l },
-      { proxsuite::linalg::sparse::from_eigen, data.u }
-    };
+        {proxsuite::linalg::sparse::from_eigen, H_triu},
+        {proxsuite::linalg::sparse::from_eigen, data.g},
+        {proxsuite::linalg::sparse::from_eigen, AT_unscaled.to_eigen()},
+        {proxsuite::linalg::sparse::from_eigen, data.b},
+        {proxsuite::linalg::sparse::from_eigen, CT_unscaled.to_eigen()},
+        {proxsuite::linalg::sparse::from_eigen, data.l},
+        {proxsuite::linalg::sparse::from_eigen, data.u}};
 
-    switch (settings.initial_guess) { // the following is used when one solve
-                                      // has already been executed
+    switch (settings.initial_guess) {  // the following is used when one solve
+                                       // has already been executed
       case InitialGuessStatus::EQUALITY_CONSTRAINED_INITIAL_GUESS: {
         results.cleanup(settings);
         break;
@@ -386,11 +314,11 @@ qp_solve(Results<T>& results,
         // keep solutions but restart workspace and results
         results.cold_start(settings);
         precond.scale_primal_in_place(
-          { proxsuite::proxqp::from_eigen, results.x });
+            {proxsuite::proxqp::from_eigen, results.x});
         precond.scale_dual_in_place_eq(
-          { proxsuite::proxqp::from_eigen, results.y });
+            {proxsuite::proxqp::from_eigen, results.y});
         precond.scale_dual_in_place_in(
-          { proxsuite::proxqp::from_eigen, results.z });
+            {proxsuite::proxqp::from_eigen, results.z});
         break;
       }
       case InitialGuessStatus::NO_INITIAL_GUESS: {
@@ -398,37 +326,33 @@ qp_solve(Results<T>& results,
         break;
       }
       case InitialGuessStatus::WARM_START: {
-        results.cold_start(settings); // because there was already a solve,
-                                      // precond was already computed if set so
+        results.cold_start(settings);  // because there was already a solve,
+                                       // precond was already computed if set so
         precond.scale_primal_in_place(
-          { proxsuite::proxqp::from_eigen,
-            results.x }); // it contains the value given in entry for warm start
+            {proxsuite::proxqp::from_eigen,
+             results
+                 .x});  // it contains the value given in entry for warm start
         precond.scale_dual_in_place_eq(
-          { proxsuite::proxqp::from_eigen, results.y });
+            {proxsuite::proxqp::from_eigen, results.y});
         precond.scale_dual_in_place_in(
-          { proxsuite::proxqp::from_eigen, results.z });
+            {proxsuite::proxqp::from_eigen, results.z});
         break;
       }
       case InitialGuessStatus::WARM_START_WITH_PREVIOUS_RESULT: {
         // keep workspace and results solutions except statistics
         results.cleanup_statistics();
         precond.scale_primal_in_place(
-          { proxsuite::proxqp::from_eigen, results.x });
+            {proxsuite::proxqp::from_eigen, results.x});
         precond.scale_dual_in_place_eq(
-          { proxsuite::proxqp::from_eigen, results.y });
+            {proxsuite::proxqp::from_eigen, results.y});
         precond.scale_dual_in_place_in(
-          { proxsuite::proxqp::from_eigen, results.z });
+            {proxsuite::proxqp::from_eigen, results.z});
         break;
       }
     }
-    work.setup_impl(
-      qp,
-      data,
-      settings,
-      false,
-      precond,
-      P::scale_qp_in_place_req(
-        proxsuite::linalg::veg::Tag<T>{}, data.dim, data.n_eq, data.n_in));
+    work.setup_impl(qp, data, settings, false, precond,
+                    P::scale_qp_in_place_req(proxsuite::linalg::veg::Tag<T>{},
+                                             data.dim, data.n_eq, data.n_in));
 
   } else {
     // the following is used for a first solve after initializing or updating
@@ -439,13 +363,13 @@ qp_solve(Results<T>& results,
       }
       case InitialGuessStatus::COLD_START_WITH_PREVIOUS_RESULT: {
         precond.scale_primal_in_place(
-          { proxsuite::proxqp::from_eigen,
-            results.x }); // meaningful for when there is an upate of the model
-                          // and one wants to warm start with previous result
+            {proxsuite::proxqp::from_eigen,
+             results.x});  // meaningful for when there is an upate of the model
+                           // and one wants to warm start with previous result
         precond.scale_dual_in_place_eq(
-          { proxsuite::proxqp::from_eigen, results.y });
+            {proxsuite::proxqp::from_eigen, results.y});
         precond.scale_dual_in_place_in(
-          { proxsuite::proxqp::from_eigen, results.z });
+            {proxsuite::proxqp::from_eigen, results.z});
         break;
       }
       case InitialGuessStatus::NO_INITIAL_GUESS: {
@@ -453,22 +377,22 @@ qp_solve(Results<T>& results,
       }
       case InitialGuessStatus::WARM_START: {
         precond.scale_primal_in_place(
-          { proxsuite::proxqp::from_eigen, results.x });
+            {proxsuite::proxqp::from_eigen, results.x});
         precond.scale_dual_in_place_eq(
-          { proxsuite::proxqp::from_eigen, results.y });
+            {proxsuite::proxqp::from_eigen, results.y});
         precond.scale_dual_in_place_in(
-          { proxsuite::proxqp::from_eigen, results.z });
+            {proxsuite::proxqp::from_eigen, results.z});
         break;
       }
       case InitialGuessStatus::WARM_START_WITH_PREVIOUS_RESULT: {
         precond.scale_primal_in_place(
-          { proxsuite::proxqp::from_eigen,
-            results.x }); // meaningful for when there is an upate of the model
-                          // and one wants to warm start with previous result
+            {proxsuite::proxqp::from_eigen,
+             results.x});  // meaningful for when there is an upate of the model
+                           // and one wants to warm start with previous result
         precond.scale_dual_in_place_eq(
-          { proxsuite::proxqp::from_eigen, results.y });
+            {proxsuite::proxqp::from_eigen, results.y});
         precond.scale_dual_in_place_in(
-          { proxsuite::proxqp::from_eigen, results.z });
+            {proxsuite::proxqp::from_eigen, results.z});
         break;
       }
     }
@@ -488,23 +412,23 @@ qp_solve(Results<T>& results,
   isize n_in = data.n_in;
   isize n_tot = n + n_eq + n_in;
 
-  VectorViewMut<T> x{ proxqp::from_eigen, results.x };
-  VectorViewMut<T> y{ proxqp::from_eigen, results.y };
-  VectorViewMut<T> z{ proxqp::from_eigen, results.z };
+  VectorViewMut<T> x{proxqp::from_eigen, results.x};
+  VectorViewMut<T> y{proxqp::from_eigen, results.y};
+  VectorViewMut<T> z{proxqp::from_eigen, results.z};
 
   proxsuite::linalg::sparse::MatMut<T, I> kkt = data.kkt_mut();
 
   auto kkt_top_n_rows =
-    detail::top_rows_mut_unchecked(proxsuite::linalg::veg::unsafe, kkt, n);
+      detail::top_rows_mut_unchecked(proxsuite::linalg::veg::unsafe, kkt, n);
 
   proxsuite::linalg::sparse::MatMut<T, I> H_scaled =
-    detail::middle_cols_mut(kkt_top_n_rows, 0, n, data.H_nnz);
+      detail::middle_cols_mut(kkt_top_n_rows, 0, n, data.H_nnz);
 
   proxsuite::linalg::sparse::MatMut<T, I> AT_scaled =
-    detail::middle_cols_mut(kkt_top_n_rows, n, n_eq, data.A_nnz);
+      detail::middle_cols_mut(kkt_top_n_rows, n, n_eq, data.A_nnz);
 
   proxsuite::linalg::sparse::MatMut<T, I> CT_scaled =
-    detail::middle_cols_mut(kkt_top_n_rows, n + n_eq, n_in, data.C_nnz);
+      detail::middle_cols_mut(kkt_top_n_rows, n + n_eq, n_in, data.C_nnz);
 
   auto& g_scaled_e = work.internal.g_scaled;
   auto& b_scaled_e = work.internal.b_scaled;
@@ -512,13 +436,13 @@ qp_solve(Results<T>& results,
   auto& u_scaled_e = work.internal.u_scaled;
 
   QpViewMut<T, I> qp_scaled = {
-    H_scaled,
-    { proxsuite::linalg::sparse::from_eigen, g_scaled_e },
-    AT_scaled,
-    { proxsuite::linalg::sparse::from_eigen, b_scaled_e },
-    CT_scaled,
-    { proxsuite::linalg::sparse::from_eigen, l_scaled_e },
-    { proxsuite::linalg::sparse::from_eigen, u_scaled_e },
+      H_scaled,
+      {proxsuite::linalg::sparse::from_eigen, g_scaled_e},
+      AT_scaled,
+      {proxsuite::linalg::sparse::from_eigen, b_scaled_e},
+      CT_scaled,
+      {proxsuite::linalg::sparse::from_eigen, l_scaled_e},
+      {proxsuite::linalg::sparse::from_eigen, u_scaled_e},
   };
 
   T const dual_feasibility_rhs_2 = infty_norm(data.g);
@@ -641,14 +565,14 @@ qp_solve(Results<T>& results,
   }
 
   proxsuite::linalg::sparse::MatMut<T, I> kkt_active = {
-    proxsuite::linalg::sparse::from_raw_parts,
-    n_tot,
-    n_tot,
-    data.H_nnz + data.A_nnz + C_active_nnz,
-    kkt.col_ptrs_mut(),
-    kkt_nnz_counts,
-    kkt.row_indices_mut(),
-    kkt.values_mut(),
+      proxsuite::linalg::sparse::from_raw_parts,
+      n_tot,
+      n_tot,
+      data.H_nnz + data.A_nnz + C_active_nnz,
+      kkt.col_ptrs_mut(),
+      kkt_nnz_counts,
+      kkt.row_indices_mut(),
+      kkt.values_mut(),
   };
 
   I* etree = work.internal.ldl.etree.ptr_mut();
@@ -656,17 +580,18 @@ qp_solve(Results<T>& results,
   I* ldl_row_indices = work.internal.ldl.row_indices.ptr_mut();
   T* ldl_values = work.internal.ldl.values.ptr_mut();
   proxsuite::linalg::veg::SliceMut<bool> active_constraints =
-    work.active_inequalities.as_mut();
+      work.active_inequalities.as_mut();
 
   proxsuite::linalg::sparse::MatMut<T, I> ldl = {
-    proxsuite::linalg::sparse::from_raw_parts,
-    n_tot,
-    n_tot,
-    0,
-    ldl_col_ptrs,
-    do_ldlt ? ldl_nnz_counts : nullptr, // si do_ldlt est vrai do ldl_nnz_counts
-    ldl_row_indices,
-    ldl_values,
+      proxsuite::linalg::sparse::from_raw_parts,
+      n_tot,
+      n_tot,
+      0,
+      ldl_col_ptrs,
+      do_ldlt ? ldl_nnz_counts
+              : nullptr,  // si do_ldlt est vrai do ldl_nnz_counts
+      ldl_row_indices,
+      ldl_values,
   };
 
   T bcl_eta_ext_init = pow(T(0.1), settings.alpha_bcl);
@@ -677,8 +602,8 @@ qp_solve(Results<T>& results,
   auto x_e = x.to_eigen();
   auto y_e = y.to_eigen();
   auto z_e = z.to_eigen();
-  sparse::refactorize<T, I>(
-    work, results, kkt_active, active_constraints, data, stack, xtag);
+  sparse::refactorize<T, I>(work, results, kkt_active, active_constraints, data,
+                            stack, xtag);
   switch (settings.initial_guess) {
     case InitialGuessStatus::EQUALITY_CONSTRAINED_INITIAL_GUESS: {
       LDLT_TEMP_VEC_UNINIT(T, rhs, n_tot, stack);
@@ -688,22 +613,10 @@ qp_solve(Results<T>& results,
       rhs.segment(n, n_eq) = b_scaled_e;
       rhs.segment(n + n_eq, n_in).setZero();
 
-      ldl_solve_in_place({ proxqp::from_eigen, rhs },
-                         { proxqp::from_eigen, no_guess },
-                         results,
-                         data,
-                         n_tot,
-                         ldl,
-                         iterative_solver,
-                         do_ldlt,
-                         stack,
-                         ldl_values,
-                         perm,
-                         ldl_col_ptrs,
-                         perm_inv,
-                         settings,
-                         kkt_active,
-                         active_constraints);
+      ldl_solve_in_place(
+          {proxqp::from_eigen, rhs}, {proxqp::from_eigen, no_guess}, results,
+          data, n_tot, ldl, iterative_solver, do_ldlt, stack, ldl_values, perm,
+          ldl_col_ptrs, perm_inv, settings, kkt_active, active_constraints);
       x_e = rhs.head(n);
       y_e = rhs.segment(n, n_eq);
       z_e = rhs.segment(n + n_eq, n_in);
@@ -729,7 +642,6 @@ qp_solve(Results<T>& results,
   T rhs_duality_gap(0);
 
   for (isize iter = 0; iter < settings.max_iter; ++iter) {
-
     results.info.iter_ext += 1;
     if (iter == settings.max_iter) {
       break;
@@ -757,9 +669,8 @@ qp_solve(Results<T>& results,
       auto is_primal_feasible = [&](T primal_feasibility_lhs) -> bool {
         T rhs_pri = settings.eps_abs;
         if (settings.eps_rel != 0) {
-          rhs_pri +=
-            settings.eps_rel * std::max({ primal_feasibility_eq_rhs_0,
-                                          primal_feasibility_in_rhs_0 });
+          rhs_pri += settings.eps_rel * std::max({primal_feasibility_eq_rhs_0,
+                                                  primal_feasibility_in_rhs_0});
         }
         return primal_feasibility_lhs <= rhs_pri;
       };
@@ -767,10 +678,10 @@ qp_solve(Results<T>& results,
         T rhs_dua = settings.eps_abs;
         if (settings.eps_rel != 0) {
           rhs_dua += settings.eps_rel * std::max({
-                                          dual_feasibility_rhs_0,
-                                          dual_feasibility_rhs_1,
-                                          dual_feasibility_rhs_2,
-                                          dual_feasibility_rhs_3,
+                                            dual_feasibility_rhs_0,
+                                            dual_feasibility_rhs_1,
+                                            dual_feasibility_rhs_2,
+                                            dual_feasibility_rhs_3,
                                         });
         }
 
@@ -778,28 +689,16 @@ qp_solve(Results<T>& results,
       };
       // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-      VEG_BIND( // ?
-        auto,
-        (primal_feasibility_lhs, dual_feasibility_lhs),
-        detail::unscaled_primal_dual_residual(work,
-                                              results,
-                                              primal_residual_eq_scaled,
-                                              primal_residual_in_scaled_lo,
-                                              primal_residual_in_scaled_up,
-                                              dual_residual_scaled,
-                                              primal_feasibility_eq_rhs_0,
-                                              primal_feasibility_in_rhs_0,
-                                              dual_feasibility_rhs_0,
-                                              dual_feasibility_rhs_1,
-                                              dual_feasibility_rhs_3,
-                                              rhs_duality_gap,
-                                              precond,
-                                              data,
-                                              qp_scaled.as_const(),
-                                              detail::vec_mut(x_e),
-                                              detail::vec_mut(y_e),
-                                              detail::vec_mut(z_e),
-                                              stack));
+      VEG_BIND(  // ?
+          auto, (primal_feasibility_lhs, dual_feasibility_lhs),
+          detail::unscaled_primal_dual_residual(
+              work, results, primal_residual_eq_scaled,
+              primal_residual_in_scaled_lo, primal_residual_in_scaled_up,
+              dual_residual_scaled, primal_feasibility_eq_rhs_0,
+              primal_feasibility_in_rhs_0, dual_feasibility_rhs_0,
+              dual_feasibility_rhs_1, dual_feasibility_rhs_3, rhs_duality_gap,
+              precond, data, qp_scaled.as_const(), detail::vec_mut(x_e),
+              detail::vec_mut(y_e), detail::vec_mut(z_e), stack));
       /*put in debug mode
       if (settings.verbose) {
               std::cout << "-------- outer iteration: " << iter << " primal
@@ -818,11 +717,11 @@ qp_solve(Results<T>& results,
         LDLT_TEMP_VEC_UNINIT(T, tmp, n, stack);
         tmp.setZero();
         detail::noalias_symhiv_add(tmp, qp_scaled.H.to_eigen(), x_e);
-        precond.unscale_dual_residual_in_place({ proxqp::from_eigen, tmp });
+        precond.unscale_dual_residual_in_place({proxqp::from_eigen, tmp});
 
-        precond.unscale_primal_in_place({ proxqp::from_eigen, x_e });
-        precond.unscale_dual_in_place_eq({ proxqp::from_eigen, y_e });
-        precond.unscale_dual_in_place_in({ proxqp::from_eigen, z_e });
+        precond.unscale_primal_in_place({proxqp::from_eigen, x_e});
+        precond.unscale_dual_in_place_eq({proxqp::from_eigen, y_e});
+        precond.unscale_dual_in_place_in({proxqp::from_eigen, z_e});
         tmp *= 0.5;
         tmp += data.g;
         results.info.objValue = (tmp).dot(x_e);
@@ -836,16 +735,16 @@ qp_solve(Results<T>& results,
                   << " | rho=" << results.info.rho << std::endl;
         results.info.pri_res = primal_feasibility_lhs;
         results.info.dua_res = dual_feasibility_lhs;
-        precond.scale_primal_in_place(VectorViewMut<T>{ from_eigen, x_e });
-        precond.scale_dual_in_place_eq(VectorViewMut<T>{ from_eigen, y_e });
-        precond.scale_dual_in_place_in(VectorViewMut<T>{ from_eigen, z_e });
+        precond.scale_primal_in_place(VectorViewMut<T>{from_eigen, x_e});
+        precond.scale_dual_in_place_eq(VectorViewMut<T>{from_eigen, y_e});
+        precond.scale_dual_in_place_in(VectorViewMut<T>{from_eigen, z_e});
       }
       if (is_primal_feasible(primal_feasibility_lhs) &&
           is_dual_feasible(dual_feasibility_lhs)) {
         if (settings.check_duality_gap) {
           if (std::fabs(results.info.duality_gap) <=
               settings.eps_duality_gap_abs +
-                settings.eps_duality_gap_rel * rhs_duality_gap) {
+                  settings.eps_duality_gap_rel * rhs_duality_gap) {
             results.info.pri_res = primal_feasibility_lhs;
             results.info.dua_res = dual_feasibility_lhs;
             results.info.status = QPSolverOutput::PROXQP_SOLVED;
@@ -895,9 +794,9 @@ qp_solve(Results<T>& results,
             auto rhs = dw;
 
             work.active_set_low.array() =
-              primal_residual_in_scaled_lo.array() <= 0;
+                primal_residual_in_scaled_lo.array() <= 0;
             work.active_set_up.array() =
-              primal_residual_in_scaled_up.array() >= 0;
+                primal_residual_in_scaled_up.array() >= 0;
             new_active_constraints = work.active_set_low || work.active_set_up;
 
             // active set change
@@ -912,7 +811,7 @@ qp_solve(Results<T>& results,
                 isize idx = n + n_eq + i;
 
                 usize col_nnz =
-                  zx(kkt.col_end(usize(idx))) - zx(kkt.col_start(usize(idx)));
+                    zx(kkt.col_end(usize(idx))) - zx(kkt.col_start(usize(idx)));
 
                 if (is_active && !was_active) {
                   added = true;
@@ -922,21 +821,16 @@ qp_solve(Results<T>& results,
 
                   if (do_ldlt) {
                     proxsuite::linalg::sparse::VecRef<T, I> new_col{
-                      proxsuite::linalg::sparse::from_raw_parts,
-                      n_tot,
-                      isize(col_nnz),
-                      kkt.row_indices() + zx(kkt.col_start(usize(idx))),
-                      kkt.values() + zx(kkt.col_start(usize(idx))),
+                        proxsuite::linalg::sparse::from_raw_parts,
+                        n_tot,
+                        isize(col_nnz),
+                        kkt.row_indices() + zx(kkt.col_start(usize(idx))),
+                        kkt.values() + zx(kkt.col_start(usize(idx))),
                     };
 
-                    ldl =
-                      proxsuite::linalg::sparse::add_row(ldl,
-                                                         etree,
-                                                         perm_inv,
-                                                         idx,
-                                                         new_col,
-                                                         -results.info.mu_in,
-                                                         stack);
+                    ldl = proxsuite::linalg::sparse::add_row(
+                        ldl, etree, perm_inv, idx, new_col, -results.info.mu_in,
+                        stack);
                   }
                   active_constraints[i] = new_active_constraints[i];
 
@@ -946,7 +840,7 @@ qp_solve(Results<T>& results,
                   kkt_active._set_nnz(kkt_active.nnz() - isize(col_nnz));
                   if (do_ldlt) {
                     ldl = proxsuite::linalg::sparse::delete_row(
-                      ldl, etree, perm_inv, idx, stack);
+                        ldl, etree, perm_inv, idx, stack);
                   }
                   active_constraints[i] = new_active_constraints[i];
                 }
@@ -954,13 +848,8 @@ qp_solve(Results<T>& results,
 
               if (!do_ldlt) {
                 if (removed || added) {
-                  refactorize(work,
-                              results,
-                              kkt_active,
-                              active_constraints,
-                              data,
-                              stack,
-                              xtag);
+                  refactorize(work, results, kkt_active, active_constraints,
+                              data, stack, xtag);
                 }
               }
             }
@@ -970,11 +859,11 @@ qp_solve(Results<T>& results,
 
             for (isize i = 0; i < n_in; ++i) {
               if (work.active_set_up(i)) {
-                rhs(n + n_eq + i) =
-                  results.info.mu_in * z_e(i) - primal_residual_in_scaled_up(i);
+                rhs(n + n_eq + i) = results.info.mu_in * z_e(i) -
+                                    primal_residual_in_scaled_up(i);
               } else if (work.active_set_low(i)) {
-                rhs(n + n_eq + i) =
-                  results.info.mu_in * z_e(i) - primal_residual_in_scaled_lo(i);
+                rhs(n + n_eq + i) = results.info.mu_in * z_e(i) -
+                                    primal_residual_in_scaled_lo(i);
               } else {
                 rhs(n + n_eq + i) = -z_e(i);
                 rhs.head(n) += z_e(i) * CT_scaled.to_eigen().col(i);
@@ -982,24 +871,13 @@ qp_solve(Results<T>& results,
             }
 
             ldl_solve_in_place(
-              { proxqp::from_eigen, rhs },
-              { proxqp::from_eigen,
-                dw_prev }, // todo: MAJ dw_prev avec dw pour avoir meilleur
-                           // guess sur les solve in place
-              results,
-              data,
-              n_tot,
-              ldl,
-              iterative_solver,
-              do_ldlt,
-              stack,
-              ldl_values,
-              perm,
-              ldl_col_ptrs,
-              perm_inv,
-              settings,
-              kkt_active,
-              active_constraints);
+                {proxqp::from_eigen, rhs},
+                {proxqp::from_eigen,
+                 dw_prev},  // todo: MAJ dw_prev avec dw pour avoir meilleur
+                            // guess sur les solve in place
+                results, data, n_tot, ldl, iterative_solver, do_ldlt, stack,
+                ldl_values, perm, ldl_col_ptrs, perm_inv, settings, kkt_active,
+                active_constraints);
           }
           auto dx = dw.head(n);
           auto dy = dw.segment(n, n_eq);
@@ -1020,7 +898,7 @@ qp_solve(Results<T>& results,
           // primal dual line search
           if (n_in > 0) {
             auto primal_dual_gradient_norm =
-              [&](T alpha_cur) -> PrimalDualGradResult<T> {
+                [&](T alpha_cur) -> PrimalDualGradResult<T> {
               LDLT_TEMP_VEC_UNINIT(T, Cdx_active, n_in, stack);
               LDLT_TEMP_VEC_UNINIT(T, active_part_z, n_in, stack);
               {
@@ -1031,39 +909,42 @@ qp_solve(Results<T>& results,
 
                 tmp_lo = primal_residual_in_scaled_lo + alpha_cur * Cdx;
                 tmp_up = primal_residual_in_scaled_up + alpha_cur * Cdx;
-                Cdx_active =
-                  (tmp_lo.array() < 0 || tmp_up.array() > 0).select(Cdx, zero);
-                active_part_z = (tmp_lo.array() < 0)
-                                  .select(primal_residual_in_scaled_lo, zero) +
-                                (tmp_up.array() > 0)
-                                  .select(primal_residual_in_scaled_up, zero);
+                Cdx_active = (tmp_lo.array() < 0 || tmp_up.array() > 0)
+                                 .select(Cdx, zero);
+                active_part_z =
+                    (tmp_lo.array() < 0)
+                        .select(primal_residual_in_scaled_lo, zero) +
+                    (tmp_up.array() > 0)
+                        .select(primal_residual_in_scaled_up, zero);
               }
 
-              T a = dx.dot(Hdx) +                         //
-                    results.info.rho * dx.squaredNorm() + //
-                    results.info.mu_eq_inv * Adx.squaredNorm() +
-                    +results.info.mu_in_inv * Cdx_active.squaredNorm() +
-                    results.info.nu * results.info.mu_eq *
+              T a =
+                  dx.dot(Hdx) +                          //
+                  results.info.rho * dx.squaredNorm() +  //
+                  results.info.mu_eq_inv * Adx.squaredNorm() +
+                  +results.info.mu_in_inv * Cdx_active.squaredNorm() +
+                  results.info.nu * results.info.mu_eq *
                       (results.info.mu_eq_inv * Adx - dy).squaredNorm() +
-                    results.info.nu * results.info.mu_in *
+                  results.info.nu * results.info.mu_in *
                       (results.info.mu_in_inv * Cdx_active - dz).squaredNorm();
 
               T b =
-                x_e.dot(Hdx) +                                               //
-                (results.info.rho * (x_e - x_prev_e) + g_scaled_e).dot(dx) + //
-                Adx.dot(results.info.mu_eq_inv * primal_residual_eq_scaled +
-                        y_e) +                                           //
-                results.info.mu_in_inv * Cdx_active.dot(active_part_z) + //
-                results.info.nu * primal_residual_eq_scaled.dot(
-                                    results.info.mu_eq_inv * Adx - dy) + //
-                results.info.nu *
-                  (active_part_z - results.info.mu_in * z_e)
-                    .dot(results.info.mu_in_inv * Cdx_active - dz);
+                  x_e.dot(Hdx) +  //
+                  (results.info.rho * (x_e - x_prev_e) + g_scaled_e)
+                      .dot(dx) +  //
+                  Adx.dot(results.info.mu_eq_inv * primal_residual_eq_scaled +
+                          y_e) +                                            //
+                  results.info.mu_in_inv * Cdx_active.dot(active_part_z) +  //
+                  results.info.nu * primal_residual_eq_scaled.dot(
+                                        results.info.mu_eq_inv * Adx - dy) +  //
+                  results.info.nu *
+                      (active_part_z - results.info.mu_in * z_e)
+                          .dot(results.info.mu_in_inv * Cdx_active - dz);
 
               return {
-                a,
-                b,
-                a * alpha_cur + b,
+                  a,
+                  b,
+                  a * alpha_cur + b,
               };
             };
 
@@ -1072,8 +953,8 @@ qp_solve(Results<T>& results,
 
             for (isize i = 0; i < n_in; ++i) {
               T alpha_candidates[2] = {
-                -primal_residual_in_scaled_lo(i) / (Cdx(i)),
-                -primal_residual_in_scaled_up(i) / (Cdx(i)),
+                  -primal_residual_in_scaled_lo(i) / (Cdx(i)),
+                  -primal_residual_in_scaled_up(i) / (Cdx(i)),
               };
 
               for (auto alpha_candidate : alpha_candidates) {
@@ -1085,8 +966,8 @@ qp_solve(Results<T>& results,
             }
             std::sort(alphas.data(), alphas.data() + alphas_count);
             alphas_count =
-              std::unique(alphas.data(), alphas.data() + alphas_count) -
-              alphas.data();
+                std::unique(alphas.data(), alphas.data() + alphas_count) -
+                alphas.data();
 
             if (alphas_count > 0 && alphas[0] <= 1) {
               auto infty = std::numeric_limits<T>::infinity();
@@ -1113,7 +994,7 @@ qp_solve(Results<T>& results,
 
                 if (alpha_last_neg == 0) {
                   last_neg_grad =
-                    primal_dual_gradient_norm(alpha_last_neg).grad;
+                      primal_dual_gradient_norm(alpha_last_neg).grad;
                 }
 
                 if (alpha_first_pos == infty) {
@@ -1122,7 +1003,7 @@ qp_solve(Results<T>& results,
                 } else {
                   alpha = alpha_last_neg -
                           last_neg_grad * (alpha_first_pos - alpha_last_neg) /
-                            (first_pos_grad - last_neg_grad);
+                              (first_pos_grad - last_neg_grad);
                 }
               }
             } else {
@@ -1140,17 +1021,17 @@ qp_solve(Results<T>& results,
           z_e += alpha * dz;
 
           dual_residual_scaled +=
-            alpha * (Hdx + ATdy + CTdz + results.info.rho * dx);
+              alpha * (Hdx + ATdy + CTdz + results.info.rho * dx);
           primal_residual_eq_scaled += alpha * (Adx - results.info.mu_eq * dy);
           primal_residual_in_scaled_lo += alpha * Cdx;
           primal_residual_in_scaled_up += alpha * Cdx;
 
           T err_in = std::max({
-            (infty_norm(helpers::negative_part(primal_residual_in_scaled_lo) +
-                        helpers::positive_part(primal_residual_in_scaled_up) -
-                        results.info.mu_in * z_e)),
-            (infty_norm(primal_residual_eq_scaled)),
-            (infty_norm(dual_residual_scaled)),
+              (infty_norm(helpers::negative_part(primal_residual_in_scaled_lo) +
+                          helpers::positive_part(primal_residual_in_scaled_up) -
+                          results.info.mu_in * z_e)),
+              (infty_norm(primal_residual_eq_scaled)),
+              (infty_norm(dual_residual_scaled)),
           });
           /* put in debug mode
           if (settings.verbose) {
@@ -1175,24 +1056,19 @@ qp_solve(Results<T>& results,
 
           // compute primal and dual infeasibility criteria
           bool is_primal_infeasible = proxsuite::proxqp::sparse::detail::
-            global_primal_residual_infeasibility(
-              VectorViewMut<T>{ from_eigen, ATdy },
-              VectorViewMut<T>{ from_eigen, CTdz },
-              VectorViewMut<T>{ from_eigen, dy },
-              VectorViewMut<T>{ from_eigen, dz },
-              qp_scaled.as_const(),
-              settings,
-              precond);
+              global_primal_residual_infeasibility(
+                  VectorViewMut<T>{from_eigen, ATdy},
+                  VectorViewMut<T>{from_eigen, CTdz},
+                  VectorViewMut<T>{from_eigen, dy},
+                  VectorViewMut<T>{from_eigen, dz}, qp_scaled.as_const(),
+                  settings, precond);
           bool is_dual_infeasible = proxsuite::proxqp::sparse::detail::
-            global_dual_residual_infeasibility(
-              VectorViewMut<T>{ from_eigen, Adx },
-              VectorViewMut<T>{ from_eigen, Cdx },
-              VectorViewMut<T>{ from_eigen, Hdx },
-              VectorViewMut<T>{ from_eigen, dx },
-              qp_scaled.as_const(),
-              settings,
-              data,
-              precond);
+              global_dual_residual_infeasibility(
+                  VectorViewMut<T>{from_eigen, Adx},
+                  VectorViewMut<T>{from_eigen, Cdx},
+                  VectorViewMut<T>{from_eigen, Hdx},
+                  VectorViewMut<T>{from_eigen, dx}, qp_scaled.as_const(),
+                  settings, data, precond);
           if (is_primal_infeasible) {
             results.info.status = QPSolverOutput::PROXQP_PRIMAL_INFEASIBLE;
             dw_prev = dw;
@@ -1219,34 +1095,22 @@ qp_solve(Results<T>& results,
       // (primal_feasibility_lhs_new, dual_feasibility_lhs_new) en guessant leur
       // type via auto
       VEG_BIND(
-        auto,
-        (primal_feasibility_lhs_new, dual_feasibility_lhs_new),
-        detail::unscaled_primal_dual_residual(work,
-                                              results,
-                                              primal_residual_eq_scaled,
-                                              primal_residual_in_scaled_lo,
-                                              primal_residual_in_scaled_up,
-                                              dual_residual_scaled,
-                                              primal_feasibility_eq_rhs_0,
-                                              primal_feasibility_in_rhs_0,
-                                              dual_feasibility_rhs_0,
-                                              dual_feasibility_rhs_1,
-                                              dual_feasibility_rhs_3,
-                                              rhs_duality_gap,
-                                              precond,
-                                              data,
-                                              qp_scaled.as_const(),
-                                              detail::vec_mut(x_e),
-                                              detail::vec_mut(y_e),
-                                              detail::vec_mut(z_e),
-                                              stack));
+          auto, (primal_feasibility_lhs_new, dual_feasibility_lhs_new),
+          detail::unscaled_primal_dual_residual(
+              work, results, primal_residual_eq_scaled,
+              primal_residual_in_scaled_lo, primal_residual_in_scaled_up,
+              dual_residual_scaled, primal_feasibility_eq_rhs_0,
+              primal_feasibility_in_rhs_0, dual_feasibility_rhs_0,
+              dual_feasibility_rhs_1, dual_feasibility_rhs_3, rhs_duality_gap,
+              precond, data, qp_scaled.as_const(), detail::vec_mut(x_e),
+              detail::vec_mut(y_e), detail::vec_mut(z_e), stack));
 
       if (is_primal_feasible(primal_feasibility_lhs_new) &&
           is_dual_feasible(dual_feasibility_lhs_new)) {
         if (settings.check_duality_gap) {
           if (std::fabs(results.info.duality_gap) <=
               settings.eps_duality_gap_abs +
-                settings.eps_duality_gap_rel * rhs_duality_gap) {
+                  settings.eps_duality_gap_rel * rhs_duality_gap) {
             results.info.pri_res = primal_feasibility_lhs_new;
             results.info.dua_res = dual_feasibility_lhs_new;
             results.info.status = QPSolverOutput::PROXQP_SOLVED;
@@ -1270,19 +1134,21 @@ qp_solve(Results<T>& results,
         } else {
           y_e = y_prev_e;
           z_e = z_prev_e;
-          new_bcl_mu_in = std::max(
-            results.info.mu_in * settings.mu_update_factor, settings.mu_min_in);
-          new_bcl_mu_eq = std::max(
-            results.info.mu_eq * settings.mu_update_factor, settings.mu_min_eq);
+          new_bcl_mu_in =
+              std::max(results.info.mu_in * settings.mu_update_factor,
+                       settings.mu_min_in);
+          new_bcl_mu_eq =
+              std::max(results.info.mu_eq * settings.mu_update_factor,
+                       settings.mu_min_eq);
 
           new_bcl_mu_in_inv =
-            std::min(results.info.mu_in_inv * settings.mu_update_inv_factor,
-                     settings.mu_max_in_inv);
+              std::min(results.info.mu_in_inv * settings.mu_update_inv_factor,
+                       settings.mu_max_in_inv);
           new_bcl_mu_eq_inv =
-            std::min(results.info.mu_eq_inv * settings.mu_update_inv_factor,
-                     settings.mu_max_eq_inv);
+              std::min(results.info.mu_eq_inv * settings.mu_update_inv_factor,
+                       settings.mu_max_eq_inv);
           bcl_eta_ext =
-            bcl_eta_ext_init * pow(new_bcl_mu_in, settings.alpha_bcl);
+              bcl_eta_ext_init * pow(new_bcl_mu_in, settings.alpha_bcl);
           bcl_eta_in = std::max(new_bcl_mu_in, eps_in_min);
         }
       };
@@ -1290,31 +1156,19 @@ qp_solve(Results<T>& results,
       bcl_update();
 
       VEG_BIND(
-        auto,
-        (_, dual_feasibility_lhs_new_2),
-        detail::unscaled_primal_dual_residual(work,
-                                              results,
-                                              primal_residual_eq_scaled,
-                                              primal_residual_in_scaled_lo,
-                                              primal_residual_in_scaled_up,
-                                              dual_residual_scaled,
-                                              primal_feasibility_eq_rhs_0,
-                                              primal_feasibility_in_rhs_0,
-                                              dual_feasibility_rhs_0,
-                                              dual_feasibility_rhs_1,
-                                              dual_feasibility_rhs_3,
-                                              rhs_duality_gap,
-                                              precond,
-                                              data,
-                                              qp_scaled.as_const(),
-                                              detail::vec_mut(x_e),
-                                              detail::vec_mut(y_e),
-                                              detail::vec_mut(z_e),
-                                              stack));
+          auto, (_, dual_feasibility_lhs_new_2),
+          detail::unscaled_primal_dual_residual(
+              work, results, primal_residual_eq_scaled,
+              primal_residual_in_scaled_lo, primal_residual_in_scaled_up,
+              dual_residual_scaled, primal_feasibility_eq_rhs_0,
+              primal_feasibility_in_rhs_0, dual_feasibility_rhs_0,
+              dual_feasibility_rhs_1, dual_feasibility_rhs_3, rhs_duality_gap,
+              precond, data, qp_scaled.as_const(), detail::vec_mut(x_e),
+              detail::vec_mut(y_e), detail::vec_mut(z_e), stack));
       proxsuite::linalg::veg::unused(_);
 
-      if (primal_feasibility_lhs_new >= primal_feasibility_lhs && //
-          dual_feasibility_lhs_new_2 >= primal_feasibility_lhs && //
+      if (primal_feasibility_lhs_new >= primal_feasibility_lhs &&  //
+          dual_feasibility_lhs_new_2 >= primal_feasibility_lhs &&  //
           results.info.mu_in <= T(1.E-5)) {
         new_bcl_mu_in = settings.cold_reset_mu_in;
         new_bcl_mu_eq = settings.cold_reset_mu_eq;
@@ -1338,7 +1192,7 @@ qp_solve(Results<T>& results,
                       xtag);
       */
       if (work.internal.do_ldlt) {
-        isize w_values = 1; // un seul elt non nul
+        isize w_values = 1;  // un seul elt non nul
         T alpha = 0;
         for (isize j = 0; j < n_eq + n_in; ++j) {
           I row_index = I(j + n);
@@ -1353,17 +1207,17 @@ qp_solve(Results<T>& results,
           }
           T value = 1;
           proxsuite::linalg::sparse::VecRef<T, I> w{
-            proxsuite::linalg::veg::from_raw_parts,
-            n + n_eq + n_in,
-            w_values,
-            &row_index, // &: adresse de row index
-            &value,
+              proxsuite::linalg::veg::from_raw_parts,
+              n + n_eq + n_in,
+              w_values,
+              &row_index,  // &: adresse de row index
+              &value,
           };
           ldl = rank1_update(ldl, etree, perm_inv, w, alpha, stack);
         }
       } else {
-        refactorize(
-          work, results, kkt_active, active_constraints, data, stack, xtag);
+        refactorize(work, results, kkt_active, active_constraints, data, stack,
+                    xtag);
       }
     }
 
@@ -1375,17 +1229,17 @@ qp_solve(Results<T>& results,
   LDLT_TEMP_VEC_UNINIT(T, tmp, n, stack);
   tmp.setZero();
   detail::noalias_symhiv_add(tmp, qp_scaled.H.to_eigen(), x_e);
-  precond.unscale_dual_residual_in_place({ proxqp::from_eigen, tmp });
+  precond.unscale_dual_residual_in_place({proxqp::from_eigen, tmp});
 
-  precond.unscale_primal_in_place({ proxqp::from_eigen, x_e });
-  precond.unscale_dual_in_place_eq({ proxqp::from_eigen, y_e });
-  precond.unscale_dual_in_place_in({ proxqp::from_eigen, z_e });
+  precond.unscale_primal_in_place({proxqp::from_eigen, x_e});
+  precond.unscale_dual_in_place_eq({proxqp::from_eigen, y_e});
+  precond.unscale_dual_in_place_in({proxqp::from_eigen, z_e});
   tmp *= 0.5;
   tmp += data.g;
   results.info.objValue = (tmp).dot(x_e);
 
   if (settings.compute_timings) {
-    results.info.solve_time = work.timer.elapsed().user; // in nanoseconds
+    results.info.solve_time = work.timer.elapsed().user;  // in nanoseconds
     results.info.run_time = results.info.solve_time + results.info.setup_time;
   }
   if (settings.verbose) {
@@ -1434,8 +1288,8 @@ qp_solve(Results<T>& results,
 
   work.set_dirty();
 }
-} // namespace sparse
-} // namespace proxqp
-} // namespace proxsuite
+}  // namespace sparse
+}  // namespace proxqp
+}  // namespace proxsuite
 
 #endif /* end of include guard PROXSUITE_PROXQP_SPARSE_SOLVER_HPP */

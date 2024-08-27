@@ -22,7 +22,8 @@
  *
  * Copyright:
  *   2020      Evan Nemerson <evan@nemerson.com>
- *   2020      Sean Maher <seanptmaher@gmail.com> (Copyright owned by Google, LLC)
+ *   2020      Sean Maher <seanptmaher@gmail.com> (Copyright owned by Google,
+ * LLC)
  */
 
 /* Implementation notes (seanptmaher):
@@ -42,81 +43,80 @@ SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-int32_t
-simde_vqdmullh_s16(int16_t a, int16_t b) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vqdmullh_s16(a, b);
-  #else
-    int32_t mul = (HEDLEY_STATIC_CAST(int32_t, a) * HEDLEY_STATIC_CAST(int32_t, b));
-    return (labs(mul) & (1 << 30)) ? ((mul < 0) ? INT32_MIN : INT32_MAX) : mul << 1;
-  #endif
+int32_t simde_vqdmullh_s16(int16_t a, int16_t b) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vqdmullh_s16(a, b);
+#else
+  int32_t mul =
+      (HEDLEY_STATIC_CAST(int32_t, a) * HEDLEY_STATIC_CAST(int32_t, b));
+  return (labs(mul) & (1 << 30)) ? ((mul < 0) ? INT32_MIN : INT32_MAX)
+                                 : mul << 1;
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vqdmullh_s16
-  #define vqdmullh_s16(a, b) simde_vqdmullh_s16((a), (b))
+#undef vqdmullh_s16
+#define vqdmullh_s16(a, b) simde_vqdmullh_s16((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-int64_t
-simde_vqdmulls_s32(int32_t a, int32_t b) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vqdmulls_s32(a, b);
-  #else
-    int64_t mul = (HEDLEY_STATIC_CAST(int64_t, a) * HEDLEY_STATIC_CAST(int64_t, b));
-    return ((a > 0 ? a : -a) & (HEDLEY_STATIC_CAST(int64_t, 1) << 62)) ? ((mul < 0) ? INT64_MIN : INT64_MAX) : mul << 1;
-  #endif
+int64_t simde_vqdmulls_s32(int32_t a, int32_t b) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vqdmulls_s32(a, b);
+#else
+  int64_t mul =
+      (HEDLEY_STATIC_CAST(int64_t, a) * HEDLEY_STATIC_CAST(int64_t, b));
+  return ((a > 0 ? a : -a) & (HEDLEY_STATIC_CAST(int64_t, 1) << 62))
+             ? ((mul < 0) ? INT64_MIN : INT64_MAX)
+             : mul << 1;
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vqdmulls_s16
-  #define vqdmulls_s16(a, b) simde_vqdmulls_s16((a), (b))
+#undef vqdmulls_s16
+#define vqdmulls_s16(a, b) simde_vqdmulls_s16((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int32x4_t
-simde_vqdmull_s16(simde_int16x4_t a, simde_int16x4_t b) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vqdmull_s16(a, b);
-  #else
-    simde_int32x4_private r_;
-    simde_int16x4_private
-      a_ = simde_int16x4_to_private(a),
-      b_ = simde_int16x4_to_private(b);
+simde_int32x4_t simde_vqdmull_s16(simde_int16x4_t a, simde_int16x4_t b) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vqdmull_s16(a, b);
+#else
+  simde_int32x4_private r_;
+  simde_int16x4_private a_ = simde_int16x4_to_private(a),
+                        b_ = simde_int16x4_to_private(b);
 
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-      r_.values[i] = simde_vqdmullh_s16(a_.values[i], b_.values[i]);
-    }
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = simde_vqdmullh_s16(a_.values[i], b_.values[i]);
+  }
 
-    return simde_int32x4_from_private(r_);
-  #endif
+  return simde_int32x4_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vqdmull_s16
-  #define vqdmull_s16(a, b) simde_vqdmull_s16((a), (b))
+#undef vqdmull_s16
+#define vqdmull_s16(a, b) simde_vqdmull_s16((a), (b))
 #endif
 SIMDE_FUNCTION_ATTRIBUTES
 
-simde_int64x2_t
-simde_vqdmull_s32(simde_int32x2_t a, simde_int32x2_t b) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vqdmull_s32(a, b);
-  #else
-    simde_int64x2_private r_;
-    simde_int32x2_private
-      a_ = simde_int32x2_to_private(a),
-      b_ = simde_int32x2_to_private(b);
+simde_int64x2_t simde_vqdmull_s32(simde_int32x2_t a, simde_int32x2_t b) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vqdmull_s32(a, b);
+#else
+  simde_int64x2_private r_;
+  simde_int32x2_private a_ = simde_int32x2_to_private(a),
+                        b_ = simde_int32x2_to_private(b);
 
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-      r_.values[i] = simde_vqdmulls_s32(a_.values[i], b_.values[i]);
-    }
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = simde_vqdmulls_s32(a_.values[i], b_.values[i]);
+  }
 
-    return simde_int64x2_from_private(r_);
-  #endif
+  return simde_int64x2_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vqdmull_s32
-  #define vqdmull_s32(a, b) simde_vqdmull_s32((a), (b))
+#undef vqdmull_s32
+#define vqdmull_s32(a, b) simde_vqdmull_s32((a), (b))
 #endif
 
 SIMDE_END_DECLS_

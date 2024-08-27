@@ -3,78 +3,72 @@
 #ifndef BonLpBranchingSolver_H
 #define BonLpBranchingSolver_H
 
-#include "BonStrongBranchingSolver.hpp"
 #include "BonEcpCuts.hpp"
+#include "BonStrongBranchingSolver.hpp"
 
-namespace Bonmin
-{
+namespace Bonmin {
 
-  /** Implementation of BonChooseVariable for curvature-based braching.
-  */
+/** Implementation of BonChooseVariable for curvature-based braching.
+ */
 
-  class LpBranchingSolver : public StrongBranchingSolver
-  {
+class LpBranchingSolver : public StrongBranchingSolver {
+ public:
+  /// Constructor from setup
+  LpBranchingSolver(BabSetupBase* b);
+  /// Copy constructor
+  LpBranchingSolver(const LpBranchingSolver&);
 
-  public:
+  /// Assignment operator
+  LpBranchingSolver& operator=(const LpBranchingSolver& rhs);
 
-    /// Constructor from setup 
-    LpBranchingSolver (BabSetupBase *b);
-    /// Copy constructor
-    LpBranchingSolver (const LpBranchingSolver &);
+  /// Destructor
+  virtual ~LpBranchingSolver();
 
-    /// Assignment operator
-    LpBranchingSolver & operator= (const LpBranchingSolver& rhs);
+  /// Called to initialize solver before a bunch of strong branching
+  /// solves
+  virtual void markHotStart(OsiTMINLPInterface* tminlp_interface);
 
-    /// Destructor
-    virtual ~LpBranchingSolver ();
+  /// Called to solve the current TMINLP (with changed bound information)
+  virtual TNLPSolver::ReturnStatus solveFromHotStart(
+      OsiTMINLPInterface* tminlp_interface);
 
-    /// Called to initialize solver before a bunch of strong branching
-    /// solves
-    virtual void markHotStart(OsiTMINLPInterface* tminlp_interface);
+  /// Called after all strong branching solves in a node
+  virtual void unmarkHotStart(OsiTMINLPInterface* tminlp_interface);
 
-    /// Called to solve the current TMINLP (with changed bound information)
-    virtual TNLPSolver::ReturnStatus solveFromHotStart(OsiTMINLPInterface* tminlp_interface);
+  void setMaxCuttingPlaneIter(int num) { maxCuttingPlaneIterations_ = num; }
 
-    /// Called after all strong branching solves in a node
-    virtual void unmarkHotStart(OsiTMINLPInterface* tminlp_interface);
+  static void registerOptions(
+      Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions);
 
-    void setMaxCuttingPlaneIter(int num)
-    {
-      maxCuttingPlaneIterations_ = num;
-    }
+ private:
+  /// Default Constructor
+  LpBranchingSolver();
 
-    static void registerOptions(Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions);
+  /// Linear solver
+  OsiSolverInterface* lin_;
 
-  private:
-    /// Default Constructor
-    LpBranchingSolver ();
+  /// Warm start object for linear solver
+  CoinWarmStart* warm_;
 
-    /// Linear solver
-    OsiSolverInterface* lin_;
+  /// Ecp cut generate
+  EcpCuts* ecp_;
 
-    /// Warm start object for linear solver
-    CoinWarmStart* warm_;
+  /// Number of maximal ECP cuts
+  int maxCuttingPlaneIterations_;
 
-    /// Ecp cut generate
-    EcpCuts* ecp_;
+  /// absolute tolerance for ECP cuts
+  double abs_ecp_tol_;
 
-    /// Number of maximal ECP cuts
-    int maxCuttingPlaneIterations_;
+  /// relative tolerance for ECP cuts
+  double rel_ecp_tol_;
 
-    /// absolute tolerance for ECP cuts
-    double abs_ecp_tol_;
-
-    /// relative tolerance for ECP cuts
-    double rel_ecp_tol_;
-
-
-   enum WarmStartMethod {
-     Basis=0 /** Use basis*/,
-     Clone /** clone problem*/
-   };
-   /// Way problems are warm started
-   WarmStartMethod warm_start_mode_;
+  enum WarmStartMethod {
+    Basis = 0 /** Use basis*/,
+    Clone /** clone problem*/
   };
+  /// Way problems are warm started
+  WarmStartMethod warm_start_mode_;
+};
 
-}
+}  // namespace Bonmin
 #endif

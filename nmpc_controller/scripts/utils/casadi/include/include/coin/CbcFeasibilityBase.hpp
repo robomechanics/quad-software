@@ -6,12 +6,11 @@
 #ifndef CbcFeasibilityBase_H
 #define CbcFeasibilityBase_H
 
-//#############################################################################
-/*  There are cases where the user wants to control how CBC sees the problems feasibility.
-    The user may want to examine the problem and say :
-    a) The default looks OK
-    b) Pretend this problem is Integer feasible
-    c) Pretend this problem is infeasible even though it looks feasible
+// #############################################################################
+/*  There are cases where the user wants to control how CBC sees the problems
+   feasibility. The user may want to examine the problem and say : a) The
+   default looks OK b) Pretend this problem is Integer feasible c) Pretend this
+   problem is infeasible even though it looks feasible
 
     This simple class allows user to do that.
 
@@ -19,7 +18,7 @@
 
 class CbcModel;
 class CbcFeasibilityBase {
-public:
+ public:
   // Default Constructor
   CbcFeasibilityBase() {}
 
@@ -32,10 +31,7 @@ public:
        -1 pretend infeasible
        1 pretend integer solution
     */
-  virtual int feasible(CbcModel *, int)
-  {
-    return 0;
-  }
+  virtual int feasible(CbcModel *, int) { return 0; }
 
   virtual ~CbcFeasibilityBase() {}
 
@@ -43,18 +39,14 @@ public:
   CbcFeasibilityBase(const CbcFeasibilityBase &) {}
 
   // Assignment operator
-  CbcFeasibilityBase &operator=(const CbcFeasibilityBase &)
-  {
-    return *this;
-  }
+  CbcFeasibilityBase &operator=(const CbcFeasibilityBase &) { return *this; }
 
   /// Clone
-  virtual CbcFeasibilityBase *clone() const
-  {
+  virtual CbcFeasibilityBase *clone() const {
     return new CbcFeasibilityBase(*this);
   }
 };
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

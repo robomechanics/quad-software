@@ -16,7 +16,7 @@
 /*! \brief Tracking information for an explicit zero coefficient
 
   \todo Why isn't this a nested class in drop_zero_coefficients_action?
-	That would match the structure of other presolve classes.
+        That would match the structure of other presolve classes.
 */
 
 struct dropped_zero {
@@ -30,36 +30,31 @@ struct dropped_zero {
   matrix. The postsolve action puts them back.
 */
 class drop_zero_coefficients_action : public CoinPresolveAction {
-
   const int nzeros_;
   const dropped_zero *const zeros_;
 
-  drop_zero_coefficients_action(int nzeros,
-    const dropped_zero *zeros,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nzeros_(nzeros)
-    , zeros_(zeros)
-  {
-  }
+  drop_zero_coefficients_action(int nzeros, const dropped_zero *zeros,
+                                const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nzeros_(nzeros), zeros_(zeros) {}
 
-public:
+ public:
   const char *name() const { return ("drop_zero_coefficients_action"); }
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    int *checkcols,
-    int ncheckcols,
-    const CoinPresolveAction *next);
+                                            int *checkcols, int ncheckcols,
+                                            const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
-  virtual ~drop_zero_coefficients_action() { deleteAction(zeros_, dropped_zero *); }
+  virtual ~drop_zero_coefficients_action() {
+    deleteAction(zeros_, dropped_zero *);
+  }
 };
 
-const CoinPresolveAction *drop_zero_coefficients(CoinPresolveMatrix *prob,
-  const CoinPresolveAction *next);
+const CoinPresolveAction *drop_zero_coefficients(
+    CoinPresolveMatrix *prob, const CoinPresolveAction *next);
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

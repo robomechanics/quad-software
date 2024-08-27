@@ -6,8 +6,9 @@
 #ifndef ClpMessage_H
 #define ClpMessage_H
 
-#include "CoinPragma.hpp"
 #include <cstring>
+
+#include "CoinPragma.hpp"
 
 // This deals with Clp messages (as against Osi messages etc)
 
@@ -116,8 +117,7 @@ enum CLP_Message {
 /** This deals with Clp messages (as against Osi messages etc)
  */
 class ClpMessage : public CoinMessages {
-
-public:
+ public:
   /**@name Constructors etc */
   //@{
   /** Constructor */
@@ -128,4 +128,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

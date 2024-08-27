@@ -8,8 +8,8 @@
 #ifndef CbcGeneralDepth_H
 #define CbcGeneralDepth_H
 
-#include "CbcGeneral.hpp"
 #include "CbcBranchBase.hpp"
+#include "CbcGeneral.hpp"
 #include "CbcSubProblem.hpp"
 
 #ifdef COIN_HAS_CLP
@@ -17,12 +17,11 @@
 /** Define a catch all class.
     This will create a list of subproblems using partial evaluation
 */
-#include "ClpSimplex.hpp"
 #include "ClpNode.hpp"
+#include "ClpSimplex.hpp"
 
 class CbcGeneralDepth : public CbcGeneral {
-
-public:
+ public:
   // Default Constructor
   CbcGeneralDepth();
 
@@ -48,49 +47,33 @@ public:
 
   /// Infeasibility - large is 0.5
   virtual double infeasibility(const OsiBranchingInformation *info,
-    int &preferredWay) const;
+                               int &preferredWay) const;
 
   using CbcObject::feasibleRegion;
   /// This looks at solution and sets bounds to contain solution
   virtual void feasibleRegion();
 
   /// Creates a branching object
-  virtual CbcBranchingObject *createCbcBranch(OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
+  virtual CbcBranchingObject *createCbcBranch(
+      OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
   /// Return maximum number of nodes
-  inline int maximumNodes() const
-  {
-    return maximumNodes_;
-  }
+  inline int maximumNodes() const { return maximumNodes_; }
   /// Get maximum depth
-  inline int maximumDepth() const
-  {
-    return maximumDepth_;
-  }
+  inline int maximumDepth() const { return maximumDepth_; }
   /// Set maximum depth
-  inline void setMaximumDepth(int value)
-  {
-    maximumDepth_ = value;
-  }
+  inline void setMaximumDepth(int value) { maximumDepth_ = value; }
   /// Return number of nodes
-  inline int numberNodes() const
-  {
-    return numberNodes_;
-  }
+  inline int numberNodes() const { return numberNodes_; }
   /// Get which solution
-  inline int whichSolution() const
-  {
-    return whichSolution_;
-  }
+  inline int whichSolution() const { return whichSolution_; }
   /// Get ClpNode info
-  inline ClpNode *nodeInfo(int which)
-  {
-    return nodeInfo_->nodeInfo_[which];
-  }
+  inline ClpNode *nodeInfo(int which) { return nodeInfo_->nodeInfo_[which]; }
 
   /// Redoes data when sequence numbers change
-  virtual void redoSequenceEtc(CbcModel *model, int numberColumns, const int *originalColumns);
+  virtual void redoSequenceEtc(CbcModel *model, int numberColumns,
+                               const int *originalColumns);
 
-protected:
+ protected:
   /// data
   /// Maximum depth
   int maximumDepth_;
@@ -108,8 +91,7 @@ protected:
  */
 class CbcNode;
 class CbcGeneralBranchingObject : public CbcBranchingObject {
-
-public:
+ public:
   // Default Constructor
   CbcGeneralBranchingObject();
 
@@ -137,21 +119,15 @@ public:
 
   using CbcBranchingObject::print;
   /** \brief Print something about branch - only if log level high
-    */
+   */
   virtual void print();
   /// Fill in current objective etc
   void state(double &objectiveValue, double &sumInfeasibilities,
-    int &numberUnsatisfied, int which) const;
+             int &numberUnsatisfied, int which) const;
   /// Set CbcNode
-  inline void setNode(CbcNode *node)
-  {
-    node_ = node;
-  }
+  inline void setNode(CbcNode *node) { node_ = node; }
   /** Return the type (an integer identifier) of \c this */
-  virtual CbcBranchObjType type() const
-  {
-    return GeneralDepthBranchObj;
-  }
+  virtual CbcBranchObjType type() const { return GeneralDepthBranchObj; }
 
   /** Compare the original object of \c this with the original object of \c
         brObj. Assumes that there is an ordering of the original objects.
@@ -170,35 +146,25 @@ public:
         replaceIfOverlap is true) replace the current branching object with one
         whose feasible region is the overlap.
      */
-  virtual CbcRangeCompare compareBranchingObject(const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
+  virtual CbcRangeCompare compareBranchingObject(
+      const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
   /// Number of subproblems
-  inline int numberSubProblems() const
-  {
-    return numberSubProblems_;
-  }
+  inline int numberSubProblems() const { return numberSubProblems_; }
   /// Decrement number left and return number
-  inline int decrementNumberLeft()
-  {
+  inline int decrementNumberLeft() {
     numberSubLeft_--;
     return numberSubLeft_;
   }
   /// Which node we want to use
-  inline int whichNode() const
-  {
-    return whichNode_;
-  }
+  inline int whichNode() const { return whichNode_; }
   /// Set which node we want to use
-  inline void setWhichNode(int value)
-  {
-    whichNode_ = value;
-  }
+  inline void setWhichNode(int value) { whichNode_ = value; }
   // Sub problem
-  const CbcSubProblem *subProblem(int which) const
-  {
+  const CbcSubProblem *subProblem(int which) const {
     return subProblems_ + which;
   }
 
-public:
+ public:
   /// data
   // Sub problems
   CbcSubProblem *subProblems_;
@@ -217,21 +183,20 @@ public:
 
  */
 class CbcOneGeneralBranchingObject : public CbcBranchingObject {
-
-public:
+ public:
   // Default Constructor
   CbcOneGeneralBranchingObject();
 
   // Useful constructor
   CbcOneGeneralBranchingObject(CbcModel *model,
-    CbcGeneralBranchingObject *object,
-    int whichOne);
+                               CbcGeneralBranchingObject *object, int whichOne);
 
   // Copy constructor
   CbcOneGeneralBranchingObject(const CbcOneGeneralBranchingObject &);
 
   // Assignment operator
-  CbcOneGeneralBranchingObject &operator=(const CbcOneGeneralBranchingObject &rhs);
+  CbcOneGeneralBranchingObject &operator=(
+      const CbcOneGeneralBranchingObject &rhs);
 
   /// Clone
   virtual CbcBranchingObject *clone() const;
@@ -248,13 +213,10 @@ public:
 
   using CbcBranchingObject::print;
   /** \brief Print something about branch - only if log level high
-    */
+   */
   virtual void print();
   /** Return the type (an integer identifier) of \c this */
-  virtual CbcBranchObjType type() const
-  {
-    return OneGeneralBranchingObj;
-  }
+  virtual CbcBranchObjType type() const { return OneGeneralBranchingObj; }
 
   /** Compare the original object of \c this with the original object of \c
         brObj. Assumes that there is an ordering of the original objects.
@@ -273,17 +235,18 @@ public:
         replaceIfOverlap is true) replace the current branching object with one
         whose feasible region is the overlap.
      */
-  virtual CbcRangeCompare compareBranchingObject(const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
+  virtual CbcRangeCompare compareBranchingObject(
+      const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
 
-public:
+ public:
   /// data
   /// Object
   CbcGeneralBranchingObject *object_;
   /// Which one
   int whichOne_;
 };
-#endif //COIN_HAS_CLP
+#endif  // COIN_HAS_CLP
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

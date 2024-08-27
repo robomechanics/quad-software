@@ -12,12 +12,13 @@
 #ifndef ClpPEPrimalColumnSteepest_H
 #define ClpPEPrimalColumnSteepest_H
 
-#include "ClpPrimalColumnSteepest.hpp"
-#include "ClpFactorization.hpp"
-#include "ClpPESimplex.hpp"
 #include <bitset>
 
-//#############################################################################
+#include "ClpFactorization.hpp"
+#include "ClpPESimplex.hpp"
+#include "ClpPrimalColumnSteepest.hpp"
+
+// #############################################################################
 class CoinIndexedVector;
 
 /** Primal Column Pivot Steepest Edge Algorithm Class
@@ -27,7 +28,7 @@ See Forrest-Goldfarb paper for algorithm
 */
 
 class ClpPEPrimalColumnSteepest : public ClpPrimalColumnSteepest {
-public:
+ public:
   ///@name Constructors and destructors
   //@{
   /** Default Constructor
@@ -52,7 +53,7 @@ public:
   /// Clone
   virtual ClpPrimalColumnPivot *clone(bool copyData = true) const;
 
-public:
+ public:
   ///@name Algorithmic methods
   //@{
 
@@ -64,26 +65,23 @@ public:
          profiling and speed
      */
   virtual int pivotColumn(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow1,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+                          CoinIndexedVector *spareRow1,
+                          CoinIndexedVector *spareRow2,
+                          CoinIndexedVector *spareColumn1,
+                          CoinIndexedVector *spareColumn2);
 
   //@}
   /** Save weights - this may initialize weights as well
-	 This is as parent but may initialize ClpPESimplex
+         This is as parent but may initialize ClpPESimplex
      */
   virtual void saveWeights(ClpSimplex *model, int mode);
   /// Updates weights - as ordinary but checks for zero moves
   virtual void updateWeights(CoinIndexedVector *input);
   //---------------------------------------------------------------------------
   // Psi
-  inline double psi() const
-  {
-    return psi_;
-  }
+  inline double psi() const { return psi_; }
 
-private:
+ private:
   /* this PESimplex object is used to identify the compatible variables */
   ClpPESimplex *modelPE_;
 
@@ -95,7 +93,8 @@ private:
   int iCurrent_;
   int iInterval_;
 
-  /* record if previous iterations concluded that compatibles should not be checked */
+  /* record if previous iterations concluded that compatibles should not be
+   * checked */
   int coDegenCompatibles_;
   int coConsecutiveCompatibles_;
   bool updateCompatibles_;
@@ -104,4 +103,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

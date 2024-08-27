@@ -9,11 +9,11 @@
 class CoinPackedMatrix;
 #include "CoinTypes.hpp"
 
-//#############################################################################
+// #############################################################################
 
-/** NON Abstract Base Class for interfacing with cut generators or branching code or ..
-    It is designed to be snapshot of a problem at a node in tree
-    
+/** NON Abstract Base Class for interfacing with cut generators or branching
+  code or .. It is designed to be snapshot of a problem at a node in tree
+
   The class may or may not own the arrays - see owned_
 
 
@@ -23,61 +23,36 @@ class CoinPackedMatrix;
 */
 
 class CoinSnapshot {
-
-public:
+ public:
   //---------------------------------------------------------------------------
   /**@name Problem query methods
-     
+
      The Matrix pointers may be NULL
   */
   //@{
   /// Get number of columns
-  inline int getNumCols() const
-  {
-    return numCols_;
-  }
+  inline int getNumCols() const { return numCols_; }
 
   /// Get number of rows
-  inline int getNumRows() const
-  {
-    return numRows_;
-  }
+  inline int getNumRows() const { return numRows_; }
 
   /// Get number of nonzero elements
-  inline int getNumElements() const
-  {
-    return numElements_;
-  }
+  inline int getNumElements() const { return numElements_; }
 
   /// Get number of integer variables
-  inline int getNumIntegers() const
-  {
-    return numIntegers_;
-  }
+  inline int getNumIntegers() const { return numIntegers_; }
 
   /// Get pointer to array[getNumCols()] of column lower bounds
-  inline const double *getColLower() const
-  {
-    return colLower_;
-  }
+  inline const double *getColLower() const { return colLower_; }
 
   /// Get pointer to array[getNumCols()] of column upper bounds
-  inline const double *getColUpper() const
-  {
-    return colUpper_;
-  }
+  inline const double *getColUpper() const { return colUpper_; }
 
   /// Get pointer to array[getNumRows()] of row lower bounds
-  inline const double *getRowLower() const
-  {
-    return rowLower_;
-  }
+  inline const double *getRowLower() const { return rowLower_; }
 
   /// Get pointer to array[getNumRows()] of row upper bounds
-  inline const double *getRowUpper() const
-  {
-    return rowUpper_;
-  }
+  inline const double *getRowUpper() const { return rowUpper_; }
 
   /** Get pointer to array[getNumRows()] of row right-hand sides
       This gives same results as OsiSolverInterface for useful cases
@@ -86,80 +61,54 @@ public:
       else
         getRightHandSide()[i] == getRowLower()[i]
   */
-  inline const double *getRightHandSide() const
-  {
-    return rightHandSide_;
-  }
+  inline const double *getRightHandSide() const { return rightHandSide_; }
 
   /// Get pointer to array[getNumCols()] of objective function coefficients
-  inline const double *getObjCoefficients() const
-  {
-    return objCoefficients_;
-  }
+  inline const double *getObjCoefficients() const { return objCoefficients_; }
 
   /// Get objective function sense (1 for min (default), -1 for max)
-  inline double getObjSense() const
-  {
-    return objSense_;
-  }
+  inline double getObjSense() const { return objSense_; }
 
   /// Return true if variable is continuous
-  inline bool isContinuous(int colIndex) const
-  {
+  inline bool isContinuous(int colIndex) const {
     return colType_[colIndex] == 'C';
   }
 
   /// Return true if variable is binary
-  inline bool isBinary(int colIndex) const
-  {
-    return colType_[colIndex] == 'B';
-  }
+  inline bool isBinary(int colIndex) const { return colType_[colIndex] == 'B'; }
 
   /// Return true if column is integer.
-  inline bool isInteger(int colIndex) const
-  {
+  inline bool isInteger(int colIndex) const {
     return colType_[colIndex] == 'B' || colType_[colIndex] == 'I';
   }
 
   /// Return true if variable is general integer
-  inline bool isIntegerNonBinary(int colIndex) const
-  {
+  inline bool isIntegerNonBinary(int colIndex) const {
     return colType_[colIndex] == 'I';
   }
 
   /// Return true if variable is binary and not fixed at either bound
-  inline bool isFreeBinary(int colIndex) const
-  {
-    return colType_[colIndex] == 'B' && colUpper_[colIndex] > colLower_[colIndex];
+  inline bool isFreeBinary(int colIndex) const {
+    return colType_[colIndex] == 'B' &&
+           colUpper_[colIndex] > colLower_[colIndex];
   }
 
   /// Get colType array ('B', 'I', or 'C' for Binary, Integer and Continuous)
-  inline const char *getColType() const
-  {
-    return colType_;
-  }
+  inline const char *getColType() const { return colType_; }
 
   /// Get pointer to row-wise copy of current matrix
-  inline const CoinPackedMatrix *getMatrixByRow() const
-  {
-    return matrixByRow_;
-  }
+  inline const CoinPackedMatrix *getMatrixByRow() const { return matrixByRow_; }
 
   /// Get pointer to column-wise copy of current matrix
-  inline const CoinPackedMatrix *getMatrixByCol() const
-  {
-    return matrixByCol_;
-  }
+  inline const CoinPackedMatrix *getMatrixByCol() const { return matrixByCol_; }
 
   /// Get pointer to row-wise copy of "original" matrix
-  inline const CoinPackedMatrix *getOriginalMatrixByRow() const
-  {
+  inline const CoinPackedMatrix *getOriginalMatrixByRow() const {
     return originalMatrixByRow_;
   }
 
   /// Get pointer to column-wise copy of "original" matrix
-  inline const CoinPackedMatrix *getOriginalMatrixByCol() const
-  {
+  inline const CoinPackedMatrix *getOriginalMatrixByCol() const {
     return originalMatrixByCol_;
   }
   //@}
@@ -167,32 +116,21 @@ public:
   /**@name Solution query methods */
   //@{
   /// Get pointer to array[getNumCols()] of primal variable values
-  inline const double *getColSolution() const
-  {
-    return colSolution_;
-  }
+  inline const double *getColSolution() const { return colSolution_; }
 
   /// Get pointer to array[getNumRows()] of dual variable values
-  inline const double *getRowPrice() const
-  {
-    return rowPrice_;
-  }
+  inline const double *getRowPrice() const { return rowPrice_; }
 
   /// Get a pointer to array[getNumCols()] of reduced costs
-  inline const double *getReducedCost() const
-  {
-    return reducedCost_;
-  }
+  inline const double *getReducedCost() const { return reducedCost_; }
 
-  /// Get pointer to array[getNumRows()] of row activity levels (constraint matrix times the solution vector).
-  inline const double *getRowActivity() const
-  {
-    return rowActivity_;
-  }
+  /// Get pointer to array[getNumRows()] of row activity levels (constraint
+  /// matrix times the solution vector).
+  inline const double *getRowActivity() const { return rowActivity_; }
 
-  /// Get pointer to array[getNumCols()] of primal variable values which should not be separated (for debug)
-  inline const double *getDoNotSeparateThis() const
-  {
+  /// Get pointer to array[getNumCols()] of primal variable values which should
+  /// not be separated (for debug)
+  inline const double *getDoNotSeparateThis() const {
     return doNotSeparateThis_;
   }
   //@}
@@ -200,53 +138,29 @@ public:
   /**@name Other scalar get methods */
   //@{
   /// Get solver's value for infinity
-  inline double getInfinity() const
-  {
-    return infinity_;
-  }
+  inline double getInfinity() const { return infinity_; }
 
   /** Get objective function value - includinbg any offset i.e.
       sum c sub j * x subj - objValue = objOffset */
-  inline double getObjValue() const
-  {
-    return objValue_;
-  }
+  inline double getObjValue() const { return objValue_; }
 
   /// Get objective offset i.e. sum c sub j * x subj -objValue = objOffset
-  inline double getObjOffset() const
-  {
-    return objOffset_;
-  }
+  inline double getObjOffset() const { return objOffset_; }
 
   /// Get dual tolerance
-  inline double getDualTolerance() const
-  {
-    return dualTolerance_;
-  }
+  inline double getDualTolerance() const { return dualTolerance_; }
 
   /// Get primal tolerance
-  inline double getPrimalTolerance() const
-  {
-    return primalTolerance_;
-  }
+  inline double getPrimalTolerance() const { return primalTolerance_; }
 
   /// Get integer tolerance
-  inline double getIntegerTolerance() const
-  {
-    return integerTolerance_;
-  }
+  inline double getIntegerTolerance() const { return integerTolerance_; }
 
   /// Get integer upper bound i.e. best solution * getObjSense
-  inline double getIntegerUpperBound() const
-  {
-    return integerUpperBound_;
-  }
+  inline double getIntegerUpperBound() const { return integerUpperBound_; }
 
   /// Get integer lower bound i.e. best possible solution * getObjSense
-  inline double getIntegerLowerBound() const
-  {
-    return integerLowerBound_;
-  }
+  inline double getIntegerLowerBound() const { return integerLowerBound_; }
   //@}
 
   //---------------------------------------------------------------------------
@@ -258,18 +172,16 @@ public:
       following values are the default:
       <ul>
       <li> <code>colub</code>: all columns have upper bound infinity
-      <li> <code>collb</code>: all columns have lower bound 0 
+      <li> <code>collb</code>: all columns have lower bound 0
       <li> <code>rowub</code>: all rows have upper bound infinity
       <li> <code>rowlb</code>: all rows have lower bound -infinity
       <li> <code>obj</code>: all variables have 0 objective coefficient
       </ul>
       All solution type arrays will be deleted
   */
-  void loadProblem(const CoinPackedMatrix &matrix,
-    const double *collb, const double *colub,
-    const double *obj,
-    const double *rowlb, const double *rowub,
-    bool makeRowCopy = false);
+  void loadProblem(const CoinPackedMatrix &matrix, const double *collb,
+                   const double *colub, const double *obj, const double *rowlb,
+                   const double *rowub, bool makeRowCopy = false);
 
   //@}
 
@@ -278,28 +190,16 @@ public:
   /**@name Methods to set data */
   //@{
   /// Set number of columns
-  inline void setNumCols(int value)
-  {
-    numCols_ = value;
-  }
+  inline void setNumCols(int value) { numCols_ = value; }
 
   /// Set number of rows
-  inline void setNumRows(int value)
-  {
-    numRows_ = value;
-  }
+  inline void setNumRows(int value) { numRows_ = value; }
 
   /// Set number of nonzero elements
-  inline void setNumElements(int value)
-  {
-    numElements_ = value;
-  }
+  inline void setNumElements(int value) { numElements_ = value; }
 
   /// Set number of integer variables
-  inline void setNumIntegers(int value)
-  {
-    numIntegers_ = value;
-  }
+  inline void setNumIntegers(int value) { numIntegers_ = value; }
 
   /// Set pointer to array[getNumCols()] of column lower bounds
   void setColLower(const double *array, bool copyIn = true);
@@ -336,10 +236,7 @@ public:
   void setObjCoefficients(const double *array, bool copyIn = true);
 
   /// Set objective function sense (1 for min (default), -1 for max)
-  inline void setObjSense(double value)
-  {
-    objSense_ = value;
-  }
+  inline void setObjSense(double value) { objSense_ = value; }
 
   /// Set colType array ('B', 'I', or 'C' for Binary, Integer and Continuous)
   void setColType(const char *array, bool copyIn = true);
@@ -354,10 +251,12 @@ public:
   void setMatrixByCol(const CoinPackedMatrix *matrix, bool copyIn = true);
 
   /// Set pointer to row-wise copy of "original" matrix
-  void setOriginalMatrixByRow(const CoinPackedMatrix *matrix, bool copyIn = true);
+  void setOriginalMatrixByRow(const CoinPackedMatrix *matrix,
+                              bool copyIn = true);
 
   /// Set pointer to column-wise copy of "original" matrix
-  void setOriginalMatrixByCol(const CoinPackedMatrix *matrix, bool copyIn = true);
+  void setOriginalMatrixByCol(const CoinPackedMatrix *matrix,
+                              bool copyIn = true);
 
   /// Set pointer to array[getNumCols()] of primal variable values
   void setColSolution(const double *array, bool copyIn = true);
@@ -368,59 +267,37 @@ public:
   /// Set a pointer to array[getNumCols()] of reduced costs
   void setReducedCost(const double *array, bool copyIn = true);
 
-  /// Set pointer to array[getNumRows()] of row activity levels (constraint matrix times the solution vector).
+  /// Set pointer to array[getNumRows()] of row activity levels (constraint
+  /// matrix times the solution vector).
   void setRowActivity(const double *array, bool copyIn = true);
 
-  /// Set pointer to array[getNumCols()] of primal variable values which should not be separated (for debug)
+  /// Set pointer to array[getNumCols()] of primal variable values which should
+  /// not be separated (for debug)
   void setDoNotSeparateThis(const double *array, bool copyIn = true);
 
   /// Set solver's value for infinity
-  inline void setInfinity(double value)
-  {
-    infinity_ = value;
-  }
+  inline void setInfinity(double value) { infinity_ = value; }
 
   /// Set objective function value (including any rhs offset)
-  inline void setObjValue(double value)
-  {
-    objValue_ = value;
-  }
+  inline void setObjValue(double value) { objValue_ = value; }
 
   /// Set objective offset i.e. sum c sub j * x subj -objValue = objOffset
-  inline void setObjOffset(double value)
-  {
-    objOffset_ = value;
-  }
+  inline void setObjOffset(double value) { objOffset_ = value; }
 
   /// Set dual tolerance
-  inline void setDualTolerance(double value)
-  {
-    dualTolerance_ = value;
-  }
+  inline void setDualTolerance(double value) { dualTolerance_ = value; }
 
   /// Set primal tolerance
-  inline void setPrimalTolerance(double value)
-  {
-    primalTolerance_ = value;
-  }
+  inline void setPrimalTolerance(double value) { primalTolerance_ = value; }
 
   /// Set integer tolerance
-  inline void setIntegerTolerance(double value)
-  {
-    integerTolerance_ = value;
-  }
+  inline void setIntegerTolerance(double value) { integerTolerance_ = value; }
 
   /// Set integer upper bound i.e. best solution * getObjSense
-  inline void setIntegerUpperBound(double value)
-  {
-    integerUpperBound_ = value;
-  }
+  inline void setIntegerUpperBound(double value) { integerUpperBound_ = value; }
 
   /// Set integer lower bound i.e. best possible solution * getObjSense
-  inline void setIntegerLowerBound(double value)
-  {
-    integerLowerBound_ = value;
-  }
+  inline void setIntegerLowerBound(double value) { integerLowerBound_ = value; }
   //@}
 
   //---------------------------------------------------------------------------
@@ -441,7 +318,7 @@ public:
 
   //@}
 
-private:
+ private:
   ///@name private functions
   //@{
   /** Does main work of destructor - type (or'ed)
@@ -526,10 +403,12 @@ private:
   /// a pointer to array[getNumCols()] of reduced costs
   const double *reducedCost_;
 
-  /// pointer to array[getNumRows()] of row activity levels (constraint matrix times the solution vector).
+  /// pointer to array[getNumRows()] of row activity levels (constraint matrix
+  /// times the solution vector).
   const double *rowActivity_;
 
-  /// pointer to array[getNumCols()] of primal variable values which should not be separated (for debug)
+  /// pointer to array[getNumCols()] of primal variable values which should not
+  /// be separated (for debug)
   const double *doNotSeparateThis_;
 
   /// number of columns
@@ -569,4 +448,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -22,7 +22,8 @@
  *
  * Copyright:
  *   2020      Evan Nemerson <evan@nemerson.com>
- *   2020      Sean Maher <seanptmaher@gmail.com> (Copyright owned by Google, LLC)
+ *   2020      Sean Maher <seanptmaher@gmail.com> (Copyright owned by Google,
+ * LLC)
  */
 
 #if !defined(SIMDE_ARM_NEON_ADDL_HIGH_H)
@@ -38,87 +39,81 @@ SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int16x8_t
-simde_vaddl_high_s8(simde_int8x16_t a, simde_int8x16_t b) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vaddl_high_s8(a, b);
-  #else
-    return simde_vaddq_s16(simde_vmovl_high_s8(a), simde_vmovl_high_s8(b));
-  #endif
+simde_int16x8_t simde_vaddl_high_s8(simde_int8x16_t a, simde_int8x16_t b) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vaddl_high_s8(a, b);
+#else
+  return simde_vaddq_s16(simde_vmovl_high_s8(a), simde_vmovl_high_s8(b));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A64V8_ENABLE_NATIVE_ALIASES)
-  #undef vaddl_high_s8
-  #define vaddl_high_s8(a, b) simde_vaddl_high_s8((a), (b))
+#undef vaddl_high_s8
+#define vaddl_high_s8(a, b) simde_vaddl_high_s8((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int32x4_t
-simde_vaddl_high_s16(simde_int16x8_t a, simde_int16x8_t b) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vaddl_high_s16(a, b);
-  #else
-    return simde_vaddq_s32(simde_vmovl_high_s16(a), simde_vmovl_high_s16(b));
-  #endif
+simde_int32x4_t simde_vaddl_high_s16(simde_int16x8_t a, simde_int16x8_t b) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vaddl_high_s16(a, b);
+#else
+  return simde_vaddq_s32(simde_vmovl_high_s16(a), simde_vmovl_high_s16(b));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A64V8_ENABLE_NATIVE_ALIASES)
-  #undef vaddl_high_s16
-  #define vaddl_high_s16(a, b) simde_vaddl_high_s16((a), (b))
+#undef vaddl_high_s16
+#define vaddl_high_s16(a, b) simde_vaddl_high_s16((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int64x2_t
-simde_vaddl_high_s32(simde_int32x4_t a, simde_int32x4_t b) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vaddl_high_s32(a, b);
-  #else
-    return simde_vaddq_s64(simde_vmovl_high_s32(a), simde_vmovl_high_s32(b));
-  #endif
+simde_int64x2_t simde_vaddl_high_s32(simde_int32x4_t a, simde_int32x4_t b) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vaddl_high_s32(a, b);
+#else
+  return simde_vaddq_s64(simde_vmovl_high_s32(a), simde_vmovl_high_s32(b));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A64V8_ENABLE_NATIVE_ALIASES)
-  #undef vaddl_high_s32
-  #define vaddl_high_s32(a, b) simde_vaddl_high_s32((a), (b))
+#undef vaddl_high_s32
+#define vaddl_high_s32(a, b) simde_vaddl_high_s32((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_uint16x8_t
-simde_vaddl_high_u8(simde_uint8x16_t a, simde_uint8x16_t b) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vaddl_high_u8(a, b);
-  #else
-    return simde_vaddq_u16(simde_vmovl_high_u8(a), simde_vmovl_high_u8(b));
-  #endif
+simde_uint16x8_t simde_vaddl_high_u8(simde_uint8x16_t a, simde_uint8x16_t b) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vaddl_high_u8(a, b);
+#else
+  return simde_vaddq_u16(simde_vmovl_high_u8(a), simde_vmovl_high_u8(b));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A64V8_ENABLE_NATIVE_ALIASES)
-  #undef vaddl_high_u8
-  #define vaddl_high_u8(a, b) simde_vaddl_high_u8((a), (b))
+#undef vaddl_high_u8
+#define vaddl_high_u8(a, b) simde_vaddl_high_u8((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_uint32x4_t
-simde_vaddl_high_u16(simde_uint16x8_t a, simde_uint16x8_t b) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vaddl_high_u16(a, b);
-  #else
-    return simde_vaddq_u32(simde_vmovl_high_u16(a), simde_vmovl_high_u16(b));
-  #endif
+simde_uint32x4_t simde_vaddl_high_u16(simde_uint16x8_t a, simde_uint16x8_t b) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vaddl_high_u16(a, b);
+#else
+  return simde_vaddq_u32(simde_vmovl_high_u16(a), simde_vmovl_high_u16(b));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A64V8_ENABLE_NATIVE_ALIASES)
-  #undef vaddl_high_u16
-  #define vaddl_high_u16(a, b) simde_vaddl_high_u16((a), (b))
+#undef vaddl_high_u16
+#define vaddl_high_u16(a, b) simde_vaddl_high_u16((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_uint64x2_t
-simde_vaddl_high_u32(simde_uint32x4_t a, simde_uint32x4_t b) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vaddl_high_u32(a, b);
-  #else
-    return simde_vaddq_u64(simde_vmovl_high_u32(a), simde_vmovl_high_u32(b));
-  #endif
+simde_uint64x2_t simde_vaddl_high_u32(simde_uint32x4_t a, simde_uint32x4_t b) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vaddl_high_u32(a, b);
+#else
+  return simde_vaddq_u64(simde_vmovl_high_u32(a), simde_vmovl_high_u32(b));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A64V8_ENABLE_NATIVE_ALIASES)
-  #undef vaddl_high_u32
-  #define vaddl_high_u32(a, b) simde_vaddl_high_u32((a), (b))
+#undef vaddl_high_u32
+#define vaddl_high_u32(a, b) simde_vaddl_high_u32((a), (b))
 #endif
 
 SIMDE_END_DECLS_

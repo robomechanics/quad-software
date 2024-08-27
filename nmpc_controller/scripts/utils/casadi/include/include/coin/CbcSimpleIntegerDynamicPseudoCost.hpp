@@ -19,7 +19,7 @@
 // weight at 1.0 is max min
 #define WEIGHT_AFTER 0.8
 #define WEIGHT_BEFORE 0.1
-//Stolen from Constraint Integer Programming book (with epsilon change)
+// Stolen from Constraint Integer Programming book (with epsilon change)
 #define WEIGHT_PRODUCT
 
 /** Define a single integer class but with dynamic pseudo costs.
@@ -31,21 +31,23 @@
  */
 
 class CbcSimpleIntegerDynamicPseudoCost : public CbcSimpleInteger {
-
-public:
+ public:
   // Default Constructor
   CbcSimpleIntegerDynamicPseudoCost();
 
   // Useful constructor - passed  model index
-  CbcSimpleIntegerDynamicPseudoCost(CbcModel *model, int iColumn, double breakEven = 0.5);
+  CbcSimpleIntegerDynamicPseudoCost(CbcModel *model, int iColumn,
+                                    double breakEven = 0.5);
 
   // Useful constructor - passed  model index and pseudo costs
   CbcSimpleIntegerDynamicPseudoCost(CbcModel *model, int iColumn,
-    double downDynamicPseudoCost, double upDynamicPseudoCost);
+                                    double downDynamicPseudoCost,
+                                    double upDynamicPseudoCost);
 
   // Useful constructor - passed  model index and pseudo costs
   CbcSimpleIntegerDynamicPseudoCost(CbcModel *model, int dummy, int iColumn,
-    double downDynamicPseudoCost, double upDynamicPseudoCost);
+                                    double downDynamicPseudoCost,
+                                    double upDynamicPseudoCost);
 
   // Copy constructor
   CbcSimpleIntegerDynamicPseudoCost(const CbcSimpleIntegerDynamicPseudoCost &);
@@ -54,27 +56,30 @@ public:
   virtual CbcObject *clone() const;
 
   // Assignment operator
-  CbcSimpleIntegerDynamicPseudoCost &operator=(const CbcSimpleIntegerDynamicPseudoCost &rhs);
+  CbcSimpleIntegerDynamicPseudoCost &operator=(
+      const CbcSimpleIntegerDynamicPseudoCost &rhs);
 
   // Destructor
   virtual ~CbcSimpleIntegerDynamicPseudoCost();
 
   /// Infeasibility - large is 0.5
   virtual double infeasibility(const OsiBranchingInformation *info,
-    int &preferredWay) const;
+                               int &preferredWay) const;
 
   /// Creates a branching object
-  virtual CbcBranchingObject *createCbcBranch(OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
+  virtual CbcBranchingObject *createCbcBranch(
+      OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
 
   /// Fills in a created branching object
-  // void fillCreateBranch(CbcIntegerBranchingObject * branching, const OsiBranchingInformation * info, int way) ;
+  // void fillCreateBranch(CbcIntegerBranchingObject * branching, const
+  // OsiBranchingInformation * info, int way) ;
 
-  /** Pass in information on branch just done and create CbcObjectUpdateData instance.
-        If object does not need data then backward pointer will be NULL.
+  /** Pass in information on branch just done and create CbcObjectUpdateData
+     instance. If object does not need data then backward pointer will be NULL.
         Assumes can get information from solver */
-  virtual CbcObjectUpdateData createUpdateInformation(const OsiSolverInterface *solver,
-    const CbcNode *node,
-    const CbcBranchingObject *branchingObject);
+  virtual CbcObjectUpdateData createUpdateInformation(
+      const OsiSolverInterface *solver, const CbcNode *node,
+      const CbcBranchingObject *branchingObject);
   /// Update object by CbcObjectUpdateData
   virtual void updateInformation(const CbcObjectUpdateData &data);
   /// Copy some information i.e. just variable stuff
@@ -85,7 +90,7 @@ public:
   virtual void updateAfter(const OsiObject *rhs, const OsiObject *baseObject);
   /// Updates stuff like pseudocosts after mini branch and bound
   void updateAfterMini(int numberDown, int numberDownInfeasible, double sumDown,
-    int numberUp, int numberUpInfeasible, double sumUp);
+                       int numberUp, int numberUpInfeasible, double sumUp);
 
   using CbcSimpleInteger::solverBranch;
   /** Create an OsiSolverBranch object
@@ -95,239 +100,133 @@ public:
   virtual OsiSolverBranch *solverBranch() const;
 
   /// Down pseudo cost
-  inline double downDynamicPseudoCost() const
-  {
-    return downDynamicPseudoCost_;
-  }
+  inline double downDynamicPseudoCost() const { return downDynamicPseudoCost_; }
   /// Set down pseudo cost
   void setDownDynamicPseudoCost(double value);
   /// Modify down pseudo cost in a slightly different way
   void updateDownDynamicPseudoCost(double value);
 
   /// Up pseudo cost
-  inline double upDynamicPseudoCost() const
-  {
-    return upDynamicPseudoCost_;
-  }
+  inline double upDynamicPseudoCost() const { return upDynamicPseudoCost_; }
   /// Set up pseudo cost
   void setUpDynamicPseudoCost(double value);
   /// Modify up pseudo cost in a slightly different way
   void updateUpDynamicPseudoCost(double value);
 
   /// Down pseudo shadow price cost
-  inline double downShadowPrice() const
-  {
-    return downShadowPrice_;
-  }
+  inline double downShadowPrice() const { return downShadowPrice_; }
   /// Set down pseudo shadow price cost
-  inline void setDownShadowPrice(double value)
-  {
-    downShadowPrice_ = value;
-  }
+  inline void setDownShadowPrice(double value) { downShadowPrice_ = value; }
   /// Up pseudo shadow price cost
-  inline double upShadowPrice() const
-  {
-    return upShadowPrice_;
-  }
+  inline double upShadowPrice() const { return upShadowPrice_; }
   /// Set up pseudo shadow price cost
-  inline void setUpShadowPrice(double value)
-  {
-    upShadowPrice_ = value;
-  }
+  inline void setUpShadowPrice(double value) { upShadowPrice_ = value; }
 
   /// Up down separator
-  inline double upDownSeparator() const
-  {
-    return upDownSeparator_;
-  }
+  inline double upDownSeparator() const { return upDownSeparator_; }
   /// Set up down separator
-  inline void setUpDownSeparator(double value)
-  {
-    upDownSeparator_ = value;
-  }
+  inline void setUpDownSeparator(double value) { upDownSeparator_ = value; }
 
   /// Down sum cost
-  inline double sumDownCost() const
-  {
-    return sumDownCost_;
-  }
+  inline double sumDownCost() const { return sumDownCost_; }
   /// Set down sum cost
-  inline void setSumDownCost(double value)
-  {
-    sumDownCost_ = value;
-  }
+  inline void setSumDownCost(double value) { sumDownCost_ = value; }
   /// Add to down sum cost and set last and square
-  inline void addToSumDownCost(double value)
-  {
+  inline void addToSumDownCost(double value) {
     sumDownCost_ += value;
     lastDownCost_ = value;
   }
 
   /// Up sum cost
-  inline double sumUpCost() const
-  {
-    return sumUpCost_;
-  }
+  inline double sumUpCost() const { return sumUpCost_; }
   /// Set up sum cost
-  inline void setSumUpCost(double value)
-  {
-    sumUpCost_ = value;
-  }
+  inline void setSumUpCost(double value) { sumUpCost_ = value; }
   /// Add to up sum cost and set last and square
-  inline void addToSumUpCost(double value)
-  {
+  inline void addToSumUpCost(double value) {
     sumUpCost_ += value;
     lastUpCost_ = value;
   }
 
   /// Down sum change
-  inline double sumDownChange() const
-  {
-    return sumDownChange_;
-  }
+  inline double sumDownChange() const { return sumDownChange_; }
   /// Set down sum change
-  inline void setSumDownChange(double value)
-  {
-    sumDownChange_ = value;
-  }
+  inline void setSumDownChange(double value) { sumDownChange_ = value; }
   /// Add to down sum change
-  inline void addToSumDownChange(double value)
-  {
-    sumDownChange_ += value;
-  }
+  inline void addToSumDownChange(double value) { sumDownChange_ += value; }
 
   /// Up sum change
-  inline double sumUpChange() const
-  {
-    return sumUpChange_;
-  }
+  inline double sumUpChange() const { return sumUpChange_; }
   /// Set up sum change
-  inline void setSumUpChange(double value)
-  {
-    sumUpChange_ = value;
-  }
+  inline void setSumUpChange(double value) { sumUpChange_ = value; }
   /// Add to up sum change and set last and square
-  inline void addToSumUpChange(double value)
-  {
-    sumUpChange_ += value;
-  }
+  inline void addToSumUpChange(double value) { sumUpChange_ += value; }
 
   /// Sum down decrease number infeasibilities from strong or actual
-  inline double sumDownDecrease() const
-  {
-    return sumDownDecrease_;
-  }
+  inline double sumDownDecrease() const { return sumDownDecrease_; }
   /// Set sum down decrease number infeasibilities from strong or actual
-  inline void setSumDownDecrease(double value)
-  {
-    sumDownDecrease_ = value;
-  }
+  inline void setSumDownDecrease(double value) { sumDownDecrease_ = value; }
   /// Add to sum down decrease number infeasibilities from strong or actual
-  inline void addToSumDownDecrease(double value)
-  {
+  inline void addToSumDownDecrease(double value) {
     sumDownDecrease_ += value; /*lastDownDecrease_ = (int) value;*/
   }
 
   /// Sum up decrease number infeasibilities from strong or actual
-  inline double sumUpDecrease() const
-  {
-    return sumUpDecrease_;
-  }
+  inline double sumUpDecrease() const { return sumUpDecrease_; }
   /// Set sum up decrease number infeasibilities from strong or actual
-  inline void setSumUpDecrease(double value)
-  {
-    sumUpDecrease_ = value;
-  }
+  inline void setSumUpDecrease(double value) { sumUpDecrease_ = value; }
   /// Add to sum up decrease number infeasibilities from strong or actual
-  inline void addToSumUpDecrease(double value)
-  {
+  inline void addToSumUpDecrease(double value) {
     sumUpDecrease_ += value; /*lastUpDecrease_ = (int) value;*/
   }
 
   /// Down number times
-  inline int numberTimesDown() const
-  {
-    return numberTimesDown_;
-  }
+  inline int numberTimesDown() const { return numberTimesDown_; }
   /// Set down number times
-  inline void setNumberTimesDown(int value)
-  {
-    numberTimesDown_ = value;
-  }
+  inline void setNumberTimesDown(int value) { numberTimesDown_ = value; }
   /// Increment down number times
-  inline void incrementNumberTimesDown()
-  {
-    numberTimesDown_++;
-  }
+  inline void incrementNumberTimesDown() { numberTimesDown_++; }
 
   /// Up number times
-  inline int numberTimesUp() const
-  {
-    return numberTimesUp_;
-  }
+  inline int numberTimesUp() const { return numberTimesUp_; }
   /// Set up number times
-  inline void setNumberTimesUp(int value)
-  {
-    numberTimesUp_ = value;
-  }
+  inline void setNumberTimesUp(int value) { numberTimesUp_ = value; }
   /// Increment up number times
-  inline void incrementNumberTimesUp()
-  {
-    numberTimesUp_++;
-  }
+  inline void incrementNumberTimesUp() { numberTimesUp_++; }
 
   /// Number times branched
-  inline int numberTimesBranched() const
-  {
+  inline int numberTimesBranched() const {
     return numberTimesDown_ + numberTimesUp_;
   }
   /// Down number times infeasible
-  inline int numberTimesDownInfeasible() const
-  {
+  inline int numberTimesDownInfeasible() const {
     return numberTimesDownInfeasible_;
   }
   /// Set down number times infeasible
-  inline void setNumberTimesDownInfeasible(int value)
-  {
+  inline void setNumberTimesDownInfeasible(int value) {
     numberTimesDownInfeasible_ = value;
   }
   /// Increment down number times infeasible
-  inline void incrementNumberTimesDownInfeasible()
-  {
+  inline void incrementNumberTimesDownInfeasible() {
     numberTimesDownInfeasible_++;
   }
 
   /// Up number times infeasible
-  inline int numberTimesUpInfeasible() const
-  {
+  inline int numberTimesUpInfeasible() const {
     return numberTimesUpInfeasible_;
   }
   /// Set up number times infeasible
-  inline void setNumberTimesUpInfeasible(int value)
-  {
+  inline void setNumberTimesUpInfeasible(int value) {
     numberTimesUpInfeasible_ = value;
   }
   /// Increment up number times infeasible
-  inline void incrementNumberTimesUpInfeasible()
-  {
-    numberTimesUpInfeasible_++;
-  }
+  inline void incrementNumberTimesUpInfeasible() { numberTimesUpInfeasible_++; }
 
   /// Number of times before trusted
-  inline int numberBeforeTrust() const
-  {
-    return numberBeforeTrust_;
-  }
+  inline int numberBeforeTrust() const { return numberBeforeTrust_; }
   /// Set number of times before trusted
-  inline void setNumberBeforeTrust(int value)
-  {
-    numberBeforeTrust_ = value;
-  }
+  inline void setNumberBeforeTrust(int value) { numberBeforeTrust_ = value; }
   /// Increment number of times before trusted
-  inline void incrementNumberBeforeTrust()
-  {
-    numberBeforeTrust_++;
-  }
+  inline void incrementNumberBeforeTrust() { numberBeforeTrust_++; }
 
   /// Return "up" estimate
   virtual double upEstimate() const;
@@ -335,18 +234,13 @@ public:
   virtual double downEstimate() const;
 
   /// method - see below for details
-  inline int method() const
-  {
-    return method_;
-  }
+  inline int method() const { return method_; }
   /// Set method
-  inline void setMethod(int value)
-  {
-    method_ = value;
-  }
+  inline void setMethod(int value) { method_ = value; }
 
   /// Pass in information on a down branch
-  void setDownInformation(double changeObjectiveDown, int changeInfeasibilityDown);
+  void setDownInformation(double changeObjectiveDown,
+                          int changeInfeasibilityDown);
   /// Pass in information on a up branch
   void setUpInformation(double changeObjectiveUp, int changeInfeasibilityUp);
   /// Pass in probing information
@@ -357,7 +251,7 @@ public:
   /// Same - returns true if contents match(ish)
   bool same(const CbcSimpleIntegerDynamicPseudoCost *obj) const;
 
-protected:
+ protected:
   /// data
 
   /// Down pseudo cost
@@ -389,9 +283,11 @@ protected:
   double lastDownCost_;
   /// Last up cost from strong (i.e. as computed by last strong)
   double lastUpCost_;
-  /// Last down decrease number infeasibilities from strong (i.e. as computed by last strong)
+  /// Last down decrease number infeasibilities from strong (i.e. as computed by
+  /// last strong)
   mutable int lastDownDecrease_;
-  /// Last up decrease number infeasibilities from strong (i.e. as computed by last strong)
+  /// Last up decrease number infeasibilities from strong (i.e. as computed by
+  /// last strong)
   mutable int lastUpDecrease_;
   /// Number of times we have gone down
   int numberTimesDown_;
@@ -431,8 +327,7 @@ protected:
 */
 
 class CbcIntegerPseudoCostBranchingObject : public CbcIntegerBranchingObject {
-
-public:
+ public:
   /// Default constructor
   CbcIntegerPseudoCostBranchingObject();
 
@@ -443,8 +338,8 @@ public:
       Specify way = -1 to set the object state to perform the down arm first,
       way = 1 for the up arm.
     */
-  CbcIntegerPseudoCostBranchingObject(CbcModel *model, int variable,
-    int way, double value);
+  CbcIntegerPseudoCostBranchingObject(CbcModel *model, int variable, int way,
+                                      double value);
 
   /** Create a degenerate branch object
 
@@ -454,13 +349,15 @@ public:
     */
 
   CbcIntegerPseudoCostBranchingObject(CbcModel *model, int variable, int way,
-    double lowerValue, double upperValue);
+                                      double lowerValue, double upperValue);
 
   /// Copy constructor
-  CbcIntegerPseudoCostBranchingObject(const CbcIntegerPseudoCostBranchingObject &);
+  CbcIntegerPseudoCostBranchingObject(
+      const CbcIntegerPseudoCostBranchingObject &);
 
   /// Assignment operator
-  CbcIntegerPseudoCostBranchingObject &operator=(const CbcIntegerPseudoCostBranchingObject &rhs);
+  CbcIntegerPseudoCostBranchingObject &operator=(
+      const CbcIntegerPseudoCostBranchingObject &rhs);
 
   /// Clone
   virtual CbcBranchingObject *clone() const;
@@ -476,19 +373,12 @@ public:
   virtual double branch();
 
   /// Change in guessed
-  inline double changeInGuessed() const
-  {
-    return changeInGuessed_;
-  }
+  inline double changeInGuessed() const { return changeInGuessed_; }
   /// Set change in guessed
-  inline void setChangeInGuessed(double value)
-  {
-    changeInGuessed_ = value;
-  }
+  inline void setChangeInGuessed(double value) { changeInGuessed_ = value; }
 
   /** Return the type (an integer identifier) of \c this */
-  virtual CbcBranchObjType type() const
-  {
+  virtual CbcBranchObjType type() const {
     return SimpleIntegerDynamicPseudoCostBranchObj;
   }
 
@@ -500,9 +390,10 @@ public:
         replaceIfOverlap is true) replace the current branching object with one
         whose feasible region is the overlap.
      */
-  virtual CbcRangeCompare compareBranchingObject(const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
+  virtual CbcRangeCompare compareBranchingObject(
+      const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
 
-protected:
+ protected:
   /// Change in guessed objective value for next branch
   double changeInGuessed_;
 };
@@ -513,14 +404,13 @@ protected:
  */
 
 class CbcSwitchingBinary : public CbcSimpleIntegerDynamicPseudoCost {
-
-public:
+ public:
   // Default Constructor
   CbcSwitchingBinary();
 
   // Useful constructor
-  CbcSwitchingBinary(CbcSimpleIntegerDynamicPseudoCost *oldObject,
-    int nOdd, const int *other, const int *otherRow);
+  CbcSwitchingBinary(CbcSimpleIntegerDynamicPseudoCost *oldObject, int nOdd,
+                     const int *other, const int *otherRow);
 
   // Copy constructor
   CbcSwitchingBinary(const CbcSwitchingBinary &);
@@ -538,58 +428,38 @@ public:
   void addZeroSwitches(int nAdd, const int *columns);
   /// Infeasibility - large is 0.5
   virtual double infeasibility(const OsiBranchingInformation *info,
-    int &preferredWay) const;
+                               int &preferredWay) const;
 
   /// Same - returns true if contents match(ish)
   bool same(const CbcSwitchingBinary *obj) const;
   /// Set associated bounds
   virtual int setAssociatedBounds(OsiSolverInterface *solver = NULL,
-    int cleanBasis = 0) const;
+                                  int cleanBasis = 0) const;
   /// Check associated bounds
-  int checkAssociatedBounds(const OsiSolverInterface *solver, const double *solution,
-    int printLevel, int state[3], int &nBadFixed) const;
+  int checkAssociatedBounds(const OsiSolverInterface *solver,
+                            const double *solution, int printLevel,
+                            int state[3], int &nBadFixed) const;
   /// Lower bound when binary zero
-  inline const double *zeroLowerBound() const
-  {
-    return zeroLowerBound_;
-  }
+  inline const double *zeroLowerBound() const { return zeroLowerBound_; }
   /// Lower bound when binary one
-  inline const double *oneLowerBound() const
-  {
-    return oneLowerBound_;
-  }
+  inline const double *oneLowerBound() const { return oneLowerBound_; }
   /// Upper bound when binary zero
-  inline const double *zeroUpperBound() const
-  {
-    return zeroUpperBound_;
-  }
+  inline const double *zeroUpperBound() const { return zeroUpperBound_; }
   /// Upper bound when binary one
-  inline const double *oneUpperBound() const
-  {
-    return oneUpperBound_;
-  }
+  inline const double *oneUpperBound() const { return oneUpperBound_; }
   /** Continuous variable -
-    */
-  inline const int *otherVariable() const
-  {
-    return otherVariable_;
-  }
+   */
+  inline const int *otherVariable() const { return otherVariable_; }
   /// Number of other variables
-  inline int numberOther() const
-  {
-    return numberOther_;
-  }
+  inline int numberOther() const { return numberOther_; }
   /** Type
-	1 - single switch
-	2 - double switch
-	3 - both
+        1 - single switch
+        2 - double switch
+        3 - both
     */
-  inline int type() const
-  {
-    return type_;
-  }
+  inline int type() const { return type_; }
 
-protected:
+ protected:
   /// data
 
   /// Lower bound when binary zero
@@ -601,14 +471,14 @@ protected:
   /// Upper bound when binary one
   double *oneUpperBound_;
   /** Continuous variable -
-    */
+   */
   int *otherVariable_;
   /// Number of other variables
   int numberOther_;
   /** Type
-	1 - single switch
-	2 - double switch
-	3 - both
+        1 - single switch
+        2 - double switch
+        3 - both
     */
   int type_;
 };
@@ -616,4 +486,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

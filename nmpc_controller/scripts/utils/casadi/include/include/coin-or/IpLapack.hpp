@@ -7,11 +7,10 @@
 #ifndef __IPLAPACK_HPP__
 #define __IPLAPACK_HPP__
 
-#include "IpUtils.hpp"
 #include "IpException.hpp"
+#include "IpUtils.hpp"
 
-namespace Ipopt
-{
+namespace Ipopt {
 DECLARE_STD_EXCEPTION(LAPACK_NOT_INCLUDED);
 
 /** Wrapper for LAPACK subroutine XPOTRS.
@@ -20,14 +19,8 @@ DECLARE_STD_EXCEPTION(LAPACK_NOT_INCLUDED);
  *  We assume that the Cholesky factor is lower traiangular.
  *  @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpLapackPotrs(
-   Index         ndim,
-   Index         nrhs,
-   const Number* a,
-   Index         lda,
-   Number*       b,
-   Index         ldb
-);
+IPOPTLIB_EXPORT void IpLapackPotrs(Index ndim, Index nrhs, const Number* a,
+                                   Index lda, Number* b, Index ldb);
 
 /** Wrapper for LAPACK subroutine DPOTRS.
  *
@@ -37,16 +30,9 @@ IPOPTLIB_EXPORT void IpLapackPotrs(
  *  @deprecated Use IpLapackPotrs() instead.
  */
 IPOPT_DEPRECATED
-inline void IpLapackDpotrs(
-   Index         ndim,
-   Index         nrhs,
-   const Number* a,
-   Index         lda,
-   Number*       b,
-   Index         ldb
-)
-{
-   IpLapackPotrs(ndim, nrhs, a, lda, b, ldb);
+inline void IpLapackDpotrs(Index ndim, Index nrhs, const Number* a, Index lda,
+                           Number* b, Index ldb) {
+  IpLapackPotrs(ndim, nrhs, a, lda, b, ldb);
 }
 
 /** Wrapper for LAPACK subroutine XPOTRF.
@@ -55,12 +41,8 @@ inline void IpLapackDpotrs(
  *  info is the return value from the LAPACK routine.
  *  @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpLapackPotrf(
-   Index   ndim,
-   Number* a,
-   Index   lda,
-   Index&  info
-);
+IPOPTLIB_EXPORT void IpLapackPotrf(Index ndim, Number* a, Index lda,
+                                   Index& info);
 
 /** Wrapper for LAPACK subroutine DPOTRF.
  *
@@ -70,14 +52,8 @@ IPOPTLIB_EXPORT void IpLapackPotrf(
  *  @deprecated Use IpLapackPotrf() instead.
  */
 IPOPT_DEPRECATED
-inline void IpLapackDpotrf(
-   Index   ndim,
-   Number* a,
-   Index   lda,
-   Index&  info
-)
-{
-   IpLapackPotrf(ndim, a, lda, info);
+inline void IpLapackDpotrf(Index ndim, Number* a, Index lda, Index& info) {
+  IpLapackPotrf(ndim, a, lda, info);
 }
 
 /** Wrapper for LAPACK subroutine XSYEV.
@@ -87,14 +63,8 @@ inline void IpLapackDpotrf(
  *  in its columns on return.
  *  @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpLapackSyev(
-   bool    compute_eigenvectors,
-   Index   ndim,
-   Number* a,
-   Index   lda,
-   Number* w,
-   Index&  info
-);
+IPOPTLIB_EXPORT void IpLapackSyev(bool compute_eigenvectors, Index ndim,
+                                  Number* a, Index lda, Number* w, Index& info);
 
 /** Wrapper for LAPACK subroutine DSYEV.
  *
@@ -105,16 +75,9 @@ IPOPTLIB_EXPORT void IpLapackSyev(
  *  @deprecated Use IpLapackSyev() instead
  */
 IPOPT_DEPRECATED
-inline void IpLapackDsyev(
-   bool    compute_eigenvectors,
-   Index   ndim,
-   Number* a,
-   Index   lda,
-   Number* w,
-   Index&  info
-)
-{
-   IpLapackSyev(compute_eigenvectors, ndim, a, lda, w, info);
+inline void IpLapackDsyev(bool compute_eigenvectors, Index ndim, Number* a,
+                          Index lda, Number* w, Index& info) {
+  IpLapackSyev(compute_eigenvectors, ndim, a, lda, w, info);
 }
 
 /** Wrapper for LAPACK subroutine XGETRF.
@@ -123,13 +86,8 @@ inline void IpLapackDsyev(
  *  info is the return value from the LAPACK routine.
  *  @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpLapackGetrf(
-   Index   ndim,
-   Number* a,
-   Index*  ipiv,
-   Index   lda,
-   Index&  info
-);
+IPOPTLIB_EXPORT void IpLapackGetrf(Index ndim, Number* a, Index* ipiv,
+                                   Index lda, Index& info);
 
 /** Wrapper for LAPACK subroutine DGETRF.
  *
@@ -139,15 +97,9 @@ IPOPTLIB_EXPORT void IpLapackGetrf(
  *  @deprecated Use IpLapackGetrf() instead.
  */
 IPOPT_DEPRECATED
-inline void IpLapackDgetrf(
-   Index   ndim,
-   Number* a,
-   Index*  ipiv,
-   Index   lda,
-   Index&  info
-)
-{
-   IpLapackGetrf(ndim, a, ipiv, lda, info);
+inline void IpLapackDgetrf(Index ndim, Number* a, Index* ipiv, Index lda,
+                           Index& info) {
+  IpLapackGetrf(ndim, a, ipiv, lda, info);
 }
 
 /** Wrapper for LAPACK subroutine XGETRS.
@@ -155,15 +107,9 @@ inline void IpLapackDgetrf(
  * Solving a linear system given a LU factorization.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpLapackGetrs(
-   Index         ndim,
-   Index         nrhs,
-   const Number* a,
-   Index         lda,
-   Index*        ipiv,
-   Number*       b,
-   Index         ldb
-);
+IPOPTLIB_EXPORT void IpLapackGetrs(Index ndim, Index nrhs, const Number* a,
+                                   Index lda, Index* ipiv, Number* b,
+                                   Index ldb);
 
 /** Wrapper for LAPACK subroutine DGETRS.
  *
@@ -172,17 +118,9 @@ IPOPTLIB_EXPORT void IpLapackGetrs(
  * @deprecated Use IpLapackGetrs() instead.
  */
 IPOPT_DEPRECATED
-inline void IpLapackDgetrs(
-   Index         ndim,
-   Index         nrhs,
-   const Number* a,
-   Index         lda,
-   Index*        ipiv,
-   Number*       b,
-   Index         ldb
-)
-{
-   IpLapackGetrs(ndim, nrhs, a, lda, ipiv, b, ldb);
+inline void IpLapackDgetrs(Index ndim, Index nrhs, const Number* a, Index lda,
+                           Index* ipiv, Number* b, Index ldb) {
+  IpLapackGetrs(ndim, nrhs, a, lda, ipiv, b, ldb);
 }
 
 /** Wrapper for LAPACK subroutine XPPSV.
@@ -192,14 +130,8 @@ inline void IpLapackDgetrs(
  *  info is the return value from the LAPACK routine.
  *  @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpLapackPpsv(
-   Index         ndim,
-   Index         nrhs,
-   const Number* a,
-   Number*       b,
-   Index         ldb,
-   Index&        info
-);
+IPOPTLIB_EXPORT void IpLapackPpsv(Index ndim, Index nrhs, const Number* a,
+                                  Number* b, Index ldb, Index& info);
 
 /** Wrapper for LAPACK subroutine DPPSV.
  *
@@ -210,18 +142,11 @@ IPOPTLIB_EXPORT void IpLapackPpsv(
  *  @deprecated Use IpLapackPpsv() instead.
  */
 IPOPT_DEPRECATED
-inline void IpLapackDppsv(
-   Index         ndim,
-   Index         nrhs,
-   const Number* a,
-   Number*       b,
-   Index         ldb,
-   Index&        info
-)
-{
-   IpLapackPpsv(ndim, nrhs, a, b, ldb, info);
+inline void IpLapackDppsv(Index ndim, Index nrhs, const Number* a, Number* b,
+                          Index ldb, Index& info) {
+  IpLapackPpsv(ndim, nrhs, a, b, ldb, info);
 }
 
-} // namespace Ipopt
+}  // namespace Ipopt
 
 #endif

@@ -28,47 +28,45 @@
 #if !defined(SIMDE_X86_AVX512_SAD_H)
 #define SIMDE_X86_AVX512_SAD_H
 
-#include "types.h"
 #include "../avx2.h"
 #include "mov.h"
+#include "types.h"
 
 HEDLEY_DIAGNOSTIC_PUSH
 SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512i
-simde_mm512_sad_epu8 (simde__m512i a, simde__m512i b) {
-  #if defined(SIMDE_X86_AVX512BW_NATIVE)
-    return _mm512_sad_epu8(a, b);
-  #else
-    simde__m512i_private
-      r_,
-      a_ = simde__m512i_to_private(a),
-      b_ = simde__m512i_to_private(b);
+simde__m512i simde_mm512_sad_epu8(simde__m512i a, simde__m512i b) {
+#if defined(SIMDE_X86_AVX512BW_NATIVE)
+  return _mm512_sad_epu8(a, b);
+#else
+  simde__m512i_private r_, a_ = simde__m512i_to_private(a),
+                           b_ = simde__m512i_to_private(b);
 
-    #if SIMDE_NATURAL_VECTOR_SIZE_LE(256)
-        for (size_t i = 0 ; i < (sizeof(r_.m256i) / sizeof(r_.m256i[0])) ; i++) {
-          r_.m256i[i] = simde_mm256_sad_epu8(a_.m256i[i], b_.m256i[i]);
-        }
-    #else
-      for (size_t i = 0 ; i < (sizeof(r_.i64) / sizeof(r_.i64[0])) ; i++) {
-        uint16_t tmp = 0;
-        SIMDE_VECTORIZE_REDUCTION(+:tmp)
-        for (size_t j = 0 ; j < ((sizeof(r_.u8) / sizeof(r_.u8[0])) / 8) ; j++) {
-          const size_t e = j + (i * 8);
-          tmp += (a_.u8[e] > b_.u8[e]) ? (a_.u8[e] - b_.u8[e]) : (b_.u8[e] - a_.u8[e]);
-        }
-        r_.i64[i] = tmp;
-      }
-    #endif
+#if SIMDE_NATURAL_VECTOR_SIZE_LE(256)
+  for (size_t i = 0; i < (sizeof(r_.m256i) / sizeof(r_.m256i[0])); i++) {
+    r_.m256i[i] = simde_mm256_sad_epu8(a_.m256i[i], b_.m256i[i]);
+  }
+#else
+  for (size_t i = 0; i < (sizeof(r_.i64) / sizeof(r_.i64[0])); i++) {
+    uint16_t tmp = 0;
+    SIMDE_VECTORIZE_REDUCTION(+ : tmp)
+    for (size_t j = 0; j < ((sizeof(r_.u8) / sizeof(r_.u8[0])) / 8); j++) {
+      const size_t e = j + (i * 8);
+      tmp +=
+          (a_.u8[e] > b_.u8[e]) ? (a_.u8[e] - b_.u8[e]) : (b_.u8[e] - a_.u8[e]);
+    }
+    r_.i64[i] = tmp;
+  }
+#endif
 
-    return simde__m512i_from_private(r_);
-  #endif
+  return simde__m512i_from_private(r_);
+#endif
 }
 #if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_sad_epu8
-  #define _mm512_sad_epu8(a, b) simde_mm512_sad_epu8(a, b)
+#undef _mm512_sad_epu8
+#define _mm512_sad_epu8(a, b) simde_mm512_sad_epu8(a, b)
 #endif
 
 SIMDE_END_DECLS_

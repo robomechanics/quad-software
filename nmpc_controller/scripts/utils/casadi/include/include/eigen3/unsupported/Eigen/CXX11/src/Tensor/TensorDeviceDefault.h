@@ -10,7 +10,6 @@
 #ifndef EIGEN_CXX11_TENSOR_TENSOR_DEVICE_DEFAULT_H
 #define EIGEN_CXX11_TENSOR_TENSOR_DEVICE_DEFAULT_H
 
-
 namespace Eigen {
 
 // Default device for the machine (typically a single cpu core)
@@ -21,26 +20,32 @@ struct DefaultDevice {
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void deallocate(void* buffer) const {
     internal::aligned_free(buffer);
   }
-    EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void* allocate_temp(size_t num_bytes) const {
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void* allocate_temp(
+      size_t num_bytes) const {
     return allocate(num_bytes);
   }
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void deallocate_temp(void* buffer) const {
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void deallocate_temp(
+      void* buffer) const {
     deallocate(buffer);
   }
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void memcpy(void* dst, const void* src, size_t n) const {
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void memcpy(void* dst, const void* src,
+                                                    size_t n) const {
     ::memcpy(dst, src, n);
   }
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void memcpyHostToDevice(void* dst, const void* src, size_t n) const {
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void memcpyHostToDevice(
+      void* dst, const void* src, size_t n) const {
     memcpy(dst, src, n);
   }
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void memcpyDeviceToHost(void* dst, const void* src, size_t n) const {
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void memcpyDeviceToHost(
+      void* dst, const void* src, size_t n) const {
     memcpy(dst, src, n);
   }
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void memset(void* buffer, int c, size_t n) const {
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void memset(void* buffer, int c,
+                                                    size_t n) const {
     ::memset(buffer, c, n);
   }
-  template<typename Type>
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Type get(Type data) const { 
+  template <typename Type>
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Type get(Type data) const {
     return data;
   }
 
@@ -63,10 +68,10 @@ struct DefaultDevice {
     return l1CacheSize();
 #elif defined(EIGEN_HIP_DEVICE_COMPILE)
     // Running on a HIP device
-    return 48*1024; // FIXME : update this number for HIP
+    return 48 * 1024;  // FIXME : update this number for HIP
 #else
     // Running on a CUDA device, return the amount of shared memory available.
-    return 48*1024;
+    return 48 * 1024;
 #endif
   }
 
@@ -76,7 +81,7 @@ struct DefaultDevice {
     return l3CacheSize();
 #elif defined(EIGEN_HIP_DEVICE_COMPILE)
     // Running on a HIP device
-    return firstLevelCacheSize(); // FIXME : update this number for HIP
+    return firstLevelCacheSize();  // FIXME : update this number for HIP
 #else
     // Running on a CUDA device
     return firstLevelCacheSize();
@@ -101,4 +106,4 @@ struct DefaultDevice {
 
 }  // namespace Eigen
 
-#endif // EIGEN_CXX11_TENSOR_TENSOR_DEVICE_DEFAULT_H
+#endif  // EIGEN_CXX11_TENSOR_TENSOR_DEVICE_DEFAULT_H

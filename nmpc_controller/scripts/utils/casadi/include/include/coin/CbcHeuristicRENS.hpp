@@ -14,7 +14,7 @@
  */
 
 class CbcHeuristicRENS : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicRENS();
 
@@ -47,16 +47,12 @@ public:
         This does Relaxation Extension Neighborhood Search
         Does not run if when_<2 and a solution exists
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
 
   /// Set type
-  inline void setRensType(int value)
-  {
-    rensType_ = value;
-  }
+  inline void setRensType(int value) { rensType_ = value; }
 
-protected:
+ protected:
   // Data
   /// Number of tries
   int numberTries_;
@@ -64,11 +60,11 @@ protected:
         0 - fix at LB
         1 - fix on dj
         2 - fix at UB as well
-	3 - fix on 0.01*average dj
-	add 16 to allow two tries
-	32 - if solution exists use to keep more variables
-	64 - if priorities keep high priority
-	128 - if priorities keep low priority
+        3 - fix on 0.01*average dj
+        add 16 to allow two tries
+        32 - if solution exists use to keep more variables
+        64 - if priorities keep high priority
+        128 - if priorities keep low priority
     */
   int rensType_;
 };
@@ -76,4 +72,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

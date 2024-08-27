@@ -24,4 +24,4 @@ ALPAQA_EXPORT_EXTERN_TEMPLATE(class, ALMSolver, ZeroFPRSolver<AndersonDirection<
 #endif
 // clang-format on
 
-} // namespace alpaqa
+}  // namespace alpaqa

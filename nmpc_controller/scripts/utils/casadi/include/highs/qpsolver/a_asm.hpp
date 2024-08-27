@@ -2,9 +2,9 @@
 #define __SRC_LIB_QPSOLVER_ASM_HPP__
 
 #include "qpsolver/instance.hpp"
-#include "qpsolver/statistics.hpp"
 #include "qpsolver/qpconst.hpp"
 #include "qpsolver/settings.hpp"
+#include "qpsolver/statistics.hpp"
 #include "util/HighsTimer.h"
 
 enum class QpAsmStatus {
@@ -22,14 +22,14 @@ struct QpSolution {
   std::vector<BasisStatus> status_var;
   std::vector<BasisStatus> status_con;
 
-  QpSolution(Instance& instance) : primal(Vector(instance.num_var)),
+  QpSolution(Instance& instance)
+      : primal(Vector(instance.num_var)),
         rowactivity(Vector(instance.num_con)),
         dualvar(instance.num_var),
         dualcon(instance.num_con),
         status_var(instance.num_var),
         status_con(instance.num_con) {}
 };
-
 
 struct QpHotstartInformation {
   std::vector<HighsInt> active;
@@ -42,15 +42,17 @@ struct QpHotstartInformation {
       : primal(Vector(num_var)), rowact(Vector(num_row)) {}
 };
 
-// the purpose of this is the pure algorithmic solution of a QP instance with given hotstart information.
-// scenarios: 
-// 1) start from a given phase1 solution
+// the purpose of this is the pure algorithmic solution of a QP instance with
+// given hotstart information. scenarios: 1) start from a given phase1 solution
 // 2) start from a user-given hotstart solution
-// 3) start from a qp solution that was attained from a scaled instance and cleanup
-// 4) start from a qp solution that was attained from a perturbed instance and cleanup
-// 5) start from a qp solution and cleanup after recomputing basis and reduced hessian factorization
+// 3) start from a qp solution that was attained from a scaled instance and
+// cleanup 4) start from a qp solution that was attained from a perturbed
+// instance and cleanup 5) start from a qp solution and cleanup after
+// recomputing basis and reduced hessian factorization
 
-
-QpAsmStatus solveqp_actual(Instance& instance, Settings& settings, QpHotstartInformation& startinfo, Statistics& stats, QpModelStatus& status, QpSolution& solution, HighsTimer& qp_timer);
+QpAsmStatus solveqp_actual(Instance& instance, Settings& settings,
+                           QpHotstartInformation& startinfo, Statistics& stats,
+                           QpModelStatus& status, QpSolution& solution,
+                           HighsTimer& qp_timer);
 
 #endif

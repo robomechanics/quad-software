@@ -7,161 +7,117 @@
 #ifndef __IPIDENTITYMATRIX_HPP__
 #define __IPIDENTITYMATRIX_HPP__
 
-#include "IpUtils.hpp"
 #include "IpSymMatrix.hpp"
+#include "IpUtils.hpp"
 
-namespace Ipopt
-{
+namespace Ipopt {
 
 /** Class for Matrices which are multiples of the identity matrix. */
-class IPOPTLIB_EXPORT IdentityMatrix: public SymMatrix
-{
-public:
-   /**@name Constructors / Destructors */
-   ///@{
-   /** Constructor, initializing with dimensions of the matrix
-    *  (true identity matrix).
-    */
-   IdentityMatrix(
-      const SymMatrixSpace* owner_space
-   );
+class IPOPTLIB_EXPORT IdentityMatrix : public SymMatrix {
+ public:
+  /**@name Constructors / Destructors */
+  ///@{
+  /** Constructor, initializing with dimensions of the matrix
+   *  (true identity matrix).
+   */
+  IdentityMatrix(const SymMatrixSpace* owner_space);
 
-   /** Destructor */
-   ~IdentityMatrix();
-   ///@}
+  /** Destructor */
+  ~IdentityMatrix();
+  ///@}
 
-   /** Method for setting the factor for the identity matrix. */
-   void SetFactor(
-      Number factor
-   )
-   {
-      factor_ = factor;
-   }
+  /** Method for setting the factor for the identity matrix. */
+  void SetFactor(Number factor) { factor_ = factor; }
 
-   /** Method for getting the factor for the identity matrix. */
-   Number GetFactor() const
-   {
-      return factor_;
-   }
+  /** Method for getting the factor for the identity matrix. */
+  Number GetFactor() const { return factor_; }
 
-   /** Method for obtaining the dimension of the matrix. */
-   Index Dim() const;
+  /** Method for obtaining the dimension of the matrix. */
+  Index Dim() const;
 
-protected:
-   /**@name Methods overloaded from matrix */
-   ///@{
-   virtual void MultVectorImpl(
-      Number        alpha,
-      const Vector& x,
-      Number        beta,
-      Vector&       y
-   ) const;
+ protected:
+  /**@name Methods overloaded from matrix */
+  ///@{
+  virtual void MultVectorImpl(Number alpha, const Vector& x, Number beta,
+                              Vector& y) const;
 
-   virtual void AddMSinvZImpl(
-      Number        alpha,
-      const Vector& S,
-      const Vector& Z,
-      Vector&       X
-   ) const;
+  virtual void AddMSinvZImpl(Number alpha, const Vector& S, const Vector& Z,
+                             Vector& X) const;
 
-   virtual bool HasValidNumbersImpl() const;
+  virtual bool HasValidNumbersImpl() const;
 
-   virtual void ComputeRowAMaxImpl(
-      Vector& rows_norms,
-      bool    init
-   ) const;
+  virtual void ComputeRowAMaxImpl(Vector& rows_norms, bool init) const;
 
-   virtual void PrintImpl(
-      const Journalist&  jnlst,
-      EJournalLevel      level,
-      EJournalCategory   category,
-      const std::string& name,
-      Index              indent,
-      const std::string& prefix
-   ) const;
-   ///@}
+  virtual void PrintImpl(const Journalist& jnlst, EJournalLevel level,
+                         EJournalCategory category, const std::string& name,
+                         Index indent, const std::string& prefix) const;
+  ///@}
 
-private:
-   /**@name Default Compiler Generated Methods
-    * (Hidden to avoid implicit creation/calling).
-    * These methods are not implemented and
-    * we do not want the compiler to implement
-    * them for us, so we declare them private
-    * and do not define them. This ensures that
-    * they will not be implicitly created/called.
-    */
-   ///@{
-   /** Default Constructor */
-   IdentityMatrix();
+ private:
+  /**@name Default Compiler Generated Methods
+   * (Hidden to avoid implicit creation/calling).
+   * These methods are not implemented and
+   * we do not want the compiler to implement
+   * them for us, so we declare them private
+   * and do not define them. This ensures that
+   * they will not be implicitly created/called.
+   */
+  ///@{
+  /** Default Constructor */
+  IdentityMatrix();
 
-   /** Copy Constructor */
-   IdentityMatrix(
-      const IdentityMatrix&
-   );
+  /** Copy Constructor */
+  IdentityMatrix(const IdentityMatrix&);
 
-   /** Default Assignment Operator */
-   void operator=(
-      const IdentityMatrix&
-   );
-   ///@}
+  /** Default Assignment Operator */
+  void operator=(const IdentityMatrix&);
+  ///@}
 
-   /** Scaling factor for this identity matrix */
-   Number factor_;
+  /** Scaling factor for this identity matrix */
+  Number factor_;
 };
 
 /** This is the matrix space for IdentityMatrix. */
-class IPOPTLIB_EXPORT IdentityMatrixSpace: public SymMatrixSpace
-{
-public:
-   /** @name Constructors / Destructors */
-   ///@{
-   /** Constructor, given the dimension of the matrix. */
-   IdentityMatrixSpace(
-      Index dim
-   )
-      : SymMatrixSpace(dim)
-   { }
+class IPOPTLIB_EXPORT IdentityMatrixSpace : public SymMatrixSpace {
+ public:
+  /** @name Constructors / Destructors */
+  ///@{
+  /** Constructor, given the dimension of the matrix. */
+  IdentityMatrixSpace(Index dim) : SymMatrixSpace(dim) {}
 
-   /** Destructor */
-   virtual ~IdentityMatrixSpace()
-   { }
-   ///@}
+  /** Destructor */
+  virtual ~IdentityMatrixSpace() {}
+  ///@}
 
-   virtual SymMatrix* MakeNewSymMatrix() const
-   {
-      return MakeNewIdentityMatrix();
-   }
+  virtual SymMatrix* MakeNewSymMatrix() const {
+    return MakeNewIdentityMatrix();
+  }
 
-   /** Method for creating a new matrix of this specific type. */
-   IdentityMatrix* MakeNewIdentityMatrix() const
-   {
-      return new IdentityMatrix(this);
-   }
+  /** Method for creating a new matrix of this specific type. */
+  IdentityMatrix* MakeNewIdentityMatrix() const {
+    return new IdentityMatrix(this);
+  }
 
-private:
-   /**@name Default Compiler Generated Methods
-    * (Hidden to avoid implicit creation/calling).
-    * These methods are not implemented and
-    * we do not want the compiler to implement
-    * them for us, so we declare them private
-    * and do not define them. This ensures that
-    * they will not be implicitly created/called.
-    */
-   ///@{
-   /** Default Constructor */
-   IdentityMatrixSpace();
+ private:
+  /**@name Default Compiler Generated Methods
+   * (Hidden to avoid implicit creation/calling).
+   * These methods are not implemented and
+   * we do not want the compiler to implement
+   * them for us, so we declare them private
+   * and do not define them. This ensures that
+   * they will not be implicitly created/called.
+   */
+  ///@{
+  /** Default Constructor */
+  IdentityMatrixSpace();
 
-   /** Copy Constructor */
-   IdentityMatrixSpace(
-      const IdentityMatrixSpace&
-   );
+  /** Copy Constructor */
+  IdentityMatrixSpace(const IdentityMatrixSpace&);
 
-   /** Default Assignment Operator */
-   void operator=(
-      const IdentityMatrixSpace&
-   );
-   ///@}
+  /** Default Assignment Operator */
+  void operator=(const IdentityMatrixSpace&);
+  ///@}
 };
 
-} // namespace Ipopt
+}  // namespace Ipopt
 #endif

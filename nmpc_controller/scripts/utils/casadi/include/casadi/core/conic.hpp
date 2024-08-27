@@ -18,10 +18,10 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_CONIC_HPP
 #define CASADI_CONIC_HPP
@@ -30,145 +30,148 @@
 
 namespace casadi {
 
-  /** \defgroup main_conic Title
-      \par
+/** \defgroup main_conic Title
+    \par
 
-      Create a QP solver
-      Solves the following strictly convex problem:
+    Create a QP solver
+    Solves the following strictly convex problem:
 
-      \verbatim
-      min          1/2 x' H x + g' x
-      x
+    \verbatim
+    min          1/2 x' H x + g' x
+    x
 
-      subject to
-      LBA <= A x <= UBA
-      LBX <= x   <= UBX
+    subject to
+    LBA <= A x <= UBA
+    LBX <= x   <= UBX
 
-      resize(Q x, np, np) + P >= 0 (psd)
+    resize(Q x, np, np) + P >= 0 (psd)
 
-      with :
-      H sparse (n x n) positive definite
-      g dense  (n x 1)
-      A sparse (nc x n)
-      Q sparse symmetric (np^2 x n)
-      P sparse symmetric (np x nq)
+    with :
+    H sparse (n x n) positive definite
+    g dense  (n x 1)
+    A sparse (nc x n)
+    Q sparse symmetric (np^2 x n)
+    P sparse symmetric (np x nq)
 
-      n: number of decision variables (x)
-      nc: number of constraints (A)
-      nq: shape of psd constraint matrix
+    n: number of decision variables (x)
+    nc: number of constraints (A)
+    nq: shape of psd constraint matrix
 
-      \endverbatim
+    \endverbatim
 
-      If H is not positive-definite, the solver should throw an error.
+    If H is not positive-definite, the solver should throw an error.
 
-      Second-order cone constraints can be added as psd constraints
-      through a helper function 'soc':
+    Second-order cone constraints can be added as psd constraints
+    through a helper function 'soc':
 
-      x in R^n
-      y in R
+    x in R^n
+    y in R
 
-      || x ||_2 <= y
+    || x ||_2 <= y
 
-        <=>
+      <=>
 
-      soc(x, y) psd
+    soc(x, y) psd
 
-      This can be proven with soc(x, y)=[y*I   x; x'  y]
-      using the Shur complement.
+    This can be proven with soc(x, y)=[y*I   x; x'  y]
+    using the Shur complement.
 
 
-      \generalsection{Conic}
-      \pluginssection{Conic}
+    \generalsection{Conic}
+    \pluginssection{Conic}
 
-      \author Joel Andersson
-      \date 2011-2015
+    \author Joel Andersson
+    \date 2011-2015
 
-      \identifier{21n} */
+    \identifier{21n} */
 
-  /** \defgroup conic Title
-  * @copydoc main_conic
-  *  @{
-  */
+/** \defgroup conic Title
+ * @copydoc main_conic
+ *  @{
+ */
 
-  /** \if EXPANDED
-  * @copydoc main_conic
-  * \endif
-  */
-  ///@{
-  CASADI_EXPORT Function conic(const std::string& name, const std::string& solver,
-                               const SpDict& qp, const Dict& opts=Dict());
-  CASADI_EXPORT Function qpsol(const std::string& name, const std::string& solver,
-                               const SXDict& qp, const Dict& opts=Dict());
-  CASADI_EXPORT Function qpsol(const std::string& name, const std::string& solver,
-                               const MXDict& qp, const Dict& opts=Dict());
-  ///@}
+/** \if EXPANDED
+ * @copydoc main_conic
+ * \endif
+ */
+///@{
+CASADI_EXPORT Function conic(const std::string& name, const std::string& solver,
+                             const SpDict& qp, const Dict& opts = Dict());
+CASADI_EXPORT Function qpsol(const std::string& name, const std::string& solver,
+                             const SXDict& qp, const Dict& opts = Dict());
+CASADI_EXPORT Function qpsol(const std::string& name, const std::string& solver,
+                             const MXDict& qp, const Dict& opts = Dict());
+///@}
 
-  /** \brief Get input scheme of QP solvers
+/** \brief Get input scheme of QP solvers
 
-      \identifier{1ee} */
-  CASADI_EXPORT std::vector<std::string> conic_in();
+    \identifier{1ee} */
+CASADI_EXPORT std::vector<std::string> conic_in();
 
-  /** \brief Get QP solver output scheme of QP solvers
+/** \brief Get QP solver output scheme of QP solvers
 
-      \identifier{1ef} */
-  CASADI_EXPORT std::vector<std::string> conic_out();
+    \identifier{1ef} */
+CASADI_EXPORT std::vector<std::string> conic_out();
 
-  /** \brief Get QP solver input scheme name by index
+/** \brief Get QP solver input scheme name by index
 
-      \identifier{1eg} */
-  CASADI_EXPORT std::string conic_in(casadi_int ind);
+    \identifier{1eg} */
+CASADI_EXPORT std::string conic_in(casadi_int ind);
 
-  /** \brief Get output scheme name by index
+/** \brief Get output scheme name by index
 
-      \identifier{1eh} */
-  CASADI_EXPORT std::string conic_out(casadi_int ind);
+    \identifier{1eh} */
+CASADI_EXPORT std::string conic_out(casadi_int ind);
 
-  /** \brief Get the number of QP solver inputs
+/** \brief Get the number of QP solver inputs
 
-      \identifier{1ei} */
-  CASADI_EXPORT casadi_int conic_n_in();
+    \identifier{1ei} */
+CASADI_EXPORT casadi_int conic_n_in();
 
-  /** \brief Get the number of QP solver outputs
+/** \brief Get the number of QP solver outputs
 
-      \identifier{1ej} */
-  CASADI_EXPORT casadi_int conic_n_out();
+    \identifier{1ej} */
+CASADI_EXPORT casadi_int conic_n_out();
 
-  /** \brief Get all options for a plugin
+/** \brief Get all options for a plugin
 
-      \identifier{1ek} */
-  CASADI_EXPORT std::vector<std::string> conic_options(const std::string& name);
+    \identifier{1ek} */
+CASADI_EXPORT std::vector<std::string> conic_options(const std::string& name);
 
-  /** \brief Get type info for a particular option
+/** \brief Get type info for a particular option
 
-      \identifier{1el} */
-  CASADI_EXPORT std::string conic_option_type(const std::string& name, const std::string& op);
+    \identifier{1el} */
+CASADI_EXPORT std::string conic_option_type(const std::string& name,
+                                            const std::string& op);
 
-  /** \brief Get documentation for a particular option
+/** \brief Get documentation for a particular option
 
-      \identifier{1em} */
-  CASADI_EXPORT std::string conic_option_info(const std::string& name, const std::string& op);
+    \identifier{1em} */
+CASADI_EXPORT std::string conic_option_info(const std::string& name,
+                                            const std::string& op);
 
-  /// Check if a particular plugin is available
-  CASADI_EXPORT bool has_conic(const std::string& name);
+/// Check if a particular plugin is available
+CASADI_EXPORT bool has_conic(const std::string& name);
 
-  /// Explicitly load a plugin dynamically
-  CASADI_EXPORT void load_conic(const std::string& name);
+/// Explicitly load a plugin dynamically
+CASADI_EXPORT void load_conic(const std::string& name);
 
-  /// Get the documentation string for a plugin
-  CASADI_EXPORT std::string doc_conic(const std::string& name);
+/// Get the documentation string for a plugin
+CASADI_EXPORT std::string doc_conic(const std::string& name);
 
-  /** Generate native code in the interfaced language for debugging */
-  CASADI_EXPORT void conic_debug(const Function& f, const std::string &filename);
+/** Generate native code in the interfaced language for debugging */
+CASADI_EXPORT void conic_debug(const Function& f, const std::string& filename);
 
-  /** Generate native code in the interfaced language for debugging */
-  CASADI_EXPORT void conic_debug(const Function& f, std::ostream &file);
+/** Generate native code in the interfaced language for debugging */
+CASADI_EXPORT void conic_debug(const Function& f, std::ostream& file);
 
-  /** @} */
+/** @} */
 
 #ifndef SWIG
 /// Input arguments of a QP problem
 enum ConicInput {
-  /// The square matrix H: sparse, (n x n). Only the lower triangular part is actually used.
+  /// The square matrix H: sparse, (n x n). Only the lower triangular part is
+  /// actually used.
   /// The matrix is assumed to be symmetrical.
   CONIC_H,
   /// The vector g: dense,  (n x 1)
@@ -193,7 +196,8 @@ enum ConicInput {
   CONIC_Q,
   /// The matrix P: sparse symmetric, (np x np)
   CONIC_P,
-  CONIC_NUM_IN};
+  CONIC_NUM_IN
+};
 
 /// Output arguments of an QP Solver
 enum ConicOutput {
@@ -205,9 +209,10 @@ enum ConicOutput {
   CONIC_LAM_A,
   /// The dual solution corresponding to simple bounds
   CONIC_LAM_X,
-  CONIC_NUM_OUT};
-#endif // SWIG
+  CONIC_NUM_OUT
+};
+#endif  // SWIG
 
-} // namespace casadi
+}  // namespace casadi
 
-#endif // CASADI_CONIC_HPP
+#endif  // CASADI_CONIC_HPP

@@ -3,12 +3,12 @@
 // Corporation and others.  All Rights Reserved.
 // This code is licensed under the terms of the Eclipse Public License (EPL).
 
-//Edwin 11/25/09 carved out of CbcCompareActual
+// Edwin 11/25/09 carved out of CbcCompareActual
 
 #ifndef CbcCompareEstimate_H
 #define CbcCompareEstimate_H
 
-//#############################################################################
+// #############################################################################
 /*  These are alternative strategies for node traversal.
     They can take data etc for fine tuning
 
@@ -16,15 +16,15 @@
     comparison function returns true if node y is better than node x.
 
 */
-#include "CbcNode.hpp"
-#include "CbcCompareBase.hpp"
 #include "CbcCompare.hpp"
+#include "CbcCompareBase.hpp"
+#include "CbcNode.hpp"
 class CbcModel;
 
 /* This is when rounding is being done
-*/
+ */
 class CbcCompareEstimate : public CbcCompareBase {
-public:
+ public:
   // Default Constructor
   CbcCompareEstimate();
   ~CbcCompareEstimate();
@@ -42,7 +42,7 @@ public:
   virtual bool test(CbcNode *x, CbcNode *y);
 };
 
-#endif //CbcCompareEstimate_H
+#endif  // CbcCompareEstimate_H
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

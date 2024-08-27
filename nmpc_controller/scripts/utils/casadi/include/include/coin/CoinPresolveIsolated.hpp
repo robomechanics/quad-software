@@ -22,31 +22,24 @@ class isolated_constraint_action : public CoinPresolveAction {
   const double *rowels_;
   const double *costs_;
 
-  isolated_constraint_action(double rlo,
-    double rup,
-    int row,
-    int ninrow,
-    const int *rowcols,
-    const double *rowels,
-    const double *costs,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , rlo_(rlo)
-    , rup_(rup)
-    , row_(row)
-    , ninrow_(ninrow)
-    , rowcols_(rowcols)
-    , rowels_(rowels)
-    , costs_(costs)
-  {
-  }
+  isolated_constraint_action(double rlo, double rup, int row, int ninrow,
+                             const int *rowcols, const double *rowels,
+                             const double *costs,
+                             const CoinPresolveAction *next)
+      : CoinPresolveAction(next),
+        rlo_(rlo),
+        rup_(rup),
+        row_(row),
+        ninrow_(ninrow),
+        rowcols_(rowcols),
+        rowels_(rowels),
+        costs_(costs) {}
 
-public:
+ public:
   const char *name() const;
 
-  static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    int row,
-    const CoinPresolveAction *next);
+  static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob, int row,
+                                            const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -56,4 +49,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

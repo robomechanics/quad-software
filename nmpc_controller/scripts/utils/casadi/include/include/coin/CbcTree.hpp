@@ -6,31 +6,32 @@
 #ifndef CbcTree_H
 #define CbcTree_H
 
-#include <vector>
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
-#include "CoinHelperFunctions.hpp"
 #include "CbcCompare.hpp"
+#include "CoinHelperFunctions.hpp"
 
 /*! \brief Using MS heap implementation
 
   It's unclear if this is needed any longer, or even if it should be allowed.
   Cbc occasionally tries to do things to the tree (typically tweaking the
-  comparison predicate) that can cause a violation of the heap property (parent better
-  than either child). In a debug build, Microsoft's heap implementation does checks that
-  detect this and fail. This symbol switched to an alternate implementation of CbcTree,
-  and there are clearly differences, but no explanation as to why or what for.
+  comparison predicate) that can cause a violation of the heap property (parent
+  better than either child). In a debug build, Microsoft's heap implementation
+  does checks that detect this and fail. This symbol switched to an alternate
+  implementation of CbcTree, and there are clearly differences, but no
+  explanation as to why or what for.
 
-  As of 100921, the code is cleaned up to make it through `cbc -unitTest' without
-  triggering `Invalid heap' in an MSVS debug build. The method validateHeap() can
-  be used for debugging if this turns up again.
+  As of 100921, the code is cleaned up to make it through `cbc -unitTest'
+  without triggering `Invalid heap' in an MSVS debug build. The method
+  validateHeap() can be used for debugging if this turns up again.
 */
-//#define CBC_DUBIOUS_HEAP
+// #define CBC_DUBIOUS_HEAP
 #if defined(_MSC_VER) || defined(__MNO_CYGWIN)
-//#define CBC_DUBIOUS_HEAP
+// #define CBC_DUBIOUS_HEAP
 #endif
-#if 1 //ndef CBC_DUBIOUS_HEAP
+#if 1  // ndef CBC_DUBIOUS_HEAP
 
 /*! \brief Controls search tree debugging
 
@@ -50,8 +51,7 @@
     This class is used to hold the set of live nodes in the search tree.
 */
 class CbcTree {
-
-public:
+ public:
   /*! \name Constructors and related */
   //@{
   /// Default Constructor
@@ -105,7 +105,7 @@ public:
   virtual bool empty();
 
   /// Return size
-  virtual int size() const { return static_cast< int >(nodes_.size()); }
+  virtual int size() const { return static_cast<int>(nodes_.size()); }
 
   /// Return a node pointer
   inline CbcNode *operator[](int i) const { return nodes_[i]; }
@@ -126,7 +126,8 @@ public:
       specified cutoff value. It also sets bestPossibleObjective to
       the best objective over remaining nodes.
     */
-  virtual void cleanTree(CbcModel *model, double cutoff, double &bestPossibleObjective);
+  virtual void cleanTree(CbcModel *model, double cutoff,
+                         double &bestPossibleObjective);
 
   /// Get best on list using alternate method
   CbcNode *bestAlternate();
@@ -162,24 +163,16 @@ public:
   inline int *newBounds() const { return newBound_; }
 
   /// Last objective in branch-and-cut search tree
-  inline double lastObjective() const
-  {
-    return lastObjective_;
-  }
+  inline double lastObjective() const { return lastObjective_; }
   /// Last depth in branch-and-cut search tree
-  inline int lastDepth() const
-  {
-    return lastDepth_;
-  }
+  inline int lastDepth() const { return lastDepth_; }
   /// Last number of objects unsatisfied
-  inline int lastUnsatisfied() const
-  {
-    return lastUnsatisfied_;
-  }
+  inline int lastUnsatisfied() const { return lastUnsatisfied_; }
   /// Adds branching information to complete state
-  void addBranchingInformation(const CbcModel *model, const CbcNodeInfo *nodeInfo,
-    const double *currentLower,
-    const double *currentUpper);
+  void addBranchingInformation(const CbcModel *model,
+                               const CbcNodeInfo *nodeInfo,
+                               const double *currentLower,
+                               const double *currentUpper);
   /// Increase space for data
   void increaseSpace();
   //@}
@@ -192,9 +185,9 @@ public:
   //@}
 #endif
 
-protected:
+ protected:
   /// Storage vector for the heap
-  std::vector< CbcNode * > nodes_;
+  std::vector<CbcNode *> nodes_;
   /// Sort predicate for heap ordering.
   CbcCompare comparison_;
   /// Maximum "node" number so far to split ties
@@ -218,14 +211,13 @@ protected:
   int *newBound_;
 };
 
-#ifdef JJF_ZERO // not used
+#ifdef JJF_ZERO  // not used
 /*! \brief Implementation of live set as a managed array.
 
     This class is used to hold the set of live nodes in the search tree.
 */
 class CbcTreeArray : public CbcTree {
-
-public:
+ public:
   // Default Constructor
   CbcTreeArray();
 
@@ -277,7 +269,7 @@ public:
   /// Get best possible objective function in the tree
   virtual double getBestPossibleObjective();
   //@}
-protected:
+ protected:
   /// Returns
   /// Last node
   CbcNode *lastNode_;
@@ -296,8 +288,7 @@ protected:
 */
 
 class CbcNewTree : public CbcTree, public CoinSearchTreeManager {
-
-public:
+ public:
   // Default Constructor
   CbcNewTree();
 
@@ -338,22 +329,13 @@ public:
   virtual bool empty();
 
   /// Return size
-  inline int size() const
-  {
-    return nodes_.size();
-  }
+  inline int size() const { return nodes_.size(); }
 
   /// [] operator
-  inline CbcNode *operator[](int i) const
-  {
-    return nodes_[i];
-  }
+  inline CbcNode *operator[](int i) const { return nodes_[i]; }
 
   /// Return a node pointer
-  inline CbcNode *nodePointer(int i) const
-  {
-    return nodes_[i];
-  }
+  inline CbcNode *nodePointer(int i) const { return nodes_[i]; }
 
   //@}
 
@@ -376,7 +358,7 @@ public:
   /// We may have got an intelligent tree so give it one more chance
   virtual void endSearch() {}
   //@}
-protected:
+ protected:
 };
 #endif
 #else
@@ -386,8 +368,7 @@ protected:
   -- lh, 100921 --
 */
 class CbcTree {
-
-public:
+ public:
   // Default Constructor
   CbcTree();
 
@@ -425,28 +406,19 @@ public:
   //@{
 
   /// Test if empty *** note may be overridden
-  //virtual bool empty() ;
+  // virtual bool empty() ;
 
   /// Return size
-  inline int size() const
-  {
-    return nodes_.size();
-  }
+  inline int size() const { return nodes_.size(); }
 
   /// [] operator
-  inline CbcNode *operator[](int i) const
-  {
-    return nodes_[i];
-  }
+  inline CbcNode *operator[](int i) const { return nodes_[i]; }
 
   /// Return a node pointer
-  inline CbcNode *nodePointer(int i) const
-  {
-    return nodes_[i];
-  }
+  inline CbcNode *nodePointer(int i) const { return nodes_[i]; }
 
   virtual bool empty();
-  //inline int size() const { return size_; }
+  // inline int size() const { return size_; }
   void realpop();
   /** After changing data in the top node, fix the heap */
   void fixTop();
@@ -472,17 +444,14 @@ public:
   /// We may have got an intelligent tree so give it one more chance
   virtual void endSearch() {}
   /// Reset maximum node number
-  inline void resetNodeNumbers()
-  {
-    maximumNodeNumber_ = 0;
-  }
+  inline void resetNodeNumbers() { maximumNodeNumber_ = 0; }
 
   /// Get maximum node number
   inline int maximumNodeNumber() const { return maximumNodeNumber_; }
   //@}
-protected:
-  std::vector< CbcNode * > nodes_;
-  CbcCompare comparison_; ///> Sort function for heap ordering.
+ protected:
+  std::vector<CbcNode *> nodes_;
+  CbcCompare comparison_;  ///> Sort function for heap ordering.
   /// Maximum "node" number so far to split ties
   int maximumNodeNumber_;
 };
@@ -490,4 +459,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

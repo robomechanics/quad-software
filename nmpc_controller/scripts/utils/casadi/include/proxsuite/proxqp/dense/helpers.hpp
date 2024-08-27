@@ -8,13 +8,13 @@
 #ifndef PROXSUITE_PROXQP_DENSE_HELPERS_HPP
 #define PROXSUITE_PROXQP_DENSE_HELPERS_HPP
 
+#include <chrono>
+#include <proxsuite/helpers/optional.hpp>
+#include <proxsuite/proxqp/dense/fwd.hpp>
+#include <proxsuite/proxqp/dense/preconditioner/ruiz.hpp>
 #include <proxsuite/proxqp/results.hpp>
 #include <proxsuite/proxqp/settings.hpp>
 #include <proxsuite/proxqp/status.hpp>
-#include <proxsuite/proxqp/dense/fwd.hpp>
-#include <proxsuite/proxqp/dense/preconditioner/ruiz.hpp>
-#include <chrono>
-#include <proxsuite/helpers/optional.hpp>
 
 namespace proxsuite {
 namespace proxqp {
@@ -30,24 +30,16 @@ namespace dense {
  * performed).
  * @param qpresults solution results.
  */
-template<typename T>
-void
-compute_equality_constrained_initial_guess(Workspace<T>& qpwork,
-                                           const Settings<T>& qpsettings,
-                                           const Model<T>& qpmodel,
-                                           Results<T>& qpresults)
-{
-
+template <typename T>
+void compute_equality_constrained_initial_guess(Workspace<T>& qpwork,
+                                                const Settings<T>& qpsettings,
+                                                const Model<T>& qpmodel,
+                                                Results<T>& qpresults) {
   qpwork.rhs.setZero();
   qpwork.rhs.head(qpmodel.dim) = -qpwork.g_scaled;
   qpwork.rhs.segment(qpmodel.dim, qpmodel.n_eq) = qpwork.b_scaled;
-  iterative_solve_with_permut_fact( //
-    qpsettings,
-    qpmodel,
-    qpresults,
-    qpwork,
-    T(1),
-    qpmodel.dim + qpmodel.n_eq);
+  iterative_solve_with_permut_fact(  //
+      qpsettings, qpmodel, qpresults, qpwork, T(1), qpmodel.dim + qpmodel.n_eq);
 
   qpresults.x = qpwork.dw_aug.head(qpmodel.dim);
   qpresults.y = qpwork.dw_aug.segment(qpmodel.dim, qpmodel.n_eq);
@@ -64,28 +56,24 @@ compute_equality_constrained_initial_guess(Workspace<T>& qpwork,
  * performed).
  * @param qpresults solution results.
  */
-template<typename T>
-void
-setup_factorization(Workspace<T>& qpwork,
-                    const Model<T>& qpmodel,
-                    Results<T>& qpresults)
-{
-
+template <typename T>
+void setup_factorization(Workspace<T>& qpwork, const Model<T>& qpmodel,
+                         Results<T>& qpresults) {
   proxsuite::linalg::veg::dynstack::DynStackMut stack{
-    proxsuite::linalg::veg::from_slice_mut,
-    qpwork.ldl_stack.as_mut(),
+      proxsuite::linalg::veg::from_slice_mut,
+      qpwork.ldl_stack.as_mut(),
   };
 
   qpwork.kkt.topLeftCorner(qpmodel.dim, qpmodel.dim) = qpwork.H_scaled;
   qpwork.kkt.topLeftCorner(qpmodel.dim, qpmodel.dim).diagonal().array() +=
-    qpresults.info.rho;
+      qpresults.info.rho;
   qpwork.kkt.block(0, qpmodel.dim, qpmodel.dim, qpmodel.n_eq) =
-    qpwork.A_scaled.transpose();
+      qpwork.A_scaled.transpose();
   qpwork.kkt.block(qpmodel.dim, 0, qpmodel.n_eq, qpmodel.dim) = qpwork.A_scaled;
   qpwork.kkt.bottomRightCorner(qpmodel.n_eq, qpmodel.n_eq).setZero();
   qpwork.kkt.diagonal()
-    .segment(qpmodel.dim, qpmodel.n_eq)
-    .setConstant(-qpresults.info.mu_eq);
+      .segment(qpmodel.dim, qpmodel.n_eq)
+      .setConstant(-qpresults.info.mu_eq);
 
   qpwork.ldl.factorize(qpwork.kkt.transpose(), stack);
 }
@@ -101,30 +89,23 @@ setup_factorization(Workspace<T>& qpwork,
  * variables (initialized to the identity preconditioner if it is the first
  * scaling performed).
  */
-template<typename T>
-void
-setup_equilibration(Workspace<T>& qpwork,
-                    const Settings<T>& qpsettings,
-                    preconditioner::RuizEquilibration<T>& ruiz,
-                    bool execute_preconditioner)
-{
-
+template <typename T>
+void setup_equilibration(Workspace<T>& qpwork, const Settings<T>& qpsettings,
+                         preconditioner::RuizEquilibration<T>& ruiz,
+                         bool execute_preconditioner) {
   QpViewBoxMut<T> qp_scaled{
-    { from_eigen, qpwork.H_scaled }, { from_eigen, qpwork.g_scaled },
-    { from_eigen, qpwork.A_scaled }, { from_eigen, qpwork.b_scaled },
-    { from_eigen, qpwork.C_scaled }, { from_eigen, qpwork.u_scaled },
-    { from_eigen, qpwork.l_scaled }
-  };
+      {from_eigen, qpwork.H_scaled}, {from_eigen, qpwork.g_scaled},
+      {from_eigen, qpwork.A_scaled}, {from_eigen, qpwork.b_scaled},
+      {from_eigen, qpwork.C_scaled}, {from_eigen, qpwork.u_scaled},
+      {from_eigen, qpwork.l_scaled}};
 
   proxsuite::linalg::veg::dynstack::DynStackMut stack{
-    proxsuite::linalg::veg::from_slice_mut,
-    qpwork.ldl_stack.as_mut(),
+      proxsuite::linalg::veg::from_slice_mut,
+      qpwork.ldl_stack.as_mut(),
   };
-  ruiz.scale_qp_in_place(qp_scaled,
-                         execute_preconditioner,
+  ruiz.scale_qp_in_place(qp_scaled, execute_preconditioner,
                          qpsettings.preconditioner_max_iter,
-                         qpsettings.preconditioner_accuracy,
-                         stack);
+                         qpsettings.preconditioner_accuracy, stack);
   qpwork.correction_guess_rhs_g = infty_norm(qpwork.g_scaled);
 }
 
@@ -137,18 +118,13 @@ setup_equilibration(Workspace<T>& qpwork,
  * performed).
  * @param qpresults solver results.
  */
-template<typename T>
-void
-initial_guess(Workspace<T>& qpwork,
-              Settings<T>& qpsettings,
-              Model<T>& qpmodel,
-              Results<T>& qpresults)
-{
-
+template <typename T>
+void initial_guess(Workspace<T>& qpwork, Settings<T>& qpsettings,
+                   Model<T>& qpmodel, Results<T>& qpresults) {
   switch (qpsettings.initial_guess) {
     case InitialGuessStatus::EQUALITY_CONSTRAINED_INITIAL_GUESS: {
-      compute_equality_constrained_initial_guess(
-        qpwork, qpsettings, qpmodel, qpresults);
+      compute_equality_constrained_initial_guess(qpwork, qpsettings, qpmodel,
+                                                 qpresults);
       break;
     }
   }
@@ -169,72 +145,54 @@ initial_guess(Workspace<T>& qpwork,
  * @param qpresults solver result.
  */
 
-template<typename T>
-void
-update(optional<MatRef<T>> H,
-       optional<VecRef<T>> g,
-       optional<MatRef<T>> A,
-       optional<VecRef<T>> b,
-       optional<MatRef<T>> C,
-       optional<VecRef<T>> l,
-       optional<VecRef<T>> u,
-       Model<T>& model,
-       Workspace<T>& work)
-{
+template <typename T>
+void update(optional<MatRef<T>> H, optional<VecRef<T>> g, optional<MatRef<T>> A,
+            optional<VecRef<T>> b, optional<MatRef<T>> C, optional<VecRef<T>> l,
+            optional<VecRef<T>> u, Model<T>& model, Workspace<T>& work) {
   // check the model is valid
   if (g != nullopt) {
-    PROXSUITE_CHECK_ARGUMENT_SIZE(g.value().size(),
-                                  model.dim,
+    PROXSUITE_CHECK_ARGUMENT_SIZE(g.value().size(), model.dim,
                                   "the dimension wrt the primal variable x "
                                   "variable for updating g is not valid.");
   }
   if (b != nullopt) {
-    PROXSUITE_CHECK_ARGUMENT_SIZE(b.value().size(),
-                                  model.n_eq,
+    PROXSUITE_CHECK_ARGUMENT_SIZE(b.value().size(), model.n_eq,
                                   "the dimension wrt equality constrained "
                                   "variables for updating b is not valid.");
   }
   if (u != nullopt) {
-    PROXSUITE_CHECK_ARGUMENT_SIZE(u.value().size(),
-                                  model.n_in,
+    PROXSUITE_CHECK_ARGUMENT_SIZE(u.value().size(), model.n_in,
                                   "the dimension wrt inequality constrained "
                                   "variables for updating u is not valid.");
   }
   if (l != nullopt) {
-    PROXSUITE_CHECK_ARGUMENT_SIZE(l.value().size(),
-                                  model.n_in,
+    PROXSUITE_CHECK_ARGUMENT_SIZE(l.value().size(), model.n_in,
                                   "the dimension wrt inequality constrained "
                                   "variables for updating l is not valid.");
   }
   if (H != nullopt) {
     PROXSUITE_CHECK_ARGUMENT_SIZE(
-      H.value().rows(),
-      model.dim,
-      "the row dimension for updating H is not valid.");
+        H.value().rows(), model.dim,
+        "the row dimension for updating H is not valid.");
     PROXSUITE_CHECK_ARGUMENT_SIZE(
-      H.value().cols(),
-      model.dim,
-      "the column dimension for updating H is not valid.");
+        H.value().cols(), model.dim,
+        "the column dimension for updating H is not valid.");
   }
   if (A != nullopt) {
     PROXSUITE_CHECK_ARGUMENT_SIZE(
-      A.value().rows(),
-      model.n_eq,
-      "the row dimension for updating A is not valid.");
+        A.value().rows(), model.n_eq,
+        "the row dimension for updating A is not valid.");
     PROXSUITE_CHECK_ARGUMENT_SIZE(
-      A.value().cols(),
-      model.dim,
-      "the column dimension for updating A is not valid.");
+        A.value().cols(), model.dim,
+        "the column dimension for updating A is not valid.");
   }
   if (C != nullopt) {
     PROXSUITE_CHECK_ARGUMENT_SIZE(
-      C.value().rows(),
-      model.n_in,
-      "the row dimension for updating C is not valid.");
+        C.value().rows(), model.n_in,
+        "the row dimension for updating C is not valid.");
     PROXSUITE_CHECK_ARGUMENT_SIZE(
-      C.value().cols(),
-      model.dim,
-      "the column dimension for updating C is not valid.");
+        C.value().cols(), model.dim,
+        "the column dimension for updating C is not valid.");
   }
 
   // update the model
@@ -285,24 +243,14 @@ update(optional<MatRef<T>> H,
  * preconditioning algorithm, or keeping previous preconditioning variables, or
  * using the identity preconditioner (i.e., no preconditioner).
  */
-template<typename T>
-void
-setup( //
-  optional<MatRef<T>> H,
-  optional<VecRef<T>> g,
-  optional<MatRef<T>> A,
-  optional<VecRef<T>> b,
-  optional<MatRef<T>> C,
-  optional<VecRef<T>> l,
-  optional<VecRef<T>> u,
-  Settings<T>& qpsettings,
-  Model<T>& qpmodel,
-  Workspace<T>& qpwork,
-  Results<T>& qpresults,
-  preconditioner::RuizEquilibration<T>& ruiz,
-  PreconditionerStatus preconditioner_status)
-{
-
+template <typename T>
+void setup(  //
+    optional<MatRef<T>> H, optional<VecRef<T>> g, optional<MatRef<T>> A,
+    optional<VecRef<T>> b, optional<MatRef<T>> C, optional<VecRef<T>> l,
+    optional<VecRef<T>> u, Settings<T>& qpsettings, Model<T>& qpmodel,
+    Workspace<T>& qpwork, Results<T>& qpresults,
+    preconditioner::RuizEquilibration<T>& ruiz,
+    PreconditionerStatus preconditioner_status) {
   switch (qpsettings.initial_guess) {
     case InitialGuessStatus::EQUALITY_CONSTRAINED_INITIAL_GUESS: {
       if (qpwork.proximal_parameter_update) {
@@ -335,8 +283,8 @@ setup( //
     case InitialGuessStatus::WARM_START: {
       if (qpwork.proximal_parameter_update) {
         qpresults
-          .cleanup_all_except_prox_parameters(); // the warm start is given at
-                                                 // the solve function
+            .cleanup_all_except_prox_parameters();  // the warm start is given
+                                                    // at the solve function
       } else {
         qpresults.cleanup(qpsettings);
       }
@@ -345,8 +293,8 @@ setup( //
     }
     case InitialGuessStatus::WARM_START_WITH_PREVIOUS_RESULT: {
       if (qpwork.refactorize || qpwork.proximal_parameter_update) {
-        qpwork.cleanup(); // meaningful for when there is an upate of the model
-                          // and one wants to warm start with previous result
+        qpwork.cleanup();  // meaningful for when there is an upate of the model
+                           // and one wants to warm start with previous result
         qpwork.refactorize = true;
       }
       qpresults.cleanup_statistics();
@@ -355,35 +303,35 @@ setup( //
   }
   if (H != nullopt) {
     qpmodel.H = H.value();
-  } // else qpmodel.H remains initialzed to a matrix with zero elements
+  }  // else qpmodel.H remains initialzed to a matrix with zero elements
   if (g != nullopt) {
     qpmodel.g = g.value();
   }
 
   if (A != nullopt) {
     qpmodel.A = A.value();
-  } // else qpmodel.A remains initialized to a matrix with zero elements or zero
-    // shape
+  }  // else qpmodel.A remains initialized to a matrix with zero elements or
+     // zero shape
 
   if (b != nullopt) {
     qpmodel.b = b.value();
-  } // else qpmodel.b remains initialized to a matrix with zero elements or zero
-    // shape
+  }  // else qpmodel.b remains initialized to a matrix with zero elements or
+     // zero shape
 
   if (C != nullopt) {
     qpmodel.C = C.value();
-  } // else qpmodel.C remains initialized to a matrix with zero elements or zero
-    // shape
+  }  // else qpmodel.C remains initialized to a matrix with zero elements or
+     // zero shape
 
   if (u != nullopt) {
     qpmodel.u = u.value();
-  } // else qpmodel.u remains initialized to a matrix with zero elements or zero
-    // shape
+  }  // else qpmodel.u remains initialized to a matrix with zero elements or
+     // zero shape
 
   if (l != nullopt) {
     qpmodel.l = l.value();
-  } // else qpmodel.l remains initialized to a matrix with zero elements or zero
-    // shape
+  }  // else qpmodel.l remains initialized to a matrix with zero elements or
+     // zero shape
   assert(qpmodel.is_valid());
 
   qpwork.H_scaled = qpmodel.H;
@@ -392,15 +340,17 @@ setup( //
   qpwork.b_scaled = qpmodel.b;
   qpwork.C_scaled = qpmodel.C;
   qpwork.u_scaled =
-    (qpmodel.u.array() <= T(1.E20))
-      .select(qpmodel.u,
+      (qpmodel.u.array() <= T(1.E20))
+          .select(
+              qpmodel.u,
               Eigen::Matrix<T, Eigen::Dynamic, 1>::Zero(qpmodel.n_in).array() +
-                T(1.E20));
+                  T(1.E20));
   qpwork.l_scaled =
-    (qpmodel.l.array() >= T(-1.E20))
-      .select(qpmodel.l,
+      (qpmodel.l.array() >= T(-1.E20))
+          .select(
+              qpmodel.l,
               Eigen::Matrix<T, Eigen::Dynamic, 1>::Zero(qpmodel.n_in).array() -
-                T(1.E20));
+                  T(1.E20));
 
   qpwork.dual_feasibility_rhs_2 = infty_norm(qpmodel.g);
 
@@ -427,16 +377,10 @@ setup( //
  * @param mu_in_new dual inequality proximal parameter.
  * @param results solver results.
  */
-template<typename T>
-void
-update_proximal_parameters(Settings<T>& settings,
-                           Results<T>& results,
-                           Workspace<T>& work,
-                           optional<T> rho_new,
-                           optional<T> mu_eq_new,
-                           optional<T> mu_in_new)
-{
-
+template <typename T>
+void update_proximal_parameters(Settings<T>& settings, Results<T>& results,
+                                Workspace<T>& work, optional<T> rho_new,
+                                optional<T> mu_eq_new, optional<T> mu_in_new) {
   if (rho_new != nullopt) {
     settings.default_rho = rho_new.value();
     results.info.rho = rho_new.value();
@@ -464,41 +408,32 @@ update_proximal_parameters(Settings<T>& settings,
  * @param results solver result.
  * @param settings solver settings.
  */
-template<typename T>
-void
-warm_start(optional<VecRef<T>> x_wm,
-           optional<VecRef<T>> y_wm,
-           optional<VecRef<T>> z_wm,
-           Results<T>& results,
-           Settings<T>& settings,
-           Model<T>& model)
-{
-  if (x_wm == nullopt && y_wm == nullopt && z_wm == nullopt)
-    return;
+template <typename T>
+void warm_start(optional<VecRef<T>> x_wm, optional<VecRef<T>> y_wm,
+                optional<VecRef<T>> z_wm, Results<T>& results,
+                Settings<T>& settings, Model<T>& model) {
+  if (x_wm == nullopt && y_wm == nullopt && z_wm == nullopt) return;
 
   settings.initial_guess = InitialGuessStatus::WARM_START;
 
   // first check problem dimensions
   if (x_wm != nullopt) {
     PROXSUITE_CHECK_ARGUMENT_SIZE(
-      x_wm.value().rows(),
-      model.dim,
-      "the dimension wrt primal variable x for warm start is not valid.");
+        x_wm.value().rows(), model.dim,
+        "the dimension wrt primal variable x for warm start is not valid.");
   }
 
   if (y_wm != nullopt) {
-    PROXSUITE_CHECK_ARGUMENT_SIZE(y_wm.value().rows(),
-                                  model.n_eq,
+    PROXSUITE_CHECK_ARGUMENT_SIZE(y_wm.value().rows(), model.n_eq,
                                   "the dimension wrt equality constrained "
                                   "variables for warm start is not valid.");
   }
 
   if (z_wm != nullopt) {
     PROXSUITE_CHECK_ARGUMENT_SIZE(
-      z_wm.value().rows(),
-      model.n_in,
-      "the dimension wrt inequality constrained variables for warm start "
-      "is not valid.");
+        z_wm.value().rows(), model.n_in,
+        "the dimension wrt inequality constrained variables for warm start "
+        "is not valid.");
   }
 
   if (x_wm != nullopt) {
@@ -513,8 +448,8 @@ warm_start(optional<VecRef<T>> x_wm,
     results.z = z_wm.value().eval();
   }
 }
-} // namespace dense
-} // namespace proxqp
-} // namespace proxsuite
+}  // namespace dense
+}  // namespace proxqp
+}  // namespace proxsuite
 
 #endif /* end of include guard PROXSUITE_PROXQP_DENSE_HELPERS_HPP */

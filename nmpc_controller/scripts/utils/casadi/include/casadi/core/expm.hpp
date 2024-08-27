@@ -18,10 +18,10 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_EXPM_HPP
 #define CASADI_EXPM_HPP
@@ -30,55 +30,56 @@
 
 namespace casadi {
 
-  /** \defgroup main_expm Title
-      \par
+/** \defgroup main_expm Title
+    \par
 
-      Performs a matrix exponentiation
-      expm(A)
+    Performs a matrix exponentiation
+    expm(A)
 
 
-      \generalsection{Expm}
-      \pluginssection{Expm}
+    \generalsection{Expm}
+    \pluginssection{Expm}
 
-      \author Joris Gillis
-      \date 2017
+    \author Joris Gillis
+    \date 2017
 
-      \identifier{21l} */
+    \identifier{21l} */
 
-  /** \defgroup expm Title
-  * @copydoc main_expm
-  *  @{
-  */
+/** \defgroup expm Title
+ * @copydoc main_expm
+ *  @{
+ */
 
-  /** \if EXPANDED
-  * @copydoc main_expm
-  * \endif
-  */
-  ///@{
-  CASADI_EXPORT Function expmsol(const std::string& name, const std::string& solver,
-                           const Sparsity& A, const Dict& opts=Dict());
-  ///@}
+/** \if EXPANDED
+ * @copydoc main_expm
+ * \endif
+ */
+///@{
+CASADI_EXPORT Function expmsol(const std::string& name,
+                               const std::string& solver, const Sparsity& A,
+                               const Dict& opts = Dict());
+///@}
 
-  /** \brief Get the number of expm solver inputs
+/** \brief Get the number of expm solver inputs
 
-      \identifier{rs} */
-  CASADI_EXPORT casadi_int expm_n_in();
+    \identifier{rs} */
+CASADI_EXPORT casadi_int expm_n_in();
 
-  /** \brief Get the number of expm solver outputs
+/** \brief Get the number of expm solver outputs
 
-      \identifier{rt} */
-  CASADI_EXPORT casadi_int expm_n_out();
+    \identifier{rt} */
+CASADI_EXPORT casadi_int expm_n_out();
 
-  /// Check if a particular plugin is available
-  CASADI_EXPORT bool has_expm(const std::string& name);
+/// Check if a particular plugin is available
+CASADI_EXPORT bool has_expm(const std::string& name);
 
-  /// Explicitly load a plugin dynamically
-  CASADI_EXPORT void load_expm(const std::string& name);
+/// Explicitly load a plugin dynamically
+CASADI_EXPORT void load_expm(const std::string& name);
 
-  /// Get the documentation string for a plugin
-  CASADI_EXPORT std::string doc_expm(const std::string& name);
+/// Get the documentation string for a plugin
+CASADI_EXPORT std::string doc_expm(const std::string& name);
 
-  /** @} */
-} // namespace casadi
+/** @} */
+}  // namespace casadi
 
-#endif // CASADI_EXPM_HPP
+#endif  // CASADI_EXPM_HPP

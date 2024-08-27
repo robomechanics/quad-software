@@ -8,11 +8,12 @@
 
 #include <string>
 #include <vector>
-#include "CoinPackedMatrix.hpp"
-#include "OsiCuts.hpp"
-#include "CoinHelperFunctions.hpp"
-#include "OsiBranchingObject.hpp"
+
 #include "CbcModel.hpp"
+#include "CoinHelperFunctions.hpp"
+#include "CoinPackedMatrix.hpp"
+#include "OsiBranchingObject.hpp"
+#include "OsiCuts.hpp"
 
 class OsiSolverInterface;
 
@@ -20,7 +21,7 @@ class CbcModel;
 #ifdef COIN_HAS_CLP
 #include "OsiClpSolverInterface.hpp"
 #endif
-//#############################################################################
+// #############################################################################
 
 class CbcHeuristicNodeList;
 class CbcBranchingObject;
@@ -29,12 +30,12 @@ class CbcBranchingObject;
     to the node where a heuristic was invoked from */
 
 class CbcHeuristicNode {
-private:
+ private:
   void gutsOfConstructor(CbcModel &model);
   CbcHeuristicNode();
   CbcHeuristicNode &operator=(const CbcHeuristicNode &);
 
-private:
+ private:
   /// The number of branching decisions made
   int numObjects_;
   /** The indices of the branching objects. Note: an index may be
@@ -42,7 +43,7 @@ private:
         been branched on multiple times. */
   CbcBranchingObject **brObj_;
 
-public:
+ public:
   CbcHeuristicNode(CbcModel &model);
 
   CbcHeuristicNode(const CbcHeuristicNode &rhs);
@@ -50,19 +51,19 @@ public:
   double distance(const CbcHeuristicNode *node) const;
   double minDistance(const CbcHeuristicNodeList &nodeList) const;
   bool minDistanceIsSmall(const CbcHeuristicNodeList &nodeList,
-    const double threshold) const;
+                          const double threshold) const;
   double avgDistance(const CbcHeuristicNodeList &nodeList) const;
 };
 
 class CbcHeuristicNodeList {
-private:
+ private:
   void gutsOfDelete();
   void gutsOfCopy(const CbcHeuristicNodeList &rhs);
 
-private:
-  std::vector< CbcHeuristicNode * > nodes_;
+ private:
+  std::vector<CbcHeuristicNode *> nodes_;
 
-public:
+ public:
   CbcHeuristicNodeList() {}
   CbcHeuristicNodeList(const CbcHeuristicNodeList &rhs);
   CbcHeuristicNodeList &operator=(const CbcHeuristicNodeList &rhs);
@@ -70,25 +71,19 @@ public:
 
   void append(CbcHeuristicNode *&node);
   void append(const CbcHeuristicNodeList &nodes);
-  inline const CbcHeuristicNode *node(int i) const
-  {
-    return nodes_[i];
-  }
-  inline int size() const
-  {
-    return static_cast< int >(nodes_.size());
-  }
+  inline const CbcHeuristicNode *node(int i) const { return nodes_[i]; }
+  inline int size() const { return static_cast<int>(nodes_.size()); }
 };
 
-//#############################################################################
+// #############################################################################
 /** Heuristic base class */
 
 class CbcHeuristic {
-private:
+ private:
   void gutsOfDelete() {}
   void gutsOfCopy(const CbcHeuristic &rhs);
 
-public:
+ public:
   // Default Constructor
   CbcHeuristic();
 
@@ -117,21 +112,17 @@ public:
         Sets solution values if good, sets objective value
         This is called after cuts have been added - so can not add cuts
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution)
-    = 0;
+  virtual int solution(double &objectiveValue, double *newSolution) = 0;
 
   /** returns 0 if no solution, 1 if valid solution, -1 if just
         returning an estimate of best possible solution
         with better objective value than one passed in
-        Sets solution values if good, sets objective value (only if nonzero code)
-        This is called at same time as cut generators - so can add cuts
+        Sets solution values if good, sets objective value (only if nonzero
+     code) This is called at same time as cut generators - so can add cuts
         Default is do nothing
     */
-  virtual int solution2(double & /*objectiveValue*/,
-    double * /*newSolution*/,
-    OsiCuts & /*cs*/)
-  {
+  virtual int solution2(double & /*objectiveValue*/, double * /*newSolution*/,
+                        OsiCuts & /*cs*/) {
     return 0;
   }
 
@@ -142,26 +133,14 @@ public:
         If 10 added then don't worry if validate says there are funny objects
         as user knows it will be fine
     */
-  inline void setWhen(int value)
-  {
-    when_ = value;
-  }
+  inline void setWhen(int value) { when_ = value; }
   /// Gets "when" flag - 0 off, 1 at root, 2 other than root, 3 always
-  inline int when() const
-  {
-    return when_;
-  }
+  inline int when() const { return when_; }
 
   /// Sets number of nodes in subtree (default 200)
-  inline void setNumberNodes(int value)
-  {
-    numberNodes_ = value;
-  }
+  inline void setNumberNodes(int value) { numberNodes_ = value; }
   /// Gets number of nodes in a subtree (default 200)
-  inline int numberNodes() const
-  {
-    return numberNodes_;
-  }
+  inline int numberNodes() const { return numberNodes_; }
   /** Switches (does not apply equally to all heuristics)
         1 bit - stop once allowable gap on objective reached
         2 bit - always do given number of passes
@@ -172,10 +151,7 @@ public:
         16 bit - needs new solution to run
         1024 bit - stop all heuristics on max time
     */
-  inline void setSwitches(int value)
-  {
-    switches_ = value;
-  }
+  inline void setSwitches(int value) { switches_ = value; }
   /** Switches (does not apply equally to all heuristics)
         1 bit - stop once allowable gap on objective reached
         2 bit - always do given number of passes
@@ -185,50 +161,30 @@ public:
                 try keep halving distance to known cutoff
         16 bit - needs new solution to run
         1024 bit - stop all heuristics on max time
-	65536 bit and above used for temporary communication
+        65536 bit and above used for temporary communication
     */
-  inline int switches() const
-  {
-    return switches_;
-  }
+  inline int switches() const { return switches_; }
   /// Whether to exit at once on gap
   bool exitNow(double bestObjective) const;
   /// Sets feasibility pump options (-1 is off)
-  inline void setFeasibilityPumpOptions(int value)
-  {
+  inline void setFeasibilityPumpOptions(int value) {
     feasibilityPumpOptions_ = value;
   }
   /// Gets feasibility pump options (-1 is off)
-  inline int feasibilityPumpOptions() const
-  {
-    return feasibilityPumpOptions_;
-  }
+  inline int feasibilityPumpOptions() const { return feasibilityPumpOptions_; }
   /// Just set model - do not do anything else
-  inline void setModelOnly(CbcModel *model)
-  {
-    model_ = model;
-  }
+  inline void setModelOnly(CbcModel *model) { model_ = model; }
 
-  /// Sets fraction of new(rows+columns)/old(rows+columns) before doing small branch and bound (default 1.0)
-  inline void setFractionSmall(double value)
-  {
-    fractionSmall_ = value;
-  }
-  /// Gets fraction of new(rows+columns)/old(rows+columns) before doing small branch and bound (default 1.0)
-  inline double fractionSmall() const
-  {
-    return fractionSmall_;
-  }
+  /// Sets fraction of new(rows+columns)/old(rows+columns) before doing small
+  /// branch and bound (default 1.0)
+  inline void setFractionSmall(double value) { fractionSmall_ = value; }
+  /// Gets fraction of new(rows+columns)/old(rows+columns) before doing small
+  /// branch and bound (default 1.0)
+  inline double fractionSmall() const { return fractionSmall_; }
   /// Get how many solutions the heuristic thought it got
-  inline int numberSolutionsFound() const
-  {
-    return numberSolutionsFound_;
-  }
+  inline int numberSolutionsFound() const { return numberSolutionsFound_; }
   /// Increment how many solutions the heuristic thought it got
-  inline void incrementNumberSolutionsFound()
-  {
-    numberSolutionsFound_++;
-  }
+  inline void incrementNumberSolutionsFound() { numberSolutionsFound_++; }
 
   /** Do mini branch and bound - return
         0 not finished - no solution
@@ -240,36 +196,24 @@ public:
         -2 time or user event
     */
   int smallBranchAndBound(OsiSolverInterface *solver, int numberNodes,
-    double *newSolution, double &newSolutionValue,
-    double cutoff, std::string name) const;
+                          double *newSolution, double &newSolutionValue,
+                          double cutoff, std::string name) const;
   /// Create C++ lines to get to current state
   virtual void generateCpp(FILE *) {}
   /// Create C++ lines to get to current state - does work for base class
   void generateCpp(FILE *fp, const char *heuristic);
   /// Returns true if can deal with "odd" problems e.g. sos type 2
-  virtual bool canDealWithOdd() const
-  {
-    return false;
-  }
+  virtual bool canDealWithOdd() const { return false; }
   /// return name of heuristic
-  inline const char *heuristicName() const
-  {
-    return heuristicName_.c_str();
-  }
+  inline const char *heuristicName() const { return heuristicName_.c_str(); }
   /// set name of heuristic
-  inline void setHeuristicName(const char *name)
-  {
-    heuristicName_ = name;
-  }
+  inline void setHeuristicName(const char *name) { heuristicName_ = name; }
   /// Set random number generator seed
   void setSeed(int value);
   /// Get random number generator seed
   int getSeed() const;
   /// Sets decay factor (for howOften) on failure
-  inline void setDecayFactor(double value)
-  {
-    decayFactor_ = value;
-  }
+  inline void setDecayFactor(double value) { decayFactor_ = value; }
   /// Set input solution
   void setInputSolution(const double *solution, double objValue);
   /* Runs if bit set
@@ -280,36 +224,21 @@ public:
         4 - during cuts at other nodes
             8 added if previous heuristic in loop found solution
      */
-  inline void setWhereFrom(int value)
-  {
-    whereFrom_ = value;
-  }
-  inline int whereFrom() const
-  {
-    return whereFrom_;
-  }
+  inline void setWhereFrom(int value) { whereFrom_ = value; }
+  inline int whereFrom() const { return whereFrom_; }
   /** Upto this depth we call the tree shallow and the heuristic can be called
         multiple times. That is, the test whether the current node is far from
         the others where the jeuristic was invoked will not be done, only the
         frequency will be tested. After that depth the heuristic will can be
         invoked only once per node, right before branching. That's when it'll be
         tested whether the heur should run at all. */
-  inline void setShallowDepth(int value)
-  {
-    shallowDepth_ = value;
-  }
+  inline void setShallowDepth(int value) { shallowDepth_ = value; }
   /** How often to invoke the heuristics in the shallow part of the tree */
-  inline void setHowOftenShallow(int value)
-  {
-    howOftenShallow_ = value;
-  }
+  inline void setHowOftenShallow(int value) { howOftenShallow_ = value; }
   /** How "far" should this node be from every other where the heuristic was
         run in order to allow the heuristic to run in this node, too. Currently
         this is tested, but we may switch to avgDistanceToRun_ in the future. */
-  inline void setMinDistanceToRun(int value)
-  {
-    minDistanceToRun_ = value;
-  }
+  inline void setMinDistanceToRun(int value) { minDistanceToRun_ = value; }
 
   /** Check whether the heuristic should run at all
         0 - before cuts at root node (or from doHeuristics)
@@ -325,49 +254,42 @@ public:
   void debugNodes();
   void printDistanceToNodes();
   /// how many times the heuristic has actually run
-  inline int numRuns() const
-  {
-    return numRuns_;
-  }
+  inline int numRuns() const { return numRuns_; }
 
   /// How many times the heuristic could run
-  inline int numCouldRun() const
-  {
-    return numCouldRun_;
-  }
+  inline int numCouldRun() const { return numCouldRun_; }
   /// Return objective function value with sign corrected
-  inline double trueObjValue(double value) const
-  {
-    return (model_->moreSpecialOptions2()&67108864)==0 ? value : -value;
+  inline double trueObjValue(double value) const {
+    return (model_->moreSpecialOptions2() & 67108864) == 0 ? value : -value;
   }
   /// Is it integer for heuristics?
 #ifdef COIN_HAS_CLP
-  inline bool isHeuristicInteger(const OsiSolverInterface *solver, int iColumn) const
-  {
-    const OsiClpSolverInterface *clpSolver
-      = dynamic_cast< const OsiClpSolverInterface * >(solver);
+  inline bool isHeuristicInteger(const OsiSolverInterface *solver,
+                                 int iColumn) const {
+    const OsiClpSolverInterface *clpSolver =
+        dynamic_cast<const OsiClpSolverInterface *>(solver);
     if (clpSolver)
       return clpSolver->isHeuristicInteger(iColumn);
     else
       return solver->isInteger(iColumn);
   }
 #else
-  inline bool isHeuristicInteger(const OsiSolverInterface *solver, int iColumn)
-  {
+  inline bool isHeuristicInteger(const OsiSolverInterface *solver,
+                                 int iColumn) {
     return solver->isInteger(iColumn);
   }
 #endif
   /*! \brief Clone, but ...
 
       If type is
-	- 0 clone the solver for the model,
-	- 1 clone the continuous solver for the model
+        - 0 clone the solver for the model,
+        - 1 clone the continuous solver for the model
         - Add 2 to say without integer variables which are at low priority
         - Add 4 to say quite likely infeasible so give up easily (clp only).
     */
   OsiSolverInterface *cloneBut(int type);
 
-protected:
+ protected:
   /// Model
   CbcModel *model_;
   /// When flag - 0 off, 1 at root, 2 other than root, 3 always
@@ -375,12 +297,13 @@ protected:
   /// Number of nodes in any sub tree
   int numberNodes_;
   /** Feasibility pump options , -1 is off
-	>=0 for feasibility pump itself
+        >=0 for feasibility pump itself
         -2 quick proximity search
         -3 longer proximity search
     */
   int feasibilityPumpOptions_;
-  /// Fraction of new(rows+columns)/old(rows+columns) before doing small branch and bound
+  /// Fraction of new(rows+columns)/old(rows+columns) before doing small branch
+  /// and bound
   mutable double fractionSmall_;
   /// Thread specific random number generator
   CoinThreadRandom randomNumberGenerator_;
@@ -461,7 +384,7 @@ protected:
  */
 
 class CbcRounding : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcRounding();
 
@@ -494,25 +417,20 @@ public:
         Sets solution values if good, sets objective value (only if good)
         This is called after cuts have been added - so can not add cuts
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /** returns 0 if no solution, 1 if valid solution
         with better objective value than one passed in
         Sets solution values if good, sets objective value (only if good)
         This is called after cuts have been added - so can not add cuts
         Use solutionValue rather than solvers one
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution,
-    double solutionValue);
+  virtual int solution(double &objectiveValue, double *newSolution,
+                       double solutionValue);
   /// Validate model i.e. sets when_ to 0 if necessary (may be NULL)
   virtual void validate();
 
   /// Set seed
-  void setSeed(int value)
-  {
-    seed_ = value;
-  }
+  void setSeed(int value) { seed_ = value; }
   /** Check whether the heuristic should run at all
         0 - before cuts at root node (or from doHeuristics)
         1 - during cuts at root
@@ -523,7 +441,7 @@ public:
     */
   virtual bool shouldHeurRun(int whereFrom);
 
-protected:
+ protected:
   // Data
 
   // Original matrix by column
@@ -551,7 +469,7 @@ protected:
  */
 
 class CbcHeuristicPartial : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicPartial();
 
@@ -559,7 +477,8 @@ public:
         Fixes all variables with priority <= given
         and does given number of nodes
     */
-  CbcHeuristicPartial(CbcModel &model, int fixPriority = 10000, int numberNodes = 200);
+  CbcHeuristicPartial(CbcModel &model, int fixPriority = 10000,
+                      int numberNodes = 200);
 
   // Copy constructor
   CbcHeuristicPartial(const CbcHeuristicPartial &);
@@ -587,21 +506,17 @@ public:
         Sets solution values if good, sets objective value (only if good)
         This is called after cuts have been added - so can not add cuts
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// Validate model i.e. sets when_ to 0 if necessary (may be NULL)
   virtual void validate();
 
   /// Set priority level
-  void setFixPriority(int value)
-  {
-    fixPriority_ = value;
-  }
+  void setFixPriority(int value) { fixPriority_ = value; }
 
   /** Check whether the heuristic should run at all */
   virtual bool shouldHeurRun(int whereFrom);
 
-protected:
+ protected:
   // Data
 
   // All variables with abs priority <= this will be fixed
@@ -613,12 +528,12 @@ protected:
  */
 
 class CbcSerendipity : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcSerendipity();
 
   /* Constructor with model
-    */
+   */
   CbcSerendipity(CbcModel &model);
 
   // Copy constructor
@@ -643,25 +558,25 @@ public:
         Sets solution values if good, sets objective value (only if good)
         We leave all variables which are at one at this node of the
         tree to that value and will
-        initially set all others to zero.  We then sort all variables in order of their cost
-        divided by the number of entries in rows which are not yet covered.  We randomize that
-        value a bit so that ties will be broken in different ways on different runs of the heuristic.
-        We then choose the best one and set it to one and repeat the exercise.
+        initially set all others to zero.  We then sort all variables in order
+     of their cost divided by the number of entries in rows which are not yet
+     covered.  We randomize that value a bit so that ties will be broken in
+     different ways on different runs of the heuristic. We then choose the best
+     one and set it to one and repeat the exercise.
 
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// Resets stuff if model changes
   virtual void resetModel(CbcModel *model);
 
-protected:
+ protected:
 };
 
 /** Just One class - this chooses one at random
  */
 
 class CbcHeuristicJustOne : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicJustOne();
 
@@ -689,8 +604,7 @@ public:
         This is called after cuts have been added - so can not add cuts
         This does Fractional Diving
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// Resets stuff if model changes
   virtual void resetModel(CbcModel *model);
 
@@ -704,10 +618,9 @@ public:
         This is dummy as never called
     */
   virtual bool selectVariableToBranch(OsiSolverInterface * /*solver*/,
-    const double * /*newSolution*/,
-    int & /*bestColumn*/,
-    int & /*bestRound*/)
-  {
+                                      const double * /*newSolution*/,
+                                      int & /*bestColumn*/,
+                                      int & /*bestRound*/) {
     return true;
   }
   /// Validate model i.e. sets when_ to 0 if necessary (may be NULL)
@@ -717,7 +630,7 @@ public:
   /// Normalize probabilities
   void normalizeProbabilities();
 
-protected:
+ protected:
   // Data
 
   // Probability of running a heuristic
@@ -732,4 +645,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

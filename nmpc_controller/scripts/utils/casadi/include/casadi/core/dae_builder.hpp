@@ -18,10 +18,10 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_DAE_BUILDER_HPP
 #define CASADI_DAE_BUILDER_HPP
@@ -66,19 +66,18 @@ class DaeBuilderInternal;
 
     \identifier{5c} */
 class CASADI_EXPORT DaeBuilder
-  : public SharedObject,
-    public SWIG_IF_ELSE(PrintableCommon, Printable<DaeBuilder>) {
+    : public SharedObject,
+      public SWIG_IF_ELSE(PrintableCommon, Printable<DaeBuilder>) {
  public:
-
   /// Readable name of the class
-  std::string type_name() const {return "DaeBuilder";}
+  std::string type_name() const { return "DaeBuilder"; }
 
   /// Default constructor
   DaeBuilder();
 
   /// Construct a DaeBuilder instance
   explicit DaeBuilder(const std::string& name, const std::string& path = "",
-    const Dict& opts = Dict());
+                      const Dict& opts = Dict());
 
   /** \brief Name of instance
 
@@ -281,22 +280,22 @@ class CASADI_EXPORT DaeBuilder
    */
   ///@{
   /// Add an independent variable (time)
-  MX add_t(const std::string& name="t");
+  MX add_t(const std::string& name = "t");
 
   /// Add a new parameter
-  MX add_p(const std::string& name=std::string());
+  MX add_p(const std::string& name = std::string());
 
   /// Add a new control
-  MX add_u(const std::string& name=std::string());
+  MX add_u(const std::string& name = std::string());
 
   /// Add a new differential state
-  MX add_x(const std::string& name=std::string());
+  MX add_x(const std::string& name = std::string());
 
   /// Add a new algebraic variable
-  MX add_z(const std::string& name=std::string());
+  MX add_z(const std::string& name = std::string());
 
   /// Add a new quadrature state
-  MX add_q(const std::string& name=std::string());
+  MX add_q(const std::string& name = std::string());
 
   /// Add a new constant
   MX add_c(const std::string& name, const MX& new_cdef);
@@ -317,7 +316,7 @@ class CASADI_EXPORT DaeBuilder
   void set_alg(const std::string& name, const MX& alg_rhs);
 
   /// Add an auxiliary variable
-  MX add_aux(const std::string& name=std::string(), casadi_int n=1);
+  MX add_aux(const std::string& name = std::string(), casadi_int n = 1);
 
   /// Add an initial equation
   void add_init(const MX& lhs, const MX& rhs);
@@ -350,14 +349,15 @@ class CASADI_EXPORT DaeBuilder
   ///@}
 
 #ifdef WITH_DEPRECATED_FEATURES
-  /** @name [DEPRECATED] Specify all variables of a type: Call set_all instead */
+  /** @name [DEPRECATED] Specify all variables of a type: Call set_all instead
+   */
   ///@{
-  void set_u(const std::vector<std::string>& name) { set_all("u", name);}
-  void set_x(const std::vector<std::string>& name) { set_all("x", name);}
+  void set_u(const std::vector<std::string>& name) { set_all("u", name); }
+  void set_x(const std::vector<std::string>& name) { set_all("x", name); }
   void set_z(const std::vector<std::string>& name,
-    const std::vector<std::string>& alg = std::vector<std::string>());
-  void set_q(const std::vector<std::string>& name) { set_all("q", name);}
-  void set_y(const std::vector<std::string>& name) { set_all("y", name);}
+             const std::vector<std::string>& alg = std::vector<std::string>());
+  void set_q(const std::vector<std::string>& name) { set_all("q", name); }
+  void set_y(const std::vector<std::string>& name) { set_all("y", name); }
   ///@}
 #endif  // WITH_DEPRECATED_FEATURES
 
@@ -368,7 +368,7 @@ class CASADI_EXPORT DaeBuilder
 
 #ifdef WITH_DEPRECATED_FEATURES
   /// [DEPRECATED] Clear input variable: Replaced by clear_all
-  void clear_in(const std::string& v) { clear_all(v);}
+  void clear_in(const std::string& v) { clear_all(v); }
 #endif  // WITH_DEPRECATED_FEATURES
 
   /// Eliminate all dependent variables
@@ -392,7 +392,8 @@ class CASADI_EXPORT DaeBuilder
   /// Prune unused controls
   void prune(bool prune_p = true, bool prune_u = true);
 
-  /// Identify iteration variables and residual equations using naming convention
+  /// Identify iteration variables and residual equations using naming
+  /// convention
   void tear();
   ///@}
 
@@ -402,16 +403,16 @@ class CASADI_EXPORT DaeBuilder
   ///@{
 
   /// Add a function from loaded expressions
-  Function add_fun(const std::string& name,
-                   const std::vector<std::string>& arg,
-                   const std::vector<std::string>& res, const Dict& opts=Dict());
+  Function add_fun(const std::string& name, const std::vector<std::string>& arg,
+                   const std::vector<std::string>& res,
+                   const Dict& opts = Dict());
 
   /// Add an already existing function
   Function add_fun(const Function& f);
 
   /// Add an external function
   Function add_fun(const std::string& name, const Importer& compiler,
-                   const Dict& opts=Dict());
+                   const Dict& opts = Dict());
 
   /// Does a particular function already exist?
   bool has_fun(const std::string& name) const;
@@ -424,13 +425,15 @@ class CASADI_EXPORT DaeBuilder
 
   /// Collect embedded functions from the expression graph
   void gather_fun(casadi_int max_depth = -1);
-///@}
+  ///@}
 
   /** @name Import and export
    */
   ///@{
   /// Import existing problem from FMI/XML
-  void parse_fmi(const std::string& filename) {load_fmi_description(filename); }
+  void parse_fmi(const std::string& filename) {
+    load_fmi_description(filename);
+  }
 
   /// Does the FMU provide support for analytic derivatives
   bool provides_directional_derivative() const;
@@ -439,15 +442,16 @@ class CASADI_EXPORT DaeBuilder
   void load_fmi_description(const std::string& filename);
 
   /// Export instance into an FMU
-  std::vector<std::string> export_fmu(const Dict& opts=Dict());
+  std::vector<std::string> export_fmu(const Dict& opts = Dict());
 
   /// Add a named linear combination of output expressions
   void add_lc(const std::string& name, const std::vector<std::string>& f_out);
 
   /// Construct a function object, legacy syntax
   Function create(const std::string& fname,
-    const std::vector<std::string>& name_in,
-    const std::vector<std::string>& name_out, bool sx, bool lifted_calls = false) const;
+                  const std::vector<std::string>& name_in,
+                  const std::vector<std::string>& name_out, bool sx,
+                  bool lifted_calls = false) const;
 
   /** \brief  Construct a function object, names provided
 
@@ -458,28 +462,29 @@ class CASADI_EXPORT DaeBuilder
 
       \identifier{6e} */
   Function create(const std::string& name,
-    const std::vector<std::string>& name_in,
-    const std::vector<std::string>& name_out,
-    const Dict& opts=Dict()) const;
+                  const std::vector<std::string>& name_in,
+                  const std::vector<std::string>& name_out,
+                  const Dict& opts = Dict()) const;
   ///@}
 
-  /** \brief  Load a function from an FMU DLL, standard IO conforming with simulator
+  /** \brief  Load a function from an FMU DLL, standard IO conforming with
+    simulator
 
     \param name    Name assigned to the resulting function object
     \param opts    Optional settings
 
       \identifier{6f} */
-  Function create(const std::string& name, const Dict& opts=Dict()) const;
+  Function create(const std::string& name, const Dict& opts = Dict()) const;
 
   /// Construct a function for evaluating dependent parameters
   Function dependent_fun(const std::string& fname,
-      const std::vector<std::string>& s_in,
-      const std::vector<std::string>& s_out) const;
+                         const std::vector<std::string>& s_in,
+                         const std::vector<std::string>& s_out) const;
 
   ///@{
   /// Get variable expression by name
   MX var(const std::string& name) const;
-  MX operator()(const std::string& name) const {return var(name);}
+  MX operator()(const std::string& name) const { return var(name); }
   ///@}
 
   /// Get the time derivative of an expression
@@ -590,53 +595,61 @@ class CASADI_EXPORT DaeBuilder
   // Set the current value, single value (string)
   void set(const std::string& name, const std::string& val);
 
-  /// Evaluate the values for a set of variables at the initial time, single value
+  /// Evaluate the values for a set of variables at the initial time, single
+  /// value
   GenericType get(const std::string& name) const;
 
 #endif  // !SWIGMATLAB
 
   /// Get an attribute
-  std::vector<double> attribute(const std::string& a, const std::vector<std::string>& name) const;
+  std::vector<double> attribute(const std::string& a,
+                                const std::vector<std::string>& name) const;
 
   /// Set an attribute
   void set_attribute(const std::string& a, const std::vector<std::string>& name,
-    const std::vector<double>& val);
+                     const std::vector<double>& val);
 
   /// Get the lower bound
   std::vector<double> min(const std::vector<std::string>& name) const;
 
   /// Set the lower bound
-  void set_min(const std::vector<std::string>& name, const std::vector<double>& val);
+  void set_min(const std::vector<std::string>& name,
+               const std::vector<double>& val);
 
   /// Get the upper bound
   std::vector<double> max(const std::vector<std::string>& name) const;
 
   /// Set the upper bound
-  void set_max(const std::vector<std::string>& name, const std::vector<double>& val);
+  void set_max(const std::vector<std::string>& name,
+               const std::vector<double>& val);
 
   /// Get the nominal value
   std::vector<double> nominal(const std::vector<std::string>& name) const;
 
   /// Set the nominal value
-  void set_nominal(const std::vector<std::string>& name, const std::vector<double>& val);
+  void set_nominal(const std::vector<std::string>& name,
+                   const std::vector<double>& val);
 
   /// Get the start attribute
   std::vector<double> start(const std::vector<std::string>& name) const;
 
   /// Set the start attribute
-  void set_start(const std::vector<std::string>& name, const std::vector<double>& val);
+  void set_start(const std::vector<std::string>& name,
+                 const std::vector<double>& val);
 
   /// Set the current value
-  void set(const std::vector<std::string>& name, const std::vector<double>& val);
+  void set(const std::vector<std::string>& name,
+           const std::vector<double>& val);
 
   /// Set the current value (string)
-  void set(const std::vector<std::string>& name, const std::vector<std::string>& val);
+  void set(const std::vector<std::string>& name,
+           const std::vector<std::string>& val);
 
   /// Evaluate the values for a set of variables at the initial time
   std::vector<GenericType> get(const std::vector<std::string>& name) const;
 
   /// Add a new variable: returns corresponding symbolic expression
-  MX add_variable(const std::string& name, casadi_int n=1);
+  MX add_variable(const std::string& name, casadi_int n = 1);
 
   /// Add a new variable: returns corresponding symbolic expression
   MX add_variable(const std::string& name, const Sparsity& sp);
@@ -645,7 +658,7 @@ class CASADI_EXPORT DaeBuilder
   void add_variable(const MX& new_v);
 
   /// Add a new variable: returns corresponding symbolic expression
-  size_t add_variable_new(const std::string& name, casadi_int n=1);
+  size_t add_variable_new(const std::string& name, casadi_int n = 1);
 
   /// Add a new variable: returns corresponding symbolic expression
   size_t add_variable_new(const std::string& name, const Sparsity& sp);
@@ -660,13 +673,14 @@ class CASADI_EXPORT DaeBuilder
   std::vector<std::string> all_variables() const;
 
   /// Get the (cached) oracle, SX or MX
-  Function oracle(bool sx = false, bool elim_w = false, bool lifted_calls = false) const;
+  Function oracle(bool sx = false, bool elim_w = false,
+                  bool lifted_calls = false) const;
 
   /** \brief Get Jacobian sparsity
 
       \identifier{6g} */
   Sparsity jac_sparsity(const std::vector<std::string>& onames,
-    const std::vector<std::string>& inames) const;
+                        const std::vector<std::string>& inames) const;
 
 #ifndef SWIG
   /// Create a new variable
@@ -715,9 +729,9 @@ class CASADI_EXPORT DaeBuilder
       \identifier{6i} */
   std::vector<std::string> name(const std::vector<size_t>& ind) const;
 
-#endif // SWIG
+#endif  // SWIG
 };
 
-} // namespace casadi
+}  // namespace casadi
 
-#endif // CASADI_DAE_BUILDER_HPP
+#endif  // CASADI_DAE_BUILDER_HPP

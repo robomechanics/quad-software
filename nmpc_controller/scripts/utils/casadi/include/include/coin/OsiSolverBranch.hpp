@@ -8,47 +8,41 @@
 class OsiSolverInterface;
 #include "CoinWarmStartBasis.hpp"
 
-//#############################################################################
+// #############################################################################
 
 /** Solver Branch Class
 
-    This provides information on a branch as a set of tighter bounds on both ways
+    This provides information on a branch as a set of tighter bounds on both
+   ways
 */
 
 class OsiSolverBranch {
-
-public:
+ public:
   ///@name Add and Get methods
   //@{
-  /// Add a simple branch (i.e. first sets ub of floor(value), second lb of ceil(value))
+  /// Add a simple branch (i.e. first sets ub of floor(value), second lb of
+  /// ceil(value))
   void addBranch(int iColumn, double value);
 
   /// Add bounds - way =-1 is first , +1 is second
-  void addBranch(int way, int numberTighterLower, const int *whichLower, const double *newLower,
-    int numberTighterUpper, const int *whichUpper, const double *newUpper);
+  void addBranch(int way, int numberTighterLower, const int *whichLower,
+                 const double *newLower, int numberTighterUpper,
+                 const int *whichUpper, const double *newUpper);
   /// Add bounds - way =-1 is first , +1 is second
-  void addBranch(int way, int numberColumns, const double *oldLower, const double *newLower,
-    const double *oldUpper, const double *newUpper);
+  void addBranch(int way, int numberColumns, const double *oldLower,
+                 const double *newLower, const double *oldUpper,
+                 const double *newUpper);
 
   /// Apply bounds
   void applyBounds(OsiSolverInterface &solver, int way) const;
   /// Returns true if current solution satsifies one side of branch
   bool feasibleOneWay(const OsiSolverInterface &solver) const;
   /// Starts
-  inline const int *starts() const
-  {
-    return start_;
-  }
+  inline const int *starts() const { return start_; }
   /// Which variables
-  inline const int *which() const
-  {
-    return indices_;
-  }
+  inline const int *which() const { return indices_; }
   /// Bounds
-  inline const double *bounds() const
-  {
-    return bound_;
-  }
+  inline const double *bounds() const { return bound_; }
   //@}
 
   ///@name Constructors and destructors
@@ -67,7 +61,7 @@ public:
 
   //@}
 
-private:
+ private:
   ///@name Private member data
   //@{
   /// Start of lower first, upper first, lower second, upper second
@@ -78,54 +72,39 @@ private:
   double *bound_;
   //@}
 };
-//#############################################################################
+// #############################################################################
 
 /** Solver Result Class
 
-    This provides information on a result as a set of tighter bounds on both ways
+    This provides information on a result as a set of tighter bounds on both
+   ways
 */
 
 class OsiSolverResult {
-
-public:
+ public:
   ///@name Add and Get methods
   //@{
   /// Create result
   void createResult(const OsiSolverInterface &solver, const double *lowerBefore,
-    const double *upperBefore);
+                    const double *upperBefore);
 
   /// Restore result
   void restoreResult(OsiSolverInterface &solver) const;
 
   /// Get basis
-  inline const CoinWarmStartBasis &basis() const
-  {
-    return basis_;
-  }
+  inline const CoinWarmStartBasis &basis() const { return basis_; }
 
   /// Objective value (as minimization)
-  inline double objectiveValue() const
-  {
-    return objectiveValue_;
-  }
+  inline double objectiveValue() const { return objectiveValue_; }
 
   /// Primal solution
-  inline const double *primalSolution() const
-  {
-    return primalSolution_;
-  }
+  inline const double *primalSolution() const { return primalSolution_; }
 
   /// Dual solution
-  inline const double *dualSolution() const
-  {
-    return dualSolution_;
-  }
+  inline const double *dualSolution() const { return dualSolution_; }
 
   /// Extra fixed
-  inline const OsiSolverBranch &fixed() const
-  {
-    return fixed_;
-  }
+  inline const OsiSolverBranch &fixed() const { return fixed_; }
   //@}
 
   ///@name Constructors and destructors
@@ -135,7 +114,7 @@ public:
 
   /// Constructor from solver
   OsiSolverResult(const OsiSolverInterface &solver, const double *lowerBefore,
-    const double *upperBefore);
+                  const double *upperBefore);
 
   /// Copy constructor
   OsiSolverResult(const OsiSolverResult &rhs);
@@ -148,10 +127,11 @@ public:
 
   //@}
 
-private:
+ private:
   ///@name Private member data
   //@{
-  /// Value of objective (if >= OsiSolverInterface::getInfinity() then infeasible)
+  /// Value of objective (if >= OsiSolverInterface::getInfinity() then
+  /// infeasible)
   double objectiveValue_;
   /// Warm start information
   CoinWarmStartBasis basis_;
@@ -166,4 +146,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

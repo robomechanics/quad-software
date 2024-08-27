@@ -18,10 +18,10 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_ROOTFINDER_HPP
 #define CASADI_ROOTFINDER_HPP
@@ -31,146 +31,146 @@
 
 namespace casadi {
 
-  /** \defgroup main_rootfinder Title
-      \par
+/** \defgroup main_rootfinder Title
+    \par
 
-   * Create a solver for rootfinding problems
-   * Takes a function where one of the inputs is unknown and one of the outputs
-   * is a residual function that is always zero, defines a new function where
-   * the the unknown input has been replaced by a _guess_ for the unknown and the
-   * residual output has been replaced by the calculated value for the input.
-   *
-   * For a function
-   * [y0, y1, ...,yi, .., yn] = F(x0, x1, ..., xj, ..., xm),
-   * where xj is unknown and yi=0, defines a new function
-   * [y0, y1, ...,xj, .., yn] = G(x0, x1, ..., xj_guess, ..., xm),
-   *
-   * xj and yi must have the same dimension and d(yi)/d(xj) must be invertable.
-   *
-   * By default, the first input is unknown and the first output is the residual.
-   *
-   *
-   * \generalsection{Rootfinder}
-   * \pluginssection{Rootfinder}
-   *
-   * \author Joel Andersson
-   * \date 2011-2015
+ * Create a solver for rootfinding problems
+ * Takes a function where one of the inputs is unknown and one of the outputs
+ * is a residual function that is always zero, defines a new function where
+ * the the unknown input has been replaced by a _guess_ for the unknown and the
+ * residual output has been replaced by the calculated value for the input.
+ *
+ * For a function
+ * [y0, y1, ...,yi, .., yn] = F(x0, x1, ..., xj, ..., xm),
+ * where xj is unknown and yi=0, defines a new function
+ * [y0, y1, ...,xj, .., yn] = G(x0, x1, ..., xj_guess, ..., xm),
+ *
+ * xj and yi must have the same dimension and d(yi)/d(xj) must be invertable.
+ *
+ * By default, the first input is unknown and the first output is the residual.
+ *
+ *
+ * \generalsection{Rootfinder}
+ * \pluginssection{Rootfinder}
+ *
+ * \author Joel Andersson
+ * \date 2011-2015
 
-      \identifier{21r} */
+    \identifier{21r} */
 
+/** \defgroup rootfinder Title
+ * @copydoc main_rootfinder
+ *  @{
+ */
 
-  /** \defgroup rootfinder Title
-  * @copydoc main_rootfinder
-  *  @{
-  */
+/** \if EXPANDED
+ * @copydoc main_rootfinder
+ * \endif
+ */
+///@{
 
-  /** \if EXPANDED
-  * @copydoc main_rootfinder
-  * \endif
-  */
-  ///@{
+///@{
+CASADI_EXPORT Function rootfinder(const std::string& name,
+                                  const std::string& solver, const SXDict& rfp,
+                                  const Dict& opts = Dict());
+CASADI_EXPORT Function rootfinder(const std::string& name,
+                                  const std::string& solver, const MXDict& rfp,
+                                  const Dict& opts = Dict());
+CASADI_EXPORT Function rootfinder(const std::string& name,
+                                  const std::string& solver, const Function& f,
+                                  const Dict& opts = Dict());
+///@}
 
-  ///@{
-  CASADI_EXPORT Function rootfinder(const std::string& name, const std::string& solver,
-                                    const SXDict& rfp, const Dict& opts=Dict());
-  CASADI_EXPORT Function rootfinder(const std::string& name, const std::string& solver,
-                                    const MXDict& rfp, const Dict& opts=Dict());
-  CASADI_EXPORT Function rootfinder(const std::string& name, const std::string& solver,
-                               const Function& f, const Dict& opts=Dict());
-  ///@}
+/** \brief Get rootfinder input scheme
 
-  /** \brief Get rootfinder input scheme
+    \identifier{1ty} */
+CASADI_EXPORT std::vector<std::string> rootfinder_in();
 
-      \identifier{1ty} */
-  CASADI_EXPORT std::vector<std::string> rootfinder_in();
+/** \brief Get rootfinder output scheme
 
-  /** \brief Get rootfinder output scheme
+    \identifier{1tz} */
+CASADI_EXPORT std::vector<std::string> rootfinder_out();
 
-      \identifier{1tz} */
-  CASADI_EXPORT std::vector<std::string> rootfinder_out();
+/** \brief Get rootfinder input scheme name by index
 
-  /** \brief Get rootfinder input scheme name by index
+    \identifier{1u0} */
+CASADI_EXPORT std::string rootfinder_in(casadi_int ind);
 
-      \identifier{1u0} */
-  CASADI_EXPORT std::string rootfinder_in(casadi_int ind);
+/** \brief Get rootfinder output scheme name by index
 
-  /** \brief Get rootfinder output scheme name by index
+    \identifier{1u1} */
+CASADI_EXPORT std::string rootfinder_out(casadi_int ind);
 
-      \identifier{1u1} */
-  CASADI_EXPORT std::string rootfinder_out(casadi_int ind);
+/** \brief Number of rootfinder inputs
 
-  /** \brief Number of rootfinder inputs
+    \identifier{1u2} */
+CASADI_EXPORT casadi_int rootfinder_n_in();
 
-      \identifier{1u2} */
-  CASADI_EXPORT casadi_int rootfinder_n_in();
+/** \brief Number of rootfinder outputs
 
-  /** \brief Number of rootfinder outputs
+    \identifier{1u3} */
+CASADI_EXPORT casadi_int rootfinder_n_out();
 
-      \identifier{1u3} */
-  CASADI_EXPORT casadi_int rootfinder_n_out();
+/** \brief Get all options for a plugin
 
-  /** \brief Get all options for a plugin
+    \identifier{1u4} */
+CASADI_EXPORT std::vector<std::string> rootfinder_options(
+    const std::string& name);
 
-      \identifier{1u4} */
-  CASADI_EXPORT std::vector<std::string> rootfinder_options(const std::string& name);
+/** \brief Get type info for a particular option
 
-  /** \brief Get type info for a particular option
+    \identifier{1u5} */
+CASADI_EXPORT std::string rootfinder_option_type(const std::string& name,
+                                                 const std::string& op);
 
-      \identifier{1u5} */
-  CASADI_EXPORT std::string rootfinder_option_type(const std::string& name, const std::string& op);
+/** \brief Get documentation for a particular option
 
-  /** \brief Get documentation for a particular option
+    \identifier{1u6} */
+CASADI_EXPORT std::string rootfinder_option_info(const std::string& name,
+                                                 const std::string& op);
 
-      \identifier{1u6} */
-  CASADI_EXPORT std::string rootfinder_option_info(const std::string& name, const std::string& op);
+/// Check if a particular plugin is available
+CASADI_EXPORT bool has_rootfinder(const std::string& name);
 
-  /// Check if a particular plugin is available
-  CASADI_EXPORT bool has_rootfinder(const std::string& name);
+/// Explicitly load a plugin dynamically
+CASADI_EXPORT void load_rootfinder(const std::string& name);
 
-  /// Explicitly load a plugin dynamically
-  CASADI_EXPORT void load_rootfinder(const std::string& name);
+/// Get the documentation string for a plugin
+CASADI_EXPORT std::string doc_rootfinder(const std::string& name);
+/** @} */
 
-  /// Get the documentation string for a plugin
-  CASADI_EXPORT std::string doc_rootfinder(const std::string& name);
-  /** @} */
+#ifndef SWIG
+/// Inputs of the symbolic representation of the rootfinding problem
+enum RfpIn { RFP_X, RFP_P, RFP_NUM_IN };
 
-  #ifndef SWIG
-  /// Inputs of the symbolic representation of the rootfinding problem
-  enum RfpIn {
-    RFP_X,
-    RFP_P,
-    RFP_NUM_IN};
+/// Shortnames for DAE symbolic representation inputs
+const std::vector<std::string> RFP_INPUTS = {"x", "p"};
 
-  /// Shortnames for DAE symbolic representation inputs
-  const std::vector<std::string> RFP_INPUTS = {"x", "p"};
+/// Inputs of the symbolic representation of the rootfinding problem
+enum RfpOut { RFP_G, RFP_NUM_OUT };
 
-  /// Inputs of the symbolic representation of the rootfinding problem
-  enum RfpOut {
-    RFP_G,
-    RFP_NUM_OUT};
+/// Shortnames for DAE symbolic representation outputs
+const std::vector<std::string> RFP_OUTPUTS = {"g"};
 
-  /// Shortnames for DAE symbolic representation outputs
-  const std::vector<std::string> RFP_OUTPUTS = {"g"};
+/// Input arguments of a rootfinder
+enum RootfinderInput {
+  /// Initial guess for the solution
+  ROOTFINDER_X0,
+  /// Parameters
+  ROOTFINDER_P,
+  /// Number of input arguments of a rootfinder
+  ROOTFINDER_NUM_IN
+};
 
-  /// Input arguments of a rootfinder
-  enum RootfinderInput {
-    /// Initial guess for the solution
-    ROOTFINDER_X0,
-    /// Parameters
-    ROOTFINDER_P,
-    /// Number of input arguments of a rootfinder
-    ROOTFINDER_NUM_IN
-  };
+/// Output arguments of a rootfinder
+enum RootfinderOutput {
+  /// Solution to the system of equations
+  ROOTFINDER_X,
+  /// Number of output arguments of a rootfinder
+  ROOTFINDER_NUM_OUT
+};
+#endif  // SWIG
 
-  /// Output arguments of a rootfinder
-  enum RootfinderOutput {
-    /// Solution to the system of equations
-    ROOTFINDER_X,
-    /// Number of output arguments of a rootfinder
-    ROOTFINDER_NUM_OUT
-  };
-  #endif // SWIG
+}  // namespace casadi
 
-} // namespace casadi
-
-#endif // CASADI_ROOTFINDER_HPP
+#endif  // CASADI_ROOTFINDER_HPP

@@ -6,10 +6,11 @@
 #ifndef ClpPrimalColumnSteepest_H
 #define ClpPrimalColumnSteepest_H
 
-#include "ClpPrimalColumnPivot.hpp"
 #include <bitset>
 
-//#############################################################################
+#include "ClpPrimalColumnPivot.hpp"
+
+// #############################################################################
 class CoinIndexedVector;
 
 /** Primal Column Pivot Steepest Edge Algorithm Class
@@ -19,8 +20,7 @@ See Forrest-Goldfarb paper for algorithm
 */
 
 class ClpPrimalColumnSteepest : public ClpPrimalColumnPivot {
-
-public:
+ public:
   ///@name Algorithmic methods
   //@{
 
@@ -32,69 +32,60 @@ public:
          profiling and speed
      */
   virtual int pivotColumn(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow1,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+                          CoinIndexedVector *spareRow1,
+                          CoinIndexedVector *spareRow2,
+                          CoinIndexedVector *spareColumn1,
+                          CoinIndexedVector *spareColumn2);
   /// For quadratic or funny nonlinearities
   int pivotColumnOldMethod(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow1,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+                           CoinIndexedVector *spareRow1,
+                           CoinIndexedVector *spareRow2,
+                           CoinIndexedVector *spareColumn1,
+                           CoinIndexedVector *spareColumn2);
   /// Just update djs
-  void justDjs(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+  void justDjs(CoinIndexedVector *updates, CoinIndexedVector *spareRow2,
+               CoinIndexedVector *spareColumn1,
+               CoinIndexedVector *spareColumn2);
   /// Update djs doing partial pricing (dantzig)
-  int partialPricing(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow2,
-    int numberWanted,
-    int numberLook);
+  int partialPricing(CoinIndexedVector *updates, CoinIndexedVector *spareRow2,
+                     int numberWanted, int numberLook);
   /// Update djs, weights for Devex using djs
-  void djsAndDevex(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+  void djsAndDevex(CoinIndexedVector *updates, CoinIndexedVector *spareRow2,
+                   CoinIndexedVector *spareColumn1,
+                   CoinIndexedVector *spareColumn2);
   /** Update djs, weights for Steepest using djs
-	 sets best sequence (possibly) */
-  void djsAndSteepest(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+         sets best sequence (possibly) */
+  void djsAndSteepest(CoinIndexedVector *updates, CoinIndexedVector *spareRow2,
+                      CoinIndexedVector *spareColumn1,
+                      CoinIndexedVector *spareColumn2);
   /// Update djs, weights for Devex using pivot row
-  void djsAndDevex2(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+  void djsAndDevex2(CoinIndexedVector *updates, CoinIndexedVector *spareRow2,
+                    CoinIndexedVector *spareColumn1,
+                    CoinIndexedVector *spareColumn2);
   /// Update djs, weights for Steepest using pivot row
-  void djsAndSteepest2(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+  void djsAndSteepest2(CoinIndexedVector *updates, CoinIndexedVector *spareRow2,
+                       CoinIndexedVector *spareColumn1,
+                       CoinIndexedVector *spareColumn2);
   /// Update weights for Devex
-  void justDevex(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+  void justDevex(CoinIndexedVector *updates, CoinIndexedVector *spareRow2,
+                 CoinIndexedVector *spareColumn1,
+                 CoinIndexedVector *spareColumn2);
   /// Update weights for Steepest
-  void justSteepest(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+  void justSteepest(CoinIndexedVector *updates, CoinIndexedVector *spareRow2,
+                    CoinIndexedVector *spareColumn1,
+                    CoinIndexedVector *spareColumn2);
   /// Updates two arrays for steepest
   int transposeTimes2(const CoinIndexedVector *pi1, CoinIndexedVector *dj1,
-    const CoinIndexedVector *pi2, CoinIndexedVector *dj2,
-    CoinIndexedVector *spare, double scaleFactor);
+                      const CoinIndexedVector *pi2, CoinIndexedVector *dj2,
+                      CoinIndexedVector *spare, double scaleFactor);
 
   /// Updates weights - part 1 - also checks accuracy
   virtual void updateWeights(CoinIndexedVector *input);
 
   /// Checks accuracy - just for debug
   void checkAccuracy(int sequence, double relativeTolerance,
-    CoinIndexedVector *rowArray1,
-    CoinIndexedVector *rowArray2);
+                     CoinIndexedVector *rowArray1,
+                     CoinIndexedVector *rowArray2);
 
   /// Initialize weights
   void initializeWeights();
@@ -123,28 +114,15 @@ public:
   /**@name gets and sets */
   //@{
   /// Mode
-  inline int mode() const
-  {
-    return mode_;
-  }
+  inline int mode() const { return mode_; }
   /// Set mode
-  inline void setMode(int mode)
-  {
-    mode_ = mode;
-  }
+  inline void setMode(int mode) { mode_ = mode; }
   /// square of infeasibility array (just for infeasible columns)
-  inline CoinIndexedVector *infeasible() const
-  {
-    return infeasible_;
-  }
+  inline CoinIndexedVector *infeasible() const { return infeasible_; }
   /// Weights
-  inline const double *weights() const
-  {
-    return weights_;
-  }
+  inline const double *weights() const { return weights_; }
   /// alternate weight array
-  inline CoinIndexedVector *alternateWeights() const
-  {
+  inline CoinIndexedVector *alternateWeights() const {
     return alternateWeights_;
   }
   /** Returns number of extra columns for sprint algorithm - 0 means off.
@@ -157,10 +135,10 @@ public:
   //@}
 
   /** enums for persistence
-     */
+   */
   enum Persistence {
-    normal = 0x00, // create (if necessary) and destroy
-    keep = 0x01 // create (if necessary) and leave
+    normal = 0x00,  // create (if necessary) and destroy
+    keep = 0x01     // create (if necessary) and leave
   };
 
   ///@name Constructors and destructors
@@ -193,12 +171,10 @@ public:
   /** reference would be faster using ClpSimplex's status_,
          but I prefer to keep modularity.
      */
-  inline bool reference(int i) const
-  {
+  inline bool reference(int i) const {
     return ((reference_[i >> 5] >> (i & 31)) & 1) != 0;
   }
-  inline void setReference(int i, bool trueFalse)
-  {
+  inline void setReference(int i, bool trueFalse) {
     unsigned int &value = reference_[i >> 5];
     int bit = i & 31;
     if (trueFalse)
@@ -207,19 +183,13 @@ public:
       value &= ~(1 << bit);
   }
   /// Set/ get persistence
-  inline void setPersistence(Persistence life)
-  {
-    persistence_ = life;
-  }
-  inline Persistence persistence() const
-  {
-    return persistence_;
-  }
+  inline void setPersistence(Persistence life) { persistence_ = life; }
+  inline Persistence persistence() const { return persistence_; }
 
   //@}
   //---------------------------------------------------------------------------
 
-protected:
+ protected:
   ///@name Protected member data
   // Update weight
   double devex_;
@@ -253,9 +223,9 @@ protected:
      */
   int mode_;
   /* Infeasibility state i.e. array of infeasibilities and sequenceIn-
-	0 - correct
-	1 - needs correcting
-	2 - not known but column sequence has been chosen
+        0 - correct
+        1 - needs correcting
+        2 - not known but column sequence has been chosen
      */
   int infeasibilitiesState_;
   /// Life of weights
@@ -278,4 +248,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

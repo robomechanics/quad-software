@@ -1,10 +1,10 @@
 #pragma once
 
-#include <alpaqa/config/config.hpp>
 #include <alpaqa/dl/dl-problem.h>
+
+#include <alpaqa/config/config.hpp>
 #include <alpaqa/problem/box-constr-problem.hpp>
 #include <alpaqa/util/demangled-typename.hpp>
-
 #include <memory>
 #include <stdexcept>
 #include <string>
@@ -14,81 +14,80 @@
 namespace alpaqa::dl {
 
 class DLLoader {
-  protected:
-    /// Load a shared library.
-    DLLoader(
-        /// Filename of the shared library to load.
-        std::string so_filename,
-        /// Prefix of the symbols in the library.
-        std::string symbol_prefix);
+ protected:
+  /// Load a shared library.
+  DLLoader(
+      /// Filename of the shared library to load.
+      std::string so_filename,
+      /// Prefix of the symbols in the library.
+      std::string symbol_prefix);
 
-  protected:
-    std::string so_filename;
-    std::string symbol_prefix;
+ protected:
+  std::string so_filename;
+  std::string symbol_prefix;
 
-    using dl_handle_t = std::shared_ptr<void>;
-    /// Handle to the shared library (returned by `dlopen`).
-    dl_handle_t handle;
+  using dl_handle_t = std::shared_ptr<void>;
+  /// Handle to the shared library (returned by `dlopen`).
+  dl_handle_t handle;
 
-    /// An associative array of additional functions exposed by the problem.
-    std::shared_ptr<function_dict_t> extra_functions;
+  /// An associative array of additional functions exposed by the problem.
+  std::shared_ptr<function_dict_t> extra_functions;
 
-    /// Open the shared library using `dlopen`
-    [[nodiscard]] std::shared_ptr<void> load_lib() const;
-    /// Load a function with signature @p F from the library using `dlsym`.
-    template <class F>
-    [[nodiscard]] F *load_func(std::string_view name) const;
+  /// Open the shared library using `dlopen`
+  [[nodiscard]] std::shared_ptr<void> load_lib() const;
+  /// Load a function with signature @p F from the library using `dlsym`.
+  template <class F>
+  [[nodiscard]] F *load_func(std::string_view name) const;
 
-    template <class Signature>
-        requires std::is_function_v<Signature>
-    const std::function<Signature> &extra_func(const std::string &name) const {
-        if (!extra_functions)
-            throw std::out_of_range("DLProblem: no extra functions");
-        auto it = extra_functions->dict.find(name);
-        if (it == extra_functions->dict.end())
-            throw std::out_of_range("DLProblem: no extra function named \"" +
-                                    name + '"');
-        try {
-            return std::any_cast<const std::function<Signature> &>(it->second);
-        } catch (const std::bad_any_cast &e) {
-            throw std::logic_error(
-                "DLProblem: incorrect type for extra function \"" + name +
-                "\" (stored type: " + demangled_typename(it->second.type()) +
-                ')');
-        }
+  template <class Signature>
+    requires std::is_function_v<Signature>
+  const std::function<Signature> &extra_func(const std::string &name) const {
+    if (!extra_functions)
+      throw std::out_of_range("DLProblem: no extra functions");
+    auto it = extra_functions->dict.find(name);
+    if (it == extra_functions->dict.end())
+      throw std::out_of_range("DLProblem: no extra function named \"" + name +
+                              '"');
+    try {
+      return std::any_cast<const std::function<Signature> &>(it->second);
+    } catch (const std::bad_any_cast &e) {
+      throw std::logic_error(
+          "DLProblem: incorrect type for extra function \"" + name +
+          "\" (stored type: " + demangled_typename(it->second.type()) + ')');
     }
+  }
 
-  public:
-    /// Unique type for calling an extra function that is a member function.
-    struct instance_t;
+ public:
+  /// Unique type for calling an extra function that is a member function.
+  struct instance_t;
 
-  protected:
-    template <class Func>
-    struct FuncTag {};
+ protected:
+  template <class Func>
+  struct FuncTag {};
 
-    template <class Ret, class... FArgs, class... Args>
-    decltype(auto)
-    call_extra_func_helper(const void *instance,
-                           FuncTag<Ret(const instance_t *, FArgs...)>,
-                           const std::string &name, Args &&...args) const {
-        return extra_func<Ret(const void *, FArgs...)>(name)(
-            instance, std::forward<Args>(args)...);
-    }
+  template <class Ret, class... FArgs, class... Args>
+  decltype(auto) call_extra_func_helper(
+      const void *instance, FuncTag<Ret(const instance_t *, FArgs...)>,
+      const std::string &name, Args &&...args) const {
+    return extra_func<Ret(const void *, FArgs...)>(name)(
+        instance, std::forward<Args>(args)...);
+  }
 
-    template <class Ret, class... FArgs, class... Args>
-    decltype(auto)
-    call_extra_func_helper(void *instance, FuncTag<Ret(instance_t *, FArgs...)>,
-                           const std::string &name, Args &&...args) {
-        return extra_func<Ret(void *, FArgs...)>(name)(
-            instance, std::forward<Args>(args)...);
-    }
+  template <class Ret, class... FArgs, class... Args>
+  decltype(auto) call_extra_func_helper(void *instance,
+                                        FuncTag<Ret(instance_t *, FArgs...)>,
+                                        const std::string &name,
+                                        Args &&...args) {
+    return extra_func<Ret(void *, FArgs...)>(name)(instance,
+                                                   std::forward<Args>(args)...);
+  }
 
-    template <class Ret, class... FArgs, class... Args>
-    decltype(auto) call_extra_func_helper(const void *, FuncTag<Ret(FArgs...)>,
-                                          const std::string &name,
-                                          Args &&...args) const {
-        return extra_func<Ret(FArgs...)>(name)(std::forward<Args>(args)...);
-    }
+  template <class Ret, class... FArgs, class... Args>
+  decltype(auto) call_extra_func_helper(const void *, FuncTag<Ret(FArgs...)>,
+                                        const std::string &name,
+                                        Args &&...args) const {
+    return extra_func<Ret(FArgs...)>(name)(std::forward<Args>(args)...);
+  }
 };
 
 /// Class that loads a problem using `dlopen`.
@@ -105,28 +104,28 @@ class DLLoader {
 /// @ingroup    grp_Problems
 /// @see @ref   TypeErasedProblem
 class DLProblem : private DLLoader, public BoxConstrProblem<DefaultConfig> {
-  public:
-    USING_ALPAQA_CONFIG(DefaultConfig);
+ public:
+  USING_ALPAQA_CONFIG(DefaultConfig);
 
-    /// Load a problem from a shared library.
-    DLProblem(
-        /// Filename of the shared library to load.
-        std::string so_filename,
-        /// Prefix of the registration function.
-        std::string symbol_prefix = "alpaqa_problem",
-        /// Pointer to custom user data to pass to the registration function.
-        void *user_param = nullptr);
+  /// Load a problem from a shared library.
+  DLProblem(
+      /// Filename of the shared library to load.
+      std::string so_filename,
+      /// Prefix of the registration function.
+      std::string symbol_prefix = "alpaqa_problem",
+      /// Pointer to custom user data to pass to the registration function.
+      void *user_param = nullptr);
 
-  private:
-    /// Problem instance created by the registration function, including the
-    /// deleter to destroy it.
-    std::shared_ptr<void> instance;
-    /// Pointer to the struct of function pointers for evaluating the objective,
-    /// constraints, their gradients, etc.
-    problem_functions_t *functions = nullptr;
+ private:
+  /// Problem instance created by the registration function, including the
+  /// deleter to destroy it.
+  std::shared_ptr<void> instance;
+  /// Pointer to the struct of function pointers for evaluating the objective,
+  /// constraints, their gradients, etc.
+  problem_functions_t *functions = nullptr;
 
-  public:
-    // clang-format off
+ public:
+  // clang-format off
     real_t eval_prox_grad_step(real_t γ, crvec x, crvec grad_ψ, rvec x̂, rvec p) const;
     real_t eval_f(crvec x) const;
     void eval_grad_f(crvec x, rvec grad_fx) const;
@@ -170,22 +169,22 @@ class DLProblem : private DLLoader, public BoxConstrProblem<DefaultConfig> {
     [[nodiscard]] bool provides_eval_grad_ψ() const;
     [[nodiscard]] bool provides_eval_ψ_grad_ψ() const;
     [[nodiscard]] bool provides_get_box_C() const;
-    // clang-format on
+  // clang-format on
 
-    using instance_t = DLLoader::instance_t;
+  using instance_t = DLLoader::instance_t;
 
-    template <class Signature, class... Args>
-    decltype(auto) call_extra_func(const std::string &name,
-                                   Args &&...args) const {
-        return extra_func_helper(instance.get(), FuncTag<Signature>{}, name,
-                                 std::forward<Args>(args)...);
-    }
+  template <class Signature, class... Args>
+  decltype(auto) call_extra_func(const std::string &name,
+                                 Args &&...args) const {
+    return extra_func_helper(instance.get(), FuncTag<Signature>{}, name,
+                             std::forward<Args>(args)...);
+  }
 
-    template <class Signature, class... Args>
-    decltype(auto) call_extra_func(const std::string &name, Args &&...args) {
-        return call_extra_func_helper(instance.get(), FuncTag<Signature>{},
-                                      name, std::forward<Args>(args)...);
-    }
+  template <class Signature, class... Args>
+  decltype(auto) call_extra_func(const std::string &name, Args &&...args) {
+    return call_extra_func_helper(instance.get(), FuncTag<Signature>{}, name,
+                                  std::forward<Args>(args)...);
+  }
 };
 
 #if ALPAQA_WITH_OCP
@@ -204,39 +203,39 @@ class DLProblem : private DLLoader, public BoxConstrProblem<DefaultConfig> {
 /// @ingroup    grp_Problems
 /// @see @ref   TypeErasedControlProblem
 class DLControlProblem : private DLLoader {
-  public:
-    USING_ALPAQA_CONFIG(DefaultConfig);
-    using Box = alpaqa::Box<config_t>;
+ public:
+  USING_ALPAQA_CONFIG(DefaultConfig);
+  using Box = alpaqa::Box<config_t>;
 
-    /// Load a problem from a shared library.
-    DLControlProblem(
-        /// Filename of the shared library to load.
-        std::string so_filename,
-        /// Prefix of the registration function.
-        std::string symbol_prefix = "alpaqa_control_problem",
-        /// Pointer to custom user data to pass to the registration function.
-        void *user_param = nullptr);
+  /// Load a problem from a shared library.
+  DLControlProblem(
+      /// Filename of the shared library to load.
+      std::string so_filename,
+      /// Prefix of the registration function.
+      std::string symbol_prefix = "alpaqa_control_problem",
+      /// Pointer to custom user data to pass to the registration function.
+      void *user_param = nullptr);
 
-  private:
-    /// Problem instance created by the registration function, including the
-    /// deleter to destroy it.
-    std::shared_ptr<void> instance;
-    /// Pointer to the struct of function pointers for evaluating the objective,
-    /// constraints, their gradients, etc.
-    control_problem_functions_t *functions = nullptr;
+ private:
+  /// Problem instance created by the registration function, including the
+  /// deleter to destroy it.
+  std::shared_ptr<void> instance;
+  /// Pointer to the struct of function pointers for evaluating the objective,
+  /// constraints, their gradients, etc.
+  control_problem_functions_t *functions = nullptr;
 
-  public:
-    length_t get_N() const { return functions->N; }
-    length_t get_nx() const { return functions->nx; }
-    length_t get_nu() const { return functions->nu; }
-    length_t get_nh() const { return functions->nh; }
-    length_t get_nh_N() const { return functions->nh_N; }
-    length_t get_nc() const { return functions->nc; }
-    length_t get_nc_N() const { return functions->nc_N; }
+ public:
+  length_t get_N() const { return functions->N; }
+  length_t get_nx() const { return functions->nx; }
+  length_t get_nu() const { return functions->nu; }
+  length_t get_nh() const { return functions->nh; }
+  length_t get_nh_N() const { return functions->nh_N; }
+  length_t get_nc() const { return functions->nc; }
+  length_t get_nc_N() const { return functions->nc_N; }
 
-    void check() const {} // TODO
+  void check() const {}  // TODO
 
-    // clang-format off
+  // clang-format off
     void get_U(Box &U) const;
     void get_D(Box &D) const;
     void get_D_N(Box &D) const;
@@ -278,24 +277,24 @@ class DLControlProblem : private DLLoader {
     [[nodiscard]] bool provides_eval_grad_constr_prod_N() const;
     [[nodiscard]] bool provides_eval_add_gn_hess_constr() const;
     [[nodiscard]] bool provides_eval_add_gn_hess_constr_N() const;
-    // clang-format on
+  // clang-format on
 
-    using instance_t = DLLoader::instance_t;
+  using instance_t = DLLoader::instance_t;
 
-    template <class Signature, class... Args>
-    decltype(auto) call_extra_func(const std::string &name,
-                                   Args &&...args) const {
-        return extra_func_helper(instance.get(), FuncTag<Signature>{}, name,
-                                 std::forward<Args>(args)...);
-    }
+  template <class Signature, class... Args>
+  decltype(auto) call_extra_func(const std::string &name,
+                                 Args &&...args) const {
+    return extra_func_helper(instance.get(), FuncTag<Signature>{}, name,
+                             std::forward<Args>(args)...);
+  }
 
-    template <class Signature, class... Args>
-    decltype(auto) call_extra_func(const std::string &name, Args &&...args) {
-        return call_extra_func_helper(instance.get(), FuncTag<Signature>{},
-                                      name, std::forward<Args>(args)...);
-    }
+  template <class Signature, class... Args>
+  decltype(auto) call_extra_func(const std::string &name, Args &&...args) {
+    return call_extra_func_helper(instance.get(), FuncTag<Signature>{}, name,
+                                  std::forward<Args>(args)...);
+  }
 };
 
 #endif
 
-} // namespace alpaqa::dl
+}  // namespace alpaqa::dl

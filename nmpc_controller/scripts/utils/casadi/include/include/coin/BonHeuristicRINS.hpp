@@ -13,43 +13,39 @@
 #include "BonLocalSolverBasedHeuristic.hpp"
 
 namespace Bonmin {
-  class HeuristicRINS:public LocalSolverBasedHeuristic {
-    public:
-     /** Default constructor*/
-     HeuristicRINS();
-    /** Constructor with setup.*/
-    HeuristicRINS(BonminSetup * setup);
+class HeuristicRINS : public LocalSolverBasedHeuristic {
+ public:
+  /** Default constructor*/
+  HeuristicRINS();
+  /** Constructor with setup.*/
+  HeuristicRINS(BonminSetup *setup);
 
-     /** Copy constructor.*/
-     HeuristicRINS(const HeuristicRINS &other);
-     /** Virtual constructor.*/
-     virtual CbcHeuristic * clone() const{
-      return new HeuristicRINS(*this);
-     }
+  /** Copy constructor.*/
+  HeuristicRINS(const HeuristicRINS &other);
+  /** Virtual constructor.*/
+  virtual CbcHeuristic *clone() const { return new HeuristicRINS(*this); }
 
-     /** Destructor*/
-     virtual ~HeuristicRINS();
+  /** Destructor*/
+  virtual ~HeuristicRINS();
 
-     /** Runs heuristic*/
-     int solution(double & objectiveValue,
-                  double * newSolution);
-   /** Register the options common to all local search based heuristics.*/
-   static void registerOptions(Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions);
+  /** Runs heuristic*/
+  int solution(double &objectiveValue, double *newSolution);
+  /** Register the options common to all local search based heuristics.*/
+  static void registerOptions(
+      Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions);
 
-   /** Initiaize using passed options.*/
-   void Initialize(Ipopt::SmartPtr<Ipopt::OptionsList> options);
+  /** Initiaize using passed options.*/
+  void Initialize(Ipopt::SmartPtr<Ipopt::OptionsList> options);
 
-    /// Sets how often to do it
-    inline void setHowOften(int value)
-    { howOften_=value;}
+  /// Sets how often to do it
+  inline void setHowOften(int value) { howOften_ = value; }
 
-  private:
-    /// How often to do (code can change)
-    int howOften_;
-    /// Number of solutions so we can do something at solution
-    int numberSolutions_;
+ private:
+  /// How often to do (code can change)
+  int howOften_;
+  /// Number of solutions so we can do something at solution
+  int numberSolutions_;
+};
 
-  };
-
-}/* Ends Bonmin namepace.*/
+}  // namespace Bonmin
 #endif

@@ -8,44 +8,40 @@
 
 #include "ClpObjective.hpp"
 
-//#############################################################################
+// #############################################################################
 
 /** Linear Objective Class
 
 */
 
 class ClpLinearObjective : public ClpObjective {
-
-public:
+ public:
   ///@name Stuff
   //@{
 
   /** Returns objective coefficients.
-       
+
        Offset is always set to 0.0. All other parameters unused.
      */
-  virtual double *gradient(const ClpSimplex *model,
-    const double *solution, double &offset, bool refresh,
-    int includeLinear = 2);
+  virtual double *gradient(const ClpSimplex *model, const double *solution,
+                           double &offset, bool refresh, int includeLinear = 2);
   /** Returns reduced gradient.Returns an offset (to be added to current one).
-     */
+   */
   virtual double reducedGradient(ClpSimplex *model, double *region,
-    bool useFeasibleCosts);
+                                 bool useFeasibleCosts);
   /** Returns step length which gives minimum of objective for
          solution + theta * change vector up to maximum theta.
 
          arrays are numberColumns+numberRows
          Also sets current objective, predicted and at maximumTheta
      */
-  virtual double stepLength(ClpSimplex *model,
-    const double *solution,
-    const double *change,
-    double maximumTheta,
-    double &currentObj,
-    double &predictedObj,
-    double &thetaObj);
+  virtual double stepLength(ClpSimplex *model, const double *solution,
+                            const double *change, double maximumTheta,
+                            double &currentObj, double &predictedObj,
+                            double &thetaObj);
   /// Return objective value (without any ClpModel offset) (model may be NULL)
-  virtual double objectiveValue(const ClpSimplex *model, const double *solution) const;
+  virtual double objectiveValue(const ClpSimplex *model,
+                                const double *solution) const;
   /// Resize objective
   virtual void resize(int newNumberColumns);
   /// Delete columns in  objective
@@ -69,7 +65,7 @@ public:
          and order is as given.
      */
   ClpLinearObjective(const ClpLinearObjective &rhs, int numberColumns,
-    const int *whichColumns);
+                     const int *whichColumns);
 
   /// Assignment operator
   ClpLinearObjective &operator=(const ClpLinearObjective &rhs);
@@ -83,13 +79,13 @@ public:
          and order is as given.
      */
   virtual ClpObjective *subsetClone(int numberColumns,
-    const int *whichColumns) const;
+                                    const int *whichColumns) const;
 
   //@}
 
   //---------------------------------------------------------------------------
 
-private:
+ private:
   ///@name Private member data
   /// Objective
   double *objective_;
@@ -101,4 +97,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

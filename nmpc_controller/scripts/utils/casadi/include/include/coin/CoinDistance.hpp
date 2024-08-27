@@ -17,13 +17,11 @@
 
 /** CoinDistance
 
-This is the Coin implementation of the std::function that is 
+This is the Coin implementation of the std::function that is
 designed to work on multiple platforms.
 */
-template < class ForwardIterator, class Distance >
-void coinDistance(ForwardIterator first, ForwardIterator last,
-  Distance &n)
-{
+template <class ForwardIterator, class Distance>
+void coinDistance(ForwardIterator first, ForwardIterator last, Distance &n) {
 #if defined(__SUNPRO_CC)
   n = 0;
   std::distance(first, last, n);
@@ -32,9 +30,8 @@ void coinDistance(ForwardIterator first, ForwardIterator last,
 #endif
 }
 
-template < class ForwardIterator >
-size_t coinDistance(ForwardIterator first, ForwardIterator last)
-{
+template <class ForwardIterator>
+size_t coinDistance(ForwardIterator first, ForwardIterator last) {
   size_t retVal;
 #if defined(__SUNPRO_CC)
   retVal = 0;
@@ -48,4 +45,4 @@ size_t coinDistance(ForwardIterator first, ForwardIterator last)
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

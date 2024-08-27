@@ -12,24 +12,24 @@
 /** macro to declare symbols as deprecated
  * @since Ipopt 3.14.0
  */
-#  define IPOPT_DEPRECATED __declspec(deprecated)
+#define IPOPT_DEPRECATED __declspec(deprecated)
 #elif defined(__GNUC__)
 /** macro to declare symbols as deprecated
  * @since Ipopt 3.14.0
  */
-#  define IPOPT_DEPRECATED __attribute__ ((deprecated))
+#define IPOPT_DEPRECATED __attribute__((deprecated))
 #else
 /** macro to declare symbols as deprecated
  * @since Ipopt 3.14.0
  */
-#  define IPOPT_DEPRECATED
+#define IPOPT_DEPRECATED
 #endif
 #endif
 
 #ifdef __GNUC__
-#  define IPOPT_UNUSED __attribute__((unused))
+#define IPOPT_UNUSED __attribute__((unused))
 #else
-#  define IPOPT_UNUSED
+#define IPOPT_UNUSED
 #endif
 
 #ifndef IPOPT_CALLCONV

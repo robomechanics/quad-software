@@ -12,20 +12,20 @@
 /// Define a single integer class but with pseudo costs
 
 class CbcSimpleIntegerPseudoCost : public CbcSimpleInteger {
-
-public:
+ public:
   // Default Constructor
   CbcSimpleIntegerPseudoCost();
 
   // Useful constructor - passed model index
-  CbcSimpleIntegerPseudoCost(CbcModel *model, int iColumn, double breakEven = 0.5);
+  CbcSimpleIntegerPseudoCost(CbcModel *model, int iColumn,
+                             double breakEven = 0.5);
 
   // Useful constructor - passed and model index and pseudo costs
   CbcSimpleIntegerPseudoCost(CbcModel *model, int iColumn,
-    double downPseudoCost, double upPseudoCost);
+                             double downPseudoCost, double upPseudoCost);
   // Useful constructor - passed and model index and pseudo costs
   CbcSimpleIntegerPseudoCost(CbcModel *model, int dummy, int iColumn,
-    double downPseudoCost, double upPseudoCost);
+                             double downPseudoCost, double upPseudoCost);
 
   // Copy constructor
   CbcSimpleIntegerPseudoCost(const CbcSimpleIntegerPseudoCost &);
@@ -41,43 +41,26 @@ public:
 
   /// Infeasibility - large is 0.5
   virtual double infeasibility(const OsiBranchingInformation *info,
-    int &preferredWay) const;
+                               int &preferredWay) const;
 
   /// Creates a branching object
-  virtual CbcBranchingObject *createCbcBranch(OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
+  virtual CbcBranchingObject *createCbcBranch(
+      OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
 
   /// Down pseudo cost
-  inline double downPseudoCost() const
-  {
-    return downPseudoCost_;
-  }
+  inline double downPseudoCost() const { return downPseudoCost_; }
   /// Set down pseudo cost
-  inline void setDownPseudoCost(double value)
-  {
-    downPseudoCost_ = value;
-  }
+  inline void setDownPseudoCost(double value) { downPseudoCost_ = value; }
 
   /// Up pseudo cost
-  inline double upPseudoCost() const
-  {
-    return upPseudoCost_;
-  }
+  inline double upPseudoCost() const { return upPseudoCost_; }
   /// Set up pseudo cost
-  inline void setUpPseudoCost(double value)
-  {
-    upPseudoCost_ = value;
-  }
+  inline void setUpPseudoCost(double value) { upPseudoCost_ = value; }
 
   /// Up down separator
-  inline double upDownSeparator() const
-  {
-    return upDownSeparator_;
-  }
+  inline double upDownSeparator() const { return upDownSeparator_; }
   /// Set up down separator
-  inline void setUpDownSeparator(double value)
-  {
-    upDownSeparator_ = value;
-  }
+  inline void setUpDownSeparator(double value) { upDownSeparator_ = value; }
 
   /// Return "up" estimate
   virtual double upEstimate() const;
@@ -85,17 +68,11 @@ public:
   virtual double downEstimate() const;
 
   /// method - see below for details
-  inline int method() const
-  {
-    return method_;
-  }
+  inline int method() const { return method_; }
   /// Set method
-  inline void setMethod(int value)
-  {
-    method_ = value;
-  }
+  inline void setMethod(int value) { method_ = value; }
 
-protected:
+ protected:
   /// data
 
   /// Down pseudo cost
@@ -119,4 +96,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

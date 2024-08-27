@@ -15,10 +15,11 @@
 #ifndef ClpInterior_H
 #define ClpInterior_H
 
-#include <iostream>
 #include <cfloat>
-#include "ClpModel.hpp"
+#include <iostream>
+
 #include "ClpMatrixBase.hpp"
+#include "ClpModel.hpp"
 #include "ClpSolve.hpp"
 #include "CoinDenseVector.hpp"
 class ClpLsqr;
@@ -51,11 +52,11 @@ typedef struct {
   double x0min;
   double z0min;
   double mu0;
-  int LSmethod; // 1=Cholesky    2=QR    3=LSQR
-  int LSproblem; // See below
+  int LSmethod;   // 1=Cholesky    2=QR    3=LSQR
+  int LSproblem;  // See below
   int LSQRMaxIter;
-  double LSQRatol1; // Initial  atol
-  double LSQRatol2; // Smallest atol (unless atol1 is smaller)
+  double LSQRatol1;  // Initial  atol
+  double LSQRatol2;  // Smallest atol (unless atol1 is smaller)
   double LSQRconlim;
   int wait;
 } Options;
@@ -71,9 +72,9 @@ class ClpCholeskyBase;
 
 class ClpInterior : public ClpModel {
   friend void ClpInteriorUnitTest(const std::string &mpsDir,
-    const std::string &netlibDir);
+                                  const std::string &netlibDir);
 
-public:
+ public:
   /**@name Constructors and destructor and copy */
   //@{
   /// Default constructor
@@ -87,10 +88,9 @@ public:
          row and column lists given.  The new order is given by list order and
          duplicates are allowed.  Name and integer information can be dropped
      */
-  ClpInterior(const ClpModel *wholeModel,
-    int numberRows, const int *whichRows,
-    int numberColumns, const int *whichColumns,
-    bool dropNames = true, bool dropIntegers = true);
+  ClpInterior(const ClpModel *wholeModel, int numberRows, const int *whichRows,
+              int numberColumns, const int *whichColumns, bool dropNames = true,
+              bool dropIntegers = true);
   /// Assignment operator. This copies the data
   ClpInterior &operator=(const ClpInterior &rhs);
   /// Destructor
@@ -107,38 +107,29 @@ public:
          <li> <code>obj</code>: all variables have 0 objective coefficient
            </ul>
        */
-  void loadProblem(const ClpMatrixBase &matrix,
-    const double *collb, const double *colub,
-    const double *obj,
-    const double *rowlb, const double *rowub,
-    const double *rowObjective = NULL);
-  void loadProblem(const CoinPackedMatrix &matrix,
-    const double *collb, const double *colub,
-    const double *obj,
-    const double *rowlb, const double *rowub,
-    const double *rowObjective = NULL);
+  void loadProblem(const ClpMatrixBase &matrix, const double *collb,
+                   const double *colub, const double *obj, const double *rowlb,
+                   const double *rowub, const double *rowObjective = NULL);
+  void loadProblem(const CoinPackedMatrix &matrix, const double *collb,
+                   const double *colub, const double *obj, const double *rowlb,
+                   const double *rowub, const double *rowObjective = NULL);
 
   /** Just like the other loadProblem() method except that the matrix is
        given in a standard column major ordered format (without gaps). */
   void loadProblem(const int numcols, const int numrows,
-    const CoinBigIndex *start, const int *index,
-    const double *value,
-    const double *collb, const double *colub,
-    const double *obj,
-    const double *rowlb, const double *rowub,
-    const double *rowObjective = NULL);
+                   const CoinBigIndex *start, const int *index,
+                   const double *value, const double *collb,
+                   const double *colub, const double *obj, const double *rowlb,
+                   const double *rowub, const double *rowObjective = NULL);
   /// This one is for after presolve to save memory
   void loadProblem(const int numcols, const int numrows,
-    const CoinBigIndex *start, const int *index,
-    const double *value, const int *length,
-    const double *collb, const double *colub,
-    const double *obj,
-    const double *rowlb, const double *rowub,
-    const double *rowObjective = NULL);
+                   const CoinBigIndex *start, const int *index,
+                   const double *value, const int *length, const double *collb,
+                   const double *colub, const double *obj, const double *rowlb,
+                   const double *rowub, const double *rowObjective = NULL);
   /// Read an mps file from the given filename
-  int readMps(const char *filename,
-    bool keepNames = false,
-    bool ignoreErrors = false);
+  int readMps(const char *filename, bool keepNames = false,
+              bool ignoreErrors = false);
   /** Borrow model.  This is so we dont have to copy large amounts
          of data around.  It assumes a derived class wants to overwrite
          an empty model with a real one - while it does an algorithm.
@@ -161,98 +152,60 @@ public:
   /**@name most useful gets and sets */
   //@{
   /// If problem is primal feasible
-  inline bool primalFeasible() const
-  {
+  inline bool primalFeasible() const {
     return (sumPrimalInfeasibilities_ <= 1.0e-5);
   }
   /// If problem is dual feasible
-  inline bool dualFeasible() const
-  {
+  inline bool dualFeasible() const {
     return (sumDualInfeasibilities_ <= 1.0e-5);
   }
   /// Current (or last) algorithm
-  inline int algorithm() const
-  {
-    return algorithm_;
-  }
+  inline int algorithm() const { return algorithm_; }
   /// Set algorithm
-  inline void setAlgorithm(int value)
-  {
-    algorithm_ = value;
-  }
+  inline void setAlgorithm(int value) { algorithm_ = value; }
   /// Sum of dual infeasibilities
-  inline CoinWorkDouble sumDualInfeasibilities() const
-  {
+  inline CoinWorkDouble sumDualInfeasibilities() const {
     return sumDualInfeasibilities_;
   }
   /// Sum of primal infeasibilities
-  inline CoinWorkDouble sumPrimalInfeasibilities() const
-  {
+  inline CoinWorkDouble sumPrimalInfeasibilities() const {
     return sumPrimalInfeasibilities_;
   }
   /// dualObjective.
-  inline CoinWorkDouble dualObjective() const
-  {
-    return dualObjective_;
-  }
+  inline CoinWorkDouble dualObjective() const { return dualObjective_; }
   /// primalObjective.
-  inline CoinWorkDouble primalObjective() const
-  {
-    return primalObjective_;
-  }
+  inline CoinWorkDouble primalObjective() const { return primalObjective_; }
   /// diagonalNorm
-  inline CoinWorkDouble diagonalNorm() const
-  {
-    return diagonalNorm_;
-  }
+  inline CoinWorkDouble diagonalNorm() const { return diagonalNorm_; }
   /// linearPerturbation
-  inline CoinWorkDouble linearPerturbation() const
-  {
+  inline CoinWorkDouble linearPerturbation() const {
     return linearPerturbation_;
   }
-  inline void setLinearPerturbation(CoinWorkDouble value)
-  {
+  inline void setLinearPerturbation(CoinWorkDouble value) {
     linearPerturbation_ = value;
   }
   /// projectionTolerance
-  inline CoinWorkDouble projectionTolerance() const
-  {
+  inline CoinWorkDouble projectionTolerance() const {
     return projectionTolerance_;
   }
-  inline void setProjectionTolerance(CoinWorkDouble value)
-  {
+  inline void setProjectionTolerance(CoinWorkDouble value) {
     projectionTolerance_ = value;
   }
   /// diagonalPerturbation
-  inline CoinWorkDouble diagonalPerturbation() const
-  {
+  inline CoinWorkDouble diagonalPerturbation() const {
     return diagonalPerturbation_;
   }
-  inline void setDiagonalPerturbation(CoinWorkDouble value)
-  {
+  inline void setDiagonalPerturbation(CoinWorkDouble value) {
     diagonalPerturbation_ = value;
   }
   /// gamma
-  inline CoinWorkDouble gamma() const
-  {
-    return gamma_;
-  }
-  inline void setGamma(CoinWorkDouble value)
-  {
-    gamma_ = value;
-  }
+  inline CoinWorkDouble gamma() const { return gamma_; }
+  inline void setGamma(CoinWorkDouble value) { gamma_ = value; }
   /// delta
-  inline CoinWorkDouble delta() const
-  {
-    return delta_;
-  }
-  inline void setDelta(CoinWorkDouble value)
-  {
-    delta_ = value;
-  }
+  inline CoinWorkDouble delta() const { return delta_; }
+  inline void setDelta(CoinWorkDouble value) { delta_ = value; }
   /// ComplementarityGap
-  inline CoinWorkDouble complementarityGap() const
-  {
+  inline CoinWorkDouble complementarityGap() const {
     return complementarityGap_;
   }
   //@}
@@ -260,22 +213,16 @@ public:
   /**@name most useful gets and sets */
   //@{
   /// Largest error on Ax-b
-  inline CoinWorkDouble largestPrimalError() const
-  {
+  inline CoinWorkDouble largestPrimalError() const {
     return largestPrimalError_;
   }
   /// Largest error on basic duals
-  inline CoinWorkDouble largestDualError() const
-  {
-    return largestDualError_;
-  }
+  inline CoinWorkDouble largestDualError() const { return largestDualError_; }
   /// Maximum iterations
-  inline int maximumBarrierIterations() const
-  {
+  inline int maximumBarrierIterations() const {
     return maximumBarrierIterations_;
   }
-  inline void setMaximumBarrierIterations(int value)
-  {
+  inline void setMaximumBarrierIterations(int value) {
     maximumBarrierIterations_ = value;
   }
   /// Set cholesky (and delete present one)
@@ -286,18 +233,12 @@ public:
          set values to exact bounds */
   void fixFixed(bool reallyFix = true);
   /// Primal erturbation vector
-  inline CoinWorkDouble *primalR() const
-  {
-    return primalR_;
-  }
+  inline CoinWorkDouble *primalR() const { return primalR_; }
   /// Dual erturbation vector
-  inline CoinWorkDouble *dualR() const
-  {
-    return dualR_;
-  }
+  inline CoinWorkDouble *dualR() const { return dualR_; }
   //@}
 
-protected:
+ protected:
   /**@name protected methods */
   //@{
   /// Does most of deletion
@@ -312,132 +253,107 @@ protected:
   ///  This does housekeeping
   int housekeeping();
   //@}
-public:
+ public:
   /**@name public methods */
   //@{
   /// Raw objective value (so always minimize)
-  inline CoinWorkDouble rawObjectiveValue() const
-  {
-    return objectiveValue_;
-  }
+  inline CoinWorkDouble rawObjectiveValue() const { return objectiveValue_; }
   /// Returns 1 if sequence indicates column
-  inline int isColumn(int sequence) const
-  {
+  inline int isColumn(int sequence) const {
     return sequence < numberColumns_ ? 1 : 0;
   }
   /// Returns sequence number within section
-  inline int sequenceWithin(int sequence) const
-  {
+  inline int sequenceWithin(int sequence) const {
     return sequence < numberColumns_ ? sequence : sequence - numberColumns_;
   }
   /// Checks solution
   void checkSolution();
   /** Modifies djs to allow for quadratic.
          returns quadratic offset */
-  CoinWorkDouble quadraticDjs(CoinWorkDouble *djRegion, const CoinWorkDouble *solution,
-    CoinWorkDouble scaleFactor);
+  CoinWorkDouble quadraticDjs(CoinWorkDouble *djRegion,
+                              const CoinWorkDouble *solution,
+                              CoinWorkDouble scaleFactor);
 
   /// To say a variable is fixed
-  inline void setFixed(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] | 1);
+  inline void setFixed(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] | 1);
   }
-  inline void clearFixed(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] & ~1);
+  inline void clearFixed(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] & ~1);
   }
-  inline bool fixed(int sequence) const
-  {
+  inline bool fixed(int sequence) const {
     return ((status_[sequence] & 1) != 0);
   }
 
   /// To flag a variable
-  inline void setFlagged(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] | 2);
+  inline void setFlagged(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] | 2);
   }
-  inline void clearFlagged(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] & ~2);
+  inline void clearFlagged(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] & ~2);
   }
-  inline bool flagged(int sequence) const
-  {
+  inline bool flagged(int sequence) const {
     return ((status_[sequence] & 2) != 0);
   }
 
   /// To say a variable is fixed OR free
-  inline void setFixedOrFree(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] | 4);
+  inline void setFixedOrFree(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] | 4);
   }
-  inline void clearFixedOrFree(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] & ~4);
+  inline void clearFixedOrFree(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] & ~4);
   }
-  inline bool fixedOrFree(int sequence) const
-  {
+  inline bool fixedOrFree(int sequence) const {
     return ((status_[sequence] & 4) != 0);
   }
 
   /// To say a variable has lower bound
-  inline void setLowerBound(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] | 8);
+  inline void setLowerBound(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] | 8);
   }
-  inline void clearLowerBound(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] & ~8);
+  inline void clearLowerBound(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] & ~8);
   }
-  inline bool lowerBound(int sequence) const
-  {
+  inline bool lowerBound(int sequence) const {
     return ((status_[sequence] & 8) != 0);
   }
 
   /// To say a variable has upper bound
-  inline void setUpperBound(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] | 16);
+  inline void setUpperBound(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] | 16);
   }
-  inline void clearUpperBound(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] & ~16);
+  inline void clearUpperBound(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] & ~16);
   }
-  inline bool upperBound(int sequence) const
-  {
+  inline bool upperBound(int sequence) const {
     return ((status_[sequence] & 16) != 0);
   }
 
   /// To say a variable has fake lower bound
-  inline void setFakeLower(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] | 32);
+  inline void setFakeLower(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] | 32);
   }
-  inline void clearFakeLower(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] & ~32);
+  inline void clearFakeLower(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] & ~32);
   }
-  inline bool fakeLower(int sequence) const
-  {
+  inline bool fakeLower(int sequence) const {
     return ((status_[sequence] & 32) != 0);
   }
 
   /// To say a variable has fake upper bound
-  inline void setFakeUpper(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] | 64);
+  inline void setFakeUpper(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] | 64);
   }
-  inline void clearFakeUpper(int sequence)
-  {
-    status_[sequence] = static_cast< unsigned char >(status_[sequence] & ~64);
+  inline void clearFakeUpper(int sequence) {
+    status_[sequence] = static_cast<unsigned char>(status_[sequence] & ~64);
   }
-  inline bool fakeUpper(int sequence) const
-  {
+  inline bool fakeUpper(int sequence) const {
     return ((status_[sequence] & 64) != 0);
   }
   //@}
 
   ////////////////// data //////////////////
-protected:
+ protected:
   /**@name data.  Many arrays have a row part and a column part.
       There is a single array with both - columns then rows and
       then normally two arrays pointing to rows and columns.  The
@@ -455,11 +371,11 @@ protected:
   /// Worst complementarity
   CoinWorkDouble worstComplementarity_;
   ///
-public:
+ public:
   CoinWorkDouble xsize_;
   CoinWorkDouble zsize_;
 
-protected:
+ protected:
   /// Working copy of lower bounds (Owner of arrays below)
   CoinWorkDouble *lower_;
   /// Row lower bounds - working copy
@@ -475,14 +391,14 @@ protected:
   /// Working copy of objective
   CoinWorkDouble *cost_;
 
-public:
+ public:
   /// Rhs
   CoinWorkDouble *rhs_;
   CoinWorkDouble *x_;
   CoinWorkDouble *y_;
   CoinWorkDouble *dj_;
 
-protected:
+ protected:
   /// Pointer to Lsqr object
   ClpLsqr *lsqrObject_;
   /// Pointer to stuff
@@ -590,7 +506,8 @@ protected:
   CoinWorkDouble *wVec_;
   /// cholesky.
   ClpCholeskyBase *cholesky_;
-  /// numberComplementarityPairs i.e. ones with lower and/or upper bounds (not fixed)
+  /// numberComplementarityPairs i.e. ones with lower and/or upper bounds (not
+  /// fixed)
   int numberComplementarityPairs_;
   /// numberComplementarityItems_ i.e. number of active bounds
   int numberComplementarityItems_;
@@ -604,7 +521,7 @@ protected:
   int algorithm_;
   //@}
 };
-//#############################################################################
+// #############################################################################
 /** A function that tests the methods in the ClpInterior class. The
     only reason for it not to be a member method is that this way it doesn't
     have to be compiled into the library. And that's a gain, because the
@@ -614,9 +531,9 @@ protected:
     It also does some testing of ClpFactorization class
  */
 void ClpInteriorUnitTest(const std::string &mpsDir,
-  const std::string &netlibDir);
+                         const std::string &netlibDir);
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

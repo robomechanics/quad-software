@@ -39,21 +39,16 @@ class implied_free_action : public CoinPresolveAction {
   const int nactions_;
   const action *const actions_;
 
-  implied_free_action(int nactions,
-    const action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-  {
-  }
+  implied_free_action(int nactions, const action *actions,
+                      const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nactions_(nactions), actions_(actions) {}
 
-public:
+ public:
   const char *name() const;
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next,
-    int &fillLevel);
+                                            const CoinPresolveAction *next,
+                                            int &fillLevel);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -63,4 +58,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

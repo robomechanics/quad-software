@@ -6,7 +6,7 @@
 #ifndef CbcTreeLocal_H
 #define CbcTreeLocal_H
 
-//#############################################################################
+// #############################################################################
 /*  This implements (approximately) local branching as in the 2002 paper by
     Matteo Fischetti and Andrea Lodi.
 
@@ -26,19 +26,19 @@
 
     If finished search and no new solution then the simplest version
     would reverse last cut and complete search.  The version implemented
-    here can use time and node limits and can widen search (increase effective k)
+    here can use time and node limits and can widen search (increase effective
+   k)
     .... and more
 
 */
 
-#include "CbcTree.hpp"
 #include "CbcNode.hpp"
+#include "CbcTree.hpp"
 #include "OsiRowCut.hpp"
 class CbcModel;
 
 class CbcTreeLocal : public CbcTree {
-
-public:
+ public:
   // Default Constructor
   CbcTreeLocal();
 
@@ -52,12 +52,13 @@ public:
        timeLimit is seconds in subTree
        nodeLimit is nodes in subTree
        refine is whether to see if we can prove current solution is optimal
-       when we fix all 0-1 (in case typeCuts==0 and there are general integer variables)
-       if false then no refinement but reverse cuts weaker
+       when we fix all 0-1 (in case typeCuts==0 and there are general integer
+     variables) if false then no refinement but reverse cuts weaker
     */
   CbcTreeLocal(CbcModel *model, const double *solution, int range = 10,
-    int typeCuts = 0, int maxDiversification = 0,
-    int timeLimit = 1000000, int nodeLimit = 1000000, bool refine = true);
+               int typeCuts = 0, int maxDiversification = 0,
+               int timeLimit = 1000000, int nodeLimit = 1000000,
+               bool refine = true);
   // Copy constructor
   CbcTreeLocal(const CbcTreeLocal &rhs);
 
@@ -102,68 +103,32 @@ public:
   /// Pass in solution (so can be used after heuristic)
   void passInSolution(const double *solution, double solutionValue);
   // range i.e. k
-  inline int range() const
-  {
-    return range_;
-  }
+  inline int range() const { return range_; }
   // setrange i.e. k
-  inline void setRange(int value)
-  {
-    range_ = value;
-  }
+  inline void setRange(int value) { range_ = value; }
   // Type of cuts - 0=just 0-1, 1=all
-  inline int typeCuts() const
-  {
-    return typeCuts_;
-  }
+  inline int typeCuts() const { return typeCuts_; }
   // Type of cuts - 0=just 0-1, 1=all
-  inline void setTypeCuts(int value)
-  {
-    typeCuts_ = value;
-  }
+  inline void setTypeCuts(int value) { typeCuts_ = value; }
   // maximum number of diversifications
-  inline int maxDiversification() const
-  {
-    return maxDiversification_;
-  }
+  inline int maxDiversification() const { return maxDiversification_; }
   // maximum number of diversifications
-  inline void setMaxDiversification(int value)
-  {
-    maxDiversification_ = value;
-  }
+  inline void setMaxDiversification(int value) { maxDiversification_ = value; }
   // time limit per subtree
-  inline int timeLimit() const
-  {
-    return timeLimit_;
-  }
+  inline int timeLimit() const { return timeLimit_; }
   // time limit per subtree
-  inline void setTimeLimit(int value)
-  {
-    timeLimit_ = value;
-  }
+  inline void setTimeLimit(int value) { timeLimit_ = value; }
   // node limit for subtree
-  inline int nodeLimit() const
-  {
-    return nodeLimit_;
-  }
+  inline int nodeLimit() const { return nodeLimit_; }
   // node limit for subtree
-  inline void setNodeLimit(int value)
-  {
-    nodeLimit_ = value;
-  }
+  inline void setNodeLimit(int value) { nodeLimit_ = value; }
   // Whether to do refinement step
-  inline bool refine() const
-  {
-    return refine_;
-  }
+  inline bool refine() const { return refine_; }
   // Whether to do refinement step
-  inline void setRefine(bool yesNo)
-  {
-    refine_ = yesNo;
-  }
+  inline void setRefine(bool yesNo) { refine_ = yesNo; }
 
   //@}
-private:
+ private:
   // Node for local cuts
   CbcNode *localNode_;
   // best solution
@@ -206,15 +171,15 @@ private:
   int nodeLimit_;
   // node count when subtree started
   int startNode_;
-  // -1 not started, 0 == stop on first solution, 1 don't stop on first, 2 refinement step
+  // -1 not started, 0 == stop on first solution, 1 don't stop on first, 2
+  // refinement step
   int searchType_;
   // Whether to do refinement step
   bool refine_;
 };
 
 class CbcTreeVariable : public CbcTree {
-
-public:
+ public:
   // Default Constructor
   CbcTreeVariable();
 
@@ -228,12 +193,13 @@ public:
        timeLimit is seconds in subTree
        nodeLimit is nodes in subTree
        refine is whether to see if we can prove current solution is optimal
-       when we fix all 0-1 (in case typeCuts==0 and there are general integer variables)
-       if false then no refinement but reverse cuts weaker
+       when we fix all 0-1 (in case typeCuts==0 and there are general integer
+     variables) if false then no refinement but reverse cuts weaker
     */
   CbcTreeVariable(CbcModel *model, const double *solution, int range = 10,
-    int typeCuts = 0, int maxDiversification = 0,
-    int timeLimit = 1000000, int nodeLimit = 1000000, bool refine = true);
+                  int typeCuts = 0, int maxDiversification = 0,
+                  int timeLimit = 1000000, int nodeLimit = 1000000,
+                  bool refine = true);
   // Copy constructor
   CbcTreeVariable(const CbcTreeVariable &rhs);
 
@@ -278,68 +244,32 @@ public:
   /// Pass in solution (so can be used after heuristic)
   void passInSolution(const double *solution, double solutionValue);
   // range i.e. k
-  inline int range() const
-  {
-    return range_;
-  }
+  inline int range() const { return range_; }
   // setrange i.e. k
-  inline void setRange(int value)
-  {
-    range_ = value;
-  }
+  inline void setRange(int value) { range_ = value; }
   // Type of cuts - 0=just 0-1, 1=all
-  inline int typeCuts() const
-  {
-    return typeCuts_;
-  }
+  inline int typeCuts() const { return typeCuts_; }
   // Type of cuts - 0=just 0-1, 1=all
-  inline void setTypeCuts(int value)
-  {
-    typeCuts_ = value;
-  }
+  inline void setTypeCuts(int value) { typeCuts_ = value; }
   // maximum number of diversifications
-  inline int maxDiversification() const
-  {
-    return maxDiversification_;
-  }
+  inline int maxDiversification() const { return maxDiversification_; }
   // maximum number of diversifications
-  inline void setMaxDiversification(int value)
-  {
-    maxDiversification_ = value;
-  }
+  inline void setMaxDiversification(int value) { maxDiversification_ = value; }
   // time limit per subtree
-  inline int timeLimit() const
-  {
-    return timeLimit_;
-  }
+  inline int timeLimit() const { return timeLimit_; }
   // time limit per subtree
-  inline void setTimeLimit(int value)
-  {
-    timeLimit_ = value;
-  }
+  inline void setTimeLimit(int value) { timeLimit_ = value; }
   // node limit for subtree
-  inline int nodeLimit() const
-  {
-    return nodeLimit_;
-  }
+  inline int nodeLimit() const { return nodeLimit_; }
   // node limit for subtree
-  inline void setNodeLimit(int value)
-  {
-    nodeLimit_ = value;
-  }
+  inline void setNodeLimit(int value) { nodeLimit_ = value; }
   // Whether to do refinement step
-  inline bool refine() const
-  {
-    return refine_;
-  }
+  inline bool refine() const { return refine_; }
   // Whether to do refinement step
-  inline void setRefine(bool yesNo)
-  {
-    refine_ = yesNo;
-  }
+  inline void setRefine(bool yesNo) { refine_ = yesNo; }
 
   //@}
-private:
+ private:
   // Node for local cuts
   CbcNode *localNode_;
   // best solution
@@ -382,7 +312,8 @@ private:
   int nodeLimit_;
   // node count when subtree started
   int startNode_;
-  // -1 not started, 0 == stop on first solution, 1 don't stop on first, 2 refinement step
+  // -1 not started, 0 == stop on first solution, 1 don't stop on first, 2
+  // refinement step
   int searchType_;
   // Whether to do refinement step
   bool refine_;
@@ -390,4 +321,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

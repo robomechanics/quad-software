@@ -55,8 +55,8 @@ plog<Packet4f>(const Packet4f& _x) {
   Packet4f non_neg_x_or_nan = padd(_x, (Packet4f)neg_mask);  // Add 0.0 or NAN.
   Packet4f x = non_neg_x_or_nan;
 
-  // Extract exponent from x = mantissa * 2**exponent, where 1.0 <= mantissa < 2.0.
-  // N.B. the exponent is one less of what frexpf() would return.
+  // Extract exponent from x = mantissa * 2**exponent, where 1.0 <= mantissa
+  // < 2.0. N.B. the exponent is one less of what frexpf() would return.
   Packet4i e_int = __builtin_msa_ftint_s_w(__builtin_msa_flog2_w(x));
   // Multiply x by 2**(-exponent-1) to get 0.5 <= x < 1.0 as from frexpf().
   x = __builtin_msa_fexp2_w(x, (Packet4i)__builtin_msa_nori_b((v16u8)e_int, 0));
@@ -113,7 +113,8 @@ plog<Packet4f>(const Packet4f& _x) {
 
   // If the argument is zero (including -0.0), the result becomes -INFINITY.
   Packet4i neg_infs = __builtin_msa_slli_w(zero_mask, 23);
-  x = (Packet4f)__builtin_msa_bsel_v((v16u8)zero_mask, (v16u8)x, (v16u8)neg_infs);
+  x = (Packet4f)__builtin_msa_bsel_v((v16u8)zero_mask, (v16u8)x,
+                                     (v16u8)neg_infs);
 
   return x;
 }
@@ -140,13 +141,14 @@ pexp<Packet4f>(const Packet4f& _x) {
   Packet4f x = _x;
 
   // Clamp x.
-  x = (Packet4f)__builtin_msa_bsel_v((v16u8)__builtin_msa_fclt_w(x, p4f_exp_lo), (v16u8)x,
-                                     (v16u8)p4f_exp_lo);
-  x = (Packet4f)__builtin_msa_bsel_v((v16u8)__builtin_msa_fclt_w(p4f_exp_hi, x), (v16u8)x,
-                                     (v16u8)p4f_exp_hi);
+  x = (Packet4f)__builtin_msa_bsel_v((v16u8)__builtin_msa_fclt_w(x, p4f_exp_lo),
+                                     (v16u8)x, (v16u8)p4f_exp_lo);
+  x = (Packet4f)__builtin_msa_bsel_v((v16u8)__builtin_msa_fclt_w(p4f_exp_hi, x),
+                                     (v16u8)x, (v16u8)p4f_exp_hi);
 
   // Round to nearest integer by adding 0.5 (with x's sign) and truncating.
-  Packet4f x2_add = (Packet4f)__builtin_msa_binsli_w((v4u32)p4f_half, (v4u32)x, 0);
+  Packet4f x2_add =
+      (Packet4f)__builtin_msa_binsli_w((v4u32)p4f_half, (v4u32)x, 0);
   Packet4f x2 = pmadd(x, p4f_cephes_LOG2EF, x2_add);
   Packet4i x2_int = __builtin_msa_ftrunc_s_w(x2);
   Packet4f x2_int_f = __builtin_msa_ffint_s_w(x2_int);
@@ -195,8 +197,9 @@ ptanh<Packet4f>(const Packet4f& _x) {
 
   // Clamp the inputs to the range [-9, 9] since anything outside
   // this range is -/+1.0f in single-precision.
-  x = (Packet4f)__builtin_msa_bsel_v((v16u8)__builtin_msa_fclt_w(p4f_tanh_hi, x), (v16u8)x,
-                                     (v16u8)p4f_tanh_hi);
+  x = (Packet4f)__builtin_msa_bsel_v(
+      (v16u8)__builtin_msa_fclt_w(p4f_tanh_hi, x), (v16u8)x,
+      (v16u8)p4f_tanh_hi);
 
   // Since the polynomials are odd/even, we need x**2.
   Packet4f x2 = pmul(x, x);
@@ -221,7 +224,8 @@ ptanh<Packet4f>(const Packet4f& _x) {
   // Reinstate the sign.
   p = (Packet4f)__builtin_msa_binsli_w((v4u32)p, (v4u32)_x, 0);
 
-  // When the argument is very small in magnitude it's more accurate to just return it.
+  // When the argument is very small in magnitude it's more accurate to just
+  // return it.
   p = (Packet4f)__builtin_msa_bsel_v((v16u8)tiny_mask, (v16u8)p, (v16u8)_x);
 
   return p;
@@ -229,17 +233,21 @@ ptanh<Packet4f>(const Packet4f& _x) {
 
 template <bool sine>
 Packet4f psincos_inner_msa_float(const Packet4f& _x) {
-  static _EIGEN_DECLARE_CONST_Packet4f(sincos_max_arg, 13176795.0f);  // Approx. (2**24) / (4/Pi).
+  static _EIGEN_DECLARE_CONST_Packet4f(
+      sincos_max_arg, 13176795.0f);  // Approx. (2**24) / (4/Pi).
   static _EIGEN_DECLARE_CONST_Packet4f(minus_cephes_DP1, -0.78515625f);
-  static _EIGEN_DECLARE_CONST_Packet4f(minus_cephes_DP2, -2.4187564849853515625e-4f);
-  static _EIGEN_DECLARE_CONST_Packet4f(minus_cephes_DP3, -3.77489497744594108e-8f);
+  static _EIGEN_DECLARE_CONST_Packet4f(minus_cephes_DP2,
+                                       -2.4187564849853515625e-4f);
+  static _EIGEN_DECLARE_CONST_Packet4f(minus_cephes_DP3,
+                                       -3.77489497744594108e-8f);
   static _EIGEN_DECLARE_CONST_Packet4f(sincof_p0, -1.9515295891e-4f);
   static _EIGEN_DECLARE_CONST_Packet4f(sincof_p1, 8.3321608736e-3f);
   static _EIGEN_DECLARE_CONST_Packet4f(sincof_p2, -1.6666654611e-1f);
   static _EIGEN_DECLARE_CONST_Packet4f(coscof_p0, 2.443315711809948e-5f);
   static _EIGEN_DECLARE_CONST_Packet4f(coscof_p1, -1.388731625493765e-3f);
   static _EIGEN_DECLARE_CONST_Packet4f(coscof_p2, 4.166664568298827e-2f);
-  static _EIGEN_DECLARE_CONST_Packet4f(cephes_FOPI, 1.27323954473516f);  // 4/Pi.
+  static _EIGEN_DECLARE_CONST_Packet4f(cephes_FOPI,
+                                       1.27323954473516f);  // 4/Pi.
   static _EIGEN_DECLARE_CONST_Packet4f(half, 0.5f);
   static _EIGEN_DECLARE_CONST_Packet4f(1, 1.0f);
 
@@ -255,22 +263,27 @@ Packet4f psincos_inner_msa_float(const Packet4f& _x) {
 
   // Scale x by 4/Pi to find x's octant.
   Packet4f y = pmul(x, p4f_cephes_FOPI);
-  // Get the octant. We'll reduce x by this number of octants or by one more than it.
+  // Get the octant. We'll reduce x by this number of octants or by one more
+  // than it.
   Packet4i y_int = __builtin_msa_ftrunc_s_w(y);
   // x's from even-numbered octants will translate to octant 0: [0, +Pi/4].
   // x's from odd-numbered octants will translate to octant -1: [-Pi/4, 0].
   // Adjustment for odd-numbered octants: octant = (octant + 1) & (~1).
   Packet4i y_int1 = __builtin_msa_addvi_w(y_int, 1);
-  Packet4i y_int2 = (Packet4i)__builtin_msa_bclri_w((Packet4ui)y_int1, 0); // bclri = bit-clear
+  Packet4i y_int2 = (Packet4i)__builtin_msa_bclri_w((Packet4ui)y_int1,
+                                                    0);  // bclri = bit-clear
   y = __builtin_msa_ffint_s_w(y_int2);
 
   // Compute the sign to apply to the polynomial.
-  Packet4i sign_mask = sine ? pxor(__builtin_msa_slli_w(y_int1, 29), (Packet4i)_x)
-                            : __builtin_msa_slli_w(__builtin_msa_addvi_w(y_int, 3), 29);
+  Packet4i sign_mask =
+      sine ? pxor(__builtin_msa_slli_w(y_int1, 29), (Packet4i)_x)
+           : __builtin_msa_slli_w(__builtin_msa_addvi_w(y_int, 3), 29);
 
   // Get the polynomial selection mask.
-  // We'll calculate both (sin and cos) polynomials and then select from the two.
-  Packet4i poly_mask = __builtin_msa_ceqi_w(__builtin_msa_slli_w(y_int2, 30), 0);
+  // We'll calculate both (sin and cos) polynomials and then select from the
+  // two.
+  Packet4i poly_mask =
+      __builtin_msa_ceqi_w(__builtin_msa_slli_w(y_int2, 30), 0);
 
   // Reduce x by y octants to get: -Pi/4 <= x <= +Pi/4.
   // The magic pass: "Extended precision modular arithmetic"
@@ -300,12 +313,15 @@ Packet4f psincos_inner_msa_float(const Packet4f& _x) {
   y2 = pmadd(y2, x, x);
 
   // Select the correct result from the two polynomials.
-  y = sine ? (Packet4f)__builtin_msa_bsel_v((v16u8)poly_mask, (v16u8)y, (v16u8)y2)
-           : (Packet4f)__builtin_msa_bsel_v((v16u8)poly_mask, (v16u8)y2, (v16u8)y);
+  y = sine ? (Packet4f)__builtin_msa_bsel_v((v16u8)poly_mask, (v16u8)y,
+                                            (v16u8)y2)
+           : (Packet4f)__builtin_msa_bsel_v((v16u8)poly_mask, (v16u8)y2,
+                                            (v16u8)y);
 
   // Update the sign.
   sign_mask = pxor(sign_mask, (Packet4i)y);
-  y = (Packet4f)__builtin_msa_binsli_w((v4u32)y, (v4u32)sign_mask, 0); // binsli = bit-insert-left
+  y = (Packet4f)__builtin_msa_binsli_w((v4u32)y, (v4u32)sign_mask,
+                                       0);  // binsli = bit-insert-left
   return y;
 }
 
@@ -330,13 +346,20 @@ pexp<Packet2d>(const Packet2d& _x) {
   static _EIGEN_DECLARE_CONST_Packet2d(exp_hi, +1024.0);
   static _EIGEN_DECLARE_CONST_Packet2d(cephes_LOG2EF, 1.4426950408889634073599);
   static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_C1, 0.693145751953125);
-  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_C2, 1.42860682030941723212e-6);
-  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_p0, 1.26177193074810590878e-4);
-  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_p1, 3.02994407707441961300e-2);
-  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_p2, 9.99999999999999999910e-1);
-  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_q0, 3.00198505138664455042e-6);
-  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_q1, 2.52448340349684104192e-3);
-  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_q2, 2.27265548208155028766e-1);
+  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_C2,
+                                       1.42860682030941723212e-6);
+  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_p0,
+                                       1.26177193074810590878e-4);
+  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_p1,
+                                       3.02994407707441961300e-2);
+  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_p2,
+                                       9.99999999999999999910e-1);
+  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_q0,
+                                       3.00198505138664455042e-6);
+  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_q1,
+                                       2.52448340349684104192e-3);
+  static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_q2,
+                                       2.27265548208155028766e-1);
   static _EIGEN_DECLARE_CONST_Packet2d(cephes_exp_q3, 2.00000000000000000009e0);
   static _EIGEN_DECLARE_CONST_Packet2d(half, 0.5);
   static _EIGEN_DECLARE_CONST_Packet2d(1, 1.0);
@@ -345,13 +368,14 @@ pexp<Packet2d>(const Packet2d& _x) {
   Packet2d x = _x;
 
   // Clamp x.
-  x = (Packet2d)__builtin_msa_bsel_v((v16u8)__builtin_msa_fclt_d(x, p2d_exp_lo), (v16u8)x,
-                                     (v16u8)p2d_exp_lo);
-  x = (Packet2d)__builtin_msa_bsel_v((v16u8)__builtin_msa_fclt_d(p2d_exp_hi, x), (v16u8)x,
-                                     (v16u8)p2d_exp_hi);
+  x = (Packet2d)__builtin_msa_bsel_v((v16u8)__builtin_msa_fclt_d(x, p2d_exp_lo),
+                                     (v16u8)x, (v16u8)p2d_exp_lo);
+  x = (Packet2d)__builtin_msa_bsel_v((v16u8)__builtin_msa_fclt_d(p2d_exp_hi, x),
+                                     (v16u8)x, (v16u8)p2d_exp_hi);
 
   // Round to nearest integer by adding 0.5 (with x's sign) and truncating.
-  Packet2d x2_add = (Packet2d)__builtin_msa_binsli_d((v2u64)p2d_half, (v2u64)x, 0);
+  Packet2d x2_add =
+      (Packet2d)__builtin_msa_binsli_d((v2u64)p2d_half, (v2u64)x, 0);
   Packet2d x2 = pmadd(x, p2d_cephes_LOG2EF, x2_add);
   Packet2l x2_long = __builtin_msa_ftrunc_s_d(x2);
   Packet2d x2_long_d = __builtin_msa_ffint_s_d(x2_long);

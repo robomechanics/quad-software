@@ -3,23 +3,24 @@
 // Corporation and others.  All Rights Reserved.
 // This code is licensed under the terms of the Eclipse Public License (EPL).
 
-/* 
+/*
    This is a simple factorization of the LP Basis
  */
 #ifndef CoinSimpFactorization_H
 #define CoinSimpFactorization_H
 
+#include <cassert>
 #include <iostream>
 #include <string>
-#include <cassert>
-#include "CoinTypes.hpp"
-#include "CoinIndexedVector.hpp"
+
 #include "CoinDenseFactorization.hpp"
+#include "CoinIndexedVector.hpp"
+#include "CoinTypes.hpp"
 class CoinPackedMatrix;
 
 /// pointers used during factorization
 class FactorPointers {
-public:
+ public:
   double *rowMax;
   int *firstRowKnonzeros;
   int *prevRow;
@@ -28,8 +29,9 @@ public:
   int *prevColumn;
   int *nextColumn;
   int *newCols;
-  //constructor
-  FactorPointers(int numRows, int numCols, int *UrowLengths_, int *UcolLengths_);
+  // constructor
+  FactorPointers(int numRows, int numCols, int *UrowLengths_,
+                 int *UcolLengths_);
   // destructor
   ~FactorPointers();
 };
@@ -37,7 +39,7 @@ public:
 class CoinSimpFactorization : public CoinOtherFactorization {
   friend void CoinSimpFactorizationUnitTest(const std::string &mpsDir);
 
-public:
+ public:
   /**@name Constructors and destructor and copy */
   //@{
   /// Default constructor
@@ -56,10 +58,8 @@ public:
   /**@name Do factorization - public */
   //@{
   /// Gets space for a factorization
-  virtual void getAreas(int numberRows,
-    int numberColumns,
-    int maximumL,
-    int maximumU);
+  virtual void getAreas(int numberRows, int numberColumns, int maximumL,
+                        int maximumU);
 
   /// PreProcesses column ordered copy of basis
   virtual void preProcess();
@@ -69,7 +69,8 @@ public:
       -1 - singular - use numberGoodColumns and redo
   */
   virtual int factor();
-  /// Does post processing on valid factorization - putting variables on correct rows
+  /// Does post processing on valid factorization - putting variables on correct
+  /// rows
   virtual void postProcess(const int *sequence, int *pivotVariable);
   /// Makes a non-singular basis by replacing variables
   virtual void makeNonSingular(int *sequence, int numberColumns);
@@ -78,8 +79,7 @@ public:
   /**@name general stuff such as status */
   //@{
   /// Total number of elements in factorization
-  virtual inline int numberElements() const
-  {
+  virtual inline int numberElements() const {
     return numberRows_ * (numberColumns_ + numberPivots_);
   }
   /// Returns maximum absolute value in factorization
@@ -96,14 +96,13 @@ public:
       speed considerations.  You could just do this on first iteration
       after factorization and thereafter re-factorize
    partial update already in U */
-  virtual int replaceColumn(CoinIndexedVector *regionSparse,
-    int pivotRow,
-    double pivotCheck,
-    bool checkBeforeModifying = false,
-    double acceptablePivot = 1.0e-8);
+  virtual int replaceColumn(CoinIndexedVector *regionSparse, int pivotRow,
+                            double pivotCheck,
+                            bool checkBeforeModifying = false,
+                            double acceptablePivot = 1.0e-8);
   //@}
 
-  /**@name various uses of factorization (return code number elements) 
+  /**@name various uses of factorization (return code number elements)
    which user may want to know about */
   //@{
   /** Updates one column (FTRAN) from regionSparse2
@@ -114,32 +113,32 @@ public:
   */
 
   virtual int updateColumnFT(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2,
-    bool noPermute = false);
+                             CoinIndexedVector *regionSparse2,
+                             bool noPermute = false);
 
   /** This version has same effect as above with FTUpdate==false
-	so number returned is always >=0 */
+        so number returned is always >=0 */
   virtual int updateColumn(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2,
-    bool noPermute = false) const;
+                           CoinIndexedVector *regionSparse2,
+                           bool noPermute = false) const;
   /// does FTRAN on two columns
   virtual int updateTwoColumnsFT(CoinIndexedVector *regionSparse1,
-    CoinIndexedVector *regionSparse2,
-    CoinIndexedVector *regionSparse3,
-    bool noPermute = false);
+                                 CoinIndexedVector *regionSparse2,
+                                 CoinIndexedVector *regionSparse3,
+                                 bool noPermute = false);
   /// does updatecolumn if save==true keeps column for replace column
   int upColumn(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2,
-    bool noPermute = false, bool save = false) const;
+               CoinIndexedVector *regionSparse2, bool noPermute = false,
+               bool save = false) const;
   /** Updates one column (BTRAN) from regionSparse2
-	regionSparse starts as zero and is zero at end 
-	Note - if regionSparse2 packed on input - will be packed on output
+        regionSparse starts as zero and is zero at end
+        Note - if regionSparse2 packed on input - will be packed on output
     */
   virtual int updateColumnTranspose(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2) const;
+                                    CoinIndexedVector *regionSparse2) const;
   /// does updateColumnTranspose, the other is a wrapper
   int upColumnTranspose(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2) const;
+                        CoinIndexedVector *regionSparse2) const;
   //@}
   /// *** Below this user may not want to know about
 
@@ -147,20 +146,13 @@ public:
    which user may not want to know about (left over from my LP code) */
   //@{
   /// Get rid of all memory
-  inline void clearArrays()
-  {
-    gutsOfDestructor();
-  }
+  inline void clearArrays() { gutsOfDestructor(); }
   /// Returns array to put basis indices in
-  inline int *indices() const
-  {
-    return reinterpret_cast< int * >(elements_ + numberRows_ * numberRows_);
+  inline int *indices() const {
+    return reinterpret_cast<int *>(elements_ + numberRows_ * numberRows_);
   }
   /// Returns permute in
-  virtual inline int *permute() const
-  {
-    return pivotRow_;
-  }
+  virtual inline int *permute() const { return pivotRow_; }
   //@}
 
   /// The real work of destructor
@@ -171,11 +163,8 @@ public:
   void gutsOfCopy(const CoinSimpFactorization &other);
 
   /// calls factorization
-  void factorize(int numberOfRows,
-    int numberOfColumns,
-    const int colStarts[],
-    const int indicesRow[],
-    const double elements[]);
+  void factorize(int numberOfRows, int numberOfColumns, const int colStarts[],
+                 const int indicesRow[], const double elements[]);
   /// main loop of factorization
   int mainLoopFactor(FactorPointers &pointers);
   /// copies L by rows
@@ -192,19 +181,19 @@ public:
   void GaussEliminate(FactorPointers &pointers, int &r, int &s);
   /// finds short row that intersects a given column
   int findShortRow(const int column, const int length, int &minRow,
-    int &minRowLength, FactorPointers &pointers);
+                   int &minRowLength, FactorPointers &pointers);
   /// finds short column that intersects a given row
   int findShortColumn(const int row, const int length, int &minCol,
-    int &minColLength, FactorPointers &pointers);
+                      int &minColLength, FactorPointers &pointers);
   /// finds maximum absolute value in a row
   double findMaxInRrow(const int row, FactorPointers &pointers);
   /// does pivoting
   void pivoting(const int pivotRow, const int pivotColumn,
-    const double invPivot, FactorPointers &pointers);
+                const double invPivot, FactorPointers &pointers);
   /// part of pivoting
   void updateCurrentRow(const int pivotRow, const int row,
-    const double multiplier, FactorPointers &pointers,
-    int &newNonZeros);
+                        const double multiplier, FactorPointers &pointers,
+                        int &newNonZeros);
   /// allocates more space for L
   void increaseLsize();
   /// allocates more space for a row of U
@@ -262,12 +251,12 @@ public:
   ///---------------------------------------
 
   //@}
-protected:
+ protected:
   /** Returns accuracy status of replaceColumn
       returns 0=OK, 1=Probably OK, 2=singular */
   int checkPivot(double saveFromU, double oldPivot) const;
   ////////////////// data //////////////////
-protected:
+ protected:
   /**@name data */
   //@{
   /// work array (should be initialized to zero)
@@ -429,4 +418,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

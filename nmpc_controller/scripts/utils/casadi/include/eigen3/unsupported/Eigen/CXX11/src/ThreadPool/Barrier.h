@@ -59,7 +59,7 @@ class Barrier {
 // Multiple threads can wait on the same Notification object,
 // but only one caller must call Notify() on the object.
 struct Notification : Barrier {
-  Notification() : Barrier(1){};
+  Notification() : Barrier(1) {};
 };
 
 }  // namespace Eigen

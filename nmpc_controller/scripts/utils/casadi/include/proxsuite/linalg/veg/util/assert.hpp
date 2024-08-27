@@ -37,9 +37,9 @@
 #else
 #define VEG_DEBUG_ASSERT(...) VEG_ASSERT(__VA_ARGS__)
 #define VEG_DEBUG_EXPECT(...) VEG_EXPECT(__VA_ARGS__)
-#define VEG_DEBUG_ASSERT_ELSE(Message, ...)                                    \
+#define VEG_DEBUG_ASSERT_ELSE(Message, ...) \
   VEG_ASSERT_ELSE(Message, __VA_ARGS__)
-#define VEG_DEBUG_EXPECT_ELSE(Message, ...)                                    \
+#define VEG_DEBUG_EXPECT_ELSE(Message, ...) \
   VEG_EXPECT_ELSE(Message, __VA_ARGS__)
 #define VEG_DEBUG_ASSERT_ALL_OF(...) VEG_ASSERT_ALL_OF(__VA_ARGS__)
 #define VEG_DEBUG_EXPECT_ALL_OF(...) VEG_EXPECT_ALL_OF(__VA_ARGS__)

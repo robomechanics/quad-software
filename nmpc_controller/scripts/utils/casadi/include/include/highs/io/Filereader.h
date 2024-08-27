@@ -42,6 +42,6 @@ class Filereader {
   static Filereader* getFilereader(const HighsLogOptions& log_options,
                                    const std::string filename);
 
-  virtual ~Filereader(){};
+  virtual ~Filereader() {};
 };
 #endif

@@ -28,8 +28,8 @@
 #if !defined(SIMDE_X86_AVX512_NEGATE_H)
 #define SIMDE_X86_AVX512_NEGATE_H
 
-#include "types.h"
 #include "mov.h"
+#include "types.h"
 #include "xor.h"
 
 HEDLEY_DIAGNOSTIC_PUSH
@@ -37,49 +37,43 @@ SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512
-simde_x_mm512_negate_ps(simde__m512 a) {
-  #if defined(SIMDE_X86_AVX512DQ_NATIVE)
-    return simde_mm512_xor_ps(a,_mm512_set1_ps(SIMDE_FLOAT32_C(-0.0)));
-  #else
-    simde__m512_private
-      r_,
-      a_ = simde__m512_to_private(a);
+simde__m512 simde_x_mm512_negate_ps(simde__m512 a) {
+#if defined(SIMDE_X86_AVX512DQ_NATIVE)
+  return simde_mm512_xor_ps(a, _mm512_set1_ps(SIMDE_FLOAT32_C(-0.0)));
+#else
+  simde__m512_private r_, a_ = simde__m512_to_private(a);
 
-    #if defined(SIMDE_VECTOR_NEGATE)
-      r_.f32 = -a_.f32;
-    #else
-      SIMDE_VECTORIZE
-      for (size_t i = 0 ; i < (sizeof(r_.f32) / sizeof(r_.f32[0])) ; i++) {
-        r_.f32[i] = -a_.f32[i];
-      }
-    #endif
+#if defined(SIMDE_VECTOR_NEGATE)
+  r_.f32 = -a_.f32;
+#else
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.f32) / sizeof(r_.f32[0])); i++) {
+    r_.f32[i] = -a_.f32[i];
+  }
+#endif
 
-    return simde__m512_from_private(r_);
-  #endif
+  return simde__m512_from_private(r_);
+#endif
 }
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512d
-simde_x_mm512_negate_pd(simde__m512d a) {
-  #if defined(SIMDE_X86_AVX512DQ_NATIVE)
-    return simde_mm512_xor_pd(a, _mm512_set1_pd(SIMDE_FLOAT64_C(-0.0)));
-  #else
-    simde__m512d_private
-      r_,
-      a_ = simde__m512d_to_private(a);
+simde__m512d simde_x_mm512_negate_pd(simde__m512d a) {
+#if defined(SIMDE_X86_AVX512DQ_NATIVE)
+  return simde_mm512_xor_pd(a, _mm512_set1_pd(SIMDE_FLOAT64_C(-0.0)));
+#else
+  simde__m512d_private r_, a_ = simde__m512d_to_private(a);
 
-    #if defined(SIMDE_VECTOR_NEGATE)
-      r_.f64 = -a_.f64;
-    #else
-      SIMDE_VECTORIZE
-      for (size_t i = 0 ; i < (sizeof(r_.f64) / sizeof(r_.f64[0])) ; i++) {
-        r_.f64[i] = -a_.f64[i];
-      }
-    #endif
+#if defined(SIMDE_VECTOR_NEGATE)
+  r_.f64 = -a_.f64;
+#else
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.f64) / sizeof(r_.f64[0])); i++) {
+    r_.f64[i] = -a_.f64[i];
+  }
+#endif
 
-    return simde__m512d_from_private(r_);
-  #endif
+  return simde__m512d_from_private(r_);
+#endif
 }
 
 SIMDE_END_DECLS_

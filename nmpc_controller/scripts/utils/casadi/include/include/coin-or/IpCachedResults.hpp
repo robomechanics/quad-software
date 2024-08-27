@@ -7,25 +7,25 @@
 #ifndef __IPCACHEDRESULTS_HPP__
 #define __IPCACHEDRESULTS_HPP__
 
-#include "IpTaggedObject.hpp"
-#include "IpObserver.hpp"
 #include <algorithm>
-#include <vector>
 #include <list>
+#include <vector>
 
-namespace Ipopt
-{
+#include "IpObserver.hpp"
+#include "IpTaggedObject.hpp"
+
+namespace Ipopt {
 
 #if IPOPT_CHECKLEVEL > 2
-# define IP_DEBUG_CACHE
+#define IP_DEBUG_CACHE
 #endif
 #ifdef IP_DEBUG_CACHE
-# include "IpDebug.hpp"
+#include "IpDebug.hpp"
 #endif
 
 // Forward Declarations
 
-template<class T>
+template <class T>
 class DependentResult;
 
 //  AW: I'm taking this out, since this is by far the most used
@@ -64,232 +64,177 @@ class DependentResult;
  *  retrieves notification whenever a TaggedObject dependency has
  *  changed.  Stale results are later removed from the cache.
  */
-template<class T>
-class CachedResults
-{
-public:
+template <class T>
+class CachedResults {
+ public:
 #ifdef IP_DEBUG_CACHE
-   /** (Only if compiled in DEBUG mode): debug verbosity level */
-   static const Index dbg_verbosity;
+  /** (Only if compiled in DEBUG mode): debug verbosity level */
+  static const Index dbg_verbosity;
 #endif
 
-   /** @name Constructors and Destructors. */
-   ///@{
-   /** Constructor */
-   CachedResults(
-      int max_cache_size /**< maximal number of results that should be cached, negative for infinity */
-   );
+  /** @name Constructors and Destructors. */
+  ///@{
+  /** Constructor */
+  CachedResults(int max_cache_size /**< maximal number of results that should be
+                                      cached, negative for infinity */
+  );
 
-   /** Destructor */
-   virtual ~CachedResults();
-   ///@}
+  /** Destructor */
+  virtual ~CachedResults();
+  ///@}
 
-   /** @name Generic methods for adding and retrieving cached results. */
-   ///@{
-   /** Generic method for adding a result to the cache, given a
-    *  std::vector of TaggesObjects and a std::vector of Numbers.
-    */
-   void AddCachedResult(
-      const T&                                result,
-      const std::vector<const TaggedObject*>& dependents,
-      const std::vector<Number>&              scalar_dependents
-   );
+  /** @name Generic methods for adding and retrieving cached results. */
+  ///@{
+  /** Generic method for adding a result to the cache, given a
+   *  std::vector of TaggesObjects and a std::vector of Numbers.
+   */
+  void AddCachedResult(const T& result,
+                       const std::vector<const TaggedObject*>& dependents,
+                       const std::vector<Number>& scalar_dependents);
 
-   /** Generic method for retrieving a cached results, given the
-    *  dependencies as a std::vector of TaggesObjects and a
-    *  std::vector of Numbers.
-    */
-   bool GetCachedResult(
-      T&                                      retResult,
-      const std::vector<const TaggedObject*>& dependents,
-      const std::vector<Number>&              scalar_dependents
-   ) const;
+  /** Generic method for retrieving a cached results, given the
+   *  dependencies as a std::vector of TaggesObjects and a
+   *  std::vector of Numbers.
+   */
+  bool GetCachedResult(T& retResult,
+                       const std::vector<const TaggedObject*>& dependents,
+                       const std::vector<Number>& scalar_dependents) const;
 
-   /** Method for adding a result, providing only a std::vector of TaggedObjects. */
-   void AddCachedResult(
-      const T&                                result,
-      const std::vector<const TaggedObject*>& dependents
-   );
+  /** Method for adding a result, providing only a std::vector of TaggedObjects.
+   */
+  void AddCachedResult(const T& result,
+                       const std::vector<const TaggedObject*>& dependents);
 
-   /** Method for retrieving a cached result, providing only a std::vector of TaggedObjects. */
-   bool GetCachedResult(
-      T&                                      retResult,
-      const std::vector<const TaggedObject*>& dependents
-   ) const;
-   ///@}
+  /** Method for retrieving a cached result, providing only a std::vector of
+   * TaggedObjects. */
+  bool GetCachedResult(
+      T& retResult, const std::vector<const TaggedObject*>& dependents) const;
+  ///@}
 
-   /** @name Pointer-based methods for adding and retrieving cached
-    *  results, providing dependencies explicitly.
-    */
-   ///@{
-   /** Method for adding a result to the cache, proving one
-    *  dependency as a TaggedObject explicitly.
-    */
-   void AddCachedResult1Dep(
-      const T&            result,
-      const TaggedObject* dependent1
-   );
+  /** @name Pointer-based methods for adding and retrieving cached
+   *  results, providing dependencies explicitly.
+   */
+  ///@{
+  /** Method for adding a result to the cache, proving one
+   *  dependency as a TaggedObject explicitly.
+   */
+  void AddCachedResult1Dep(const T& result, const TaggedObject* dependent1);
 
-   /** Method for retrieving a cached result, proving one dependency
-    *  as a TaggedObject explicitly.
-    */
-   bool GetCachedResult1Dep(
-      T&                  retResult,
-      const TaggedObject* dependent1
-   );
+  /** Method for retrieving a cached result, proving one dependency
+   *  as a TaggedObject explicitly.
+   */
+  bool GetCachedResult1Dep(T& retResult, const TaggedObject* dependent1);
 
-   /** Method for adding a result to the cache, proving two
-    *  dependencies as a TaggedObject explicitly.
-    */
-   void AddCachedResult2Dep(
-      const T&            result,
-      const TaggedObject* dependent1,
-      const TaggedObject* dependent2
-   );
+  /** Method for adding a result to the cache, proving two
+   *  dependencies as a TaggedObject explicitly.
+   */
+  void AddCachedResult2Dep(const T& result, const TaggedObject* dependent1,
+                           const TaggedObject* dependent2);
 
-   /** Method for retrieving a cached result, proving two
-    *  dependencies as a TaggedObject explicitly.
-    */
-   bool GetCachedResult2Dep(
-      T&                  retResult,
-      const TaggedObject* dependent1,
-      const TaggedObject* dependent2
-   );
+  /** Method for retrieving a cached result, proving two
+   *  dependencies as a TaggedObject explicitly.
+   */
+  bool GetCachedResult2Dep(T& retResult, const TaggedObject* dependent1,
+                           const TaggedObject* dependent2);
 
-   /** Method for adding a result to the cache, proving three
-    *  dependencies as a TaggedObject explicitly.
-    */
-   void AddCachedResult3Dep(
-      const T&            result,
-      const TaggedObject* dependent1,
-      const TaggedObject* dependent2,
-      const TaggedObject* dependent3
-   );
+  /** Method for adding a result to the cache, proving three
+   *  dependencies as a TaggedObject explicitly.
+   */
+  void AddCachedResult3Dep(const T& result, const TaggedObject* dependent1,
+                           const TaggedObject* dependent2,
+                           const TaggedObject* dependent3);
 
-   /** Method for retrieving a cached result, proving three
-    *  dependencies as a TaggedObject explicitly.
-    */
-   bool GetCachedResult3Dep(
-      T&                  retResult,
-      const TaggedObject* dependent1,
-      const TaggedObject* dependent2,
-      const TaggedObject* dependent3
-   );
+  /** Method for retrieving a cached result, proving three
+   *  dependencies as a TaggedObject explicitly.
+   */
+  bool GetCachedResult3Dep(T& retResult, const TaggedObject* dependent1,
+                           const TaggedObject* dependent2,
+                           const TaggedObject* dependent3);
 
-   /** @name Pointer-free version of the Add and Get methods */
-   ///@{
-   bool GetCachedResult1Dep(
-      T&                  retResult,
-      const TaggedObject& dependent1
-   )
-   {
-      return GetCachedResult1Dep(retResult, &dependent1);
-   }
+  /** @name Pointer-free version of the Add and Get methods */
+  ///@{
+  bool GetCachedResult1Dep(T& retResult, const TaggedObject& dependent1) {
+    return GetCachedResult1Dep(retResult, &dependent1);
+  }
 
-   bool GetCachedResult2Dep(
-      T&                  retResult,
-      const TaggedObject& dependent1,
-      const TaggedObject& dependent2
-   )
-   {
-      return GetCachedResult2Dep(retResult, &dependent1, &dependent2);
-   }
+  bool GetCachedResult2Dep(T& retResult, const TaggedObject& dependent1,
+                           const TaggedObject& dependent2) {
+    return GetCachedResult2Dep(retResult, &dependent1, &dependent2);
+  }
 
-   bool GetCachedResult3Dep(
-      T&                  retResult,
-      const TaggedObject& dependent1,
-      const TaggedObject& dependent2,
-      const TaggedObject& dependent3)
-   {
-      return GetCachedResult3Dep(retResult, &dependent1, &dependent2, &dependent3);
-   }
+  bool GetCachedResult3Dep(T& retResult, const TaggedObject& dependent1,
+                           const TaggedObject& dependent2,
+                           const TaggedObject& dependent3) {
+    return GetCachedResult3Dep(retResult, &dependent1, &dependent2,
+                               &dependent3);
+  }
 
-   void AddCachedResult1Dep(
-      const T&            result,
-      const TaggedObject& dependent1
-   )
-   {
-      AddCachedResult1Dep(result, &dependent1);
-   }
+  void AddCachedResult1Dep(const T& result, const TaggedObject& dependent1) {
+    AddCachedResult1Dep(result, &dependent1);
+  }
 
-   void AddCachedResult2Dep(
-      const T&            result,
-      const TaggedObject& dependent1,
-      const TaggedObject& dependent2
-   )
-   {
-      AddCachedResult2Dep(result, &dependent1, &dependent2);
-   }
+  void AddCachedResult2Dep(const T& result, const TaggedObject& dependent1,
+                           const TaggedObject& dependent2) {
+    AddCachedResult2Dep(result, &dependent1, &dependent2);
+  }
 
-   void AddCachedResult3Dep(
-      const T&            result,
-      const TaggedObject& dependent1,
-      const TaggedObject& dependent2,
-      const TaggedObject& dependent3
-   )
-   {
-      AddCachedResult3Dep(result, &dependent1, &dependent2, &dependent3);
-   }
-   ///@}
+  void AddCachedResult3Dep(const T& result, const TaggedObject& dependent1,
+                           const TaggedObject& dependent2,
+                           const TaggedObject& dependent3) {
+    AddCachedResult3Dep(result, &dependent1, &dependent2, &dependent3);
+  }
+  ///@}
 
-   /** Invalidates the result for given dependencies.
-    *
-    *  Sets the stale flag for the corresponding cached result to
-    *  true if it is found.
-    *  @return true, if the result was found
-    */
-   bool InvalidateResult(
-      const std::vector<const TaggedObject*>& dependents,
-      const std::vector<Number>&              scalar_dependents
-   );
+  /** Invalidates the result for given dependencies.
+   *
+   *  Sets the stale flag for the corresponding cached result to
+   *  true if it is found.
+   *  @return true, if the result was found
+   */
+  bool InvalidateResult(const std::vector<const TaggedObject*>& dependents,
+                        const std::vector<Number>& scalar_dependents);
 
-   /** Invalidates all cached results */
-   void Clear();
+  /** Invalidates all cached results */
+  void Clear();
 
-   /** Invalidate all cached results and changes max_cache_size */
-   void Clear(
-      int max_cache_size
-   );
+  /** Invalidate all cached results and changes max_cache_size */
+  void Clear(int max_cache_size);
 
-private:
-   /**@name Default Compiler Generated Methods
-    * (Hidden to avoid implicit creation/calling).
-    *
-    * These methods are not implemented and
-    * we do not want the compiler to implement
-    * them for us, so we declare them private
-    * and do not define them. This ensures that
-    * they will not be implicitly created/called.
-    */
-   ///@{
-   /** Default Constructor */
-   CachedResults();
+ private:
+  /**@name Default Compiler Generated Methods
+   * (Hidden to avoid implicit creation/calling).
+   *
+   * These methods are not implemented and
+   * we do not want the compiler to implement
+   * them for us, so we declare them private
+   * and do not define them. This ensures that
+   * they will not be implicitly created/called.
+   */
+  ///@{
+  /** Default Constructor */
+  CachedResults();
 
-   /** Copy Constructor */
-   CachedResults(
-      const CachedResults&
-   );
+  /** Copy Constructor */
+  CachedResults(const CachedResults&);
 
-   /** Default Assignment Operator */
-   void operator=(
-      const CachedResults&
-   );
-   ///@}
+  /** Default Assignment Operator */
+  void operator=(const CachedResults&);
+  ///@}
 
-   /** maximum number of cached results */
-   int max_cache_size_;
+  /** maximum number of cached results */
+  int max_cache_size_;
 
-   /** list of currently cached results. */
-   mutable std::list<DependentResult<T>*>* cached_results_;
+  /** list of currently cached results. */
+  mutable std::list<DependentResult<T>*>* cached_results_;
 
-   /** internal method for removing stale DependentResults from the list
-    *
-    *  It is called at the beginning of every GetDependentResult method.
-    */
-   void CleanupInvalidatedResults() const;
+  /** internal method for removing stale DependentResults from the list
+   *
+   *  It is called at the beginning of every GetDependentResult method.
+   */
+  void CleanupInvalidatedResults() const;
 
-   /** Print list of currently cached results */
-   void DebugPrintCachedResults() const;
+  /** Print list of currently cached results */
+  void DebugPrintCachedResults() const;
 };
 
 /** Templated class which stores one entry for the CachedResult
@@ -297,105 +242,92 @@ private:
  *  dependencies (vector of TaggedObjects and vector of Numbers).
  *  It also stores a priority.
  */
-template<class T>
-class DependentResult: public Observer
-{
-public:
-
+template <class T>
+class DependentResult : public Observer {
+ public:
 #ifdef IP_DEBUG_CACHE
-   static const Index dbg_verbosity;
+  static const Index dbg_verbosity;
 #endif
 
-   /** @name Constructor, Destructors */
-   ///@{
-   /** Constructor, given all information about the result. */
-   DependentResult(
-      const T&                                result,
-      const std::vector<const TaggedObject*>& dependents,
-      const std::vector<Number>&              scalar_dependents
-   );
+  /** @name Constructor, Destructors */
+  ///@{
+  /** Constructor, given all information about the result. */
+  DependentResult(const T& result,
+                  const std::vector<const TaggedObject*>& dependents,
+                  const std::vector<Number>& scalar_dependents);
 
-   /** Destructor. */
-   ~DependentResult();
-   ///@}
+  /** Destructor. */
+  ~DependentResult();
+  ///@}
 
-   /** @name Accessor method. */
-   ///@{
-   /** Indicates, whether the DependentResult is no longer valid. */
-   bool IsStale() const;
+  /** @name Accessor method. */
+  ///@{
+  /** Indicates, whether the DependentResult is no longer valid. */
+  bool IsStale() const;
 
-   /** Invalidates the cached result. */
-   void Invalidate();
+  /** Invalidates the cached result. */
+  void Invalidate();
 
-   /** Returns the cached result. */
-   const T& GetResult() const;
-   ///@}
+  /** Returns the cached result. */
+  const T& GetResult() const;
+  ///@}
 
-   /** This method returns true if the dependencies provided to this
-    *  function are identical to the ones stored with the
-    *  DependentResult.
-    */
-   bool DependentsIdentical(
-      const std::vector<const TaggedObject*>& dependents,
-      const std::vector<Number>&              scalar_dependents
-   ) const;
+  /** This method returns true if the dependencies provided to this
+   *  function are identical to the ones stored with the
+   *  DependentResult.
+   */
+  bool DependentsIdentical(const std::vector<const TaggedObject*>& dependents,
+                           const std::vector<Number>& scalar_dependents) const;
 
-   /** Print information about this DependentResults. */
-   void DebugPrint() const;
+  /** Print information about this DependentResults. */
+  void DebugPrint() const;
 
-protected:
-   /** Notification Receiver Method.
-    *
-    *  This method is overloading the pure virtual method from the
-    *  Observer base class.  This method is called when a Subject
-    *  registered for this Observer sends a notification.  In this
-    *  particular case, if this method is called with
-    *  notify_type==NT_Changed or NT_BeingDeleted, then this results
-    *  is marked as stale.
-    */
-   virtual void ReceiveNotification(
-      NotifyType     notify_type,
-      const Subject* subject
-   );
+ protected:
+  /** Notification Receiver Method.
+   *
+   *  This method is overloading the pure virtual method from the
+   *  Observer base class.  This method is called when a Subject
+   *  registered for this Observer sends a notification.  In this
+   *  particular case, if this method is called with
+   *  notify_type==NT_Changed or NT_BeingDeleted, then this results
+   *  is marked as stale.
+   */
+  virtual void ReceiveNotification(NotifyType notify_type,
+                                   const Subject* subject);
 
-private:
+ private:
+  /**@name Default Compiler Generated Methods
+   * (Hidden to avoid implicit creation/calling).
+   *
+   * These methods are not implemented and
+   * we do not want the compiler to implement
+   * them for us, so we declare them private
+   * and do not define them. This ensures that
+   * they will not be implicitly created/called.
+   */
+  ///@{
+  /** Default Constructor */
+  DependentResult();
 
-   /**@name Default Compiler Generated Methods
-    * (Hidden to avoid implicit creation/calling).
-    *
-    * These methods are not implemented and
-    * we do not want the compiler to implement
-    * them for us, so we declare them private
-    * and do not define them. This ensures that
-    * they will not be implicitly created/called.
-    */
-   ///@{
-   /** Default Constructor */
-   DependentResult();
+  /** Copy Constructor */
+  DependentResult(const DependentResult&);
 
-   /** Copy Constructor */
-   DependentResult(
-      const DependentResult&
-   );
+  /** Default Assignment Operator */
+  void operator=(const DependentResult&);
+  ///@}
 
-   /** Default Assignment Operator */
-   void operator=(
-      const DependentResult&
-   );
-   ///@}
-
-   /** Flag indicating, if the cached result is still valid.
-    *
-    *  A result becomes invalid, if the ReceiveNotification method is
-    *  called with NT_Changed.
-    */
-   bool stale_;
-   /** The value of the dependent results */
-   const T result_;
-   /** Dependencies in form of TaggedObjects */
-   std::vector<TaggedObject::Tag> dependent_tags_;
-   /** Dependencies in form a Numbers */
-   std::vector<Number> scalar_dependents_;
+  /** Flag indicating, if the cached result is still valid.
+   *
+   *  A result becomes invalid, if the ReceiveNotification method is
+   *  called with NT_Changed.
+   */
+  bool stale_;
+  /** The value of the dependent results */
+  const T result_;
+  /** Dependencies in form of TaggedObjects */
+  std::vector<TaggedObject::Tag> dependent_tags_;
+  /** Dependencies in form a Numbers */
+  std::vector<Number> scalar_dependents_;
 };
 
 #ifdef IP_DEBUG_CACHE
@@ -406,492 +338,413 @@ template <class T>
 const Index DependentResult<T>::dbg_verbosity = 0;
 #endif
 
-template<class T>
+template <class T>
 DependentResult<T>::DependentResult(
-   const T&                                result,
-   const std::vector<const TaggedObject*>& dependents,
-   const std::vector<Number>&              scalar_dependents
-)
-   : stale_(false),
-     result_(result),
-     dependent_tags_(dependents.size()),
-     scalar_dependents_(scalar_dependents)
-{
+    const T& result, const std::vector<const TaggedObject*>& dependents,
+    const std::vector<Number>& scalar_dependents)
+    : stale_(false),
+      result_(result),
+      dependent_tags_(dependents.size()),
+      scalar_dependents_(scalar_dependents) {
 #ifdef IP_DEBUG_CACHE
-   DBG_START_METH("DependentResult<T>::DependentResult()", dbg_verbosity);
+  DBG_START_METH("DependentResult<T>::DependentResult()", dbg_verbosity);
 #endif
 
-   for( Index i = 0; i < (Index) dependents.size(); ++i )
-   {
-      if( dependents[i] )
-      {
-         // Call the RequestAttach method of the Observer base class.
-         // This will add this dependent result in the Observer list
-         // for the Subject dependents[i].  As a consequence, the
-         // ReceiveNotification method of this DependentResult will be
-         // called with notify_type=NT_Changed, whenever the
-         // TaggedResult dependents[i] is changed (i.e. its HasChanged
-         // method is called).
-         RequestAttach(NT_Changed, dependents[i]);
-         dependent_tags_[i] = dependents[i]->GetTag();
-      }
-      else
-      {
-         dependent_tags_[i] = 0;
-      }
-   }
-}
-
-template<class T>
-DependentResult<T>::~DependentResult()
-{
-#ifdef IP_DEBUG_CACHE
-   DBG_START_METH("DependentResult<T>::~DependentResult()", dbg_verbosity);
-   //DBG_ASSERT(stale_ == true);
-#endif
-   // Nothing to be done here, destructor
-   // of T should sufficiently remove
-   // any memory, etc.
-}
-
-template<class T>
-bool DependentResult<T>::IsStale() const
-{
-   return stale_;
-}
-
-template<class T>
-void DependentResult<T>::Invalidate()
-{
-   stale_ = true;
-}
-
-template<class T>
-void DependentResult<T>::ReceiveNotification(
-   NotifyType notify_type,
-   const Subject* /*subject*/
-)
-{
-#ifdef IP_DEBUG_CACHE
-   DBG_START_METH("DependentResult<T>::ReceiveNotification", dbg_verbosity);
-#endif
-
-   if( notify_type == NT_Changed || notify_type == NT_BeingDestroyed )
-   {
-      stale_ = true;
-      // technically, I could unregister the notifications here, but they
-      // aren't really hurting anything
-   }
-}
-
-template<class T>
-bool DependentResult<T>::DependentsIdentical(
-   const std::vector<const TaggedObject*>& dependents,
-   const std::vector<Number>&              scalar_dependents
-) const
-{
-#ifdef IP_DEBUG_CACHE
-   DBG_START_METH("DependentResult<T>::DependentsIdentical", dbg_verbosity);
-   DBG_ASSERT(stale_ == false);
-   DBG_ASSERT(dependents.size() == dependent_tags_.size());
-#endif
-
-   bool retVal = true;
-
-   if( dependents.size() != dependent_tags_.size() || scalar_dependents.size() != scalar_dependents_.size() )
-   {
-      retVal = false;
-   }
-   else
-   {
-      for( Index i = 0; i < (Index) dependents.size(); i++ )
-      {
-         if( ( dependents[i] && dependents[i]->GetTag() != dependent_tags_[i])
-             || (!dependents[i] && dependent_tags_[i] != 0) )
-         {
-            retVal = false;
-            break;
-         }
-      }
-      if( retVal )
-         for( Index i = 0; i < (Index) scalar_dependents.size(); i++ )
-            if( scalar_dependents[i] != scalar_dependents_[i] )
-            {
-               retVal = false;
-               break;
-            }
-   }
-
-   return retVal;
-}
-
-template<class T>
-const T& DependentResult<T>::GetResult() const
-{
-#ifdef IP_DEBUG_CACHE
-   DBG_START_METH("DependentResult<T>::GetResult()", dbg_verbosity);
-   DBG_ASSERT(stale_ == false);
-#endif
-
-   return result_;
-}
-
-template<class T>
-void DependentResult<T>::DebugPrint() const
-{
-#ifdef IP_DEBUG_CACHE
-   DBG_START_METH("DependentResult<T>::DebugPrint", dbg_verbosity);
-#endif
-
-}
-
-template<class T>
-CachedResults<T>::CachedResults(
-   int max_cache_size
-)
-   : max_cache_size_(max_cache_size),
-     cached_results_(NULL)
-{
-#ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::CachedResults", dbg_verbosity);
-#endif
-
-}
-
-template<class T>
-CachedResults<T>::~CachedResults()
-{
-#ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::!CachedResults()", dbg_verbosity);
-#endif
-
-   if( cached_results_ )
-   {
-      for( typename std::list<DependentResult<T>*>::iterator iter = cached_results_->begin(); iter != cached_results_->end(); ++iter )
-      {
-         delete *iter;
-      }
-
-      delete cached_results_;
-   }
-   /*
-    while (!cached_results_.empty()) {
-    DependentResult<T>* result = cached_results_.back();
-    cached_results_.pop_back();
-    delete result;
+  for (Index i = 0; i < (Index)dependents.size(); ++i) {
+    if (dependents[i]) {
+      // Call the RequestAttach method of the Observer base class.
+      // This will add this dependent result in the Observer list
+      // for the Subject dependents[i].  As a consequence, the
+      // ReceiveNotification method of this DependentResult will be
+      // called with notify_type=NT_Changed, whenever the
+      // TaggedResult dependents[i] is changed (i.e. its HasChanged
+      // method is called).
+      RequestAttach(NT_Changed, dependents[i]);
+      dependent_tags_[i] = dependents[i]->GetTag();
+    } else {
+      dependent_tags_[i] = 0;
     }
-    */
+  }
 }
 
-template<class T>
-void CachedResults<T>::AddCachedResult(
-   const T&                                result,
-   const std::vector<const TaggedObject*>& dependents,
-   const std::vector<Number>&              scalar_dependents
-)
-{
+template <class T>
+DependentResult<T>::~DependentResult() {
 #ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::AddCachedResult", dbg_verbosity);
+  DBG_START_METH("DependentResult<T>::~DependentResult()", dbg_verbosity);
+  // DBG_ASSERT(stale_ == true);
+#endif
+  // Nothing to be done here, destructor
+  // of T should sufficiently remove
+  // any memory, etc.
+}
+
+template <class T>
+bool DependentResult<T>::IsStale() const {
+  return stale_;
+}
+
+template <class T>
+void DependentResult<T>::Invalidate() {
+  stale_ = true;
+}
+
+template <class T>
+void DependentResult<T>::ReceiveNotification(NotifyType notify_type,
+                                             const Subject* /*subject*/
+) {
+#ifdef IP_DEBUG_CACHE
+  DBG_START_METH("DependentResult<T>::ReceiveNotification", dbg_verbosity);
 #endif
 
-   CleanupInvalidatedResults();
+  if (notify_type == NT_Changed || notify_type == NT_BeingDestroyed) {
+    stale_ = true;
+    // technically, I could unregister the notifications here, but they
+    // aren't really hurting anything
+  }
+}
 
-   // insert the new one here
-   DependentResult<T>* newResult = new DependentResult<T>(result, dependents, scalar_dependents);
-   if( !cached_results_ )
-   {
-      cached_results_ = new std::list<DependentResult<T>*>;
-   }
+template <class T>
+bool DependentResult<T>::DependentsIdentical(
+    const std::vector<const TaggedObject*>& dependents,
+    const std::vector<Number>& scalar_dependents) const {
+#ifdef IP_DEBUG_CACHE
+  DBG_START_METH("DependentResult<T>::DependentsIdentical", dbg_verbosity);
+  DBG_ASSERT(stale_ == false);
+  DBG_ASSERT(dependents.size() == dependent_tags_.size());
+#endif
 
-   cached_results_->push_front(newResult);
+  bool retVal = true;
 
-   // keep the list small enough
-   if( max_cache_size_ >= 0 )
-   {
-      // if negative, allow infinite cache
-      // non-negative - limit size of list to max_cache_size
-      DBG_ASSERT(cached_results_->size() <= (size_t)max_cache_size_ + 1);
-      if( cached_results_->size() > (size_t)max_cache_size_ )
-      {
-         delete cached_results_->back();
-         cached_results_->pop_back();
+  if (dependents.size() != dependent_tags_.size() ||
+      scalar_dependents.size() != scalar_dependents_.size()) {
+    retVal = false;
+  } else {
+    for (Index i = 0; i < (Index)dependents.size(); i++) {
+      if ((dependents[i] && dependents[i]->GetTag() != dependent_tags_[i]) ||
+          (!dependents[i] && dependent_tags_[i] != 0)) {
+        retVal = false;
+        break;
       }
-   }
+    }
+    if (retVal)
+      for (Index i = 0; i < (Index)scalar_dependents.size(); i++)
+        if (scalar_dependents[i] != scalar_dependents_[i]) {
+          retVal = false;
+          break;
+        }
+  }
 
-#ifdef IP_DEBUG_CACHE
-   DBG_EXEC(2, DebugPrintCachedResults());
-#endif
-
+  return retVal;
 }
 
-template<class T>
+template <class T>
+const T& DependentResult<T>::GetResult() const {
+#ifdef IP_DEBUG_CACHE
+  DBG_START_METH("DependentResult<T>::GetResult()", dbg_verbosity);
+  DBG_ASSERT(stale_ == false);
+#endif
+
+  return result_;
+}
+
+template <class T>
+void DependentResult<T>::DebugPrint() const {
+#ifdef IP_DEBUG_CACHE
+  DBG_START_METH("DependentResult<T>::DebugPrint", dbg_verbosity);
+#endif
+}
+
+template <class T>
+CachedResults<T>::CachedResults(int max_cache_size)
+    : max_cache_size_(max_cache_size), cached_results_(NULL) {
+#ifdef IP_DEBUG_CACHE
+  DBG_START_METH("CachedResults<T>::CachedResults", dbg_verbosity);
+#endif
+}
+
+template <class T>
+CachedResults<T>::~CachedResults() {
+#ifdef IP_DEBUG_CACHE
+  DBG_START_METH("CachedResults<T>::!CachedResults()", dbg_verbosity);
+#endif
+
+  if (cached_results_) {
+    for (typename std::list<DependentResult<T>*>::iterator iter =
+             cached_results_->begin();
+         iter != cached_results_->end(); ++iter) {
+      delete *iter;
+    }
+
+    delete cached_results_;
+  }
+  /*
+   while (!cached_results_.empty()) {
+   DependentResult<T>* result = cached_results_.back();
+   cached_results_.pop_back();
+   delete result;
+   }
+   */
+}
+
+template <class T>
 void CachedResults<T>::AddCachedResult(
-   const T&                                result,
-   const std::vector<const TaggedObject*>& dependents
-)
-{
-   std::vector<Number> scalar_dependents;
-   AddCachedResult(result, dependents, scalar_dependents);
+    const T& result, const std::vector<const TaggedObject*>& dependents,
+    const std::vector<Number>& scalar_dependents) {
+#ifdef IP_DEBUG_CACHE
+  DBG_START_METH("CachedResults<T>::AddCachedResult", dbg_verbosity);
+#endif
+
+  CleanupInvalidatedResults();
+
+  // insert the new one here
+  DependentResult<T>* newResult =
+      new DependentResult<T>(result, dependents, scalar_dependents);
+  if (!cached_results_) {
+    cached_results_ = new std::list<DependentResult<T>*>;
+  }
+
+  cached_results_->push_front(newResult);
+
+  // keep the list small enough
+  if (max_cache_size_ >= 0) {
+    // if negative, allow infinite cache
+    // non-negative - limit size of list to max_cache_size
+    DBG_ASSERT(cached_results_->size() <= (size_t)max_cache_size_ + 1);
+    if (cached_results_->size() > (size_t)max_cache_size_) {
+      delete cached_results_->back();
+      cached_results_->pop_back();
+    }
+  }
+
+#ifdef IP_DEBUG_CACHE
+  DBG_EXEC(2, DebugPrintCachedResults());
+#endif
 }
 
-template<class T>
+template <class T>
+void CachedResults<T>::AddCachedResult(
+    const T& result, const std::vector<const TaggedObject*>& dependents) {
+  std::vector<Number> scalar_dependents;
+  AddCachedResult(result, dependents, scalar_dependents);
+}
+
+template <class T>
 bool CachedResults<T>::GetCachedResult(
-   T&                                      retResult,
-   const std::vector<const TaggedObject*>& dependents,
-   const std::vector<Number>&              scalar_dependents
-) const
-{
+    T& retResult, const std::vector<const TaggedObject*>& dependents,
+    const std::vector<Number>& scalar_dependents) const {
 #ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::GetCachedResult", dbg_verbosity);
+  DBG_START_METH("CachedResults<T>::GetCachedResult", dbg_verbosity);
 #endif
 
-   if( !cached_results_ )
-   {
-      return false;
-   }
+  if (!cached_results_) {
+    return false;
+  }
 
-   CleanupInvalidatedResults();
+  CleanupInvalidatedResults();
 
-   bool retValue = false;
-   for( typename std::list<DependentResult<T>*>::const_iterator iter = cached_results_->begin(); iter != cached_results_->end(); ++iter )
-      if( (*iter)->DependentsIdentical(dependents, scalar_dependents) )
-      {
-         retResult = (*iter)->GetResult();
-         retValue = true;
-         break;
-      }
+  bool retValue = false;
+  for (typename std::list<DependentResult<T>*>::const_iterator iter =
+           cached_results_->begin();
+       iter != cached_results_->end(); ++iter)
+    if ((*iter)->DependentsIdentical(dependents, scalar_dependents)) {
+      retResult = (*iter)->GetResult();
+      retValue = true;
+      break;
+    }
 
 #ifdef IP_DEBUG_CACHE
-   DBG_EXEC(2, DebugPrintCachedResults());
+  DBG_EXEC(2, DebugPrintCachedResults());
 #endif
 
-   return retValue;
+  return retValue;
 }
 
-template<class T>
+template <class T>
 bool CachedResults<T>::GetCachedResult(
-   T&                                      retResult,
-   const std::vector<const TaggedObject*>& dependents
-) const
-{
-   std::vector<Number> scalar_dependents;
-   return GetCachedResult(retResult, dependents, scalar_dependents);
+    T& retResult, const std::vector<const TaggedObject*>& dependents) const {
+  std::vector<Number> scalar_dependents;
+  return GetCachedResult(retResult, dependents, scalar_dependents);
 }
 
-template<class T>
-void CachedResults<T>::AddCachedResult1Dep(
-   const T&            result,
-   const TaggedObject* dependent1
-)
-{
+template <class T>
+void CachedResults<T>::AddCachedResult1Dep(const T& result,
+                                           const TaggedObject* dependent1) {
 #ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::AddCachedResult1Dep", dbg_verbosity);
+  DBG_START_METH("CachedResults<T>::AddCachedResult1Dep", dbg_verbosity);
 #endif
 
-   std::vector<const TaggedObject*> dependents(1);
-   dependents[0] = dependent1;
+  std::vector<const TaggedObject*> dependents(1);
+  dependents[0] = dependent1;
 
-   AddCachedResult(result, dependents);
+  AddCachedResult(result, dependents);
 }
 
-template<class T>
-bool CachedResults<T>::GetCachedResult1Dep(
-   T&                  retResult,
-   const TaggedObject* dependent1
-)
-{
+template <class T>
+bool CachedResults<T>::GetCachedResult1Dep(T& retResult,
+                                           const TaggedObject* dependent1) {
 #ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::GetCachedResult1Dep", dbg_verbosity);
+  DBG_START_METH("CachedResults<T>::GetCachedResult1Dep", dbg_verbosity);
 #endif
 
-   std::vector<const TaggedObject*> dependents(1);
-   dependents[0] = dependent1;
+  std::vector<const TaggedObject*> dependents(1);
+  dependents[0] = dependent1;
 
-   return GetCachedResult(retResult, dependents);
+  return GetCachedResult(retResult, dependents);
 }
 
-template<class T>
-void CachedResults<T>::AddCachedResult2Dep(
-   const T&            result,
-   const TaggedObject* dependent1,
-   const TaggedObject* dependent2
-)
+template <class T>
+void CachedResults<T>::AddCachedResult2Dep(const T& result,
+                                           const TaggedObject* dependent1,
+                                           const TaggedObject* dependent2)
 
 {
 #ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::AddCachedResult2dDep", dbg_verbosity);
+  DBG_START_METH("CachedResults<T>::AddCachedResult2dDep", dbg_verbosity);
 #endif
 
-   std::vector<const TaggedObject*> dependents(2);
-   dependents[0] = dependent1;
-   dependents[1] = dependent2;
+  std::vector<const TaggedObject*> dependents(2);
+  dependents[0] = dependent1;
+  dependents[1] = dependent2;
 
-   AddCachedResult(result, dependents);
+  AddCachedResult(result, dependents);
 }
 
-template<class T>
-bool CachedResults<T>::GetCachedResult2Dep(
-   T&                  retResult,
-   const TaggedObject* dependent1,
-   const TaggedObject* dependent2
-)
-{
+template <class T>
+bool CachedResults<T>::GetCachedResult2Dep(T& retResult,
+                                           const TaggedObject* dependent1,
+                                           const TaggedObject* dependent2) {
 #ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::GetCachedResult2Dep", dbg_verbosity);
+  DBG_START_METH("CachedResults<T>::GetCachedResult2Dep", dbg_verbosity);
 #endif
 
-   std::vector<const TaggedObject*> dependents(2);
-   dependents[0] = dependent1;
-   dependents[1] = dependent2;
+  std::vector<const TaggedObject*> dependents(2);
+  dependents[0] = dependent1;
+  dependents[1] = dependent2;
 
-   return GetCachedResult(retResult, dependents);
+  return GetCachedResult(retResult, dependents);
 }
 
-template<class T>
-void CachedResults<T>::AddCachedResult3Dep(
-   const T&            result,
-   const TaggedObject* dependent1,
-   const TaggedObject* dependent2,
-   const TaggedObject* dependent3
-)
-{
+template <class T>
+void CachedResults<T>::AddCachedResult3Dep(const T& result,
+                                           const TaggedObject* dependent1,
+                                           const TaggedObject* dependent2,
+                                           const TaggedObject* dependent3) {
 #ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::AddCachedResult2dDep", dbg_verbosity);
+  DBG_START_METH("CachedResults<T>::AddCachedResult2dDep", dbg_verbosity);
 #endif
 
-   std::vector<const TaggedObject*> dependents(3);
-   dependents[0] = dependent1;
-   dependents[1] = dependent2;
-   dependents[2] = dependent3;
+  std::vector<const TaggedObject*> dependents(3);
+  dependents[0] = dependent1;
+  dependents[1] = dependent2;
+  dependents[2] = dependent3;
 
-   AddCachedResult(result, dependents);
+  AddCachedResult(result, dependents);
 }
 
-template<class T>
-bool CachedResults<T>::GetCachedResult3Dep(
-   T&                  retResult,
-   const TaggedObject* dependent1,
-   const TaggedObject* dependent2,
-   const TaggedObject* dependent3
-)
-{
+template <class T>
+bool CachedResults<T>::GetCachedResult3Dep(T& retResult,
+                                           const TaggedObject* dependent1,
+                                           const TaggedObject* dependent2,
+                                           const TaggedObject* dependent3) {
 #ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::GetCachedResult2Dep", dbg_verbosity);
+  DBG_START_METH("CachedResults<T>::GetCachedResult2Dep", dbg_verbosity);
 #endif
 
-   std::vector<const TaggedObject*> dependents(3);
-   dependents[0] = dependent1;
-   dependents[1] = dependent2;
-   dependents[2] = dependent3;
+  std::vector<const TaggedObject*> dependents(3);
+  dependents[0] = dependent1;
+  dependents[1] = dependent2;
+  dependents[2] = dependent3;
 
-   return GetCachedResult(retResult, dependents);
+  return GetCachedResult(retResult, dependents);
 }
 
-template<class T>
+template <class T>
 bool CachedResults<T>::InvalidateResult(
-   const std::vector<const TaggedObject*>& dependents,
-   const std::vector<Number>&              scalar_dependents
-)
-{
-   if( !cached_results_ )
-   {
-      return false;
-   }
+    const std::vector<const TaggedObject*>& dependents,
+    const std::vector<Number>& scalar_dependents) {
+  if (!cached_results_) {
+    return false;
+  }
 
-   CleanupInvalidatedResults();
+  CleanupInvalidatedResults();
 
-   bool retValue = false;
-   for( typename std::list<DependentResult<T>*>::const_iterator iter = cached_results_->begin(); iter != cached_results_->end(); ++iter )
-      if( (*iter)->DependentsIdentical(dependents, scalar_dependents) )
-      {
-         (*iter)->Invalidate();
-         retValue = true;
-         break;
-      }
-
-   return retValue;
-}
-
-template<class T>
-void CachedResults<T>::Clear()
-{
-   if( !cached_results_ )
-   {
-      return;
-   }
-
-   for( typename std::list<DependentResult<T>*>::const_iterator iter = cached_results_->begin(); iter != cached_results_->end(); ++iter )
-   {
+  bool retValue = false;
+  for (typename std::list<DependentResult<T>*>::const_iterator iter =
+           cached_results_->begin();
+       iter != cached_results_->end(); ++iter)
+    if ((*iter)->DependentsIdentical(dependents, scalar_dependents)) {
       (*iter)->Invalidate();
-   }
+      retValue = true;
+      break;
+    }
 
-   CleanupInvalidatedResults();
+  return retValue;
 }
 
-template<class T>
-void CachedResults<T>::Clear(
-   int max_cache_size
-)
-{
-   Clear();
-   max_cache_size_ = max_cache_size;
+template <class T>
+void CachedResults<T>::Clear() {
+  if (!cached_results_) {
+    return;
+  }
+
+  for (typename std::list<DependentResult<T>*>::const_iterator iter =
+           cached_results_->begin();
+       iter != cached_results_->end(); ++iter) {
+    (*iter)->Invalidate();
+  }
+
+  CleanupInvalidatedResults();
 }
 
-template<class T>
-void CachedResults<T>::CleanupInvalidatedResults() const
-{
+template <class T>
+void CachedResults<T>::Clear(int max_cache_size) {
+  Clear();
+  max_cache_size_ = max_cache_size;
+}
+
+template <class T>
+void CachedResults<T>::CleanupInvalidatedResults() const {
 #ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::CleanupInvalidatedResults", dbg_verbosity);
+  DBG_START_METH("CachedResults<T>::CleanupInvalidatedResults", dbg_verbosity);
 #endif
 
-   if( !cached_results_ )
-   {
-      return;
-   }
+  if (!cached_results_) {
+    return;
+  }
 
-   typename std::list<DependentResult<T>*>::iterator iter;
-   iter = cached_results_->begin();
-   while( iter != cached_results_->end() )
-   {
-      if( (*iter)->IsStale() )
-      {
-         typename std::list<DependentResult<T>*>::iterator iter_to_remove = iter++;
-         DependentResult<T>* result_to_delete = (*iter_to_remove);
-         cached_results_->erase(iter_to_remove);
-         delete result_to_delete;
-      }
-      else
-      {
-         ++iter;
-      }
-   }
+  typename std::list<DependentResult<T>*>::iterator iter;
+  iter = cached_results_->begin();
+  while (iter != cached_results_->end()) {
+    if ((*iter)->IsStale()) {
+      typename std::list<DependentResult<T>*>::iterator iter_to_remove = iter++;
+      DependentResult<T>* result_to_delete = (*iter_to_remove);
+      cached_results_->erase(iter_to_remove);
+      delete result_to_delete;
+    } else {
+      ++iter;
+    }
+  }
 }
 
-template<class T>
-void CachedResults<T>::DebugPrintCachedResults() const
-{
+template <class T>
+void CachedResults<T>::DebugPrintCachedResults() const {
 #ifdef IP_DEBUG_CACHE
-   DBG_START_METH("CachedResults<T>::DebugPrintCachedResults", dbg_verbosity);
-   if (DBG_VERBOSITY() >= 2 )
-   {
-      if (!cached_results_)
-      {
-         DBG_PRINT((2, "Currentlt no cached results:\n"));
+  DBG_START_METH("CachedResults<T>::DebugPrintCachedResults", dbg_verbosity);
+  if (DBG_VERBOSITY() >= 2) {
+    if (!cached_results_) {
+      DBG_PRINT((2, "Currentlt no cached results:\n"));
+    } else {
+      typename std::list<DependentResult<T>*>::const_iterator iter;
+      DBG_PRINT((2, "Current set of cached results:\n"));
+      for (iter = cached_results_->begin(); iter != cached_results_->end();
+           ++iter) {
+        DBG_PRINT((2, "  DependentResult: %p\n", (void*)*iter));
       }
-      else
-      {
-         typename std::list< DependentResult<T>* >::const_iterator iter;
-         DBG_PRINT((2, "Current set of cached results:\n"));
-         for (iter = cached_results_->begin(); iter != cached_results_->end(); ++iter)
-         {
-            DBG_PRINT((2, "  DependentResult: %p\n", (void*)*iter));
-         }
-      }
-   }
+    }
+  }
 #endif
-
 }
 
-} // namespace Ipopt
+}  // namespace Ipopt
 
 #endif

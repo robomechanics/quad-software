@@ -1,49 +1,46 @@
 #ifndef UTIL_H
-# define UTIL_H
+#define UTIL_H
 
-# ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
-# endif // ifdef __cplusplus
+#endif  // ifdef __cplusplus
 
-# include "types.h"
-# include "constants.h"
+#include "constants.h"
+#include "types.h"
 
 /******************
-* Versioning     *
-******************/
+ * Versioning     *
+ ******************/
 
 /**
  * Return OSQP version
  * @return  OSQP version
  */
-const char* osqp_version(void);
-
+const char *osqp_version(void);
 
 /**********************
-* Utility Functions  *
-**********************/
+ * Utility Functions  *
+ **********************/
 
-# ifndef EMBEDDED
+#ifndef EMBEDDED
 
 /**
  * Copy settings creating a new settings structure (uses MALLOC)
  * @param  settings Settings to be copied
  * @return          New settings structure
  */
-OSQPSettings* copy_settings(const OSQPSettings *settings);
+OSQPSettings *copy_settings(const OSQPSettings *settings);
 
-# endif // #ifndef EMBEDDED
+#endif  // #ifndef EMBEDDED
 
 /**
  * Custom string copy to avoid string.h library
  * @param dest   destination string
  * @param source source string
  */
-void c_strcpy(char       dest[],
-              const char source[]);
+void c_strcpy(char dest[], const char source[]);
 
-
-# ifdef PRINTING
+#ifdef PRINTING
 
 /**
  * Print Header before running the algorithm
@@ -73,32 +70,29 @@ void print_polish(OSQPWorkspace *work);
  * @param info   info structure
  * @param polish is polish enabled?
  */
-void print_footer(OSQPInfo *info,
-                  c_int     polish);
+void print_footer(OSQPInfo *info, c_int polish);
 
-
-# endif // ifdef PRINTING
-
+#endif  // ifdef PRINTING
 
 /*********************************
-* Timer Structs and Functions * *
-*********************************/
+ * Timer Structs and Functions * *
+ *********************************/
 
 /*! \cond PRIVATE */
 
-# ifdef PROFILING
+#ifdef PROFILING
 
 // Windows
-#  ifdef IS_WINDOWS
+#ifdef IS_WINDOWS
 
-  // Some R packages clash with elements
-  // of the windows.h header, so use a
-  // slimmer version for conflict avoidance
-# ifdef R_LANG
+// Some R packages clash with elements
+// of the windows.h header, so use a
+// slimmer version for conflict avoidance
+#ifdef R_LANG
 #define NOGDI
-# endif
+#endif
 
-#   include <windows.h>
+#include <windows.h>
 
 struct OSQP_TIMER {
   LARGE_INTEGER tic;
@@ -107,31 +101,30 @@ struct OSQP_TIMER {
 };
 
 // Mac
-#  elif defined IS_MAC
+#elif defined IS_MAC
 
-#   include <mach/mach_time.h>
+#include <mach/mach_time.h>
 
 /* Use MAC OSX  mach_time for timing */
 struct OSQP_TIMER {
-  uint64_t                  tic;
-  uint64_t                  toc;
+  uint64_t tic;
+  uint64_t toc;
   mach_timebase_info_data_t tinfo;
 };
 
 // Linux
-#  else // ifdef IS_WINDOWS
+#else  // ifdef IS_WINDOWS
 
 /* Use POSIX clock_gettime() for timing on non-Windows machines */
-#   include <time.h>
-#   include <sys/time.h>
-
+#include <sys/time.h>
+#include <time.h>
 
 struct OSQP_TIMER {
   struct timespec tic;
   struct timespec toc;
 };
 
-#  endif // ifdef IS_WINDOWS
+#endif  // ifdef IS_WINDOWS
 
 /*! \endcond */
 
@@ -143,7 +136,7 @@ struct OSQP_TIMER {
  * Start timer
  * @param t Timer object
  */
-void    osqp_tic(OSQPTimer *t);
+void osqp_tic(OSQPTimer *t);
 
 /**
  * Report time
@@ -152,71 +145,52 @@ void    osqp_tic(OSQPTimer *t);
  */
 c_float osqp_toc(OSQPTimer *t);
 
-# endif /* END #ifdef PROFILING */
-
+#endif /* END #ifdef PROFILING */
 
 /* ================================= DEBUG FUNCTIONS ======================= */
 
 /*! \cond PRIVATE */
 
-
-# ifndef EMBEDDED
+#ifndef EMBEDDED
 
 /* Compare CSC matrices */
-c_int is_eq_csc(csc    *A,
-                csc    *B,
-                c_float tol);
+c_int is_eq_csc(csc *A, csc *B, c_float tol);
 
 /* Convert sparse CSC to dense */
-c_float* csc_to_dns(csc *M);
+c_float *csc_to_dns(csc *M);
 
-# endif // #ifndef EMBEDDED
+#endif  // #ifndef EMBEDDED
 
-
-# ifdef PRINTING
-#  include <stdio.h>
-
+#ifdef PRINTING
+#include <stdio.h>
 
 /* Print a csc sparse matrix */
-void print_csc_matrix(csc        *M,
-                      const char *name);
+void print_csc_matrix(csc *M, const char *name);
 
 /* Dump csc sparse matrix to file */
-void dump_csc_matrix(csc        *M,
-                     const char *file_name);
+void dump_csc_matrix(csc *M, const char *file_name);
 
 /* Print a triplet format sparse matrix */
-void print_trip_matrix(csc        *M,
-                       const char *name);
+void print_trip_matrix(csc *M, const char *name);
 
 /* Print a dense matrix */
-void print_dns_matrix(c_float    *M,
-                      c_int       m,
-                      c_int       n,
-                      const char *name);
+void print_dns_matrix(c_float *M, c_int m, c_int n, const char *name);
 
 /* Print vector  */
-void print_vec(c_float    *v,
-               c_int       n,
-               const char *name);
+void print_vec(c_float *v, c_int n, const char *name);
 
 /* Dump vector to file */
-void dump_vec(c_float    *v,
-              c_int       len,
-              const char *file_name);
+void dump_vec(c_float *v, c_int len, const char *file_name);
 
 // Print int array
-void print_vec_int(c_int      *x,
-                   c_int       n,
-                   const char *name);
+void print_vec_int(c_int *x, c_int n, const char *name);
 
-# endif // ifdef PRINTING
+#endif  // ifdef PRINTING
 
 /*! \endcond */
 
-
-# ifdef __cplusplus
+#ifdef __cplusplus
 }
-# endif // ifdef __cplusplus
+#endif  // ifdef __cplusplus
 
-#endif // ifndef UTIL_H
+#endif  // ifndef UTIL_H

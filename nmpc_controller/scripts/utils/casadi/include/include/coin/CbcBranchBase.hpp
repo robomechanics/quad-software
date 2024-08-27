@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+
 #include "OsiBranchingObject.hpp"
 
 enum CbcRangeCompare {
@@ -18,13 +19,13 @@ enum CbcRangeCompare {
   CbcRangeOverlap
 };
 
-#include "CbcObject.hpp"
-#include "CbcBranchingObject.hpp"
 #include "CbcBranchDecision.hpp"
+#include "CbcBranchingObject.hpp"
 #include "CbcConsequence.hpp"
+#include "CbcObject.hpp"
 #include "CbcObjectUpdateData.hpp"
 
-//##############################################################################
+// ##############################################################################
 
 /** Compare two ranges. The two bounds arrays are both of size two and
     describe closed intervals. Return the appropriate CbcRangeCompare value
@@ -32,13 +33,12 @@ enum CbcRangeCompare {
     overlap (and if \c replaceIfOverlap is true) replace the content of thisBd
     with the intersection of the ranges.
 */
-static inline CbcRangeCompare
-CbcCompareRanges(double *thisBd, const double *otherBd,
-  const bool replaceIfOverlap)
-{
+static inline CbcRangeCompare CbcCompareRanges(double *thisBd,
+                                               const double *otherBd,
+                                               const bool replaceIfOverlap) {
   const double lbDiff = thisBd[0] - otherBd[0];
-  if (lbDiff < 0) { // lb of this < lb of other
-    if (thisBd[1] >= otherBd[1]) { // ub of this >= ub of other
+  if (lbDiff < 0) {                 // lb of this < lb of other
+    if (thisBd[1] >= otherBd[1]) {  // ub of this >= ub of other
       return CbcRangeSuperset;
     } else if (thisBd[1] < otherBd[0]) {
       return CbcRangeDisjoint;
@@ -49,8 +49,8 @@ CbcCompareRanges(double *thisBd, const double *otherBd,
       }
       return CbcRangeOverlap;
     }
-  } else if (lbDiff > 0) { // lb of this > lb of other
-    if (thisBd[1] <= otherBd[1]) { // ub of this <= ub of other
+  } else if (lbDiff > 0) {          // lb of this > lb of other
+    if (thisBd[1] <= otherBd[1]) {  // ub of this <= ub of other
       return CbcRangeSubset;
     } else if (thisBd[0] > otherBd[1]) {
       return CbcRangeDisjoint;
@@ -61,19 +61,19 @@ CbcCompareRanges(double *thisBd, const double *otherBd,
       }
       return CbcRangeOverlap;
     }
-  } else { // lb of this == lb of other
+  } else {  // lb of this == lb of other
     if (thisBd[1] == otherBd[1]) {
       return CbcRangeSame;
     }
     return thisBd[1] < otherBd[1] ? CbcRangeSubset : CbcRangeSuperset;
   }
 
-  return CbcRangeSame; // fake return
+  return CbcRangeSame;  // fake return
 }
 
-//#############################################################################
+// #############################################################################
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -10,16 +10,15 @@
 /** Lotsize class */
 
 class CbcLotsize : public CbcObject {
-
-public:
+ public:
   // Default Constructor
   CbcLotsize();
 
   /* Useful constructor - passed model index.
        Also passed valid values - if range then pairs
     */
-  CbcLotsize(CbcModel *model, int iColumn,
-    int numberPoints, const double *points, bool range = false);
+  CbcLotsize(CbcModel *model, int iColumn, int numberPoints,
+             const double *points, bool range = false);
 
   // Copy constructor
   CbcLotsize(const CbcLotsize &);
@@ -35,7 +34,7 @@ public:
 
   /// Infeasibility - large is 0.5
   virtual double infeasibility(const OsiBranchingInformation *info,
-    int &preferredWay) const;
+                               int &preferredWay) const;
 
   using CbcObject::feasibleRegion;
   /** Set bounds to contain the current solution.
@@ -48,7 +47,8 @@ public:
   virtual void feasibleRegion();
 
   /// Creates a branching object
-  virtual CbcBranchingObject *createCbcBranch(OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
+  virtual CbcBranchingObject *createCbcBranch(
+      OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
 
   /** \brief Given a valid solution (with reduced costs, etc.),
         return a branching object which would give a new feasible
@@ -60,8 +60,8 @@ public:
       to bounds on the variable, the branching object will move in the other
       direction.  If no movement is possible, the method returns NULL.
 
-      Only the bounds on this variable are considered when determining if the new
-      point is feasible.
+      Only the bounds on this variable are considered when determining if the
+     new point is feasible.
     */
   virtual CbcBranchingObject *preferredNewFeasible() const;
 
@@ -87,20 +87,14 @@ public:
   bool findRange(double value) const;
 
   /** Returns floor and ceiling
-    */
-  virtual void floorCeiling(double &floorLotsize, double &ceilingLotsize, double value,
-    double tolerance) const;
+   */
+  virtual void floorCeiling(double &floorLotsize, double &ceilingLotsize,
+                            double value, double tolerance) const;
 
   /// Model column number
-  inline int modelSequence() const
-  {
-    return columnNumber_;
-  }
+  inline int modelSequence() const { return columnNumber_; }
   /// Set model column number
-  inline void setModelSequence(int value)
-  {
-    columnNumber_ = value;
-  }
+  inline void setModelSequence(int value) { columnNumber_ = value; }
 
   /** Column number if single column object -1 otherwise,
         so returns >= 0
@@ -108,41 +102,25 @@ public:
     */
   virtual int columnNumber() const;
   /// Original variable bounds
-  inline double originalLowerBound() const
-  {
-    return bound_[0];
-  }
-  inline double originalUpperBound() const
-  {
+  inline double originalLowerBound() const { return bound_[0]; }
+  inline double originalUpperBound() const {
     return bound_[rangeType_ * numberRanges_ - 1];
   }
   /// Type - 1 points, 2 ranges
-  inline int rangeType() const
-  {
-    return rangeType_;
-  }
+  inline int rangeType() const { return rangeType_; }
   /// Number of points
-  inline int numberRanges() const
-  {
-    return numberRanges_;
-  }
+  inline int numberRanges() const { return numberRanges_; }
   /// Ranges
-  inline double *bound() const
-  {
-    return bound_;
-  }
+  inline double *bound() const { return bound_; }
   /** \brief Return true if object can take part in normal heuristics
-    */
-  virtual bool canDoHeuristics() const
-  {
-    return false;
-  }
+   */
+  virtual bool canDoHeuristics() const { return false; }
 
-private:
+ private:
   /// Just for debug (CBC_PRINT defined in CbcBranchLotsize.cpp)
   void printLotsize(double value, bool condition, int type) const;
 
-protected:
+ protected:
   /// data
 
   /// Column number in model
@@ -170,20 +148,19 @@ protected:
 */
 
 class CbcLotsizeBranchingObject : public CbcBranchingObject {
-
-public:
+ public:
   /// Default constructor
   CbcLotsizeBranchingObject();
 
   /** Create a lotsize floor/ceiling branch object
 
       Specifies a simple two-way branch. Let \p value = x*. One arm of the
-      branch will be is lb <= x <= valid range below(x*), the other valid range above(x*) <= x <= ub.
-      Specify way = -1 to set the object state to perform the down arm first,
-      way = 1 for the up arm.
+      branch will be is lb <= x <= valid range below(x*), the other valid range
+     above(x*) <= x <= ub. Specify way = -1 to set the object state to perform
+     the down arm first, way = 1 for the up arm.
     */
-  CbcLotsizeBranchingObject(CbcModel *model, int variable,
-    int way, double value, const CbcLotsize *lotsize);
+  CbcLotsizeBranchingObject(CbcModel *model, int variable, int way,
+                            double value, const CbcLotsize *lotsize);
 
   /** Create a degenerate branch object
 
@@ -192,7 +169,7 @@ public:
     */
 
   CbcLotsizeBranchingObject(CbcModel *model, int variable, int way,
-    double lowerValue, double upperValue);
+                            double lowerValue, double upperValue);
 
   /// Copy constructor
   CbcLotsizeBranchingObject(const CbcLotsizeBranchingObject &);
@@ -214,14 +191,11 @@ public:
 
   using CbcBranchingObject::print;
   /** \brief Print something about branch - only if log level high
-    */
+   */
   virtual void print();
 
   /** Return the type (an integer identifier) of \c this */
-  virtual CbcBranchObjType type() const
-  {
-    return LotsizeBranchObj;
-  }
+  virtual CbcBranchObjType type() const { return LotsizeBranchObj; }
 
   // LL: compareOriginalObject can be inherited from the CbcBranchingObject
   // since variable_ uniquely defines the lot sizing object.
@@ -234,9 +208,10 @@ public:
         replaceIfOverlap is true) replace the current branching object with one
         whose feasible region is the overlap.
      */
-  virtual CbcRangeCompare compareBranchingObject(const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
+  virtual CbcRangeCompare compareBranchingObject(
+      const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
 
-protected:
+ protected:
   /// Lower [0] and upper [1] bounds for the down arm (way_ = -1)
   double down_[2];
   /// Lower [0] and upper [1] bounds for the up arm (way_ = 1)
@@ -246,4 +221,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

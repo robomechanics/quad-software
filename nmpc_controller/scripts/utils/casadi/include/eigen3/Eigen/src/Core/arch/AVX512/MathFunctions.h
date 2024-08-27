@@ -14,14 +14,16 @@ namespace Eigen {
 
 namespace internal {
 
-// Disable the code for older versions of gcc that don't support many of the required avx512 instrinsics.
-#if EIGEN_GNUC_AT_LEAST(5, 3) || EIGEN_COMP_CLANG  || EIGEN_COMP_MSVC >= 1923
+// Disable the code for older versions of gcc that don't support many of the
+// required avx512 instrinsics.
+#if EIGEN_GNUC_AT_LEAST(5, 3) || EIGEN_COMP_CLANG || EIGEN_COMP_MSVC >= 1923
 
 #define _EIGEN_DECLARE_CONST_Packet16f(NAME, X) \
   const Packet16f p16f_##NAME = pset1<Packet16f>(X)
 
 #define _EIGEN_DECLARE_CONST_Packet16f_FROM_INT(NAME, X) \
-  const Packet16f p16f_##NAME =  preinterpret<Packet16f,Packet16i>(pset1<Packet16i>(X))
+  const Packet16f p16f_##NAME =                          \
+      preinterpret<Packet16f, Packet16i>(pset1<Packet16i>(X))
 
 #define _EIGEN_DECLARE_CONST_Packet8d(NAME, X) \
   const Packet8d p8d_##NAME = pset1<Packet8d>(X)
@@ -33,7 +35,8 @@ namespace internal {
   const Packet16bf p16bf_##NAME = pset1<Packet16bf>(X)
 
 #define _EIGEN_DECLARE_CONST_Packet16bf_FROM_INT(NAME, X) \
-  const Packet16bf p16bf_##NAME =  preinterpret<Packet16bf,Packet16i>(pset1<Packet16i>(X))
+  const Packet16bf p16bf_##NAME =                         \
+      preinterpret<Packet16bf, Packet16i>(pset1<Packet16i>(X))
 
 template <>
 EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED Packet16f
@@ -101,15 +104,16 @@ pexp<Packet16f>(const Packet16f& _x) {
   Packet16f r2 = pmul(r, r);
   Packet16f r3 = pmul(r2, r);
 
-  // Evaluate the polynomial approximant,improved by instruction-level parallelism.
+  // Evaluate the polynomial approximant,improved by instruction-level
+  // parallelism.
   Packet16f y, y1, y2;
-  y  = pmadd(p16f_cephes_exp_p0, r, p16f_cephes_exp_p1);
+  y = pmadd(p16f_cephes_exp_p0, r, p16f_cephes_exp_p1);
   y1 = pmadd(p16f_cephes_exp_p3, r, p16f_cephes_exp_p4);
   y2 = padd(r, p16f_1);
-  y  = pmadd(y, r, p16f_cephes_exp_p2);
+  y = pmadd(y, r, p16f_cephes_exp_p2);
   y1 = pmadd(y1, r, p16f_cephes_exp_p5);
-  y  = pmadd(y, r3, y1);
-  y  = pmadd(y, r2, y2);
+  y = pmadd(y, r3, y1);
+  y = pmadd(y, r2, y2);
 
   // Build emm0 = 2^m.
   Packet16i emm0 = _mm512_cvttps_epi32(padd(m, p16f_127));
@@ -137,12 +141,14 @@ EIGEN_STRONG_INLINE Packet16h pfrexp(const Packet16h& a, Packet16h& exponent) {
 }
 
 template <>
-EIGEN_STRONG_INLINE Packet16h pldexp(const Packet16h& a, const Packet16h& exponent) {
+EIGEN_STRONG_INLINE Packet16h pldexp(const Packet16h& a,
+                                     const Packet16h& exponent) {
   return float2half(pldexp<Packet16f>(half2float(a), half2float(exponent)));
 }
 
 template <>
-EIGEN_STRONG_INLINE Packet16bf pfrexp(const Packet16bf& a, Packet16bf& exponent) {
+EIGEN_STRONG_INLINE Packet16bf pfrexp(const Packet16bf& a,
+                                      Packet16bf& exponent) {
   Packet16f fexponent;
   const Packet16bf out = F32ToBf16(pfrexp<Packet16f>(Bf16ToF32(a), fexponent));
   exponent = F32ToBf16(fexponent);
@@ -150,7 +156,8 @@ EIGEN_STRONG_INLINE Packet16bf pfrexp(const Packet16bf& a, Packet16bf& exponent)
 }
 
 template <>
-EIGEN_STRONG_INLINE Packet16bf pldexp(const Packet16bf& a, const Packet16bf& exponent) {
+EIGEN_STRONG_INLINE Packet16bf pldexp(const Packet16bf& a,
+                                      const Packet16bf& exponent) {
   return F32ToBf16(pldexp<Packet16f>(Bf16ToF32(a), Bf16ToF32(exponent)));
 }
 
@@ -165,10 +172,11 @@ template <>
 EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED Packet16f
 psqrt<Packet16f>(const Packet16f& _x) {
   Packet16f neg_half = pmul(_x, pset1<Packet16f>(-.5f));
-  __mmask16 denormal_mask = _mm512_kand(
-      _mm512_cmp_ps_mask(_x, pset1<Packet16f>((std::numeric_limits<float>::min)()),
-                        _CMP_LT_OQ),
-      _mm512_cmp_ps_mask(_x, _mm512_setzero_ps(), _CMP_GE_OQ));
+  __mmask16 denormal_mask =
+      _mm512_kand(_mm512_cmp_ps_mask(
+                      _x, pset1<Packet16f>((std::numeric_limits<float>::min)()),
+                      _CMP_LT_OQ),
+                  _mm512_cmp_ps_mask(_x, _mm512_setzero_ps(), _CMP_GE_OQ));
 
   Packet16f x = _mm512_rsqrt14_ps(_x);
 
@@ -176,17 +184,18 @@ psqrt<Packet16f>(const Packet16f& _x) {
   x = pmul(x, pmadd(neg_half, pmul(x, x), pset1<Packet16f>(1.5f)));
 
   // Flush results for denormals to zero.
-  return _mm512_mask_blend_ps(denormal_mask, pmul(_x,x), _mm512_setzero_ps());
+  return _mm512_mask_blend_ps(denormal_mask, pmul(_x, x), _mm512_setzero_ps());
 }
 
 template <>
 EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED Packet8d
 psqrt<Packet8d>(const Packet8d& _x) {
   Packet8d neg_half = pmul(_x, pset1<Packet8d>(-.5));
-  __mmask16 denormal_mask = _mm512_kand(
-      _mm512_cmp_pd_mask(_x, pset1<Packet8d>((std::numeric_limits<double>::min)()),
-                        _CMP_LT_OQ),
-      _mm512_cmp_pd_mask(_x, _mm512_setzero_pd(), _CMP_GE_OQ));
+  __mmask16 denormal_mask =
+      _mm512_kand(_mm512_cmp_pd_mask(
+                      _x, pset1<Packet8d>((std::numeric_limits<double>::min)()),
+                      _CMP_LT_OQ),
+                  _mm512_cmp_pd_mask(_x, _mm512_setzero_pd(), _CMP_GE_OQ));
 
   Packet8d x = _mm512_rsqrt14_pd(_x);
 
@@ -196,7 +205,7 @@ psqrt<Packet8d>(const Packet8d& _x) {
   // Do a second step of Newton's iteration.
   x = pmul(x, pmadd(neg_half, pmul(x, x), pset1<Packet8d>(1.5)));
 
-  return _mm512_mask_blend_pd(denormal_mask, pmul(_x,x), _mm512_setzero_pd());
+  return _mm512_mask_blend_pd(denormal_mask, pmul(_x, x), _mm512_setzero_pd());
 }
 #else
 template <>
@@ -233,7 +242,8 @@ prsqrt<Packet16f>(const Packet16f& _x) {
 
   // Identity infinite, negative and denormal arguments.
   __mmask16 inf_mask = _mm512_cmp_ps_mask(_x, p16f_inf, _CMP_EQ_OQ);
-  __mmask16 not_pos_mask = _mm512_cmp_ps_mask(_x, _mm512_setzero_ps(), _CMP_LE_OQ);
+  __mmask16 not_pos_mask =
+      _mm512_cmp_ps_mask(_x, _mm512_setzero_ps(), _CMP_LE_OQ);
   __mmask16 not_finite_pos_mask = not_pos_mask | inf_mask;
 
   // Compute an approximate result using the rsqrt intrinsic, forcing +inf
@@ -244,7 +254,8 @@ prsqrt<Packet16f>(const Packet16f& _x) {
   // This uses the formula y_{n+1} = y_n * (1.5 - y_n * (0.5 * x) * y_n).
   // It is essential to evaluate the inner term like this because forming
   // y_n^2 may over- or underflow.
-  Packet16f y_newton = pmul(y_approx, pmadd(y_approx, pmul(neg_half, y_approx), p16f_one_point_five));
+  Packet16f y_newton = pmul(
+      y_approx, pmadd(y_approx, pmul(neg_half, y_approx), p16f_one_point_five));
 
   // Select the result of the Newton-Raphson step for positive finite arguments.
   // For other arguments, choose the output of the intrinsic. This will
@@ -276,7 +287,8 @@ prsqrt<Packet8d>(const Packet8d& _x) {
 
   // Identity infinite, negative and denormal arguments.
   __mmask8 inf_mask = _mm512_cmp_pd_mask(_x, p8d_inf, _CMP_EQ_OQ);
-  __mmask8 not_pos_mask = _mm512_cmp_pd_mask(_x, _mm512_setzero_pd(), _CMP_LE_OQ);
+  __mmask8 not_pos_mask =
+      _mm512_cmp_pd_mask(_x, _mm512_setzero_pd(), _CMP_LE_OQ);
   __mmask8 not_finite_pos_mask = not_pos_mask | inf_mask;
 
   // Compute an approximate result using the rsqrt intrinsic, forcing +inf
@@ -286,16 +298,18 @@ prsqrt<Packet8d>(const Packet8d& _x) {
 #else
   Packet8d y_approx = _mm512_rsqrt14_pd(_x);
 #endif
-  // Do one or two steps of Newton-Raphson's to improve the approximation, depending on the
-  // starting accuracy (either 2^-14 or 2^-28, depending on whether AVX512ER is available).
-  // The Newton-Raphson algorithm has quadratic convergence and roughly doubles the number
-  // of correct digits for each step.
+  // Do one or two steps of Newton-Raphson's to improve the approximation,
+  // depending on the starting accuracy (either 2^-14 or 2^-28, depending on
+  // whether AVX512ER is available). The Newton-Raphson algorithm has quadratic
+  // convergence and roughly doubles the number of correct digits for each step.
   // This uses the formula y_{n+1} = y_n * (1.5 - y_n * (0.5 * x) * y_n).
   // It is essential to evaluate the inner term like this because forming
   // y_n^2 may over- or underflow.
-  Packet8d y_newton = pmul(y_approx, pmadd(neg_half, pmul(y_approx, y_approx), p8d_one_point_five));
+  Packet8d y_newton = pmul(
+      y_approx, pmadd(neg_half, pmul(y_approx, y_approx), p8d_one_point_five));
 #if !defined(EIGEN_VECTORIZE_AVX512ER)
-  y_newton = pmul(y_newton, pmadd(y_newton, pmul(neg_half, y_newton), p8d_one_point_five));
+  y_newton = pmul(
+      y_newton, pmadd(y_newton, pmul(neg_half, y_newton), p8d_one_point_five));
 #endif
   // Select the result of the Newton-Raphson step for positive finite arguments.
   // For other arguments, choose the output of the intrinsic. This will
@@ -310,16 +324,18 @@ EIGEN_STRONG_INLINE Packet8d prsqrt<Packet8d>(const Packet8d& x) {
 }
 #endif
 
-template<> EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED
-Packet16f plog1p<Packet16f>(const Packet16f& _x) {
+template <>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED Packet16f
+plog1p<Packet16f>(const Packet16f& _x) {
   return generic_plog1p(_x);
 }
 
 F16_PACKET_FUNCTION(Packet16f, Packet16h, plog1p)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, plog1p)
 
-template<> EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED
-Packet16f pexpm1<Packet16f>(const Packet16f& _x) {
+template <>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED Packet16f
+pexpm1<Packet16f>(const Packet16f& _x) {
   return generic_expm1(_x);
 }
 
@@ -327,7 +343,6 @@ F16_PACKET_FUNCTION(Packet16f, Packet16h, pexpm1)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, pexpm1)
 
 #endif
-
 
 template <>
 EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED Packet16f

@@ -18,7 +18,8 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
 
@@ -30,58 +31,48 @@
 
 namespace casadi {
 
+template <>
+DM DM::solve(const DM& A, const DM& b, const std::string& lsolver,
+             const Dict& dict);
 
-  template<>
-  DM DM::
-  solve(const DM& A, const DM& b,
-        const std::string& lsolver, const Dict& dict);
+template <>
+DM DM::inv(const DM& A, const std::string& lsolver, const Dict& dict);
+template <>
+DM DM::pinv(const DM& A, const std::string& lsolver, const Dict& dict);
 
-  template<>
-  DM DM::
-  inv(const DM& A,
-        const std::string& lsolver, const Dict& dict);
-  template<>
-  DM DM::
-  pinv(const DM& A, const std::string& lsolver,
-       const Dict& dict);
+template <>
+DM DM::rand(const Sparsity& sp);  // NOLINT(runtime/threadsafe_fn)
 
-  template<>
-  DM DM::
-  rand(const Sparsity& sp); // NOLINT(runtime/threadsafe_fn)
+template <>
+DM DM::expm(const DM& A);
 
-  template<>
-  DM DM::
-  expm(const DM& A);
+template <>
+DM DM::expm_const(const DM& A, const DM& t);
 
-  template<>
-  DM DM::
-  expm_const(const DM& A, const DM& t);
+template <>
+DM DM::_logsumexp(const DM& A);
 
-  template<>
-  DM DM::
-  _logsumexp(const DM& A);
+template <>
+std::vector<DM> DM::cse(const std::vector<DM>& e);
 
-  template<>
-  std::vector<DM> DM::
-  cse(const std::vector<DM>& e);
+template <>
+void DM::export_code(const std::string& lang, std::ostream& stream,
+                     const Dict& options) const;
 
-  template<> void DM::export_code(const std::string& lang,
-       std::ostream &stream, const Dict& options) const;
+template <>
+Dict DM::info() const;
 
-  template<>
-  Dict DM::info() const;
+template <>
+void DM::to_file(const std::string& filename, const Sparsity& sp,
+                 const double* nonzeros, const std::string& format);
 
-  template<>
-  void DM::to_file(const std::string& filename, const Sparsity& sp,
-    const double* nonzeros, const std::string& format);
-
-  template<>
-  DM DM::from_file(const std::string& filename, const std::string& format_hint);
+template <>
+DM DM::from_file(const std::string& filename, const std::string& format_hint);
 
 #ifndef CASADI_DM_INSTANTIATOR_CPP
-  extern template class Matrix<double>;
-#endif // CASADI_DM_INSTANTIATOR_CPP
+extern template class Matrix<double>;
+#endif  // CASADI_DM_INSTANTIATOR_CPP
 
-} // namespace casadi
+}  // namespace casadi
 
-#endif // CASADI_DM_HPP
+#endif  // CASADI_DM_HPP

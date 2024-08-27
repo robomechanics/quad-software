@@ -11,7 +11,7 @@
 #ifndef HIGHS_C_API
 #define HIGHS_C_API
 
-//#include "util/HighsInt.h"
+// #include "util/HighsInt.h"
 #include "lp_data/HighsCallbackStruct.h"
 
 const HighsInt kHighsMaximumStringLength = 512;

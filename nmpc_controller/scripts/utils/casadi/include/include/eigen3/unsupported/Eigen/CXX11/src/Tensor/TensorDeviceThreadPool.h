@@ -7,15 +7,16 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#if defined(EIGEN_USE_THREADS) && !defined(EIGEN_CXX11_TENSOR_TENSOR_DEVICE_THREAD_POOL_H)
+#if defined(EIGEN_USE_THREADS) && \
+    !defined(EIGEN_CXX11_TENSOR_TENSOR_DEVICE_THREAD_POOL_H)
 #define EIGEN_CXX11_TENSOR_TENSOR_DEVICE_THREAD_POOL_H
 
 namespace Eigen {
 
 // Runs an arbitrary function and then calls Notify() on the passed in
 // Notification.
-template <typename Function, typename... Args> struct FunctionWrapperWithNotification
-{
+template <typename Function, typename... Args>
+struct FunctionWrapperWithNotification {
   static void run(Notification* n, Function f, Args... args) {
     f(args...);
     if (n) {
@@ -24,8 +25,8 @@ template <typename Function, typename... Args> struct FunctionWrapperWithNotific
   }
 };
 
-template <typename Function, typename... Args> struct FunctionWrapperWithBarrier
-{
+template <typename Function, typename... Args>
+struct FunctionWrapperWithBarrier {
   static void run(Barrier* b, Function f, Args... args) {
     f(args...);
     if (b) {
@@ -52,12 +53,13 @@ class Allocator {
 // Build a thread pool device on top the an existing pool of threads.
 struct ThreadPoolDevice {
   // The ownership of the thread pool remains with the caller.
-  ThreadPoolDevice(ThreadPoolInterface* pool, int num_cores, Allocator* allocator = nullptr)
-      : pool_(pool), num_threads_(num_cores), allocator_(allocator) { }
+  ThreadPoolDevice(ThreadPoolInterface* pool, int num_cores,
+                   Allocator* allocator = nullptr)
+      : pool_(pool), num_threads_(num_cores), allocator_(allocator) {}
 
   EIGEN_STRONG_INLINE void* allocate(size_t num_bytes) const {
     return allocator_ ? allocator_->allocate(num_bytes)
-        : internal::aligned_malloc(num_bytes);
+                      : internal::aligned_malloc(num_bytes);
   }
 
   EIGEN_STRONG_INLINE void deallocate(void* buffer) const {
@@ -68,7 +70,7 @@ struct ThreadPoolDevice {
     }
   }
 
-    EIGEN_STRONG_INLINE void* allocate_temp(size_t num_bytes) const {
+  EIGEN_STRONG_INLINE void* allocate_temp(size_t num_bytes) const {
     return allocate(num_bytes);
   }
 
@@ -76,7 +78,7 @@ struct ThreadPoolDevice {
     deallocate(buffer);
   }
 
-  template<typename Type>
+  template <typename Type>
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Type get(Type data) const {
     return data;
   }
@@ -90,7 +92,8 @@ struct ThreadPoolDevice {
     // CPU cycles due to the threads competing for memory bandwidth, so we
     // statically schedule at most 4 block copies here.
     const size_t kMinBlockSize = 32768;
-    const size_t num_threads = CostModel::numThreads(n, TensorOpCost(1.0, 1.0, 0), 4);
+    const size_t num_threads =
+        CostModel::numThreads(n, TensorOpCost(1.0, 1.0, 0), 4);
     if (n <= kMinBlockSize || num_threads < 2) {
       ::memcpy(dst, src, n);
     } else {
@@ -111,10 +114,12 @@ struct ThreadPoolDevice {
     }
 #endif
   }
-  EIGEN_STRONG_INLINE void memcpyHostToDevice(void* dst, const void* src, size_t n) const {
+  EIGEN_STRONG_INLINE void memcpyHostToDevice(void* dst, const void* src,
+                                              size_t n) const {
     memcpy(dst, src, n);
   }
-  EIGEN_STRONG_INLINE void memcpyDeviceToHost(void* dst, const void* src, size_t n) const {
+  EIGEN_STRONG_INLINE void memcpyDeviceToHost(void* dst, const void* src,
+                                              size_t n) const {
     memcpy(dst, src, n);
   }
 
@@ -122,9 +127,7 @@ struct ThreadPoolDevice {
     ::memset(buffer, c, n);
   }
 
-  EIGEN_STRONG_INLINE int numThreads() const {
-    return num_threads_;
-  }
+  EIGEN_STRONG_INLINE int numThreads() const { return num_threads_; }
 
   // Number of theads available in the underlying thread pool. This number can
   // be different from the value returned by numThreads().
@@ -190,11 +193,12 @@ struct ThreadPoolDevice {
   void parallelFor(Index n, const TensorOpCost& cost,
                    std::function<Index(Index)> block_align,
                    std::function<void(Index, Index)> f) const {
-    if (EIGEN_PREDICT_FALSE(n <= 0)){
+    if (EIGEN_PREDICT_FALSE(n <= 0)) {
       return;
-    // Compute small problems directly in the caller thread.
+      // Compute small problems directly in the caller thread.
     } else if (n == 1 || numThreads() == 1 ||
-               CostModel::numThreads(n, cost, static_cast<int>(numThreads())) == 1) {
+               CostModel::numThreads(n, cost, static_cast<int>(numThreads())) ==
+                   1) {
       f(0, n);
       return;
     }
@@ -211,7 +215,8 @@ struct ThreadPoolDevice {
                                                   Index lastIdx) {
       while (lastIdx - firstIdx > block.size) {
         // Split into halves and schedule the second half on a different thread.
-        const Index midIdx = firstIdx + divup((lastIdx - firstIdx) / 2, block.size) * block.size;
+        const Index midIdx =
+            firstIdx + divup((lastIdx - firstIdx) / 2, block.size) * block.size;
         pool_->Schedule([=, &handleRange]() { handleRange(midIdx, lastIdx); });
         lastIdx = midIdx;
       }
@@ -239,7 +244,8 @@ struct ThreadPoolDevice {
     parallelFor(n, cost, nullptr, std::move(f));
   }
 
-  // WARNING: This function is asynchronous and will not block the calling thread.
+  // WARNING: This function is asynchronous and will not block the calling
+  // thread.
   //
   // Asynchronous parallelFor executes f with [0, n) arguments in parallel
   // without waiting for completion. When the last block finished, it will call
@@ -270,7 +276,8 @@ struct ThreadPoolDevice {
     ctx->handle_range = [this, ctx, block](Index firstIdx, Index lastIdx) {
       while (lastIdx - firstIdx > block.size) {
         // Split into halves and schedule the second half on a different thread.
-        const Index midIdx = firstIdx + divup((lastIdx - firstIdx) / 2, block.size) * block.size;
+        const Index midIdx =
+            firstIdx + divup((lastIdx - firstIdx) / 2, block.size) * block.size;
         pool_->Schedule(
             [ctx, midIdx, lastIdx]() { ctx->handle_range(midIdx, lastIdx); });
         lastIdx = midIdx;
@@ -403,7 +410,6 @@ struct ThreadPoolDevice {
   Allocator* allocator_;
 };
 
-
 }  // end namespace Eigen
 
-#endif // EIGEN_CXX11_TENSOR_TENSOR_DEVICE_THREAD_POOL_H
+#endif  // EIGEN_CXX11_TENSOR_TENSOR_DEVICE_THREAD_POOL_H

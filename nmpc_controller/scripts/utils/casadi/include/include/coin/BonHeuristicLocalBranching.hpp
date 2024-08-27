@@ -13,47 +13,45 @@
 #include "BonLocalSolverBasedHeuristic.hpp"
 
 namespace Bonmin {
-  class HeuristicLocalBranching:public LocalSolverBasedHeuristic {
-    public:
-     /** Default constructor*/
-     HeuristicLocalBranching();
-    /** Constructor with setup.*/
-    HeuristicLocalBranching(BonminSetup * setup);
+class HeuristicLocalBranching : public LocalSolverBasedHeuristic {
+ public:
+  /** Default constructor*/
+  HeuristicLocalBranching();
+  /** Constructor with setup.*/
+  HeuristicLocalBranching(BonminSetup *setup);
 
-     /** Copy constructor.*/
-     HeuristicLocalBranching(const HeuristicLocalBranching &other);
-     /** Virtual constructor.*/
-     virtual CbcHeuristic * clone() const{
-      return new HeuristicLocalBranching(*this);
-     }
+  /** Copy constructor.*/
+  HeuristicLocalBranching(const HeuristicLocalBranching &other);
+  /** Virtual constructor.*/
+  virtual CbcHeuristic *clone() const {
+    return new HeuristicLocalBranching(*this);
+  }
 
-     /** Destructor*/
-     virtual ~HeuristicLocalBranching();
-    
-    /// Update model
-    virtual void setModel(CbcModel * model);
+  /** Destructor*/
+  virtual ~HeuristicLocalBranching();
 
-    /// Validate model i.e. sets when_ to 0 if necessary
-    virtual void validate();
+  /// Update model
+  virtual void setModel(CbcModel *model);
 
-     /** Runs heuristic*/
-     int solution(double & objectiveValue,
-                  double * newSolution);
+  /// Validate model i.e. sets when_ to 0 if necessary
+  virtual void validate();
 
-    /** Register the options common to all local search based heuristics.*/
-    static void registerOptions(Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions);
+  /** Runs heuristic*/
+  int solution(double &objectiveValue, double *newSolution);
 
-    /** Initiaize using passed options.*/
-    void Initialize(Ipopt::SmartPtr<Ipopt::OptionsList> options);
+  /** Register the options common to all local search based heuristics.*/
+  static void registerOptions(
+      Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions);
 
-  private:
-    /// How often to do (code can change)
-    int howOften_;
-    /// Number of solutions so we can do something at solution
-    int numberSolutions_;
+  /** Initiaize using passed options.*/
+  void Initialize(Ipopt::SmartPtr<Ipopt::OptionsList> options);
 
-  };
+ private:
+  /// How often to do (code can change)
+  int howOften_;
+  /// Number of solutions so we can do something at solution
+  int numberSolutions_;
+};
 
-}/* Ends Bonmin namepace.*/
+}  // namespace Bonmin
 #endif
-

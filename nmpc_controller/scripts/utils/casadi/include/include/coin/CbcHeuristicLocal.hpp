@@ -11,7 +11,7 @@
  */
 
 class CbcHeuristicLocal : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicLocal();
 
@@ -53,25 +53,16 @@ public:
         This first version does not do LP's and does swaps of two integer
         variables.  Later versions could do Lps.
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// This version fixes stuff and does IP
-  int solutionFix(double &objectiveValue,
-    double *newSolution,
-    const int *keep);
+  int solutionFix(double &objectiveValue, double *newSolution, const int *keep);
 
   /// Sets type of search
-  inline void setSearchType(int value)
-  {
-    swap_ = value;
-  }
+  inline void setSearchType(int value) { swap_ = value; }
   /// Used array so we can set
-  inline int *used() const
-  {
-    return used_;
-  }
+  inline int *used() const { return used_; }
 
-protected:
+ protected:
   // Data
 
   // Original matrix by column
@@ -89,12 +80,12 @@ protected:
  */
 class CbcHeuristicFPump;
 class CbcHeuristicProximity : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicProximity();
 
   /* Constructor with model - assumed before cuts
-    */
+   */
   CbcHeuristicProximity(CbcModel &model);
 
   // Copy constructor
@@ -122,20 +113,13 @@ public:
   /** returns 0 if no solution, 1 if valid solution.
         Sets solution values if good, sets objective value (only if good)
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// Set extra increment
-  inline void setIncrement(double value)
-  {
-    increment_ = value;
-  }
+  inline void setIncrement(double value) { increment_ = value; }
   /// Used array so we can set
-  inline int *used() const
-  {
-    return used_;
-  }
+  inline int *used() const { return used_; }
 
-protected:
+ protected:
   // Data
   /// Increment to use if no change
   double increment_;
@@ -154,7 +138,7 @@ protected:
  */
 
 class CbcHeuristicNaive : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicNaive();
 
@@ -188,21 +172,14 @@ public:
   /** returns 0 if no solution, 1 if valid solution.
         Sets solution values if good, sets objective value (only if good)
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
 
   /// Sets large cost value
-  inline void setLargeValue(double value)
-  {
-    large_ = value;
-  }
+  inline void setLargeValue(double value) { large_ = value; }
   /// Gets large cost value
-  inline double largeValue() const
-  {
-    return large_;
-  }
+  inline double largeValue() const { return large_; }
 
-protected:
+ protected:
   /// Data
   /// Large value
   double large_;
@@ -212,7 +189,7 @@ protected:
  */
 
 class CbcHeuristicCrossover : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicCrossover();
 
@@ -248,20 +225,17 @@ public:
         when_ 0 off, 1 only at new solutions, 2 also every now and then
         add 10 to make only if agree at lower bound
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
 
   /// Sets number of solutions to use
-  inline void setNumberSolutions(int value)
-  {
-    if (value > 0 && value <= 10)
-      useNumber_ = value;
+  inline void setNumberSolutions(int value) {
+    if (value > 0 && value <= 10) useNumber_ = value;
   }
 
-protected:
+ protected:
   // Data
   /// Attempts
-  std::vector< double > attempts_;
+  std::vector<double> attempts_;
   /// Random numbers to stop same search happening
   double random_[10];
   /// Number of solutions so we only do after new solution
@@ -273,4 +247,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -30,58 +30,55 @@
 #if !defined(SIMDE_X86_AVX512_SETZERO_H)
 #define SIMDE_X86_AVX512_SETZERO_H
 
-#include "types.h"
 #include "cast.h"
+#include "types.h"
 
 HEDLEY_DIAGNOSTIC_PUSH
 SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512i
-simde_mm512_setzero_si512(void) {
-  #if defined(SIMDE_X86_AVX512F_NATIVE)
-    return _mm512_setzero_si512();
-  #else
-    simde__m512i r;
-    simde_memset(&r, 0, sizeof(r));
-    return r;
-  #endif
+simde__m512i simde_mm512_setzero_si512(void) {
+#if defined(SIMDE_X86_AVX512F_NATIVE)
+  return _mm512_setzero_si512();
+#else
+  simde__m512i r;
+  simde_memset(&r, 0, sizeof(r));
+  return r;
+#endif
 }
 #define simde_mm512_setzero_epi32() simde_mm512_setzero_si512()
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_setzero_si512
-  #define _mm512_setzero_si512() simde_mm512_setzero_si512()
-  #undef _mm512_setzero_epi32
-  #define _mm512_setzero_epi32() simde_mm512_setzero_si512()
+#undef _mm512_setzero_si512
+#define _mm512_setzero_si512() simde_mm512_setzero_si512()
+#undef _mm512_setzero_epi32
+#define _mm512_setzero_epi32() simde_mm512_setzero_si512()
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512
-simde_mm512_setzero_ps(void) {
-  #if defined(SIMDE_X86_AVX512F_NATIVE)
-    return _mm512_setzero_ps();
-  #else
-    return simde_mm512_castsi512_ps(simde_mm512_setzero_si512());
-  #endif
+simde__m512 simde_mm512_setzero_ps(void) {
+#if defined(SIMDE_X86_AVX512F_NATIVE)
+  return _mm512_setzero_ps();
+#else
+  return simde_mm512_castsi512_ps(simde_mm512_setzero_si512());
+#endif
 }
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_setzero_si512
-  #define _mm512_setzero_si512() simde_mm512_setzero_si512()
+#undef _mm512_setzero_si512
+#define _mm512_setzero_si512() simde_mm512_setzero_si512()
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512d
-simde_mm512_setzero_pd(void) {
-  #if defined(SIMDE_X86_AVX512F_NATIVE)
-    return _mm512_setzero_pd();
-  #else
-    return simde_mm512_castsi512_pd(simde_mm512_setzero_si512());
-  #endif
+simde__m512d simde_mm512_setzero_pd(void) {
+#if defined(SIMDE_X86_AVX512F_NATIVE)
+  return _mm512_setzero_pd();
+#else
+  return simde_mm512_castsi512_pd(simde_mm512_setzero_si512());
+#endif
 }
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_setzero_si512
-  #define _mm512_setzero_si512() simde_mm512_setzero_si512()
+#undef _mm512_setzero_si512
+#define _mm512_setzero_si512() simde_mm512_setzero_si512()
 #endif
 
 SIMDE_END_DECLS_

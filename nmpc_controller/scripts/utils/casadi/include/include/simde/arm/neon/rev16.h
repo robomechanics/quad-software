@@ -36,99 +36,98 @@ SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int8x8_t
-simde_vrev16_s8(simde_int8x8_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vrev16_s8(a);
-  #elif defined(SIMDE_X86_SSSE3_NATIVE) && defined(SIMDE_X86_MMX_NATIVE)
-    return _mm_shuffle_pi8(a, _mm_set_pi8(6, 7, 4, 5, 2, 3, 0, 1));
-  #else
-    simde_int8x8_private
-      r_,
-      a_ = simde_int8x8_to_private(a);
+simde_int8x8_t simde_vrev16_s8(simde_int8x8_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vrev16_s8(a);
+#elif defined(SIMDE_X86_SSSE3_NATIVE) && defined(SIMDE_X86_MMX_NATIVE)
+  return _mm_shuffle_pi8(a, _mm_set_pi8(6, 7, 4, 5, 2, 3, 0, 1));
+#else
+  simde_int8x8_private r_, a_ = simde_int8x8_to_private(a);
 
-    #if defined(SIMDE_SHUFFLE_VECTOR_)
-      r_.values = SIMDE_SHUFFLE_VECTOR_(8, 8, a_.values, a_.values, 1, 0, 3, 2, 5, 4, 7, 6);
-    #else
-      SIMDE_VECTORIZE
-      for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-        r_.values[i] = a_.values[i ^ 1];
-      }
-    #endif
+#if defined(SIMDE_SHUFFLE_VECTOR_)
+  r_.values =
+      SIMDE_SHUFFLE_VECTOR_(8, 8, a_.values, a_.values, 1, 0, 3, 2, 5, 4, 7, 6);
+#else
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = a_.values[i ^ 1];
+  }
+#endif
 
-    return simde_int8x8_from_private(r_);
-  #endif
+  return simde_int8x8_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrev16_s8
-  #define vrev16_s8(a) simde_vrev16_s8(a)
+#undef vrev16_s8
+#define vrev16_s8(a) simde_vrev16_s8(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_uint8x8_t
-simde_vrev16_u8(simde_uint8x8_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vrev16_u8(a);
-  #else
-    return simde_vreinterpret_u8_s8(simde_vrev16_s8(simde_vreinterpret_s8_u8(a)));
-  #endif
+simde_uint8x8_t simde_vrev16_u8(simde_uint8x8_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vrev16_u8(a);
+#else
+  return simde_vreinterpret_u8_s8(simde_vrev16_s8(simde_vreinterpret_s8_u8(a)));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrev16_u8
-  #define vrev16_u8(a) simde_vrev16_u8(a)
+#undef vrev16_u8
+#define vrev16_u8(a) simde_vrev16_u8(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int8x16_t
-simde_vrev16q_s8(simde_int8x16_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vrev16q_s8(a);
-  #elif defined(SIMDE_X86_SSSE3_NATIVE)
-    return _mm_shuffle_epi8(a, _mm_set_epi8(14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1));
-  #elif defined(SIMDE_POWER_ALTIVEC_P8_NATIVE)
-    return HEDLEY_REINTERPRET_CAST(SIMDE_POWER_ALTIVEC_VECTOR(signed char),
-                                   vec_revb(HEDLEY_REINTERPRET_CAST(SIMDE_POWER_ALTIVEC_VECTOR(signed short),
-                                                                    a)));
-  #elif defined(SIMDE_POWER_ALTIVEC_P7_NATIVE)
-    return HEDLEY_REINTERPRET_CAST(SIMDE_POWER_ALTIVEC_VECTOR(signed char),
-                                   vec_reve(HEDLEY_REINTERPRET_CAST(SIMDE_POWER_ALTIVEC_VECTOR(signed short),
-                                                                    vec_reve(a))));
-  #elif defined(SIMDE_WASM_SIMD128_NATIVE)
-    return wasm_v8x16_shuffle(a, a, 1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
-  #else
-    simde_int8x16_private
-      r_,
-      a_ = simde_int8x16_to_private(a);
+simde_int8x16_t simde_vrev16q_s8(simde_int8x16_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vrev16q_s8(a);
+#elif defined(SIMDE_X86_SSSE3_NATIVE)
+  return _mm_shuffle_epi8(
+      a, _mm_set_epi8(14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1));
+#elif defined(SIMDE_POWER_ALTIVEC_P8_NATIVE)
+  return HEDLEY_REINTERPRET_CAST(
+      SIMDE_POWER_ALTIVEC_VECTOR(signed char),
+      vec_revb(HEDLEY_REINTERPRET_CAST(SIMDE_POWER_ALTIVEC_VECTOR(signed short),
+                                       a)));
+#elif defined(SIMDE_POWER_ALTIVEC_P7_NATIVE)
+  return HEDLEY_REINTERPRET_CAST(
+      SIMDE_POWER_ALTIVEC_VECTOR(signed char),
+      vec_reve(HEDLEY_REINTERPRET_CAST(SIMDE_POWER_ALTIVEC_VECTOR(signed short),
+                                       vec_reve(a))));
+#elif defined(SIMDE_WASM_SIMD128_NATIVE)
+  return wasm_v8x16_shuffle(a, a, 1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12,
+                            15, 14);
+#else
+  simde_int8x16_private r_, a_ = simde_int8x16_to_private(a);
 
-    #if defined(SIMDE_SHUFFLE_VECTOR_)
-    r_.values = SIMDE_SHUFFLE_VECTOR_(8, 16, a_.values, a_.values, 1, 0, 3, 2, 5, 4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
-    #else
-      SIMDE_VECTORIZE
-      for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-        r_.values[i] = a_.values[i ^ 1];
-      }
-    #endif
+#if defined(SIMDE_SHUFFLE_VECTOR_)
+  r_.values = SIMDE_SHUFFLE_VECTOR_(8, 16, a_.values, a_.values, 1, 0, 3, 2, 5,
+                                    4, 7, 6, 9, 8, 11, 10, 13, 12, 15, 14);
+#else
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = a_.values[i ^ 1];
+  }
+#endif
 
-    return simde_int8x16_from_private(r_);
-  #endif
+  return simde_int8x16_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrev16q_s8
-  #define vrev16q_s8(a) simde_vrev16q_s8(a)
+#undef vrev16q_s8
+#define vrev16q_s8(a) simde_vrev16q_s8(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_uint8x16_t
-simde_vrev16q_u8(simde_uint8x16_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vrev16q_u8(a);
-  #else
-    return simde_vreinterpretq_u8_s8(simde_vrev16q_s8(simde_vreinterpretq_s8_u8(a)));
-  #endif
+simde_uint8x16_t simde_vrev16q_u8(simde_uint8x16_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vrev16q_u8(a);
+#else
+  return simde_vreinterpretq_u8_s8(
+      simde_vrev16q_s8(simde_vreinterpretq_s8_u8(a)));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrev16q_u8
-  #define vrev16q_u8(a) simde_vrev16q_u8(a)
+#undef vrev16q_u8
+#define vrev16q_u8(a) simde_vrev16q_u8(a)
 #endif
 
 SIMDE_END_DECLS_

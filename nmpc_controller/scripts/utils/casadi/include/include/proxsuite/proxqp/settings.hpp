@@ -8,24 +8,22 @@
 #define PROXSUITE_PROXQP_SETTINGS_HPP
 
 #include <Eigen/Core>
-#include <proxsuite/proxqp/status.hpp>
 #include <proxsuite/proxqp/dense/views.hpp>
 #include <proxsuite/proxqp/sparse/fwd.hpp>
+#include <proxsuite/proxqp/status.hpp>
 
 namespace proxsuite {
 namespace proxqp {
 
 // Sparse backend specifications
-enum struct SparseBackend
-{
-  Automatic,      // the solver will select the appropriate sparse backend.
-  SparseCholesky, // sparse cholesky backend.
-  MatrixFree,     // iterative matrix free sparse backend.
+enum struct SparseBackend {
+  Automatic,       // the solver will select the appropriate sparse backend.
+  SparseCholesky,  // sparse cholesky backend.
+  MatrixFree,      // iterative matrix free sparse backend.
 };
 
-inline std::ostream&
-operator<<(std::ostream& os, const SparseBackend& sparse_backend)
-{
+inline std::ostream& operator<<(std::ostream& os,
+                                const SparseBackend& sparse_backend) {
   if (sparse_backend == SparseBackend::Automatic)
     os << "Automatic";
   else if (sparse_backend == SparseBackend::SparseCholesky) {
@@ -44,10 +42,8 @@ operator<<(std::ostream& os, const SparseBackend& sparse_backend)
  * Settings class, which defines the parameters used by the dense and sparse
  * solver (and its preconditioner).
  */
-template<typename T>
-struct Settings
-{
-
+template <typename T>
+struct Settings {
   T default_rho;
   T default_mu_eq;
   T default_mu_in;
@@ -158,145 +154,121 @@ struct Settings
    */
 
   Settings(
-    T default_rho = 1.E-6,
-    T default_mu_eq = 1.E-3,
-    T default_mu_in = 1.E-1,
-    T alpha_bcl = 0.1,
-    T beta_bcl = 0.9,
-    T refactor_dual_feasibility_threshold = 1e-2,
-    T refactor_rho_threshold = 1e-7,
-    T mu_min_eq = 1e-9,
-    T mu_min_in = 1e-8,
-    T mu_max_eq_inv = 1e9,
-    T mu_max_in_inv = 1e8,
-    T mu_update_factor = 0.1,
-    T mu_update_inv_factor = 10,
-    T cold_reset_mu_eq = 1. / 1.1,
-    T cold_reset_mu_in = 1. / 1.1,
-    T cold_reset_mu_eq_inv = 1.1,
-    T cold_reset_mu_in_inv = 1.1,
-    T eps_abs = 1.e-5,
-    T eps_rel = 0,
-    isize max_iter = 10000,
-    isize max_iter_in = 1500,
-    isize safe_guard = 1.E4,
-    isize nb_iterative_refinement = 10,
-    T eps_refact = 1.e-6, // before eps_refact_=1.e-6
-    bool verbose = false,
-    InitialGuessStatus initial_guess = InitialGuessStatus::
-      EQUALITY_CONSTRAINED_INITIAL_GUESS, // default to
-                                          // EQUALITY_CONSTRAINED_INITIAL_GUESS,
-                                          // as most often we run only
-                                          // once a problem
-    bool update_preconditioner = true,
-    bool compute_preconditioner = true,
-    bool compute_timings = false,
-    bool check_duality_gap = false,
-    T eps_duality_gap_abs = 1.e-4,
-    T eps_duality_gap_rel = 0,
-    isize preconditioner_max_iter = 10,
-    T preconditioner_accuracy = 1.e-3,
-    T eps_primal_inf = 1.E-4,
-    T eps_dual_inf = 1.E-4,
-    bool bcl_update = true,
-    SparseBackend sparse_backend = SparseBackend::Automatic)
-    : default_rho(default_rho)
-    , default_mu_eq(default_mu_eq)
-    , default_mu_in(default_mu_in)
-    , alpha_bcl(alpha_bcl)
-    , beta_bcl(beta_bcl)
-    , refactor_dual_feasibility_threshold(refactor_dual_feasibility_threshold)
-    , refactor_rho_threshold(refactor_rho_threshold)
-    , mu_min_eq(mu_min_eq)
-    , mu_min_in(mu_min_in)
-    , mu_max_eq_inv(mu_max_eq_inv)
-    , mu_max_in_inv(mu_max_in_inv)
-    , mu_update_factor(mu_update_factor)
-    , mu_update_inv_factor(mu_update_inv_factor)
-    , cold_reset_mu_eq(cold_reset_mu_eq)
-    , cold_reset_mu_in(cold_reset_mu_in)
-    , cold_reset_mu_eq_inv(cold_reset_mu_eq_inv)
-    , cold_reset_mu_in_inv(cold_reset_mu_in_inv)
-    , eps_abs(eps_abs)
-    , eps_rel(eps_rel)
-    , max_iter(max_iter)
-    , max_iter_in(max_iter_in)
-    , safe_guard(safe_guard)
-    , nb_iterative_refinement(nb_iterative_refinement)
-    , eps_refact(eps_refact)
-    , verbose(verbose)
-    , initial_guess(initial_guess)
-    , update_preconditioner(update_preconditioner)
-    , compute_preconditioner(compute_preconditioner)
-    , compute_timings(compute_timings)
-    , check_duality_gap(check_duality_gap)
-    , eps_duality_gap_abs(eps_duality_gap_abs)
-    , eps_duality_gap_rel(eps_duality_gap_rel)
-    , preconditioner_max_iter(preconditioner_max_iter)
-    , preconditioner_accuracy(preconditioner_accuracy)
-    , eps_primal_inf(eps_primal_inf)
-    , eps_dual_inf(eps_dual_inf)
-    , bcl_update(bcl_update)
-    , sparse_backend(sparse_backend)
-  {
-  }
+      T default_rho = 1.E-6, T default_mu_eq = 1.E-3, T default_mu_in = 1.E-1,
+      T alpha_bcl = 0.1, T beta_bcl = 0.9,
+      T refactor_dual_feasibility_threshold = 1e-2,
+      T refactor_rho_threshold = 1e-7, T mu_min_eq = 1e-9, T mu_min_in = 1e-8,
+      T mu_max_eq_inv = 1e9, T mu_max_in_inv = 1e8, T mu_update_factor = 0.1,
+      T mu_update_inv_factor = 10, T cold_reset_mu_eq = 1. / 1.1,
+      T cold_reset_mu_in = 1. / 1.1, T cold_reset_mu_eq_inv = 1.1,
+      T cold_reset_mu_in_inv = 1.1, T eps_abs = 1.e-5, T eps_rel = 0,
+      isize max_iter = 10000, isize max_iter_in = 1500, isize safe_guard = 1.E4,
+      isize nb_iterative_refinement = 10,
+      T eps_refact = 1.e-6,  // before eps_refact_=1.e-6
+      bool verbose = false,
+      InitialGuessStatus initial_guess = InitialGuessStatus::
+          EQUALITY_CONSTRAINED_INITIAL_GUESS,  // default to
+                                               // EQUALITY_CONSTRAINED_INITIAL_GUESS,
+                                               // as most often we run only
+                                               // once a problem
+      bool update_preconditioner = true, bool compute_preconditioner = true,
+      bool compute_timings = false, bool check_duality_gap = false,
+      T eps_duality_gap_abs = 1.e-4, T eps_duality_gap_rel = 0,
+      isize preconditioner_max_iter = 10, T preconditioner_accuracy = 1.e-3,
+      T eps_primal_inf = 1.E-4, T eps_dual_inf = 1.E-4, bool bcl_update = true,
+      SparseBackend sparse_backend = SparseBackend::Automatic)
+      : default_rho(default_rho),
+        default_mu_eq(default_mu_eq),
+        default_mu_in(default_mu_in),
+        alpha_bcl(alpha_bcl),
+        beta_bcl(beta_bcl),
+        refactor_dual_feasibility_threshold(
+            refactor_dual_feasibility_threshold),
+        refactor_rho_threshold(refactor_rho_threshold),
+        mu_min_eq(mu_min_eq),
+        mu_min_in(mu_min_in),
+        mu_max_eq_inv(mu_max_eq_inv),
+        mu_max_in_inv(mu_max_in_inv),
+        mu_update_factor(mu_update_factor),
+        mu_update_inv_factor(mu_update_inv_factor),
+        cold_reset_mu_eq(cold_reset_mu_eq),
+        cold_reset_mu_in(cold_reset_mu_in),
+        cold_reset_mu_eq_inv(cold_reset_mu_eq_inv),
+        cold_reset_mu_in_inv(cold_reset_mu_in_inv),
+        eps_abs(eps_abs),
+        eps_rel(eps_rel),
+        max_iter(max_iter),
+        max_iter_in(max_iter_in),
+        safe_guard(safe_guard),
+        nb_iterative_refinement(nb_iterative_refinement),
+        eps_refact(eps_refact),
+        verbose(verbose),
+        initial_guess(initial_guess),
+        update_preconditioner(update_preconditioner),
+        compute_preconditioner(compute_preconditioner),
+        compute_timings(compute_timings),
+        check_duality_gap(check_duality_gap),
+        eps_duality_gap_abs(eps_duality_gap_abs),
+        eps_duality_gap_rel(eps_duality_gap_rel),
+        preconditioner_max_iter(preconditioner_max_iter),
+        preconditioner_accuracy(preconditioner_accuracy),
+        eps_primal_inf(eps_primal_inf),
+        eps_dual_inf(eps_dual_inf),
+        bcl_update(bcl_update),
+        sparse_backend(sparse_backend) {}
 };
 
-template<typename T>
-bool
-operator==(const Settings<T>& settings1, const Settings<T>& settings2)
-{
+template <typename T>
+bool operator==(const Settings<T>& settings1, const Settings<T>& settings2) {
   bool value =
-    settings1.default_rho == settings2.default_rho &&
-    settings1.default_mu_eq == settings2.default_mu_eq &&
-    settings1.default_mu_in == settings2.default_mu_in &&
-    settings1.alpha_bcl == settings2.alpha_bcl &&
-    settings1.alpha_bcl == settings2.alpha_bcl &&
-    settings1.refactor_dual_feasibility_threshold ==
-      settings2.refactor_dual_feasibility_threshold &&
-    settings1.refactor_rho_threshold == settings2.refactor_rho_threshold &&
-    settings1.mu_min_eq == settings2.mu_min_eq &&
-    settings1.mu_min_in == settings2.mu_min_in &&
-    settings1.mu_max_eq_inv == settings2.mu_max_eq_inv &&
-    settings1.mu_max_in_inv == settings2.mu_max_in_inv &&
-    settings1.mu_update_factor == settings2.mu_update_factor &&
-    settings1.mu_update_factor == settings2.mu_update_factor &&
-    settings1.cold_reset_mu_eq == settings2.cold_reset_mu_eq &&
-    settings1.cold_reset_mu_in == settings2.cold_reset_mu_in &&
-    settings1.cold_reset_mu_eq_inv == settings2.cold_reset_mu_eq_inv &&
-    settings1.cold_reset_mu_in_inv == settings2.cold_reset_mu_in_inv &&
-    settings1.eps_abs == settings2.eps_abs &&
-    settings1.eps_rel == settings2.eps_rel &&
-    settings1.max_iter == settings2.max_iter &&
-    settings1.max_iter_in == settings2.max_iter_in &&
-    settings1.safe_guard == settings2.safe_guard &&
-    settings1.nb_iterative_refinement == settings2.nb_iterative_refinement &&
-    settings1.eps_refact == settings2.eps_refact &&
-    settings1.verbose == settings2.verbose &&
-    settings1.initial_guess == settings2.initial_guess &&
-    settings1.update_preconditioner == settings2.update_preconditioner &&
-    settings1.compute_preconditioner == settings2.compute_preconditioner &&
-    settings1.compute_timings == settings2.compute_timings &&
-    settings1.check_duality_gap == settings2.check_duality_gap &&
-    settings1.eps_duality_gap_abs == settings2.eps_duality_gap_abs &&
-    settings1.eps_duality_gap_rel == settings2.eps_duality_gap_rel &&
-    settings1.preconditioner_max_iter == settings2.preconditioner_max_iter &&
-    settings1.preconditioner_accuracy == settings2.preconditioner_accuracy &&
-    settings1.eps_primal_inf == settings2.eps_primal_inf &&
-    settings1.eps_dual_inf == settings2.eps_dual_inf &&
-    settings1.bcl_update == settings2.bcl_update &&
-    settings1.sparse_backend == settings2.sparse_backend;
+      settings1.default_rho == settings2.default_rho &&
+      settings1.default_mu_eq == settings2.default_mu_eq &&
+      settings1.default_mu_in == settings2.default_mu_in &&
+      settings1.alpha_bcl == settings2.alpha_bcl &&
+      settings1.alpha_bcl == settings2.alpha_bcl &&
+      settings1.refactor_dual_feasibility_threshold ==
+          settings2.refactor_dual_feasibility_threshold &&
+      settings1.refactor_rho_threshold == settings2.refactor_rho_threshold &&
+      settings1.mu_min_eq == settings2.mu_min_eq &&
+      settings1.mu_min_in == settings2.mu_min_in &&
+      settings1.mu_max_eq_inv == settings2.mu_max_eq_inv &&
+      settings1.mu_max_in_inv == settings2.mu_max_in_inv &&
+      settings1.mu_update_factor == settings2.mu_update_factor &&
+      settings1.mu_update_factor == settings2.mu_update_factor &&
+      settings1.cold_reset_mu_eq == settings2.cold_reset_mu_eq &&
+      settings1.cold_reset_mu_in == settings2.cold_reset_mu_in &&
+      settings1.cold_reset_mu_eq_inv == settings2.cold_reset_mu_eq_inv &&
+      settings1.cold_reset_mu_in_inv == settings2.cold_reset_mu_in_inv &&
+      settings1.eps_abs == settings2.eps_abs &&
+      settings1.eps_rel == settings2.eps_rel &&
+      settings1.max_iter == settings2.max_iter &&
+      settings1.max_iter_in == settings2.max_iter_in &&
+      settings1.safe_guard == settings2.safe_guard &&
+      settings1.nb_iterative_refinement == settings2.nb_iterative_refinement &&
+      settings1.eps_refact == settings2.eps_refact &&
+      settings1.verbose == settings2.verbose &&
+      settings1.initial_guess == settings2.initial_guess &&
+      settings1.update_preconditioner == settings2.update_preconditioner &&
+      settings1.compute_preconditioner == settings2.compute_preconditioner &&
+      settings1.compute_timings == settings2.compute_timings &&
+      settings1.check_duality_gap == settings2.check_duality_gap &&
+      settings1.eps_duality_gap_abs == settings2.eps_duality_gap_abs &&
+      settings1.eps_duality_gap_rel == settings2.eps_duality_gap_rel &&
+      settings1.preconditioner_max_iter == settings2.preconditioner_max_iter &&
+      settings1.preconditioner_accuracy == settings2.preconditioner_accuracy &&
+      settings1.eps_primal_inf == settings2.eps_primal_inf &&
+      settings1.eps_dual_inf == settings2.eps_dual_inf &&
+      settings1.bcl_update == settings2.bcl_update &&
+      settings1.sparse_backend == settings2.sparse_backend;
   return value;
 }
 
-template<typename T>
-bool
-operator!=(const Settings<T>& settings1, const Settings<T>& settings2)
-{
+template <typename T>
+bool operator!=(const Settings<T>& settings1, const Settings<T>& settings2) {
   return !(settings1 == settings2);
 }
 
-} // namespace proxqp
-} // namespace proxsuite
+}  // namespace proxqp
+}  // namespace proxsuite
 
 #endif /* end of include guard PROXSUITE_PROXQP_SETTINGS_HPP */

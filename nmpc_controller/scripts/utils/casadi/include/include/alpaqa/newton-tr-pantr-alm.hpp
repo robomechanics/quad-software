@@ -24,4 +24,4 @@ ALPAQA_EXPORT_EXTERN_TEMPLATE(class, ALMSolver, PANTRSolver<NewtonTRDirection<Ei
 #endif
 // clang-format on
 
-} // namespace alpaqa
+}  // namespace alpaqa

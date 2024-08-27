@@ -8,13 +8,12 @@
 #ifndef PROXSUITE_SERIALIZATION_ARCHIVE_HPP
 #define PROXSUITE_SERIALIZATION_ARCHIVE_HPP
 
-#include <fstream>
-#include <string>
-
-#include <cereal/cereal.hpp>
 #include <cereal/archives/binary.hpp>
 #include <cereal/archives/json.hpp>
 #include <cereal/archives/xml.hpp>
+#include <cereal/cereal.hpp>
+#include <fstream>
+#include <string>
 
 namespace proxsuite {
 namespace serialization {
@@ -28,10 +27,8 @@ namespace serialization {
 /// \param[in]  is  string stream constaining the serialized content of the
 /// object.
 ///
-template<typename T>
-inline void
-loadFromStringStream(T& object, std::istringstream& is)
-{
+template <typename T>
+inline void loadFromStringStream(T& object, std::istringstream& is) {
   cereal::JSONInputArchive ia(is);
   ia(object);
 }
@@ -45,10 +42,8 @@ loadFromStringStream(T& object, std::istringstream& is)
 /// \param[out]  ss String stream constaining the serialized content of the
 /// object.
 ///
-template<typename T>
-inline void
-saveToStringStream(const T& object, std::stringstream& ss)
-{
+template <typename T>
+inline void saveToStringStream(const T& object, std::stringstream& ss) {
   cereal::JSONOutputArchive oa(ss);
   oa(object);
 }
@@ -61,10 +56,8 @@ saveToStringStream(const T& object, std::stringstream& ss)
 /// \param[out] object Object in which the loaded data are copied.
 /// \param[in]  str  string constaining the serialized content of the object.
 ///
-template<typename T>
-inline void
-loadFromString(T& object, const std::string& str)
-{
+template <typename T>
+inline void loadFromString(T& object, const std::string& str) {
   std::istringstream is(str);
   loadFromStringStream(object, is);
 }
@@ -78,10 +71,8 @@ loadFromString(T& object, const std::string& str)
 ///
 /// \returns a string  constaining the serialized content of the object.
 ///
-template<typename T>
-inline std::string
-saveToString(const T& object)
-{
+template <typename T>
+inline std::string saveToString(const T& object) {
   std::stringstream ss;
   saveToStringStream(object, ss);
   return ss.str();
@@ -95,10 +86,8 @@ saveToString(const T& object)
 /// \param[out] object Object in which the loaded data are copied.
 /// \param[in] filename Name of the file containing the serialized data.
 ///
-template<typename T>
-inline void
-loadFromBinary(T& object, const std::string& filename)
-{
+template <typename T>
+inline void loadFromBinary(T& object, const std::string& filename) {
   std::ifstream ifs(filename.c_str(), std::ios::binary);
   if (ifs) {
     cereal::BinaryInputArchive ia(ifs);
@@ -118,10 +107,8 @@ loadFromBinary(T& object, const std::string& filename)
 /// \param[in] object Object in which the loaded data are copied.
 /// \param[in] filename Name of the file containing the serialized data.
 ///
-template<typename T>
-void
-saveToBinary(const T& object, const std::string& filename)
-{
+template <typename T>
+void saveToBinary(const T& object, const std::string& filename) {
   std::ofstream ofs(filename.c_str(), std::ios::binary);
   if (ofs) {
     cereal::BinaryOutputArchive oa(ofs);
@@ -141,10 +128,8 @@ saveToBinary(const T& object, const std::string& filename)
 /// \param[out] object Object in which the loaded data are copied.
 /// \param[in] filename Name of the file containing the serialized data.
 ///
-template<typename T>
-inline void
-loadFromJSON(T& object, const std::string& filename)
-{
+template <typename T>
+inline void loadFromJSON(T& object, const std::string& filename) {
   std::ifstream ifs(filename.c_str());
   if (ifs) {
     cereal::JSONInputArchive ia(ifs);
@@ -164,10 +149,8 @@ loadFromJSON(T& object, const std::string& filename)
 /// \param[in] object Object in which the loaded data are copied.
 /// \param[in] filename Name of the file containing the serialized data.
 ///
-template<typename T>
-void
-saveToJSON(const T& object, const std::string& filename)
-{
+template <typename T>
+void saveToJSON(const T& object, const std::string& filename) {
   std::ofstream ofs(filename.c_str());
   if (ofs) {
     cereal::JSONOutputArchive oa(ofs);
@@ -187,10 +170,8 @@ saveToJSON(const T& object, const std::string& filename)
 /// \param[out] object Object in which the loaded data are copied.
 /// \param[in] filename Name of the file containing the serialized data.
 ///
-template<typename T>
-inline void
-loadFromXML(T& object, const std::string& filename)
-{
+template <typename T>
+inline void loadFromXML(T& object, const std::string& filename) {
   std::ifstream ifs(filename.c_str());
   if (ifs) {
     cereal::XMLInputArchive ia(ifs);
@@ -210,10 +191,8 @@ loadFromXML(T& object, const std::string& filename)
 /// \param[in] object Object in which the loaded data are copied.
 /// \param[in] filename Name of the file containing the serialized data.
 ///
-template<typename T>
-void
-saveToXML(const T& object, const std::string& filename)
-{
+template <typename T>
+void saveToXML(const T& object, const std::string& filename) {
   std::ofstream ofs(filename.c_str());
   if (ofs) {
     cereal::XMLOutputArchive oa(ofs);
@@ -225,7 +204,7 @@ saveToXML(const T& object, const std::string& filename)
   }
 }
 
-}
-}
+}  // namespace serialization
+}  // namespace proxsuite
 
 #endif /* end of include guard PROXSUITE_SERIALIZATION_ARCHIVE_HPP */

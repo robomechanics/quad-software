@@ -38,33 +38,33 @@ namespace internal {
 
 // TODO(ezhulenev): Add specializations for all other types of Tensor ops.
 
-template<typename Expression>
+template <typename Expression>
 struct ExpressionHasTensorBroadcastingOp {
   enum { value = false };
 };
 
-template<typename LhsXprType, typename RhsXprType>
+template <typename LhsXprType, typename RhsXprType>
 struct ExpressionHasTensorBroadcastingOp<
     const TensorAssignOp<LhsXprType, RhsXprType> > {
   enum { value = ExpressionHasTensorBroadcastingOp<RhsXprType>::value };
 };
 
-template<typename UnaryOp, typename XprType>
+template <typename UnaryOp, typename XprType>
 struct ExpressionHasTensorBroadcastingOp<
     const TensorCwiseUnaryOp<UnaryOp, XprType> > {
   enum { value = ExpressionHasTensorBroadcastingOp<XprType>::value };
 };
 
-template<typename BinaryOp, typename LhsXprType, typename RhsXprType>
+template <typename BinaryOp, typename LhsXprType, typename RhsXprType>
 struct ExpressionHasTensorBroadcastingOp<
     const TensorCwiseBinaryOp<BinaryOp, LhsXprType, RhsXprType> > {
   enum {
     value = ExpressionHasTensorBroadcastingOp<LhsXprType>::value ||
-        ExpressionHasTensorBroadcastingOp<RhsXprType>::value
+            ExpressionHasTensorBroadcastingOp<RhsXprType>::value
   };
 };
 
-template<typename Broadcast, typename XprType>
+template <typename Broadcast, typename XprType>
 struct ExpressionHasTensorBroadcastingOp<
     const TensorBroadcastingOp<Broadcast, XprType> > {
   enum { value = true };
@@ -173,8 +173,8 @@ class TensorExecutor<Expression, DefaultDevice, Vectorizable,
   static const int NumDims = traits<Expression>::NumDimensions;
 
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE void run(const Expression& expr,
-                         const DefaultDevice& device = DefaultDevice()) {
+  static EIGEN_STRONG_INLINE void run(
+      const Expression& expr, const DefaultDevice& device = DefaultDevice()) {
     typedef TensorBlockMapper<NumDims, Evaluator::Layout, StorageIndex>
         TensorBlockMapper;
 
@@ -327,7 +327,7 @@ class TensorExecutor<Expression, ThreadPoolDevice, Vectorizable, Tiling> {
   typedef typename Expression::Index StorageIndex;
 
   static EIGEN_STRONG_INLINE void run(const Expression& expr,
-                         const ThreadPoolDevice& device) {
+                                      const ThreadPoolDevice& device) {
     typedef TensorEvaluator<Expression, ThreadPoolDevice> Evaluator;
     typedef EvalRange<Evaluator, StorageIndex, Vectorizable> EvalRange;
 
@@ -335,11 +335,11 @@ class TensorExecutor<Expression, ThreadPoolDevice, Vectorizable, Tiling> {
     const bool needs_assign = evaluator.evalSubExprsIfNeeded(nullptr);
     if (needs_assign) {
       const StorageIndex size = array_prod(evaluator.dimensions());
-      device.parallelFor(size, evaluator.costPerCoeff(Vectorizable),
-                         EvalRange::alignBlockSize,
-                         [&evaluator](StorageIndex firstIdx, StorageIndex lastIdx) {
-                           EvalRange::run(&evaluator, firstIdx, lastIdx);
-                         });
+      device.parallelFor(
+          size, evaluator.costPerCoeff(Vectorizable), EvalRange::alignBlockSize,
+          [&evaluator](StorageIndex firstIdx, StorageIndex lastIdx) {
+            EvalRange::run(&evaluator, firstIdx, lastIdx);
+          });
     }
     evaluator.cleanup();
   }
@@ -359,8 +359,7 @@ class TensorExecutor<Expression, ThreadPoolDevice, Vectorizable,
   typedef TensorBlockMapper<NumDims, Evaluator::Layout, IndexType> BlockMapper;
   typedef TensorExecutorTilingContext<BlockMapper> TilingContext;
 
-  typedef internal::TensorBlockDescriptor<NumDims, IndexType>
-      TensorBlockDesc;
+  typedef internal::TensorBlockDescriptor<NumDims, IndexType> TensorBlockDesc;
   typedef internal::TensorBlockScratchAllocator<ThreadPoolDevice>
       TensorBlockScratch;
 
@@ -474,7 +473,6 @@ class TensorAsyncExecutor<Expression, ThreadPoolDevice, DoneCallback,
   static EIGEN_STRONG_INLINE void runAsync(const Expression& expr,
                                            const ThreadPoolDevice& device,
                                            DoneCallback done) {
-
     TensorAsyncExecutorContext* const ctx =
         new TensorAsyncExecutorContext(expr, device, std::move(done));
 
@@ -553,8 +551,9 @@ class TensorExecutor<Expression, GpuDevice, Vectorizable, Tiling> {
 #if defined(EIGEN_GPUCC)
 template <typename Evaluator, typename StorageIndex, bool Vectorizable>
 struct EigenMetaKernelEval {
-  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE
-  void run(Evaluator& eval, StorageIndex firstIdx, StorageIndex lastIdx, StorageIndex step_size) {
+  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void run(
+      Evaluator& eval, StorageIndex firstIdx, StorageIndex lastIdx,
+      StorageIndex step_size) {
     for (StorageIndex i = firstIdx; i < lastIdx; i += step_size) {
       eval.evalScalar(i);
     }
@@ -563,9 +562,11 @@ struct EigenMetaKernelEval {
 
 template <typename Evaluator, typename StorageIndex>
 struct EigenMetaKernelEval<Evaluator, StorageIndex, true> {
-  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE
-  void run(Evaluator& eval, StorageIndex firstIdx, StorageIndex lastIdx, StorageIndex step_size) {
-    const StorageIndex PacketSize = unpacket_traits<typename Evaluator::PacketReturnType>::size;
+  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void run(
+      Evaluator& eval, StorageIndex firstIdx, StorageIndex lastIdx,
+      StorageIndex step_size) {
+    const StorageIndex PacketSize =
+        unpacket_traits<typename Evaluator::PacketReturnType>::size;
     const StorageIndex vectorized_size = (lastIdx / PacketSize) * PacketSize;
     const StorageIndex vectorized_step_size = step_size * PacketSize;
 
@@ -574,38 +575,40 @@ struct EigenMetaKernelEval<Evaluator, StorageIndex, true> {
          i += vectorized_step_size) {
       eval.evalPacket(i);
     }
-    for (StorageIndex i = vectorized_size + firstIdx; i < lastIdx; i += step_size) {
+    for (StorageIndex i = vectorized_size + firstIdx; i < lastIdx;
+         i += step_size) {
       eval.evalScalar(i);
     }
   }
 };
 
 template <typename Evaluator, typename StorageIndex>
-__global__ void
-__launch_bounds__(1024)
-EigenMetaKernel(Evaluator eval, StorageIndex size) {
-
+__global__ void __launch_bounds__(1024)
+    EigenMetaKernel(Evaluator eval, StorageIndex size) {
   const StorageIndex first_index = blockIdx.x * blockDim.x + threadIdx.x;
   const StorageIndex step_size = blockDim.x * gridDim.x;
 
   const bool vectorizable = Evaluator::PacketAccess & Evaluator::IsAligned;
-  EigenMetaKernelEval<Evaluator, StorageIndex, vectorizable>::run(eval, first_index, size, step_size);
+  EigenMetaKernelEval<Evaluator, StorageIndex, vectorizable>::run(
+      eval, first_index, size, step_size);
 }
 
 /*static*/
 template <typename Expression, bool Vectorizable, TiledEvaluation Tiling>
-EIGEN_STRONG_INLINE void TensorExecutor<Expression, GpuDevice, Vectorizable, Tiling>::run(
-    const Expression& expr, const GpuDevice& device) {
+EIGEN_STRONG_INLINE void TensorExecutor<Expression, GpuDevice, Vectorizable,
+                                        Tiling>::run(const Expression& expr,
+                                                     const GpuDevice& device) {
   TensorEvaluator<Expression, GpuDevice> evaluator(expr, device);
   const bool needs_assign = evaluator.evalSubExprsIfNeeded(nullptr);
   if (needs_assign) {
-
     const int block_size = device.maxGpuThreadsPerBlock();
     const int max_blocks = device.getNumGpuMultiProcessors() *
                            device.maxGpuThreadsPerMultiProcessor() / block_size;
     const StorageIndex size = array_prod(evaluator.dimensions());
-    // Create a least one block to ensure we won't crash when tensorflow calls with tensors of size 0.
-    const int num_blocks = numext::maxi<int>(numext::mini<int>(max_blocks, divup<int>(size, block_size)), 1);
+    // Create a least one block to ensure we won't crash when tensorflow calls
+    // with tensors of size 0.
+    const int num_blocks = numext::maxi<int>(
+        numext::mini<int>(max_blocks, divup<int>(size, block_size)), 1);
 
     LAUNCH_GPU_KERNEL(
         (EigenMetaKernel<TensorEvaluator<Expression, GpuDevice>, StorageIndex>),
@@ -626,8 +629,8 @@ struct ExecExprFunctorKernel {
   Evaluator evaluator;
   const Index range;
   template <typename Scratch>
-  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE ExecExprFunctorKernel(
-      const Scratch, Evaluator evaluator_, const Index range_)
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE
+  ExecExprFunctorKernel(const Scratch, Evaluator evaluator_, const Index range_)
       : evaluator(evaluator_), range(range_) {}
 
   EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void operator()(
@@ -682,9 +685,8 @@ class TensorExecutor<Expression, Eigen::SyclDevice, Vectorizable, Tiling> {
       dev.parallel_for_setup(vectorizable_threads, tileSize, range, GRange);
       range = total_size;
 
-      dev.template nullary_kernel_launcher<
-          typename Evaluator::CoeffReturnType,
-          ExecExprFunctorKernel<Evaluator> >(
+      dev.template nullary_kernel_launcher<typename Evaluator::CoeffReturnType,
+                                           ExecExprFunctorKernel<Evaluator> >(
           evaluator,
           cl::sycl::nd_range<1>(cl::sycl::range<1>(GRange),
                                 cl::sycl::range<1>(tileSize)),
@@ -696,8 +698,8 @@ class TensorExecutor<Expression, Eigen::SyclDevice, Vectorizable, Tiling> {
 
 #endif
 
-} // end namespace internal
+}  // end namespace internal
 
-} // end namespace Eigen
+}  // end namespace Eigen
 
-#endif // EIGEN_CXX11_TENSOR_TENSOR_EXECUTOR_H
+#endif  // EIGEN_CXX11_TENSOR_TENSOR_EXECUTOR_H

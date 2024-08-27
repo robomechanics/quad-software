@@ -7,13 +7,12 @@
 #ifndef __IPTAGGEDOBJECT_HPP__
 #define __IPTAGGEDOBJECT_HPP__
 
-#include "IpUtils.hpp"
 #include "IpDebug.hpp"
-#include "IpReferenced.hpp"
 #include "IpObserver.hpp"
+#include "IpReferenced.hpp"
+#include "IpUtils.hpp"
 
-namespace Ipopt
-{
+namespace Ipopt {
 
 /** TaggedObject class.
  * Often, certain calculations or operations are expensive,
@@ -54,75 +53,66 @@ namespace Ipopt
  *  example, a Vector class, inside its own set method, MUST call
  *  ObjectChanged() to update the internally stored tag for comparison.
  */
-class IPOPTLIB_EXPORT TaggedObject : public ReferencedObject, public Subject
-{
-public:
-   /** Type for the Tag values */
-   typedef unsigned int Tag;
+class IPOPTLIB_EXPORT TaggedObject : public ReferencedObject, public Subject {
+ public:
+  /** Type for the Tag values */
+  typedef unsigned int Tag;
 
-   /** Constructor. */
-   TaggedObject()
-      :
-      Subject()
-   {
-      ObjectChanged();
-   }
+  /** Constructor. */
+  TaggedObject() : Subject() { ObjectChanged(); }
 
-   /** Destructor. */
-   virtual ~TaggedObject()
-   {}
+  /** Destructor. */
+  virtual ~TaggedObject() {}
 
-   /** Users of TaggedObjects call this to
-    *  update their own internal tags every time
-    *  they perform the expensive operation.
-    */
-   Tag GetTag() const
-   {
-      return tag_;
-   }
+  /** Users of TaggedObjects call this to
+   *  update their own internal tags every time
+   *  they perform the expensive operation.
+   */
+  Tag GetTag() const { return tag_; }
 
-   /** Users of TaggedObjects call this to
-    *  check if the object HasChanged since
-    *  they last updated their own internal
-    *  tag.
-    */
-   bool HasChanged(const Tag comparison_tag) const
-   {
-      return (comparison_tag == tag_) ? false : true;
-   }
-protected:
-   /** Objects derived from TaggedObject MUST call this
-    *  method every time their internal state changes to
-    *  update the internal tag for comparison
-    */
-   void ObjectChanged();
-private:
-   /**@name Default Compiler Generated Methods (Hidden to avoid
-    * implicit creation/calling).  These methods are not implemented
-    * and we do not want the compiler to implement them for us, so we
-    * declare them private and do not define them. This ensures that
-    * they will not be implicitly created/called. */
-   ///@{
-   /** Copy Constructor */
-   TaggedObject(const TaggedObject&);
+  /** Users of TaggedObjects call this to
+   *  check if the object HasChanged since
+   *  they last updated their own internal
+   *  tag.
+   */
+  bool HasChanged(const Tag comparison_tag) const {
+    return (comparison_tag == tag_) ? false : true;
+  }
 
-   /** Default Assignment Operator */
-   void operator=(const TaggedObject&);
-   ///@}
+ protected:
+  /** Objects derived from TaggedObject MUST call this
+   *  method every time their internal state changes to
+   *  update the internal tag for comparison
+   */
+  void ObjectChanged();
 
-   /** The tag indicating the current state of the object.
-    *  We use this to compare against the comparison_tag
-    *  in the HasChanged method. This member is updated
-    *  from the unique_tag_ every time the object changes.
-    */
-   Tag tag_;
+ private:
+  /**@name Default Compiler Generated Methods (Hidden to avoid
+   * implicit creation/calling).  These methods are not implemented
+   * and we do not want the compiler to implement them for us, so we
+   * declare them private and do not define them. This ensures that
+   * they will not be implicitly created/called. */
+  ///@{
+  /** Copy Constructor */
+  TaggedObject(const TaggedObject&);
 
-   /** The index indicating the cache priority for this
-    * TaggedObject. If a result that depended on this
-    * TaggedObject is cached, it will be cached with this
-    * priority
-    */
-   Index cache_priority_;
+  /** Default Assignment Operator */
+  void operator=(const TaggedObject&);
+  ///@}
+
+  /** The tag indicating the current state of the object.
+   *  We use this to compare against the comparison_tag
+   *  in the HasChanged method. This member is updated
+   *  from the unique_tag_ every time the object changes.
+   */
+  Tag tag_;
+
+  /** The index indicating the cache priority for this
+   * TaggedObject. If a result that depended on this
+   * TaggedObject is cached, it will be cached with this
+   * priority
+   */
+  Index cache_priority_;
 };
-} // namespace Ipopt
+}  // namespace Ipopt
 #endif

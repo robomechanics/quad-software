@@ -12,16 +12,16 @@ class OsiSolverInterface;
 
 /** Abstract base class for consequent bounds.
     When a variable is branched on it normally interacts with other variables by
-    means of equations.  There are cases where we want to step outside LP and do something
-    more directly e.g. fix bounds.  This class is for that.
+    means of equations.  There are cases where we want to step outside LP and do
+   something more directly e.g. fix bounds.  This class is for that.
 
-    At present it need not be virtual as only instance is CbcFixVariable, but ...
+    At present it need not be virtual as only instance is CbcFixVariable, but
+   ...
 
  */
 
 class CbcConsequence {
-
-public:
+ public:
   // Default Constructor
   CbcConsequence();
 
@@ -38,13 +38,13 @@ public:
   virtual ~CbcConsequence();
 
   /** Apply to an LP solver.  Action depends on state
-     */
+   */
   virtual void applyToSolver(OsiSolverInterface *solver, int state) const = 0;
 
-protected:
+ protected:
 };
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -6,38 +6,34 @@
 #ifndef PROXSUITE_PROXQP_SPARSE_UTILS_HPP
 #define PROXSUITE_PROXQP_SPARSE_UTILS_HPP
 
-#include <iostream>
 #include <Eigen/IterativeLinearSolvers>
+#include <iostream>
+#include <proxsuite/linalg/dense/core.hpp>
+#include <proxsuite/linalg/sparse/core.hpp>
+#include <proxsuite/linalg/sparse/factorize.hpp>
+#include <proxsuite/linalg/sparse/rowmod.hpp>
+#include <proxsuite/linalg/sparse/update.hpp>
+#include <proxsuite/linalg/veg/vec.hpp>
+#include <proxsuite/proxqp/dense/views.hpp>
+#include <proxsuite/proxqp/settings.hpp>
 #include <unsupported/Eigen/IterativeSolvers>
 
 #include "proxsuite/helpers/common.hpp"
-#include <proxsuite/linalg/dense/core.hpp>
-#include <proxsuite/linalg/sparse/core.hpp>
-#include "proxsuite/proxqp/sparse/workspace.hpp"
-#include <proxsuite/linalg/sparse/factorize.hpp>
-#include <proxsuite/linalg/sparse/update.hpp>
-#include <proxsuite/linalg/sparse/rowmod.hpp>
-#include <proxsuite/proxqp/dense/views.hpp>
-#include <proxsuite/proxqp/settings.hpp>
-#include <proxsuite/linalg/veg/vec.hpp>
 #include "proxsuite/proxqp/results.hpp"
-#include "proxsuite/proxqp/utils/prints.hpp"
-#include "proxsuite/proxqp/sparse/views.hpp"
 #include "proxsuite/proxqp/sparse/model.hpp"
-#include "proxsuite/proxqp/sparse/preconditioner/ruiz.hpp"
 #include "proxsuite/proxqp/sparse/preconditioner/identity.hpp"
+#include "proxsuite/proxqp/sparse/preconditioner/ruiz.hpp"
+#include "proxsuite/proxqp/sparse/views.hpp"
+#include "proxsuite/proxqp/sparse/workspace.hpp"
+#include "proxsuite/proxqp/utils/prints.hpp"
 
 namespace proxsuite {
 namespace proxqp {
 namespace sparse {
 
-template<typename T, typename I>
-void
-print_setup_header(const Settings<T>& settings,
-                   Results<T>& results,
-                   const Model<T, I>& model)
-{
-
+template <typename T, typename I>
+void print_setup_header(const Settings<T>& settings, Results<T>& results,
+                        const Model<T, I>& model) {
   proxsuite::proxqp::print_preambule();
 
   // Print variables and constraints
@@ -86,34 +82,29 @@ print_setup_header(const Settings<T>& settings,
       break;
     case InitialGuessStatus::WARM_START_WITH_PREVIOUS_RESULT:
       std::cout
-        << "          initial guess: warm start with previous result. \n"
-        << std::endl;
+          << "          initial guess: warm start with previous result. \n"
+          << std::endl;
       break;
     case InitialGuessStatus::COLD_START_WITH_PREVIOUS_RESULT:
       std::cout
-        << "          initial guess: cold start with previous result. \n"
-        << std::endl;
+          << "          initial guess: cold start with previous result. \n"
+          << std::endl;
       break;
     case InitialGuessStatus::EQUALITY_CONSTRAINED_INITIAL_GUESS:
       std::cout
-        << "          initial guess: equality constrained initial guess. \n"
-        << std::endl;
+          << "          initial guess: equality constrained initial guess. \n"
+          << std::endl;
   }
 }
 
 namespace detail {
 
-template<typename T, typename I>
-VEG_NO_INLINE void
-noalias_gevmmv_add_impl( //
-  VectorViewMut<T> out_l,
-  VectorViewMut<T> out_r,
-  proxsuite::linalg::sparse::MatRef<T, I> a,
-  VectorView<T> in_l,
-  VectorView<T> in_r)
-{
-  VEG_ASSERT_ALL_OF /* NOLINT */ (a.nrows() == out_r.dim,
-                                  a.ncols() == in_r.dim,
+template <typename T, typename I>
+VEG_NO_INLINE void noalias_gevmmv_add_impl(  //
+    VectorViewMut<T> out_l, VectorViewMut<T> out_r,
+    proxsuite::linalg::sparse::MatRef<T, I> a, VectorView<T> in_l,
+    VectorView<T> in_r) {
+  VEG_ASSERT_ALL_OF /* NOLINT */ (a.nrows() == out_r.dim, a.ncols() == in_r.dim,
                                   a.ncols() == out_l.dim,
                                   a.nrows() == in_l.dim);
   // equivalent to
@@ -176,17 +167,12 @@ noalias_gevmmv_add_impl( //
   }
 }
 
-template<typename T, typename I>
-VEG_NO_INLINE void
-noalias_symhiv_add_impl( //
-  VectorViewMut<T> out,
-  proxsuite::linalg::sparse::MatRef<T, I> a,
-  VectorView<T> in)
-{
-  VEG_ASSERT_ALL_OF /* NOLINT */ ( //
-    a.nrows() == a.ncols(),
-    a.nrows() == out.dim,
-    a.ncols() == in.dim);
+template <typename T, typename I>
+VEG_NO_INLINE void noalias_symhiv_add_impl(  //
+    VectorViewMut<T> out, proxsuite::linalg::sparse::MatRef<T, I> a,
+    VectorView<T> in) {
+  VEG_ASSERT_ALL_OF /* NOLINT */ (  //
+      a.nrows() == a.ncols(), a.nrows() == out.dim, a.ncols() == in.dim);
   // equivalent to
   // out.to_eigen().noalias() +=
   // 		a.to_eigen().template selfadjointView<Eigen::Upper>() *
@@ -256,37 +242,26 @@ noalias_symhiv_add_impl( //
   }
 }
 
-template<typename OutL, typename OutR, typename A, typename InL, typename InR>
-void
-noalias_gevmmv_add(OutL&& out_l,
-                   OutR&& out_r,
-                   A const& a,
-                   InL const& in_l,
-                   InR const& in_r)
-{
+template <typename OutL, typename OutR, typename A, typename InL, typename InR>
+void noalias_gevmmv_add(OutL&& out_l, OutR&& out_r, A const& a, InL const& in_l,
+                        InR const& in_r) {
   // noalias general vector matrix matrix vector add
   noalias_gevmmv_add_impl<typename A::Scalar, typename A::StorageIndex>(
-    { proxqp::from_eigen, out_l },
-    { proxqp::from_eigen, out_r },
-    { proxsuite::linalg::sparse::from_eigen, a },
-    { proxqp::from_eigen, in_l },
-    { proxqp::from_eigen, in_r });
+      {proxqp::from_eigen, out_l}, {proxqp::from_eigen, out_r},
+      {proxsuite::linalg::sparse::from_eigen, a}, {proxqp::from_eigen, in_l},
+      {proxqp::from_eigen, in_r});
 }
 
-template<typename Out, typename A, typename In>
-void
-noalias_symhiv_add(Out&& out, A const& a, In const& in)
-{
+template <typename Out, typename A, typename In>
+void noalias_symhiv_add(Out&& out, A const& a, In const& in) {
   // noalias symmetric (hi) matrix vector add
   noalias_symhiv_add_impl<typename A::Scalar, typename A::StorageIndex>(
-    { proxqp::from_eigen, out },
-    { proxsuite::linalg::sparse::from_eigen, a },
-    { proxqp::from_eigen, in });
+      {proxqp::from_eigen, out}, {proxsuite::linalg::sparse::from_eigen, a},
+      {proxqp::from_eigen, in});
 }
 
-template<typename T, typename I>
-struct AugmentedKkt : Eigen::EigenBase<AugmentedKkt<T, I>>
-{
+template <typename T, typename I>
+struct AugmentedKkt : Eigen::EigenBase<AugmentedKkt<T, I>> {
   struct Raw /* NOLINT */
   {
     proxsuite::linalg::sparse::MatRef<T, I> kkt_active;
@@ -299,16 +274,12 @@ struct AugmentedKkt : Eigen::EigenBase<AugmentedKkt<T, I>>
     T mu_in;
   } _;
 
-  AugmentedKkt /* NOLINT */ (Raw raw) noexcept
-    : _{ raw }
-  {
-  }
+  AugmentedKkt /* NOLINT */ (Raw raw) noexcept : _{raw} {}
 
   using Scalar = T;
   using RealScalar = T;
   using StorageIndex = I;
-  enum
-  {
+  enum {
     ColsAtCompileTime = Eigen::Dynamic,
     MaxColsAtCompileTime = Eigen::Dynamic,
     IsRowMajor = false,
@@ -316,141 +287,125 @@ struct AugmentedKkt : Eigen::EigenBase<AugmentedKkt<T, I>>
 
   auto rows() const noexcept -> isize { return _.n + _.n_eq + _.n_in; }
   auto cols() const noexcept -> isize { return rows(); }
-  template<typename Rhs>
+  template <typename Rhs>
   auto operator*(Eigen::MatrixBase<Rhs> const& x) const
-    -> Eigen::Product<AugmentedKkt, Rhs, Eigen::AliasFreeProduct>
-  {
-    return Eigen::Product< //
-      AugmentedKkt,
-      Rhs,
-      Eigen::AliasFreeProduct>{
-      *this,
-      x.derived(),
+      -> Eigen::Product<AugmentedKkt, Rhs, Eigen::AliasFreeProduct> {
+    return Eigen::Product<  //
+        AugmentedKkt, Rhs, Eigen::AliasFreeProduct>{
+        *this,
+        x.derived(),
     };
   }
 };
 
-template<typename T>
-using VecMapMut = Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1>,
-                             Eigen::Unaligned,
-                             Eigen::Stride<Eigen::Dynamic, 1>>;
-template<typename T>
+template <typename T>
+using VecMapMut =
+    Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1>, Eigen::Unaligned,
+               Eigen::Stride<Eigen::Dynamic, 1>>;
+template <typename T>
 using VecMap = Eigen::Map<Eigen::Matrix<T, Eigen::Dynamic, 1> const,
-                          Eigen::Unaligned,
-                          Eigen::Stride<Eigen::Dynamic, 1>>;
+                          Eigen::Unaligned, Eigen::Stride<Eigen::Dynamic, 1>>;
 
-template<typename V>
-auto
-vec(V const& v) -> VecMap<typename V::Scalar>
-{
+template <typename V>
+auto vec(V const& v) -> VecMap<typename V::Scalar> {
   static_assert(V::InnerStrideAtCompileTime == 1, ".");
   return {
-    v.data(),
-    v.rows(),
-    v.cols(),
-    Eigen::Stride<Eigen::Dynamic, 1>{
-      v.outerStride(),
-      v.innerStride(),
-    },
+      v.data(),
+      v.rows(),
+      v.cols(),
+      Eigen::Stride<Eigen::Dynamic, 1>{
+          v.outerStride(),
+          v.innerStride(),
+      },
   };
 }
 
-template<typename V>
-auto
-vec_mut(V&& v)
-  -> VecMapMut<typename proxsuite::linalg::veg::uncvref_t<V>::Scalar>
-{
+template <typename V>
+auto vec_mut(V&& v)
+    -> VecMapMut<typename proxsuite::linalg::veg::uncvref_t<V>::Scalar> {
   static_assert(
-    proxsuite::linalg::veg::uncvref_t<V>::InnerStrideAtCompileTime == 1, ".");
+      proxsuite::linalg::veg::uncvref_t<V>::InnerStrideAtCompileTime == 1, ".");
   return {
-    v.data(),
-    v.rows(),
-    v.cols(),
-    Eigen::Stride<Eigen::Dynamic, 1>{
-      v.outerStride(),
-      v.innerStride(),
-    },
+      v.data(),
+      v.rows(),
+      v.cols(),
+      Eigen::Stride<Eigen::Dynamic, 1>{
+          v.outerStride(),
+          v.innerStride(),
+      },
   };
 }
 
-template<typename T, typename I>
-auto
-middle_cols(proxsuite::linalg::sparse::MatRef<T, I> mat,
-            isize start,
-            isize ncols,
-            isize nnz) -> proxsuite::linalg::sparse::MatRef<T, I>
-{
+template <typename T, typename I>
+auto middle_cols(proxsuite::linalg::sparse::MatRef<T, I> mat, isize start,
+                 isize ncols,
+                 isize nnz) -> proxsuite::linalg::sparse::MatRef<T, I> {
   VEG_ASSERT(start <= mat.ncols());
   VEG_ASSERT(ncols <= mat.ncols() - start);
 
   return {
-    proxsuite::linalg::sparse::from_raw_parts,
-    mat.nrows(),
-    ncols,
-    nnz,
-    mat.col_ptrs() + start,
-    mat.is_compressed() ? nullptr : (mat.nnz_per_col() + start),
-    mat.row_indices(),
-    mat.values(),
+      proxsuite::linalg::sparse::from_raw_parts,
+      mat.nrows(),
+      ncols,
+      nnz,
+      mat.col_ptrs() + start,
+      mat.is_compressed() ? nullptr : (mat.nnz_per_col() + start),
+      mat.row_indices(),
+      mat.values(),
   };
 }
 
-template<typename T, typename I>
-auto
-middle_cols_mut(proxsuite::linalg::sparse::MatMut<T, I> mat,
-                isize start,
-                isize ncols,
-                isize nnz) -> proxsuite::linalg::sparse::MatMut<T, I>
-{
+template <typename T, typename I>
+auto middle_cols_mut(proxsuite::linalg::sparse::MatMut<T, I> mat, isize start,
+                     isize ncols,
+                     isize nnz) -> proxsuite::linalg::sparse::MatMut<T, I> {
   VEG_ASSERT(start <= mat.ncols());
   VEG_ASSERT(ncols <= mat.ncols() - start);
   return {
-    proxsuite::linalg::sparse::from_raw_parts,
-    mat.nrows(),
-    ncols,
-    nnz,
-    mat.col_ptrs_mut() + start,
-    mat.is_compressed() ? nullptr : (mat.nnz_per_col_mut() + start),
-    mat.row_indices_mut(),
-    mat.values_mut(),
+      proxsuite::linalg::sparse::from_raw_parts,
+      mat.nrows(),
+      ncols,
+      nnz,
+      mat.col_ptrs_mut() + start,
+      mat.is_compressed() ? nullptr : (mat.nnz_per_col_mut() + start),
+      mat.row_indices_mut(),
+      mat.values_mut(),
   };
 }
 
-template<typename T, typename I>
-auto
-top_rows_unchecked(proxsuite::linalg::veg::Unsafe /*unsafe*/,
-                   proxsuite::linalg::sparse::MatRef<T, I> mat,
-                   isize nrows) -> proxsuite::linalg::sparse::MatRef<T, I>
-{
+template <typename T, typename I>
+auto top_rows_unchecked(proxsuite::linalg::veg::Unsafe /*unsafe*/,
+                        proxsuite::linalg::sparse::MatRef<T, I> mat,
+                        isize nrows)
+    -> proxsuite::linalg::sparse::MatRef<T, I> {
   VEG_ASSERT(nrows <= mat.nrows());
   return {
-    proxsuite::linalg::sparse::from_raw_parts,
-    nrows,
-    mat.ncols(),
-    mat.nnz(),
-    mat.col_ptrs(),
-    mat.nnz_per_col(),
-    mat.row_indices(),
-    mat.values(),
+      proxsuite::linalg::sparse::from_raw_parts,
+      nrows,
+      mat.ncols(),
+      mat.nnz(),
+      mat.col_ptrs(),
+      mat.nnz_per_col(),
+      mat.row_indices(),
+      mat.values(),
   };
 }
 
-template<typename T, typename I>
-auto
-top_rows_mut_unchecked(proxsuite::linalg::veg::Unsafe /*unsafe*/,
-                       proxsuite::linalg::sparse::MatMut<T, I> mat,
-                       isize nrows) -> proxsuite::linalg::sparse::MatMut<T, I>
-{
+template <typename T, typename I>
+auto top_rows_mut_unchecked(proxsuite::linalg::veg::Unsafe /*unsafe*/,
+                            proxsuite::linalg::sparse::MatMut<T, I> mat,
+                            isize nrows)
+    -> proxsuite::linalg::sparse::MatMut<T, I> {
   VEG_ASSERT(nrows <= mat.nrows());
   return {
-    proxsuite::linalg::sparse::from_raw_parts,
-    nrows,
-    mat.ncols(),
-    mat.nnz(),
-    mat.col_ptrs_mut(),
-    mat.nnz_per_col_mut(),
-    mat.row_indices_mut(),
-    mat.values_mut(),
+      proxsuite::linalg::sparse::from_raw_parts,
+      nrows,
+      mat.ncols(),
+      mat.nnz(),
+      mat.col_ptrs_mut(),
+      mat.nnz_per_col_mut(),
+      mat.row_indices_mut(),
+      mat.values_mut(),
   };
 }
 /*!
@@ -468,17 +423,11 @@ top_rows_mut_unchecked(proxsuite::linalg::veg::Unsafe /*unsafe*/,
  * @param dz variable used for testing global primal infeasibility criterion is
  * satisfied.
  */
-template<typename T, typename I, typename P>
-bool
-global_primal_residual_infeasibility(VectorViewMut<T> ATdy,
-                                     VectorViewMut<T> CTdz,
-                                     VectorViewMut<T> dy,
-                                     VectorViewMut<T> dz,
-                                     const QpView<T, I> qp_scaled,
-                                     const Settings<T>& qpsettings,
-                                     const P& ruiz)
-{
-
+template <typename T, typename I, typename P>
+bool global_primal_residual_infeasibility(
+    VectorViewMut<T> ATdy, VectorViewMut<T> CTdz, VectorViewMut<T> dy,
+    VectorViewMut<T> dz, const QpView<T, I> qp_scaled,
+    const Settings<T>& qpsettings, const P& ruiz) {
   // The problem is primal infeasible if the following four conditions hold:
   //
   // ||unscaled(A^Tdy)|| <= eps_p_inf ||unscaled(dy)||
@@ -524,18 +473,11 @@ satisfied.
 * @param dx variable used for testing global dual infeasibility criterion is
 satisfied.
 */
-template<typename T, typename I, typename P>
-bool
-global_dual_residual_infeasibility(VectorViewMut<T> Adx,
-                                   VectorViewMut<T> Cdx,
-                                   VectorViewMut<T> Hdx,
-                                   VectorViewMut<T> dx,
-                                   const QpView<T, I> qp_scaled,
-                                   const Settings<T>& qpsettings,
-                                   const Model<T, I>& qpmodel,
-                                   const P& ruiz)
-{
-
+template <typename T, typename I, typename P>
+bool global_dual_residual_infeasibility(
+    VectorViewMut<T> Adx, VectorViewMut<T> Cdx, VectorViewMut<T> Hdx,
+    VectorViewMut<T> dx, const QpView<T, I> qp_scaled,
+    const Settings<T>& qpsettings, const Model<T, I>& qpmodel, const P& ruiz) {
   // The problem is dual infeasible if one of the conditions hold:
   //
   // FIRST
@@ -576,7 +518,7 @@ global_dual_residual_infeasibility(VectorViewMut<T> Adx,
   bound *= ruiz.c;
   bound_neg *= ruiz.c;
   bool second_cond_alt1 =
-    infty_norm(Hdx.to_eigen()) <= bound && gdx <= bound_neg;
+      infty_norm(Hdx.to_eigen()) <= bound && gdx <= bound_neg;
   bound_neg *= qpsettings.eps_dual_inf;
 
   bool res = first_cond && second_cond_alt1 && infty_norm(dx.to_eigen()) != 0;
@@ -611,30 +553,19 @@ global_dual_residual_infeasibility(VectorViewMut<T> Adx,
  * @param z_e current estimate of inequality constrained lagrange multiplier.
  * @param stak stack.
  */
-template<typename T, typename I, typename P>
-auto
-unscaled_primal_dual_residual(
-  const Workspace<T, I>& work,
-  Results<T>& results,
-  VecMapMut<T> primal_residual_eq_scaled,
-  VecMapMut<T> primal_residual_in_scaled_lo,
-  VecMapMut<T> primal_residual_in_scaled_up,
-  VecMapMut<T> dual_residual_scaled,
-  T& primal_feasibility_eq_rhs_0,
-  T& primal_feasibility_in_rhs_0,
-  T& dual_feasibility_rhs_0,
-  T& dual_feasibility_rhs_1,
-  T& dual_feasibility_rhs_3,
-  T& rhs_duality_gap,
-  const P& precond,
-  Model<T, I> const& data,
-  const QpView<T, I> qp_scaled,
-  VecMapMut<T> x_e,
-  VecMapMut<T> y_e,
-  VecMapMut<T> z_e,
-  proxsuite::linalg::veg::dynstack::DynStackMut stack)
-  -> proxsuite::linalg::veg::Tuple<T, T>
-{
+template <typename T, typename I, typename P>
+auto unscaled_primal_dual_residual(
+    const Workspace<T, I>& work, Results<T>& results,
+    VecMapMut<T> primal_residual_eq_scaled,
+    VecMapMut<T> primal_residual_in_scaled_lo,
+    VecMapMut<T> primal_residual_in_scaled_up,
+    VecMapMut<T> dual_residual_scaled, T& primal_feasibility_eq_rhs_0,
+    T& primal_feasibility_in_rhs_0, T& dual_feasibility_rhs_0,
+    T& dual_feasibility_rhs_1, T& dual_feasibility_rhs_3, T& rhs_duality_gap,
+    const P& precond, Model<T, I> const& data, const QpView<T, I> qp_scaled,
+    VecMapMut<T> x_e, VecMapMut<T> y_e, VecMapMut<T> z_e,
+    proxsuite::linalg::veg::dynstack::DynStackMut stack)
+    -> proxsuite::linalg::veg::Tuple<T, T> {
   isize n = x_e.rows();
 
   LDLT_TEMP_VEC_UNINIT(T, tmp, n, stack);
@@ -645,39 +576,39 @@ unscaled_primal_dual_residual(
     dual_residual_scaled += tmp;
 
     precond.unscale_dual_residual_in_place(
-      { proxqp::from_eigen, tmp }); // contains unscaled Hx
+        {proxqp::from_eigen, tmp});  // contains unscaled Hx
     dual_feasibility_rhs_0 = infty_norm(tmp);
-    precond.unscale_primal_in_place({ proxqp::from_eigen, x_e });
-    results.info.duality_gap = x_e.dot(data.g); // contains gTx
+    precond.unscale_primal_in_place({proxqp::from_eigen, x_e});
+    results.info.duality_gap = x_e.dot(data.g);  // contains gTx
     rhs_duality_gap = std::fabs(results.info.duality_gap);
 
     const T xHx = (tmp).dot(x_e);
     results.info.duality_gap += xHx;
     rhs_duality_gap = std::max(rhs_duality_gap, std::abs(xHx));
-    tmp += data.g; // contains now Hx+g
-    precond.scale_primal_in_place({ proxqp::from_eigen, x_e });
+    tmp += data.g;  // contains now Hx+g
+    precond.scale_primal_in_place({proxqp::from_eigen, x_e});
 
-    precond.unscale_dual_in_place_eq({ proxsuite::proxqp::from_eigen, y_e });
+    precond.unscale_dual_in_place_eq({proxsuite::proxqp::from_eigen, y_e});
     const T by = (data.b).dot(y_e);
     results.info.duality_gap += by;
     rhs_duality_gap = std::max(rhs_duality_gap, std::abs(by));
-    precond.scale_dual_in_place_eq({ proxsuite::proxqp::from_eigen, y_e });
+    precond.scale_dual_in_place_eq({proxsuite::proxqp::from_eigen, y_e});
 
-    precond.unscale_dual_in_place_in({ proxsuite::proxqp::from_eigen, z_e });
+    precond.unscale_dual_in_place_in({proxsuite::proxqp::from_eigen, z_e});
 
-    const T zl =
-      helpers::select(work.active_set_low, results.z, 0)
-        .dot(helpers::at_least(data.l, -helpers::infinite_bound<T>::value()));
+    const T zl = helpers::select(work.active_set_low, results.z, 0)
+                     .dot(helpers::at_least(
+                         data.l, -helpers::infinite_bound<T>::value()));
     results.info.duality_gap += zl;
     rhs_duality_gap = std::max(rhs_duality_gap, std::abs(zl));
 
     const T zu =
-      helpers::select(work.active_set_up, results.z, 0)
-        .dot(helpers::at_most(data.u, helpers::infinite_bound<T>::value()));
+        helpers::select(work.active_set_up, results.z, 0)
+            .dot(helpers::at_most(data.u, helpers::infinite_bound<T>::value()));
     results.info.duality_gap += zu;
     rhs_duality_gap = std::max(rhs_duality_gap, std::abs(zu));
 
-    precond.scale_dual_in_place_in({ proxsuite::proxqp::from_eigen, z_e });
+    precond.scale_dual_in_place_in({proxsuite::proxqp::from_eigen, z_e});
   }
 
   {
@@ -685,12 +616,12 @@ unscaled_primal_dual_residual(
     ATy.setZero();
     primal_residual_eq_scaled.setZero();
 
-    detail::noalias_gevmmv_add(
-      primal_residual_eq_scaled, ATy, qp_scaled.AT.to_eigen(), x_e, y_e);
+    detail::noalias_gevmmv_add(primal_residual_eq_scaled, ATy,
+                               qp_scaled.AT.to_eigen(), x_e, y_e);
 
     dual_residual_scaled += ATy;
 
-    precond.unscale_dual_residual_in_place({ proxqp::from_eigen, ATy });
+    precond.unscale_dual_residual_in_place({proxqp::from_eigen, ATy});
     dual_feasibility_rhs_1 = infty_norm(ATy);
   }
 
@@ -699,93 +630,83 @@ unscaled_primal_dual_residual(
     CTz.setZero();
     primal_residual_in_scaled_up.setZero();
 
-    detail::noalias_gevmmv_add(
-      primal_residual_in_scaled_up, CTz, qp_scaled.CT.to_eigen(), x_e, z_e);
+    detail::noalias_gevmmv_add(primal_residual_in_scaled_up, CTz,
+                               qp_scaled.CT.to_eigen(), x_e, z_e);
 
     dual_residual_scaled += CTz;
 
-    precond.unscale_dual_residual_in_place({ proxqp::from_eigen, CTz });
+    precond.unscale_dual_residual_in_place({proxqp::from_eigen, CTz});
     dual_feasibility_rhs_3 = infty_norm(CTz);
   }
   precond.unscale_primal_residual_in_place_eq(
-    { proxqp::from_eigen, primal_residual_eq_scaled });
+      {proxqp::from_eigen, primal_residual_eq_scaled});
   primal_feasibility_eq_rhs_0 = infty_norm(primal_residual_eq_scaled);
 
   precond.unscale_primal_residual_in_place_in(
-    { proxqp::from_eigen, primal_residual_in_scaled_up });
+      {proxqp::from_eigen, primal_residual_in_scaled_up});
   primal_feasibility_in_rhs_0 = infty_norm(primal_residual_in_scaled_up);
 
   auto b = data.b;
   auto l = data.l;
   auto u = data.u;
   primal_residual_in_scaled_lo =
-    helpers::positive_part(primal_residual_in_scaled_up - u) +
-    helpers::negative_part(primal_residual_in_scaled_up - l);
+      helpers::positive_part(primal_residual_in_scaled_up - u) +
+      helpers::negative_part(primal_residual_in_scaled_up - l);
 
   primal_residual_eq_scaled -= b;
   T primal_feasibility_eq_lhs = infty_norm(primal_residual_eq_scaled);
   T primal_feasibility_in_lhs = infty_norm(primal_residual_in_scaled_lo);
   T primal_feasibility_lhs =
-    std::max(primal_feasibility_eq_lhs, primal_feasibility_in_lhs);
+      std::max(primal_feasibility_eq_lhs, primal_feasibility_in_lhs);
 
   // scaled Ax - b
   precond.scale_primal_residual_in_place_eq(
-    { proxqp::from_eigen, primal_residual_eq_scaled });
+      {proxqp::from_eigen, primal_residual_eq_scaled});
   // scaled Cx
   precond.scale_primal_residual_in_place_in(
-    { proxqp::from_eigen, primal_residual_in_scaled_up });
+      {proxqp::from_eigen, primal_residual_in_scaled_up});
 
   precond.unscale_dual_residual_in_place(
-    { proxqp::from_eigen, dual_residual_scaled });
+      {proxqp::from_eigen, dual_residual_scaled});
   T dual_feasibility_lhs = infty_norm(dual_residual_scaled);
   precond.scale_dual_residual_in_place(
-    { proxqp::from_eigen, dual_residual_scaled });
+      {proxqp::from_eigen, dual_residual_scaled});
 
   return proxsuite::linalg::veg::tuplify(primal_feasibility_lhs,
                                          dual_feasibility_lhs);
 }
 
-} // namespace detail
-} // namespace sparse
-} // namespace proxqp
-} // namespace proxsuite
+}  // namespace detail
+}  // namespace sparse
+}  // namespace proxqp
+}  // namespace proxsuite
 
 namespace Eigen {
 namespace internal {
-template<typename T, typename I>
+template <typename T, typename I>
 struct traits<proxsuite::proxqp::sparse::detail::AugmentedKkt<T, I>>
-  : Eigen::internal::traits<Eigen::SparseMatrix<T, Eigen::ColMajor, I>>
-{};
+    : Eigen::internal::traits<Eigen::SparseMatrix<T, Eigen::ColMajor, I>> {};
 
-template<typename Rhs, typename T, typename I>
+template <typename Rhs, typename T, typename I>
 struct generic_product_impl<
-  proxsuite::proxqp::sparse::detail::AugmentedKkt<T, I>,
-  Rhs,
-  SparseShape,
-  DenseShape,
-  GemvProduct>
-  : generic_product_impl_base<
-      proxsuite::proxqp::sparse::detail::AugmentedKkt<T, I>,
-      Rhs,
-      generic_product_impl<
-        proxsuite::proxqp::sparse::detail::AugmentedKkt<T, I>,
-        Rhs>>
-{
+    proxsuite::proxqp::sparse::detail::AugmentedKkt<T, I>, Rhs, SparseShape,
+    DenseShape, GemvProduct>
+    : generic_product_impl_base<
+          proxsuite::proxqp::sparse::detail::AugmentedKkt<T, I>, Rhs,
+          generic_product_impl<
+              proxsuite::proxqp::sparse::detail::AugmentedKkt<T, I>, Rhs>> {
   using Mat_ = proxsuite::proxqp::sparse::detail::AugmentedKkt<T, I>;
 
   using Scalar = typename Product<Mat_, Rhs>::Scalar;
 
-  template<typename Dst>
-  static void scaleAndAddTo(Dst& dst,
-                            Mat_ const& lhs,
-                            Rhs const& rhs,
-                            PROXSUITE_MAYBE_UNUSED Scalar const& alpha)
-  {
+  template <typename Dst>
+  static void scaleAndAddTo(Dst& dst, Mat_ const& lhs, Rhs const& rhs,
+                            PROXSUITE_MAYBE_UNUSED Scalar const& alpha) {
     using proxsuite::linalg::veg::isize;
 
     VEG_ASSERT(alpha == Scalar(1));
     proxsuite::proxqp::sparse::detail::noalias_symhiv_add(
-      dst, lhs._.kkt_active.to_eigen(), rhs);
+        dst, lhs._.kkt_active.to_eigen(), rhs);
 
     {
       isize n = lhs._.n;
@@ -804,12 +725,12 @@ struct generic_product_impl<
       dst_y += (-1 / lhs._.mu_eq) * rhs_y;
       for (isize i = 0; i < n_in; ++i) {
         dst_z[i] +=
-          (lhs._.active_constraints[i] ? -1 / lhs._.mu_in : T(1)) * rhs_z[i];
+            (lhs._.active_constraints[i] ? -1 / lhs._.mu_in : T(1)) * rhs_z[i];
       }
     }
   }
 };
-} // namespace internal
-} // namespace Eigen
+}  // namespace internal
+}  // namespace Eigen
 
 #endif /* end of include guard PROXSUITE_PROXQP_SPARSE_UTILS_HPP */

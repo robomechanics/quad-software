@@ -7,19 +7,19 @@
 #ifndef PROXSUITE_PROXQP_DENSE_UTILS_HPP
 #define PROXSUITE_PROXQP_DENSE_UTILS_HPP
 
-#include <iostream>
-#include <fstream>
 #include <cmath>
+#include <fstream>
+#include <iostream>
+#include <proxsuite/proxqp/dense/model.hpp>
+#include <proxsuite/proxqp/dense/preconditioner/ruiz.hpp>
+#include <proxsuite/proxqp/results.hpp>
+#include <proxsuite/proxqp/settings.hpp>
+#include <proxsuite/proxqp/utils/prints.hpp>
 #include <type_traits>
 
 #include "proxsuite/helpers/common.hpp"
 #include "proxsuite/proxqp/dense/views.hpp"
 #include "proxsuite/proxqp/dense/workspace.hpp"
-#include <proxsuite/proxqp/dense/model.hpp>
-#include <proxsuite/proxqp/results.hpp>
-#include <proxsuite/proxqp/utils/prints.hpp>
-#include <proxsuite/proxqp/settings.hpp>
-#include <proxsuite/proxqp/dense/preconditioner/ruiz.hpp>
 
 // #include <fmt/format.h>
 // #include <fmt/ostream.h>
@@ -28,13 +28,9 @@ namespace proxsuite {
 namespace proxqp {
 namespace dense {
 
-template<typename T>
-void
-print_setup_header(const Settings<T>& settings,
-                   const Results<T>& results,
-                   const Model<T>& model)
-{
-
+template <typename T>
+void print_setup_header(const Settings<T>& settings, const Results<T>& results,
+                        const Model<T>& model) {
   proxsuite::proxqp::print_preambule();
 
   // Print variables and constraints
@@ -77,18 +73,18 @@ print_setup_header(const Settings<T>& settings,
       break;
     case InitialGuessStatus::WARM_START_WITH_PREVIOUS_RESULT:
       std::cout
-        << "          initial guess: warm start with previous result. \n"
-        << std::endl;
+          << "          initial guess: warm start with previous result. \n"
+          << std::endl;
       break;
     case InitialGuessStatus::COLD_START_WITH_PREVIOUS_RESULT:
       std::cout
-        << "          initial guess: cold start with previous result. \n"
-        << std::endl;
+          << "          initial guess: cold start with previous result. \n"
+          << std::endl;
       break;
     case InitialGuessStatus::EQUALITY_CONSTRAINED_INITIAL_GUESS:
       std::cout
-        << "          initial guess: equality constrained initial guess. \n"
-        << std::endl;
+          << "          initial guess: equality constrained initial guess. \n"
+          << std::endl;
   }
 }
 
@@ -98,13 +94,12 @@ print_setup_header(const Settings<T>& settings,
  * @param filename filename name for the CSV.
  * @param mat matrix to save into CSV format.
  */
-template<typename Derived>
-void
-save_data(const std::string& filename, const ::Eigen::MatrixBase<Derived>& mat)
-{
+template <typename Derived>
+void save_data(const std::string& filename,
+               const ::Eigen::MatrixBase<Derived>& mat) {
   // https://eigen.tuxfamily.org/dox/structEigen_1_1IOFormat.html
-  const static Eigen::IOFormat CSVFormat(
-    Eigen::FullPrecision, Eigen::DontAlignCols, ", ", "\n");
+  const static Eigen::IOFormat CSVFormat(Eigen::FullPrecision,
+                                         Eigen::DontAlignCols, ", ", "\n");
 
   std::ofstream file(filename);
   if (file.is_open()) {
@@ -131,18 +126,12 @@ save_data(const std::string& filename, const ::Eigen::MatrixBase<Derived>& mat)
  * @param primal_feasibility_in_lhs scalar variable used when using a relative
  * stopping criterion.
  */
-template<typename T>
-void
-global_primal_residual(const Model<T>& qpmodel,
-                       const Results<T>& qpresults,
-                       Workspace<T>& qpwork,
-                       const preconditioner::RuizEquilibration<T>& ruiz,
-                       T& primal_feasibility_lhs,
-                       T& primal_feasibility_eq_rhs_0,
-                       T& primal_feasibility_in_rhs_0,
-                       T& primal_feasibility_eq_lhs,
-                       T& primal_feasibility_in_lhs)
-{
+template <typename T>
+void global_primal_residual(
+    const Model<T>& qpmodel, const Results<T>& qpresults, Workspace<T>& qpwork,
+    const preconditioner::RuizEquilibration<T>& ruiz, T& primal_feasibility_lhs,
+    T& primal_feasibility_eq_rhs_0, T& primal_feasibility_in_rhs_0,
+    T& primal_feasibility_eq_lhs, T& primal_feasibility_in_lhs) {
   // COMPUTES:
   // primal_residual_eq_scaled = scaled(Ax - b)
   //
@@ -160,24 +149,24 @@ global_primal_residual(const Model<T>& qpmodel,
   qpwork.primal_residual_in_scaled_up.noalias() = qpwork.C_scaled * qpresults.x;
 
   ruiz.unscale_primal_residual_in_place_eq(
-    VectorViewMut<T>{ from_eigen, qpwork.primal_residual_eq_scaled });
+      VectorViewMut<T>{from_eigen, qpwork.primal_residual_eq_scaled});
   primal_feasibility_eq_rhs_0 = infty_norm(qpwork.primal_residual_eq_scaled);
   ruiz.unscale_primal_residual_in_place_in(
-    VectorViewMut<T>{ from_eigen, qpwork.primal_residual_in_scaled_up });
+      VectorViewMut<T>{from_eigen, qpwork.primal_residual_in_scaled_up});
   primal_feasibility_in_rhs_0 = infty_norm(qpwork.primal_residual_in_scaled_up);
 
   qpwork.primal_residual_in_scaled_low =
-    helpers::positive_part(qpwork.primal_residual_in_scaled_up - qpmodel.u) +
-    helpers::negative_part(qpwork.primal_residual_in_scaled_up - qpmodel.l);
+      helpers::positive_part(qpwork.primal_residual_in_scaled_up - qpmodel.u) +
+      helpers::negative_part(qpwork.primal_residual_in_scaled_up - qpmodel.l);
   qpwork.primal_residual_eq_scaled -= qpmodel.b;
 
   primal_feasibility_in_lhs = infty_norm(qpwork.primal_residual_in_scaled_low);
   primal_feasibility_eq_lhs = infty_norm(qpwork.primal_residual_eq_scaled);
   primal_feasibility_lhs =
-    std::max(primal_feasibility_eq_lhs, primal_feasibility_in_lhs);
+      std::max(primal_feasibility_eq_lhs, primal_feasibility_in_lhs);
 
   ruiz.scale_primal_residual_in_place_eq(
-    VectorViewMut<T>{ from_eigen, qpwork.primal_residual_eq_scaled });
+      VectorViewMut<T>{from_eigen, qpwork.primal_residual_eq_scaled});
 }
 
 /*!
@@ -195,18 +184,11 @@ global_primal_residual(const Model<T>& qpmodel,
  * @param dz variable used for testing global primal infeasibility criterion is
  * satisfied.
  */
-template<typename T>
-bool
-global_primal_residual_infeasibility(
-  VectorViewMut<T> ATdy,
-  VectorViewMut<T> CTdz,
-  VectorViewMut<T> dy,
-  VectorViewMut<T> dz,
-  Workspace<T>& qpwork,
-  const Settings<T>& qpsettings,
-  const preconditioner::RuizEquilibration<T>& ruiz)
-{
-
+template <typename T>
+bool global_primal_residual_infeasibility(
+    VectorViewMut<T> ATdy, VectorViewMut<T> CTdz, VectorViewMut<T> dy,
+    VectorViewMut<T> dz, Workspace<T>& qpwork, const Settings<T>& qpsettings,
+    const preconditioner::RuizEquilibration<T>& ruiz) {
   // The problem is primal infeasible if the following four conditions hold:
   //
   // ||unscaled(A^Tdy)|| <= eps_p_inf ||unscaled(dy)||
@@ -253,19 +235,11 @@ global_primal_residual_infeasibility(
  * @param dx variable used for testing global dual infeasibility criterion is
  * satisfied.
  */
-template<typename T>
-bool
-global_dual_residual_infeasibility(
-  VectorViewMut<T> Adx,
-  VectorViewMut<T> Cdx,
-  VectorViewMut<T> Hdx,
-  VectorViewMut<T> dx,
-  Workspace<T>& qpwork,
-  const Settings<T>& qpsettings,
-  const Model<T>& qpmodel,
-  const preconditioner::RuizEquilibration<T>& ruiz)
-{
-
+template <typename T>
+bool global_dual_residual_infeasibility(
+    VectorViewMut<T> Adx, VectorViewMut<T> Cdx, VectorViewMut<T> Hdx,
+    VectorViewMut<T> dx, Workspace<T>& qpwork, const Settings<T>& qpsettings,
+    const Model<T>& qpmodel, const preconditioner::RuizEquilibration<T>& ruiz) {
   // The problem is dual infeasible the two following conditions hold:
   //
   // FIRST
@@ -305,7 +279,7 @@ global_dual_residual_infeasibility(
   bound *= ruiz.c;
   bound_neg *= ruiz.c;
   bool second_cond_alt1 =
-    infty_norm(Hdx.to_eigen()) <= bound && gdx <= bound_neg;
+      infty_norm(Hdx.to_eigen()) <= bound && gdx <= bound_neg;
   bound_neg *= qpsettings.eps_dual_inf;
 
   bool res = first_cond && second_cond_alt1 && infty_norm(dx.to_eigen()) != 0;
@@ -328,19 +302,13 @@ global_dual_residual_infeasibility(
  * @param dual_feasibility_rhs_3 scalar variable used when using a relative
  * stopping criterion.
  */
-template<typename T>
-void
-global_dual_residual(Results<T>& qpresults,
-                     Workspace<T>& qpwork,
-                     const Model<T>& qpmodel,
-                     const preconditioner::RuizEquilibration<T>& ruiz,
-                     T& dual_feasibility_lhs,
-                     T& dual_feasibility_rhs_0,
-                     T& dual_feasibility_rhs_1,
-                     T& dual_feasibility_rhs_3,
-                     T& rhs_duality_gap,
-                     T& duality_gap)
-{
+template <typename T>
+void global_dual_residual(Results<T>& qpresults, Workspace<T>& qpwork,
+                          const Model<T>& qpmodel,
+                          const preconditioner::RuizEquilibration<T>& ruiz,
+                          T& dual_feasibility_lhs, T& dual_feasibility_rhs_0,
+                          T& dual_feasibility_rhs_1, T& dual_feasibility_rhs_3,
+                          T& rhs_duality_gap, T& duality_gap) {
   // dual_feasibility_lhs = norm(dual_residual_scaled)
   // dual_feasibility_rhs_0 = norm(unscaled(Hx))
   // dual_feasibility_rhs_1 = norm(unscaled(ATy))
@@ -350,66 +318,64 @@ global_dual_residual(Results<T>& qpresults,
 
   qpwork.dual_residual_scaled = qpwork.g_scaled;
   qpwork.CTz.noalias() =
-    qpwork.H_scaled.template selfadjointView<Eigen::Lower>() * qpresults.x;
+      qpwork.H_scaled.template selfadjointView<Eigen::Lower>() * qpresults.x;
   qpwork.dual_residual_scaled += qpwork.CTz;
   ruiz.unscale_dual_residual_in_place(
-    VectorViewMut<T>{ from_eigen, qpwork.CTz }); // contains unscaled Hx
+      VectorViewMut<T>{from_eigen, qpwork.CTz});  // contains unscaled Hx
   dual_feasibility_rhs_0 = infty_norm(qpwork.CTz);
 
-  ruiz.unscale_primal_in_place(VectorViewMut<T>{ from_eigen, qpresults.x });
+  ruiz.unscale_primal_in_place(VectorViewMut<T>{from_eigen, qpresults.x});
   duality_gap = (qpmodel.g).dot(qpresults.x);
   rhs_duality_gap = std::fabs(duality_gap);
   const T xHx = (qpwork.CTz).dot(qpresults.x);
-  duality_gap += xHx; // contains now xHx+g.Tx
+  duality_gap += xHx;  // contains now xHx+g.Tx
   rhs_duality_gap = std::max(rhs_duality_gap, std::abs(xHx));
 
-  ruiz.scale_primal_in_place(VectorViewMut<T>{ from_eigen, qpresults.x });
+  ruiz.scale_primal_in_place(VectorViewMut<T>{from_eigen, qpresults.x});
 
   qpwork.CTz.noalias() = qpwork.A_scaled.transpose() * qpresults.y;
   qpwork.dual_residual_scaled += qpwork.CTz;
-  ruiz.unscale_dual_residual_in_place(
-    VectorViewMut<T>{ from_eigen, qpwork.CTz });
+  ruiz.unscale_dual_residual_in_place(VectorViewMut<T>{from_eigen, qpwork.CTz});
   dual_feasibility_rhs_1 = infty_norm(qpwork.CTz);
 
   qpwork.CTz.noalias() = qpwork.C_scaled.transpose() * qpresults.z;
   qpwork.dual_residual_scaled += qpwork.CTz;
-  ruiz.unscale_dual_residual_in_place(
-    VectorViewMut<T>{ from_eigen, qpwork.CTz });
+  ruiz.unscale_dual_residual_in_place(VectorViewMut<T>{from_eigen, qpwork.CTz});
   dual_feasibility_rhs_3 = infty_norm(qpwork.CTz);
 
   ruiz.unscale_dual_residual_in_place(
-    VectorViewMut<T>{ from_eigen, qpwork.dual_residual_scaled });
+      VectorViewMut<T>{from_eigen, qpwork.dual_residual_scaled});
 
   dual_feasibility_lhs = infty_norm(qpwork.dual_residual_scaled);
 
   ruiz.scale_dual_residual_in_place(
-    VectorViewMut<T>{ from_eigen, qpwork.dual_residual_scaled });
+      VectorViewMut<T>{from_eigen, qpwork.dual_residual_scaled});
 
-  ruiz.unscale_dual_in_place_eq(VectorViewMut<T>{ from_eigen, qpresults.y });
+  ruiz.unscale_dual_in_place_eq(VectorViewMut<T>{from_eigen, qpresults.y});
   const T by = (qpmodel.b).dot(qpresults.y);
   rhs_duality_gap = std::max(rhs_duality_gap, std::abs(by));
   duality_gap += by;
-  ruiz.scale_dual_in_place_eq(VectorViewMut<T>{ from_eigen, qpresults.y });
+  ruiz.scale_dual_in_place_eq(VectorViewMut<T>{from_eigen, qpresults.y});
 
-  ruiz.unscale_dual_in_place_in(VectorViewMut<T>{ from_eigen, qpresults.z });
+  ruiz.unscale_dual_in_place_in(VectorViewMut<T>{from_eigen, qpresults.z});
 
-  const T zu =
-    helpers::select(qpwork.active_set_up, qpresults.z, 0)
-      .dot(helpers::at_most(qpmodel.u, helpers::infinite_bound<T>::value()));
+  const T zu = helpers::select(qpwork.active_set_up, qpresults.z, 0)
+                   .dot(helpers::at_most(qpmodel.u,
+                                         helpers::infinite_bound<T>::value()));
   rhs_duality_gap = std::max(rhs_duality_gap, std::abs(zu));
   duality_gap += zu;
 
-  const T zl =
-    helpers::select(qpwork.active_set_low, qpresults.z, 0)
-      .dot(helpers::at_least(qpmodel.l, -helpers::infinite_bound<T>::value()));
+  const T zl = helpers::select(qpwork.active_set_low, qpresults.z, 0)
+                   .dot(helpers::at_least(
+                       qpmodel.l, -helpers::infinite_bound<T>::value()));
   rhs_duality_gap = std::max(rhs_duality_gap, std::abs(zl));
   duality_gap += zl;
 
-  ruiz.scale_dual_in_place_in(VectorViewMut<T>{ from_eigen, qpresults.z });
+  ruiz.scale_dual_in_place_in(VectorViewMut<T>{from_eigen, qpresults.z});
 }
 
-} // namespace dense
-} // namespace proxqp
-} // namespace proxsuite
+}  // namespace dense
+}  // namespace proxqp
+}  // namespace proxsuite
 
 #endif /* end of include guard PROXSUITE_PROXQP_DENSE_UTILS_HPP */

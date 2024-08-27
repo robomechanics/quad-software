@@ -40,8 +40,8 @@ sleqp_hess_struct_create(SleqpHessStruct** star, int dimension, bool empty);
  * @param[in]  hessian_struct  The Hessian structure
  * @returns                    The number \f$ k \f$ of blocks
  **/
-SLEQP_EXPORT int
-sleqp_hess_struct_num_blocks(const SleqpHessStruct* hessian_struct);
+SLEQP_EXPORT int sleqp_hess_struct_num_blocks(
+    const SleqpHessStruct* hessian_struct);
 
 /**
  * Returns the \f$ l \f$-th block of the Hessian
@@ -51,11 +51,8 @@ sleqp_hess_struct_num_blocks(const SleqpHessStruct* hessian_struct);
  * @param[out] begin           The 0-based index \f$ j_l \f$
  * @param[out] end             The 0-based index \f$ j_{l+1} \f$
  **/
-SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
-sleqp_hess_struct_block_range(const SleqpHessStruct* hessian_struct,
-                              int block,
-                              int* begin,
-                              int* end);
+SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE sleqp_hess_struct_block_range(
+    const SleqpHessStruct* hessian_struct, int block, int* begin, int* end);
 
 /**
  * Pushes a new block into the Hessian
@@ -82,10 +79,8 @@ sleqp_hess_struct_clear(SleqpHessStruct* hessian_struct);
  * @param[out]  end             The value \f$ n \f$
  *
  **/
-SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
-sleqp_hess_struct_lin_range(const SleqpHessStruct* hessian_struct,
-                            int* begin,
-                            int* end);
+SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE sleqp_hess_struct_lin_range(
+    const SleqpHessStruct* hessian_struct, int* begin, int* end);
 
 SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
 sleqp_hess_struct_copy(const SleqpHessStruct* source, SleqpHessStruct* target);

@@ -13,15 +13,13 @@
 #define CbcNWay_H
 
 class CbcNWay : public CbcObject {
-
-public:
+ public:
   // Default Constructor
   CbcNWay();
 
   /** Useful constructor (which are matrix indices)
-    */
-  CbcNWay(CbcModel *model, int numberMembers,
-    const int *which, int identifier);
+   */
+  CbcNWay(CbcModel *model, int numberMembers, const int *which, int identifier);
 
   // Copy constructor
   CbcNWay(const CbcNWay &);
@@ -43,30 +41,26 @@ public:
 
   /// Infeasibility - large is 0.5 (and 0.5 will give this)
   virtual double infeasibility(const OsiBranchingInformation *info,
-    int &preferredWay) const;
+                               int &preferredWay) const;
 
   using CbcObject::feasibleRegion;
   /// This looks at solution and sets bounds to contain solution
   virtual void feasibleRegion();
 
   /// Creates a branching object
-  virtual CbcBranchingObject *createCbcBranch(OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
+  virtual CbcBranchingObject *createCbcBranch(
+      OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
 
   /// Number of members
-  inline int numberMembers() const
-  {
-    return numberMembers_;
-  }
+  inline int numberMembers() const { return numberMembers_; }
 
   /// Members (indices in range 0 ... numberColumns-1)
-  inline const int *members() const
-  {
-    return members_;
-  }
+  inline const int *members() const { return members_; }
   /// Redoes data when sequence numbers change
-  virtual void redoSequenceEtc(CbcModel *model, int numberColumns, const int *originalColumns);
+  virtual void redoSequenceEtc(CbcModel *model, int numberColumns,
+                               const int *originalColumns);
 
-protected:
+ protected:
   /// data
   /// Number of members
   int numberMembers_;
@@ -80,8 +74,7 @@ protected:
     Variable is number of set.
  */
 class CbcNWayBranchingObject : public CbcBranchingObject {
-
-public:
+ public:
   // Default Constructor
   CbcNWayBranchingObject();
 
@@ -90,7 +83,7 @@ public:
         this is so -1 and +1 have similarity to normal
     */
   CbcNWayBranchingObject(CbcModel *model, const CbcNWay *nway,
-    int numberBranches, const int *order);
+                         int numberBranches, const int *order);
 
   // Copy constructor
   CbcNWayBranchingObject(const CbcNWayBranchingObject &);
@@ -118,25 +111,16 @@ public:
 
   using CbcBranchingObject::print;
   /** \brief Print something about branch - only if log level high
-    */
+   */
   virtual void print();
   /** The number of branch arms created for this branching object
-    */
-  virtual int numberBranches() const
-  {
-    return numberInSet_;
-  }
+   */
+  virtual int numberBranches() const { return numberInSet_; }
   /// Is this a two way object (-1 down, +1 up)
-  virtual bool twoWay() const
-  {
-    return false;
-  }
+  virtual bool twoWay() const { return false; }
 
   /** Return the type (an integer identifier) of \c this */
-  virtual CbcBranchObjType type() const
-  {
-    return NWayBranchObj;
-  }
+  virtual CbcBranchObjType type() const { return NWayBranchObj; }
 
   /** Compare the original object of \c this with the original object of \c
         brObj. Assumes that there is an ordering of the original objects.
@@ -155,9 +139,10 @@ public:
         replaceIfOverlap is true) replace the current branching object with one
         whose feasible region is the overlap.
      */
-  virtual CbcRangeCompare compareBranchingObject(const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
+  virtual CbcRangeCompare compareBranchingObject(
+      const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
 
-private:
+ private:
   /// order of branching - points back to CbcNWay
   int *order_;
   /// Points back to object
@@ -168,4 +153,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

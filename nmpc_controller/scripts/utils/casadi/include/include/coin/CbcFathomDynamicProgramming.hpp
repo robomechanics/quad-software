@@ -8,25 +8,25 @@
 
 #include "CbcFathom.hpp"
 
-//#############################################################################
+// #############################################################################
 /** FathomDynamicProgramming class.
 
-    The idea is that after some branching the problem will be effectively smaller than
-    the original problem and maybe there will be a more specialized technique which can completely
-    fathom this branch quickly.
+    The idea is that after some branching the problem will be effectively
+   smaller than the original problem and maybe there will be a more specialized
+   technique which can completely fathom this branch quickly.
 
     This is a dynamic programming implementation which is very fast for some
     specialized problems.  It expects small integral rhs, an all integer problem
-    and positive integral coefficients. At present it can not do general set covering
-    problems just set partitioning.  It can find multiple optima for various rhs
-    combinations.
+    and positive integral coefficients. At present it can not do general set
+   covering problems just set partitioning.  It can find multiple optima for
+   various rhs combinations.
 
-    The main limiting factor is size of state space.  Each 1 rhs doubles the size of the problem.
-    2 or 3 rhs quadruples, 4,5,6,7 by 8 etc.
+    The main limiting factor is size of state space.  Each 1 rhs doubles the
+   size of the problem. 2 or 3 rhs quadruples, 4,5,6,7 by 8 etc.
  */
 
 class CbcFathomDynamicProgramming : public CbcFathom {
-public:
+ public:
   // Default Constructor
   CbcFathomDynamicProgramming();
 
@@ -57,80 +57,58 @@ public:
   virtual int fathom(double *&newSolution);
 
   /// Maximum size allowed
-  inline int maximumSize() const
-  {
-    return maximumSizeAllowed_;
-  }
-  inline void setMaximumSize(int value)
-  {
-    maximumSizeAllowed_ = value;
-  }
+  inline int maximumSize() const { return maximumSizeAllowed_; }
+  inline void setMaximumSize(int value) { maximumSizeAllowed_ = value; }
   /// Returns type of algorithm and sets up arrays
   int checkPossible(int allowableSize = 0);
   // set algorithm
-  inline void setAlgorithm(int value)
-  {
-    algorithm_ = value;
-  }
+  inline void setAlgorithm(int value) { algorithm_ = value; }
   /** Tries a column
         returns true if was used in making any changes.
     */
   bool tryColumn(int numberElements, const int *rows,
-    const double *coefficients, double cost,
-    int upper = COIN_INT_MAX);
+                 const double *coefficients, double cost,
+                 int upper = COIN_INT_MAX);
   /// Returns cost array
-  inline const double *cost() const
-  {
-    return cost_;
-  }
+  inline const double *cost() const { return cost_; }
   /// Returns back array
-  inline const int *back() const
-  {
-    return back_;
-  }
+  inline const int *back() const { return back_; }
   /// Gets bit pattern for target result
-  inline int target() const
-  {
-    return target_;
-  }
+  inline int target() const { return target_; }
   /// Sets bit pattern for target result
-  inline void setTarget(int value)
-  {
-    target_ = value;
-  }
+  inline void setTarget(int value) { target_ = value; }
 
-private:
+ private:
   /// Does deleteions
   void gutsOfDelete();
 
   /** Adds one attempt of one column of type 0,
         returns true if was used in making any changes
     */
-  bool addOneColumn0(int numberElements, const int *rows,
-    double cost);
+  bool addOneColumn0(int numberElements, const int *rows, double cost);
   /** Adds one attempt of one column of type 1,
         returns true if was used in making any changes.
         At present the user has to call it once for each possible value
     */
   bool addOneColumn1(int numberElements, const int *rows,
-    const int *coefficients, double cost);
+                     const int *coefficients, double cost);
   /** Adds one attempt of one column of type 1,
         returns true if was used in making any changes.
         At present the user has to call it once for each possible value.
         This version is when there are enough 1 rhs to do faster
     */
   bool addOneColumn1A(int numberElements, const int *rows,
-    const int *coefficients, double cost);
+                      const int *coefficients, double cost);
+  /// Gets bit pattern from original column
+  int bitPattern(int numberElements, const int *rows, const int *coefficients);
   /// Gets bit pattern from original column
   int bitPattern(int numberElements, const int *rows,
-    const int *coefficients);
-  /// Gets bit pattern from original column
-  int bitPattern(int numberElements, const int *rows,
-    const double *coefficients);
-  /// Fills in original column (dense) from bit pattern - returning number nonzero
+                 const double *coefficients);
+  /// Fills in original column (dense) from bit pattern - returning number
+  /// nonzero
   int decodeBitPattern(int bitPattern, int *values, int numberRows);
 
-protected:
+ protected:
   /// Size of states (power of 2 unless just one constraint)
   int size_;
   /** Type - 0 coefficients and rhs all 1,
@@ -166,12 +144,13 @@ protected:
   /// Current algorithm
   int algorithm_;
 
-private:
+ private:
   /// Illegal Assignment operator
-  CbcFathomDynamicProgramming &operator=(const CbcFathomDynamicProgramming &rhs);
+  CbcFathomDynamicProgramming &operator=(
+      const CbcFathomDynamicProgramming &rhs);
 };
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

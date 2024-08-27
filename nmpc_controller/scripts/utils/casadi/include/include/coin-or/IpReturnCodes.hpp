@@ -10,8 +10,7 @@
 
 /* include from a common include file */
 
-namespace Ipopt
-{
+namespace Ipopt {
 #include "IpReturnCodes_inc.h"
 }
 

@@ -18,18 +18,17 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_TYPES_HPP
 #define CASADI_TYPES_HPP
 
 #ifndef CASADI_INT_TYPE
 #define CASADI_INT_TYPE long long int
-#endif // CASADI_INT_TYPE
-
+#endif  // CASADI_INT_TYPE
 
 #ifndef CASADI_C_H
 // Avoid interaction problems with <casadi/casadi_c.h>
@@ -41,7 +40,7 @@ typedef CASADI_INT_TYPE casadi_int;
 
 #ifndef SWIG  // Not in public API
 typedef unsigned CASADI_INT_TYPE casadi_uint;
-#endif // SWIG
+#endif  // SWIG
 
 // Convert to string
 #define CASADI_STR1(x) #x
@@ -51,15 +50,14 @@ typedef unsigned CASADI_INT_TYPE casadi_uint;
 typedef casadi_int casadi_index;
 
 namespace casadi {
-    /** Unified return status for solvers */
-    enum UnifiedReturnStatus {
-        SOLVER_RET_SUCCESS,
-        SOLVER_RET_UNKNOWN,
-        SOLVER_RET_LIMITED, // Out of time
-        SOLVER_RET_NAN,
-        SOLVER_RET_INFEASIBLE
-    };
-}
+/** Unified return status for solvers */
+enum UnifiedReturnStatus {
+  SOLVER_RET_SUCCESS,
+  SOLVER_RET_UNKNOWN,
+  SOLVER_RET_LIMITED,  // Out of time
+  SOLVER_RET_NAN,
+  SOLVER_RET_INFEASIBLE
+};
+}  // namespace casadi
 
-
-#endif // CASADI_TYPES_HPP
+#endif  // CASADI_TYPES_HPP

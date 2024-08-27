@@ -41,143 +41,133 @@ SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int8x8_t
-simde_vcreate_s8(uint64_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vcreate_s8(a);
-  #else
-    return simde_vreinterpret_s8_u64(simde_vdup_n_u64(a));
-  #endif
+simde_int8x8_t simde_vcreate_s8(uint64_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vcreate_s8(a);
+#else
+  return simde_vreinterpret_s8_u64(simde_vdup_n_u64(a));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vcreate_s8
-  #define vcreate_s8(a) simde_vcreate_s8(a)
+#undef vcreate_s8
+#define vcreate_s8(a) simde_vcreate_s8(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int16x4_t
-simde_vcreate_s16(uint64_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vcreate_s16(a);
-  #else
-    return simde_vreinterpret_s16_u64(simde_vdup_n_u64(a));
-  #endif
+simde_int16x4_t simde_vcreate_s16(uint64_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vcreate_s16(a);
+#else
+  return simde_vreinterpret_s16_u64(simde_vdup_n_u64(a));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vcreate_s16
-  #define vcreate_s16(a) simde_vcreate_s16(a)
+#undef vcreate_s16
+#define vcreate_s16(a) simde_vcreate_s16(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int32x2_t
-simde_vcreate_s32(uint64_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vcreate_s32(a);
-  #else
-    return simde_vreinterpret_s32_u64(simde_vdup_n_u64(a));
-  #endif
+simde_int32x2_t simde_vcreate_s32(uint64_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vcreate_s32(a);
+#else
+  return simde_vreinterpret_s32_u64(simde_vdup_n_u64(a));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vcreate_s32
-  #define vcreate_s32(a) simde_vcreate_s32(a)
+#undef vcreate_s32
+#define vcreate_s32(a) simde_vcreate_s32(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int64x1_t
-simde_vcreate_s64(uint64_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vcreate_s64(a);
-  #else
-    return simde_vreinterpret_s64_u64(simde_vdup_n_u64(a));
-  #endif
+simde_int64x1_t simde_vcreate_s64(uint64_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vcreate_s64(a);
+#else
+  return simde_vreinterpret_s64_u64(simde_vdup_n_u64(a));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vcreate_s64
-  #define vcreate_s64(a) simde_vcreate_s64(a)
+#undef vcreate_s64
+#define vcreate_s64(a) simde_vcreate_s64(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_uint8x8_t
-simde_vcreate_u8(uint64_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vcreate_u8(a);
-  #else
-    return simde_vreinterpret_u8_u64(simde_vdup_n_u64(a));
-  #endif
+simde_uint8x8_t simde_vcreate_u8(uint64_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vcreate_u8(a);
+#else
+  return simde_vreinterpret_u8_u64(simde_vdup_n_u64(a));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vcreate_u8
-  #define vcreate_u8(a) simde_vcreate_u8(a)
+#undef vcreate_u8
+#define vcreate_u8(a) simde_vcreate_u8(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_uint16x4_t
-simde_vcreate_u16(uint64_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vcreate_u16(a);
-  #else
-    return simde_vreinterpret_u16_u64(simde_vdup_n_u64(a));
-  #endif
+simde_uint16x4_t simde_vcreate_u16(uint64_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vcreate_u16(a);
+#else
+  return simde_vreinterpret_u16_u64(simde_vdup_n_u64(a));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vcreate_u16
-  #define vcreate_u16(a) simde_vcreate_u16(a)
+#undef vcreate_u16
+#define vcreate_u16(a) simde_vcreate_u16(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_uint32x2_t
-simde_vcreate_u32(uint64_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vcreate_u32(a);
-  #else
-    return simde_vreinterpret_u32_u64(simde_vdup_n_u64(a));
-  #endif
+simde_uint32x2_t simde_vcreate_u32(uint64_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vcreate_u32(a);
+#else
+  return simde_vreinterpret_u32_u64(simde_vdup_n_u64(a));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vcreate_u32
-  #define vcreate_u32(a) simde_vcreate_u32(a)
+#undef vcreate_u32
+#define vcreate_u32(a) simde_vcreate_u32(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_uint64x1_t
-simde_vcreate_u64(uint64_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vcreate_u64(a);
-  #else
-    return simde_vdup_n_u64(a);
-  #endif
+simde_uint64x1_t simde_vcreate_u64(uint64_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vcreate_u64(a);
+#else
+  return simde_vdup_n_u64(a);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vcreate_u64
-  #define vcreate_u64(a) simde_vcreate_u64(a)
+#undef vcreate_u64
+#define vcreate_u64(a) simde_vcreate_u64(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_float32x2_t
-simde_vcreate_f32(uint64_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vcreate_f32(a);
-  #else
-    return simde_vreinterpret_f32_u64(simde_vdup_n_u64(a));
-  #endif
+simde_float32x2_t simde_vcreate_f32(uint64_t a) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vcreate_f32(a);
+#else
+  return simde_vreinterpret_f32_u64(simde_vdup_n_u64(a));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vcreate_f32
-  #define vcreate_f32(a) simde_vcreate_f32(a)
+#undef vcreate_f32
+#define vcreate_f32(a) simde_vcreate_f32(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_float64x1_t
-simde_vcreate_f64(uint64_t a) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vcreate_f64(a);
-  #else
-    return simde_vreinterpret_f64_u64(simde_vdup_n_u64(a));
-  #endif
+simde_float64x1_t simde_vcreate_f64(uint64_t a) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vcreate_f64(a);
+#else
+  return simde_vreinterpret_f64_u64(simde_vdup_n_u64(a));
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vcreate_f64
-  #define vcreate_f64(a) simde_vcreate_f64(a)
+#undef vcreate_f64
+#define vcreate_f64(a) simde_vcreate_f64(a)
 #endif
 
 SIMDE_END_DECLS_

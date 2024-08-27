@@ -57,35 +57,36 @@
  * anything we can detect. */
 
 #if defined(__clang__) && !defined(SIMDE_DETECT_CLANG_VERSION)
-#  if __has_warning("-Wformat-insufficient-args")
-#    define SIMDE_DETECT_CLANG_VERSION 120000
-#  elif __has_warning("-Wimplicit-const-int-float-conversion")
-#    define SIMDE_DETECT_CLANG_VERSION 110000
-#  elif __has_warning("-Wmisleading-indentation")
-#    define SIMDE_DETECT_CLANG_VERSION 100000
-#  elif defined(__FILE_NAME__)
-#    define SIMDE_DETECT_CLANG_VERSION 90000
-#  elif __has_warning("-Wextra-semi-stmt") || __has_builtin(__builtin_rotateleft32)
-#    define SIMDE_DETECT_CLANG_VERSION 80000
-#  elif __has_warning("-Wc++98-compat-extra-semi")
-#    define SIMDE_DETECT_CLANG_VERSION 70000
-#  elif __has_warning("-Wpragma-pack")
-#    define SIMDE_DETECT_CLANG_VERSION 60000
-#  elif __has_warning("-Wbitfield-enum-conversion")
-#    define SIMDE_DETECT_CLANG_VERSION 50000
-#  elif __has_attribute(diagnose_if)
-#    define SIMDE_DETECT_CLANG_VERSION 40000
-#  elif __has_warning("-Wcast-calling-convention")
-#    define SIMDE_DETECT_CLANG_VERSION 30900
-#  elif __has_warning("-WCL4")
-#    define SIMDE_DETECT_CLANG_VERSION 30800
-#  elif __has_warning("-WIndependentClass-attribute")
-#    define SIMDE_DETECT_CLANG_VERSION 30700
-#  elif __has_warning("-Wambiguous-ellipsis")
-#    define SIMDE_DETECT_CLANG_VERSION 30600
-#  else
-#    define SIMDE_DETECT_CLANG_VERSION 1
-#  endif
+#if __has_warning("-Wformat-insufficient-args")
+#define SIMDE_DETECT_CLANG_VERSION 120000
+#elif __has_warning("-Wimplicit-const-int-float-conversion")
+#define SIMDE_DETECT_CLANG_VERSION 110000
+#elif __has_warning("-Wmisleading-indentation")
+#define SIMDE_DETECT_CLANG_VERSION 100000
+#elif defined(__FILE_NAME__)
+#define SIMDE_DETECT_CLANG_VERSION 90000
+#elif __has_warning("-Wextra-semi-stmt") || \
+    __has_builtin(__builtin_rotateleft32)
+#define SIMDE_DETECT_CLANG_VERSION 80000
+#elif __has_warning("-Wc++98-compat-extra-semi")
+#define SIMDE_DETECT_CLANG_VERSION 70000
+#elif __has_warning("-Wpragma-pack")
+#define SIMDE_DETECT_CLANG_VERSION 60000
+#elif __has_warning("-Wbitfield-enum-conversion")
+#define SIMDE_DETECT_CLANG_VERSION 50000
+#elif __has_attribute(diagnose_if)
+#define SIMDE_DETECT_CLANG_VERSION 40000
+#elif __has_warning("-Wcast-calling-convention")
+#define SIMDE_DETECT_CLANG_VERSION 30900
+#elif __has_warning("-WCL4")
+#define SIMDE_DETECT_CLANG_VERSION 30800
+#elif __has_warning("-WIndependentClass-attribute")
+#define SIMDE_DETECT_CLANG_VERSION 30700
+#elif __has_warning("-Wambiguous-ellipsis")
+#define SIMDE_DETECT_CLANG_VERSION 30600
+#else
+#define SIMDE_DETECT_CLANG_VERSION 1
+#endif
 #endif /* defined(__clang__) && !defined(SIMDE_DETECT_CLANG_VERSION) */
 
 /* The SIMDE_DETECT_CLANG_VERSION_CHECK macro is pretty
@@ -99,11 +100,14 @@
  * such as pragmas to disable a specific warning. */
 
 #if defined(SIMDE_DETECT_CLANG_VERSION)
-#  define SIMDE_DETECT_CLANG_VERSION_CHECK(major, minor, revision) (SIMDE_DETECT_CLANG_VERSION >= ((major * 10000) + (minor * 1000) + (revision)))
-#  define SIMDE_DETECT_CLANG_VERSION_NOT(major, minor, revision) (SIMDE_DETECT_CLANG_VERSION < ((major * 10000) + (minor * 1000) + (revision)))
+#define SIMDE_DETECT_CLANG_VERSION_CHECK(major, minor, revision) \
+  (SIMDE_DETECT_CLANG_VERSION >=                                 \
+   ((major * 10000) + (minor * 1000) + (revision)))
+#define SIMDE_DETECT_CLANG_VERSION_NOT(major, minor, revision) \
+  (SIMDE_DETECT_CLANG_VERSION < ((major * 10000) + (minor * 1000) + (revision)))
 #else
-#  define SIMDE_DETECT_CLANG_VERSION_CHECK(major, minor, revision) (0)
-#  define SIMDE_DETECT_CLANG_VERSION_NOT(major, minor, revision) (0)
+#define SIMDE_DETECT_CLANG_VERSION_CHECK(major, minor, revision) (0)
+#define SIMDE_DETECT_CLANG_VERSION_NOT(major, minor, revision) (0)
 #endif
 
 #endif /* !defined(SIMDE_DETECT_CLANG_H) */

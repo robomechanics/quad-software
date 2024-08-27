@@ -18,90 +18,93 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_CASADI_META_HPP
 #define CASADI_CASADI_META_HPP
 
 #include <casadi/core/casadi_export.h>
+
 #include <string>
 
 namespace casadi {
-  /** \brief Collects global CasADi meta information
+/** \brief Collects global CasADi meta information
+*
+*  \author Joris Gillis
+*  \date 2012
+
+    \identifier{23k} */
+class CASADI_EXPORT CasadiMeta {
+ private:
+  /// No instances are allowed
+  CasadiMeta();
+
+ public:
+  /** \brief Obtain the version number of CasADi
+
+  *  The format is 'x.y.z' or 'x.y.z+'
   *
-  *  \author Joris Gillis
-  *  \date 2012
+  *  The variant without + indicates that the version is an official release
+  *
+  *  The variant with + indicates that the version is more recent than 'x.y.z',
+  *     and might be more recent than 'x.y.w'  with w>z.
+  *
+  *  \see getGitRevision getGitDescribe
 
-      \identifier{23k} */
-  class CASADI_EXPORT CasadiMeta {
-    private:
-      /// No instances are allowed
-      CasadiMeta();
-    public:
-    /** \brief Obtain the version number of CasADi
+      \identifier{iz} */
+  static const char* version();
+  /** \brief Obtain the git hash of this build
 
-    *  The format is 'x.y.z' or 'x.y.z+'
-    *
-    *  The variant without + indicates that the version is an official release
-    *
-    *  The variant with + indicates that the version is more recent than 'x.y.z',
-    *     and might be more recent than 'x.y.w'  with w>z.
-    *
-    *  \see getGitRevision getGitDescribe
+  *      (only available if built from a git repo)
 
-        \identifier{iz} */
-    static const char* version();
-    /** \brief Obtain the git hash of this build
+      \identifier{j0} */
+  static const char* git_revision();
+  /** \brief Obtain the git description of this build
 
-    *      (only available if built from a git repo)
+  *      (only available if built from a git repo)
 
-        \identifier{j0} */
-    static const char* git_revision();
-    /** \brief Obtain the git description of this build
+      \identifier{j1} */
+  static const char* git_describe();
+  /** \brief Obtain list of features that were compiled into this build
 
-    *      (only available if built from a git repo)
+      \identifier{j2} */
+  static const char* feature_list();
+  /** \brief Obtain build type: RELEASE/Debug
 
-        \identifier{j1} */
-    static const char* git_describe();
-    /** \brief Obtain list of features that were compiled into this build
+      \identifier{j3} */
+  static const char* build_type();
+  /** \brief Obtain compiler identification
 
-        \identifier{j2} */
-    static const char* feature_list();
-    /** \brief Obtain build type: RELEASE/Debug
+  * Provided by
+  http://www.cmake.org/cmake/help/v2.8.10/cmake.html#variable:CMAKE_LANG_COMPILER_ID
 
-        \identifier{j3} */
-    static const char* build_type();
-    /** \brief Obtain compiler identification
+      \identifier{j4} */
+  static const char* compiler_id();
+  /** \brief Obtain compiler
 
-    * Provided by http://www.cmake.org/cmake/help/v2.8.10/cmake.html#variable:CMAKE_LANG_COMPILER_ID
+      \identifier{j5} */
+  static const char* compiler();
+  /** \brief Obtain compiler flags
 
-        \identifier{j4} */
-    static const char* compiler_id();
-    /** \brief Obtain compiler
+      \identifier{j6} */
+  static const char* compiler_flags();
+  /** \brief Obtain modules list
 
-        \identifier{j5} */
-    static const char* compiler();
-    /** \brief Obtain compiler flags
+      \identifier{j7} */
+  static const char* modules();
+  /** \brief Obtain plugins list
 
-        \identifier{j6} */
-    static const char* compiler_flags();
-    /** \brief Obtain modules list
+      \identifier{j8} */
+  static const char* plugins();
+  /** \brief Obtain install prefix
 
-        \identifier{j7} */
-    static const char* modules();
-    /** \brief Obtain plugins list
-
-        \identifier{j8} */
-    static const char* plugins();
-    /** \brief Obtain install prefix
-
-        \identifier{j9} */
-    static const char* install_prefix();
-  };
+      \identifier{j9} */
+  static const char* install_prefix();
+};
 
 }  // namespace casadi
 
-#endif // CASADI_CASADI_META_HPP
+#endif  // CASADI_CASADI_META_HPP

@@ -18,10 +18,10 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_PRINTABLE_HPP
 #define CASADI_PRINTABLE_HPP
@@ -36,38 +36,37 @@
 
 namespace casadi {
 
-  /** \brief Empty Base
+/** \brief Empty Base
 
-      This class is extended in SWIG.
+    This class is extended in SWIG.
 
-      \identifier{7h} */
-  struct CASADI_EXPORT PrintableCommon {};
+    \identifier{7h} */
+struct CASADI_EXPORT PrintableCommon {};
 
 #ifndef SWIG
-  /** \brief Base class for objects that have a natural string representation
+/** \brief Base class for objects that have a natural string representation
 
-      \author Joel Andersson
-      \date 2010-2014
+    \author Joel Andersson
+    \date 2010-2014
 
-      \identifier{7i} */
-  template<class Derived>
-  class CASADI_EXPORT Printable : public PrintableCommon {
-  public:
-    /// Print a string representation of the object to a stream
-    inline friend
-      std::ostream& operator<<(std::ostream &stream, const Derived& obj) {
-      obj.disp(stream);
-      return stream;
-    }
+    \identifier{7i} */
+template <class Derived>
+class CASADI_EXPORT Printable : public PrintableCommon {
+ public:
+  /// Print a string representation of the object to a stream
+  inline friend std::ostream& operator<<(std::ostream& stream,
+                                         const Derived& obj) {
+    obj.disp(stream);
+    return stream;
+  }
 
-    /// Get string representation with type information
-    inline friend std::string repr(const Derived& obj) {
-      return Derived::type_name() + "(" + obj.get_str() + ")";
-    }
-  };
-#endif // SWIG
+  /// Get string representation with type information
+  inline friend std::string repr(const Derived& obj) {
+    return Derived::type_name() + "(" + obj.get_str() + ")";
+  }
+};
+#endif  // SWIG
 
-} // namespace casadi
+}  // namespace casadi
 
-
-#endif // CASADI_PRINTABLE_HPP
+#endif  // CASADI_PRINTABLE_HPP

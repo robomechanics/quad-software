@@ -7,15 +7,13 @@
 
 #include "IpSmartPtr.hpp"
 
-namespace Ipopt
-{
+namespace Ipopt {
 
 class RegisteredOptions;
 
 SIPOPTLIB_EXPORT void RegisterOptions_sIPOPT(
-   const SmartPtr<RegisteredOptions>& roptions
-);
+    const SmartPtr<RegisteredOptions>& roptions);
 
-} // namespace Ipopt
+}  // namespace Ipopt
 
 #endif

@@ -6,9 +6,8 @@
 #ifndef ClpFactorization_H
 #define ClpFactorization_H
 
-#include "CoinPragma.hpp"
-
 #include "CoinFactorization.hpp"
+#include "CoinPragma.hpp"
 class ClpMatrixBase;
 class ClpSimplex;
 class ClpNetworkBasis;
@@ -17,8 +16,8 @@ class CoinOtherFactorization;
 #define CLP_MULTIPLE_FACTORIZATIONS 4
 #endif
 #ifdef CLP_MULTIPLE_FACTORIZATIONS
-#include "CoinDenseFactorization.hpp"
 #include "ClpSimplex.hpp"
+#include "CoinDenseFactorization.hpp"
 #endif
 #ifndef COIN_FAST_CODE
 #define COIN_FAST_CODE
@@ -33,13 +32,13 @@ class CoinOtherFactorization;
 */
 class ClpFactorization
 #ifndef CLP_MULTIPLE_FACTORIZATIONS
-  : public CoinFactorization
+    : public CoinFactorization
 #endif
 {
 
-  //friend class CoinFactorization;
+  // friend class CoinFactorization;
 
-public:
+ public:
   /**@name factorization */
   //@{
   /** When part of LP - given by basic variables.
@@ -86,20 +85,16 @@ public:
          speed considerations.  You could just do this on first iteration
          after factorization and thereafter re-factorize
       partial update already in U */
-  int replaceColumn(const ClpSimplex *model,
-    CoinIndexedVector *regionSparse,
-    CoinIndexedVector *tableauColumn,
-    int pivotRow,
-    double pivotCheck,
-    bool checkBeforeModifying = false,
-    double acceptablePivot = 1.0e-8);
+  int replaceColumn(const ClpSimplex *model, CoinIndexedVector *regionSparse,
+                    CoinIndexedVector *tableauColumn, int pivotRow,
+                    double pivotCheck, bool checkBeforeModifying = false,
+                    double acceptablePivot = 1.0e-8);
 #if ABOCA_LITE_FACTORIZATION
   /// Does btranU part of replaceColumn (skipping entries)
   void replaceColumn1(CoinIndexedVector *regionSparse, int pivotRow);
   /// Does replaceColumn - having already done btranU
-  int replaceColumn2(CoinIndexedVector *regionSparse,
-    int pivotRow,
-    double pivotCheck);
+  int replaceColumn2(CoinIndexedVector *regionSparse, int pivotRow,
+                     double pivotCheck);
 #endif
   //@}
 
@@ -111,113 +106,103 @@ public:
          number returned is negative if no room
          region1 starts as zero and is zero at end */
   int updateColumnFT(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2);
+                     CoinIndexedVector *regionSparse2);
   /** Updates one column (FTRAN) from region2
          region1 starts as zero and is zero at end */
   int updateColumn(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2,
-    bool noPermute = false) const;
+                   CoinIndexedVector *regionSparse2,
+                   bool noPermute = false) const;
   /** Updates one column (FTRAN) from region2
          Tries to do FT update
          number returned is negative if no room.
          Also updates region3
          region1 starts as zero and is zero at end */
   int updateTwoColumnsFT(CoinIndexedVector *regionSparse1,
-    CoinIndexedVector *regionSparse2,
-    CoinIndexedVector *regionSparse3,
-    bool noPermuteRegion3 = false);
+                         CoinIndexedVector *regionSparse2,
+                         CoinIndexedVector *regionSparse3,
+                         bool noPermuteRegion3 = false);
   /// For debug (no statistics update)
   int updateColumnForDebug(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2,
-    bool noPermute = false) const;
+                           CoinIndexedVector *regionSparse2,
+                           bool noPermute = false) const;
   /** Updates one column (BTRAN) from region2
          region1 starts as zero and is zero at end */
   int updateColumnTranspose(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2) const;
+                            CoinIndexedVector *regionSparse2) const;
   /** Updates two columns (BTRAN) from regionSparse2 and 3
-	 regionSparse starts as zero and is zero at end 
-	 Note - if regionSparse2 packed on input - will be packed on output - same for 3
+         regionSparse starts as zero and is zero at end
+         Note - if regionSparse2 packed on input - will be packed on output -
+     same for 3
      */
   void updateTwoColumnsTranspose(CoinIndexedVector *regionSparse,
-    CoinIndexedVector *regionSparse2,
-    CoinIndexedVector *regionSparse3) const;
+                                 CoinIndexedVector *regionSparse2,
+                                 CoinIndexedVector *regionSparse3) const;
   //@}
 #ifdef CLP_MULTIPLE_FACTORIZATIONS
   /**@name Lifted from CoinFactorization */
   //@{
   /// Total number of elements in factorization
-  inline int numberElements() const
-  {
+  inline int numberElements() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->numberElements();
     else
       return coinFactorizationB_->numberElements();
   }
   /// Returns address of permute region
-  inline int *permute() const
-  {
+  inline int *permute() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->permute();
     else
       return coinFactorizationB_->permute();
   }
   /// Returns address of pivotColumn region (also used for permuting)
-  inline int *pivotColumn() const
-  {
+  inline int *pivotColumn() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->pivotColumn();
     else
       return coinFactorizationB_->permute();
   }
   /// Maximum number of pivots between factorizations
-  inline int maximumPivots() const
-  {
+  inline int maximumPivots() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->maximumPivots();
     else
       return coinFactorizationB_->maximumPivots();
   }
   /// Set maximum number of pivots between factorizations
-  inline void maximumPivots(int value)
-  {
+  inline void maximumPivots(int value) {
     if (coinFactorizationA_)
       coinFactorizationA_->maximumPivots(value);
     else
       coinFactorizationB_->maximumPivots(value);
   }
   /// Returns number of pivots since factorization
-  inline int pivots() const
-  {
+  inline int pivots() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->pivots();
     else
       return coinFactorizationB_->pivots();
   }
   /// Whether larger areas needed
-  inline double areaFactor() const
-  {
+  inline double areaFactor() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->areaFactor();
     else
       return 0.0;
   }
   /// Set whether larger areas needed
-  inline void areaFactor(double value)
-  {
-    if (coinFactorizationA_)
-      coinFactorizationA_->areaFactor(value);
+  inline void areaFactor(double value) {
+    if (coinFactorizationA_) coinFactorizationA_->areaFactor(value);
   }
   /// Zero tolerance
-  inline double zeroTolerance() const
-  {
+  inline double zeroTolerance() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->zeroTolerance();
     else
       return coinFactorizationB_->zeroTolerance();
   }
   /// Set zero tolerance
-  inline void zeroTolerance(double value)
-  {
+  inline void zeroTolerance(double value) {
     if (coinFactorizationA_)
       coinFactorizationA_->zeroTolerance(value);
     else
@@ -226,38 +211,32 @@ public:
   /// Set tolerances to safer of existing and given
   void saferTolerances(double zeroTolerance, double pivotTolerance);
   /**  get sparse threshold */
-  inline int sparseThreshold() const
-  {
+  inline int sparseThreshold() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->sparseThreshold();
     else
       return 0;
   }
   /**  Set sparse threshold */
-  inline void sparseThreshold(int value)
-  {
-    if (coinFactorizationA_)
-      coinFactorizationA_->sparseThreshold(value);
+  inline void sparseThreshold(int value) {
+    if (coinFactorizationA_) coinFactorizationA_->sparseThreshold(value);
   }
   /// Returns status
-  inline int status() const
-  {
+  inline int status() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->status();
     else
       return coinFactorizationB_->status();
   }
   /// Sets status
-  inline void setStatus(int value)
-  {
+  inline void setStatus(int value) {
     if (coinFactorizationA_)
       coinFactorizationA_->setStatus(value);
     else
       coinFactorizationB_->setStatus(value);
   }
   /// Returns number of dense rows
-  inline int numberDense() const
-  {
+  inline int numberDense() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->numberDense();
     else
@@ -265,24 +244,21 @@ public:
   }
 #if 1
   /// Returns number in U area
-  inline CoinBigIndex numberElementsU() const
-  {
+  inline CoinBigIndex numberElementsU() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->numberElementsU();
     else
       return -1;
   }
   /// Returns number in L area
-  inline CoinBigIndex numberElementsL() const
-  {
+  inline CoinBigIndex numberElementsL() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->numberElementsL();
     else
       return -1;
   }
   /// Returns number in R area
-  inline CoinBigIndex numberElementsR() const
-  {
+  inline CoinBigIndex numberElementsR() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->numberElementsR();
     else
@@ -294,52 +270,43 @@ public:
   void statsRefactor(char when) const;
 #endif
   /// Level of detail of messages
-  inline int messageLevel() const
-  {
+  inline int messageLevel() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->messageLevel();
     else
       return 1;
   }
   /// Set level of detail of messages
-  inline void messageLevel(int value)
-  {
-    if (coinFactorizationA_)
-      coinFactorizationA_->messageLevel(value);
+  inline void messageLevel(int value) {
+    if (coinFactorizationA_) coinFactorizationA_->messageLevel(value);
   }
   /// Get rid of all memory
-  inline void clearArrays()
-  {
+  inline void clearArrays() {
     if (coinFactorizationA_)
       coinFactorizationA_->clearArrays();
     else if (coinFactorizationB_)
       coinFactorizationB_->clearArrays();
   }
   /// Number of Rows after factorization
-  inline int numberRows() const
-  {
+  inline int numberRows() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->numberRows();
     else
       return coinFactorizationB_->numberRows();
   }
   /// Gets dense threshold
-  inline int denseThreshold() const
-  {
+  inline int denseThreshold() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->denseThreshold();
     else
       return 0;
   }
   /// Sets dense threshold
-  inline void setDenseThreshold(int value)
-  {
-    if (coinFactorizationA_)
-      coinFactorizationA_->setDenseThreshold(value);
+  inline void setDenseThreshold(int value) {
+    if (coinFactorizationA_) coinFactorizationA_->setDenseThreshold(value);
   }
   /// Pivot tolerance
-  inline double pivotTolerance() const
-  {
+  inline double pivotTolerance() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->pivotTolerance();
     else if (coinFactorizationB_)
@@ -347,66 +314,53 @@ public:
     return 1.0e-8;
   }
   /// Set pivot tolerance
-  inline void pivotTolerance(double value)
-  {
+  inline void pivotTolerance(double value) {
     if (coinFactorizationA_)
       coinFactorizationA_->pivotTolerance(value);
     else if (coinFactorizationB_)
       coinFactorizationB_->pivotTolerance(value);
   }
   /// Allows change of pivot accuracy check 1.0 == none >1.0 relaxed
-  inline void relaxAccuracyCheck(double value)
-  {
-    if (coinFactorizationA_)
-      coinFactorizationA_->relaxAccuracyCheck(value);
+  inline void relaxAccuracyCheck(double value) {
+    if (coinFactorizationA_) coinFactorizationA_->relaxAccuracyCheck(value);
   }
   /** Array persistence flag
          If 0 then as now (delete/new)
          1 then only do arrays if bigger needed
          2 as 1 but give a bit extra if bigger needed
      */
-  inline int persistenceFlag() const
-  {
+  inline int persistenceFlag() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->persistenceFlag();
     else
       return 0;
   }
-  inline void setPersistenceFlag(int value)
-  {
-    if (coinFactorizationA_)
-      coinFactorizationA_->setPersistenceFlag(value);
+  inline void setPersistenceFlag(int value) {
+    if (coinFactorizationA_) coinFactorizationA_->setPersistenceFlag(value);
   }
   /// Delete all stuff (leaves as after CoinFactorization())
-  inline void almostDestructor()
-  {
+  inline void almostDestructor() {
     if (coinFactorizationA_)
       coinFactorizationA_->almostDestructor();
     else if (coinFactorizationB_)
       coinFactorizationB_->clearArrays();
   }
   /// Returns areaFactor but adjusted for dense
-  inline double adjustedAreaFactor() const
-  {
+  inline double adjustedAreaFactor() const {
     if (coinFactorizationA_)
       return coinFactorizationA_->adjustedAreaFactor();
     else
       return 0.0;
   }
-  inline void setBiasLU(int value)
-  {
-    if (coinFactorizationA_)
-      coinFactorizationA_->setBiasLU(value);
+  inline void setBiasLU(int value) {
+    if (coinFactorizationA_) coinFactorizationA_->setBiasLU(value);
   }
   /// true if Forrest Tomlin update, false if PFI
-  inline void setForrestTomlin(bool value)
-  {
-    if (coinFactorizationA_)
-      coinFactorizationA_->setForrestTomlin(value);
+  inline void setForrestTomlin(bool value) {
+    if (coinFactorizationA_) coinFactorizationA_->setForrestTomlin(value);
   }
   /// Sets default values
-  inline void setDefaultValues()
-  {
+  inline void setDefaultValues() {
     if (coinFactorizationA_) {
       // row activities have negative sign
 #ifndef COIN_FAST_CODE
@@ -418,57 +372,36 @@ public:
   /// If nonzero force use of 1,dense 2,small 3,osl
   void forceOtherFactorization(int which);
   /// Get switch to osl if number rows <= this
-  inline int goOslThreshold() const
-  {
-    return goOslThreshold_;
-  }
+  inline int goOslThreshold() const { return goOslThreshold_; }
   /// Set switch to osl if number rows <= this
-  inline void setGoOslThreshold(int value)
-  {
-    goOslThreshold_ = value;
-  }
+  inline void setGoOslThreshold(int value) { goOslThreshold_ = value; }
   /// Get switch to dense if number rows <= this
-  inline int goDenseThreshold() const
-  {
-    return goDenseThreshold_;
-  }
+  inline int goDenseThreshold() const { return goDenseThreshold_; }
   /// Set switch to dense if number rows <= this
-  inline void setGoDenseThreshold(int value)
-  {
-    goDenseThreshold_ = value;
-  }
+  inline void setGoDenseThreshold(int value) { goDenseThreshold_ = value; }
   /// Get switch to small if number rows <= this
-  inline int goSmallThreshold() const
-  {
-    return goSmallThreshold_;
-  }
+  inline int goSmallThreshold() const { return goSmallThreshold_; }
   /// Set switch to small if number rows <= this
-  inline void setGoSmallThreshold(int value)
-  {
-    goSmallThreshold_ = value;
-  }
+  inline void setGoSmallThreshold(int value) { goSmallThreshold_ = value; }
   /// Go over to dense or small code if small enough
   void goDenseOrSmall(int numberRows);
   /// Sets factorization
   void setFactorization(ClpFactorization &factorization);
   /// Return 1 if dense code
-  inline int isDenseOrSmall() const
-  {
-    return coinFactorizationB_ ? 1 : 0;
-  }
+  inline int isDenseOrSmall() const { return coinFactorizationB_ ? 1 : 0; }
   /// Return coinFactorizationA_
-  inline CoinFactorization *coinFactorization() const
-  {
+  inline CoinFactorization *coinFactorization() const {
     return coinFactorizationA_;
   }
 #else
-  inline bool timeToRefactorize() const
-  {
-    return (pivots() * 3 > maximumPivots() * 2 && numberElementsR() * 3 > (numberElementsL() + numberElementsU()) * 2 + 1000 && !numberDense());
+  inline bool timeToRefactorize() const {
+    return (pivots() * 3 > maximumPivots() * 2 &&
+            numberElementsR() * 3 >
+                (numberElementsL() + numberElementsU()) * 2 + 1000 &&
+            !numberDense());
   }
   /// Sets default values
-  inline void setDefaultValues()
-  {
+  inline void setDefaultValues() {
     // row activities have negative sign
 #ifndef COIN_FAST_CODE
     slackValue(-1.0);
@@ -489,29 +422,20 @@ public:
   /// Says whether to redo pivot order
   bool needToReorder() const;
   /// To switch statistics on or off
-  inline void doStatistics(bool trueFalse) const
-  {
-    doStatistics_ = trueFalse;
-  }
+  inline void doStatistics(bool trueFalse) const { doStatistics_ = trueFalse; }
 #ifndef SLIM_CLP
   /// Says if a network basis
-  inline bool networkBasis() const
-  {
-    return (networkBasis_ != NULL);
-  }
+  inline bool networkBasis() const { return (networkBasis_ != NULL); }
 #else
   /// Says if a network basis
-  inline bool networkBasis() const
-  {
-    return false;
-  }
+  inline bool networkBasis() const { return false; }
 #endif
   /// Fills weighted row list
   void getWeights(int *weights) const;
   //@}
 
   ////////////////// data //////////////////
-private:
+ private:
   /**@name data */
   //@{
   /// Pointer to network basis
@@ -553,4 +477,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

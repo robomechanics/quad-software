@@ -9,15 +9,14 @@
 #include "ClpObjective.hpp"
 #include "CoinPackedMatrix.hpp"
 
-//#############################################################################
+// #############################################################################
 
 /** Quadratic Objective Class
 
 */
 
 class ClpQuadraticObjective : public ClpObjective {
-
-public:
+ public:
   ///@name Stuff
   //@{
 
@@ -27,29 +26,26 @@ public:
          Uses model for scaling
          includeLinear 0 - no, 1 as is, 2 as feasible
      */
-  virtual double *gradient(const ClpSimplex *model,
-    const double *solution, double &offset, bool refresh,
-    int includeLinear = 2);
+  virtual double *gradient(const ClpSimplex *model, const double *solution,
+                           double &offset, bool refresh, int includeLinear = 2);
   /// Resize objective
   /** Returns reduced gradient.Returns an offset (to be added to current one).
-     */
+   */
   virtual double reducedGradient(ClpSimplex *model, double *region,
-    bool useFeasibleCosts);
+                                 bool useFeasibleCosts);
   /** Returns step length which gives minimum of objective for
          solution + theta * change vector up to maximum theta.
 
          arrays are numberColumns+numberRows
          Also sets current objective, predicted and at maximumTheta
      */
-  virtual double stepLength(ClpSimplex *model,
-    const double *solution,
-    const double *change,
-    double maximumTheta,
-    double &currentObj,
-    double &predictedObj,
-    double &thetaObj);
+  virtual double stepLength(ClpSimplex *model, const double *solution,
+                            const double *change, double maximumTheta,
+                            double &currentObj, double &predictedObj,
+                            double &thetaObj);
   /// Return objective value (without any ClpModel offset) (model may be NULL)
-  virtual double objectiveValue(const ClpSimplex *model, const double *solution) const;
+  virtual double objectiveValue(const ClpSimplex *model,
+                                const double *solution) const;
   virtual void resize(int newNumberColumns);
   /// Delete columns in  objective
   virtual void deleteSome(int numberToDelete, const int *which);
@@ -69,9 +65,8 @@ public:
 
   /// Constructor from objective
   ClpQuadraticObjective(const double *linearObjective, int numberColumns,
-    const CoinBigIndex *start,
-    const int *column, const double *element,
-    int numberExtendedColumns_ = -1);
+                        const CoinBigIndex *start, const int *column,
+                        const double *element, int numberExtendedColumns_ = -1);
 
   /** Copy constructor .
          If type is -1 then make sure half symmetric,
@@ -82,7 +77,7 @@ public:
          and order is as given.
      */
   ClpQuadraticObjective(const ClpQuadraticObjective &rhs, int numberColumns,
-    const int *whichColumns);
+                        const int *whichColumns);
 
   /// Assignment operator
   ClpQuadraticObjective &operator=(const ClpQuadraticObjective &rhs);
@@ -96,13 +91,13 @@ public:
          and order is as given.
      */
   virtual ClpObjective *subsetClone(int numberColumns,
-    const int *whichColumns) const;
+                                    const int *whichColumns) const;
 
   /** Load up quadratic objective.  This is stored as a CoinPackedMatrix */
   void loadQuadraticObjective(const int numberColumns,
-    const CoinBigIndex *start,
-    const int *column, const double *element,
-    int numberExtendedColumns = -1);
+                              const CoinBigIndex *start, const int *column,
+                              const double *element,
+                              int numberExtendedColumns = -1);
   void loadQuadraticObjective(const CoinPackedMatrix &matrix);
   /// Get rid of quadratic objective
   void deleteQuadraticObjective();
@@ -110,35 +105,22 @@ public:
   ///@name Gets and sets
   //@{
   /// Quadratic objective
-  inline CoinPackedMatrix *quadraticObjective() const
-  {
+  inline CoinPackedMatrix *quadraticObjective() const {
     return quadraticObjective_;
   }
   /// Linear objective
-  inline double *linearObjective() const
-  {
-    return objective_;
-  }
+  inline double *linearObjective() const { return objective_; }
   /// Length of linear objective which could be bigger
-  inline int numberExtendedColumns() const
-  {
-    return numberExtendedColumns_;
-  }
+  inline int numberExtendedColumns() const { return numberExtendedColumns_; }
   /// Number of columns in quadratic objective
-  inline int numberColumns() const
-  {
-    return numberColumns_;
-  }
+  inline int numberColumns() const { return numberColumns_; }
   /// If a full or half matrix
-  inline bool fullMatrix() const
-  {
-    return fullMatrix_;
-  }
+  inline bool fullMatrix() const { return fullMatrix_; }
   //@}
 
   //---------------------------------------------------------------------------
 
-private:
+ private:
   ///@name Private member data
   /// Quadratic objective
   CoinPackedMatrix *quadraticObjective_;
@@ -158,4 +140,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

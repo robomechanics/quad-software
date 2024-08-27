@@ -14,11 +14,10 @@ class CoinWarmStartBasis;
 class CglTreeProbingInfo;
 /** Stored Cut Generator Class */
 class CglStored : public CglCutGenerator {
-
-public:
+ public:
   /**@name Generate Cuts */
   //@{
-  /** Generate Mixed Integer Stored cuts for the model of the 
+  /** Generate Mixed Integer Stored cuts for the model of the
       solver interface, si.
 
       Insert the generated cuts into OsiCut, cs.
@@ -27,7 +26,7 @@ public:
       and inserts any that are violated by enough
   */
   virtual void generateCuts(const OsiSolverInterface &si, OsiCuts &cs,
-    const CglTreeInfo info = CglTreeInfo());
+                            const CglTreeInfo info = CglTreeInfo());
   //@}
 
   /**@name Change criterion on whether to include cut.
@@ -35,20 +34,11 @@ public:
   (default 1.0e-5) */
   //@{
   /// Set
-  inline void setRequiredViolation(double value)
-  {
-    requiredViolation_ = value;
-  }
+  inline void setRequiredViolation(double value) { requiredViolation_ = value; }
   /// Get
-  inline double getRequiredViolation() const
-  {
-    return requiredViolation_;
-  }
+  inline double getRequiredViolation() const { return requiredViolation_; }
   /// Takes over ownership of probing info
-  inline void setProbingInfo(CglTreeProbingInfo *info)
-  {
-    probingInfo_ = info;
-  }
+  inline void setProbingInfo(CglTreeProbingInfo *info) { probingInfo_ = info; }
   //@}
 
   /**@name Cut stuff */
@@ -60,35 +50,23 @@ public:
   /// Add a row cut from a packed vector
   void addCut(double lb, double ub, const CoinPackedVector &vector);
   /// Add a row cut from elements
-  void addCut(double lb, double ub, int size, const int *colIndices, const double *elements);
-  inline int sizeRowCuts() const
-  {
-    return cuts_.sizeRowCuts();
-  }
-  const OsiRowCut *rowCutPointer(int index) const
-  {
+  void addCut(double lb, double ub, int size, const int *colIndices,
+              const double *elements);
+  inline int sizeRowCuts() const { return cuts_.sizeRowCuts(); }
+  const OsiRowCut *rowCutPointer(int index) const {
     return cuts_.rowCutPtr(index);
   }
   /// Save stuff
   void saveStuff(double bestObjective, const double *bestSolution,
-    const double *lower, const double *upper);
+                 const double *lower, const double *upper);
   /// Best solution (or NULL)
-  inline const double *bestSolution() const
-  {
-    return bestSolution_;
-  }
+  inline const double *bestSolution() const { return bestSolution_; }
   /// Best objective
   double bestObjective() const;
   /// Tight lower bounds
-  const double *tightLower() const
-  {
-    return bounds_;
-  }
+  const double *tightLower() const { return bounds_; }
   /// Tight upper bounds
-  const double *tightUpper() const
-  {
-    return bounds_ + numberColumns_;
-  }
+  const double *tightUpper() const { return bounds_ + numberColumns_; }
   //@}
 
   /**@name Constructors and destructors */
@@ -106,14 +84,13 @@ public:
   virtual CglCutGenerator *clone() const;
 
   /// Assignment operator
-  CglStored &
-  operator=(const CglStored &rhs);
+  CglStored &operator=(const CglStored &rhs);
 
   /// Destructor
   virtual ~CglStored();
   //@}
 
-protected:
+ protected:
   // Protected member methods
 
   // Protected member data
@@ -137,4 +114,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

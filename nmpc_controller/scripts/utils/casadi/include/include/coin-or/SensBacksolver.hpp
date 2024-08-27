@@ -10,27 +10,20 @@
 #include "IpAlgStrategy.hpp"
 #include "IpIteratesVector.hpp"
 
-namespace Ipopt
-{
+namespace Ipopt {
 
-class SIPOPTLIB_EXPORT SensBacksolver: public AlgorithmStrategyObject
-{
+class SIPOPTLIB_EXPORT SensBacksolver : public AlgorithmStrategyObject {
+  /** This class is the interface to all backsolvers that may
+   *  be used for the sIPOPT. */
+ public:
+  SensBacksolver() {}
 
-   /** This class is the interface to all backsolvers that may
-    *  be used for the sIPOPT. */
-public:
-   SensBacksolver()
-   { }
+  virtual ~SensBacksolver() {}
 
-   virtual ~SensBacksolver()
-   { }
-
-   virtual bool Solve(
-      SmartPtr<IteratesVector>       delta_lhs,
-      SmartPtr<const IteratesVector> delta_rhs
-   ) = 0;
+  virtual bool Solve(SmartPtr<IteratesVector> delta_lhs,
+                     SmartPtr<const IteratesVector> delta_rhs) = 0;
 };
 
-}
+}  // namespace Ipopt
 
 #endif

@@ -12,7 +12,7 @@
  */
 
 class CbcHeuristicDiveGuided : public CbcHeuristicDive {
-public:
+ public:
   // Default Constructor
   CbcHeuristicDiveGuided();
 
@@ -44,12 +44,11 @@ public:
         returned will not be trivially roundable.
     */
   virtual bool selectVariableToBranch(OsiSolverInterface *solver,
-    const double *newSolution,
-    int &bestColumn,
-    int &bestRound);
+                                      const double *newSolution,
+                                      int &bestColumn, int &bestRound);
 };
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

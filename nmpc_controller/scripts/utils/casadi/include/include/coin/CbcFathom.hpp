@@ -16,20 +16,20 @@
 
 class CbcModel;
 
-//#############################################################################
+// #############################################################################
 /** Fathom base class.
 
-    The idea is that after some branching the problem will be effectively smaller than
-    the original problem and maybe there will be a more specialized technique which can completely
-    fathom this branch quickly.
+    The idea is that after some branching the problem will be effectively
+   smaller than the original problem and maybe there will be a more specialized
+   technique which can completely fathom this branch quickly.
 
-    One method is to presolve the problem to give a much smaller new problem and then do branch
-    and cut on that.  Another might be dynamic programming.
+    One method is to presolve the problem to give a much smaller new problem and
+   then do branch and cut on that.  Another might be dynamic programming.
 
  */
 
 class CbcFathom {
-public:
+ public:
   // Default Constructor
   CbcFathom();
 
@@ -58,25 +58,22 @@ public:
   virtual int fathom(double *&newSolution) = 0;
 
   // Is this method possible
-  inline bool possible() const
-  {
-    return possible_;
-  }
+  inline bool possible() const { return possible_; }
 
-protected:
+ protected:
   /// Model
   CbcModel *model_;
   /// Possible - if this method of fathoming can be used
   bool possible_;
 
-private:
+ private:
   /// Illegal Assignment operator
   CbcFathom &operator=(const CbcFathom &rhs);
 };
 
 #include "OsiClpSolverInterface.hpp"
 
-//#############################################################################
+// #############################################################################
 
 /**
 
@@ -86,8 +83,7 @@ This is for codes where solver needs to know about CbcModel
 */
 
 class CbcOsiSolver : public OsiClpSolverInterface {
-
-public:
+ public:
   /**@name Constructors and destructors */
   //@{
   /// Default Constructor
@@ -110,20 +106,14 @@ public:
   /**@name Sets and Gets */
   //@{
   /// Set Cbc Model
-  inline void setCbcModel(CbcModel *model)
-  {
-    cbcModel_ = model;
-  }
+  inline void setCbcModel(CbcModel *model) { cbcModel_ = model; }
   /// Return Cbc Model
-  inline CbcModel *cbcModel() const
-  {
-    return cbcModel_;
-  }
+  inline CbcModel *cbcModel() const { return cbcModel_; }
   //@}
 
   //---------------------------------------------------------------------------
 
-protected:
+ protected:
   /**@name Private member data */
   //@{
   /// Pointer back to CbcModel
@@ -133,4 +123,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

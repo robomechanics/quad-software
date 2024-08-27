@@ -27,8 +27,7 @@
 */
 
 class CbcSOS : public CbcObject {
-
-public:
+ public:
   // Default Constructor
   CbcSOS();
 
@@ -40,11 +39,10 @@ public:
     Weights can be used to assign arbitrary weights to variables, in the order
     they are specified in which. If no weights are provided, a default array of
     0, 1, 2, ... is generated.
-	*/
+        */
 
-  CbcSOS(CbcModel *model, int numberMembers,
-    const int *which, const double *weights, int identifier,
-    int type = 1);
+  CbcSOS(CbcModel *model, int numberMembers, const int *which,
+         const double *weights, int identifier, int type = 1);
 
   // Copy constructor
   CbcSOS(const CbcSOS &);
@@ -60,21 +58,22 @@ public:
 
   /// Infeasibility - large is 0.5
   virtual double infeasibility(const OsiBranchingInformation *info,
-    int &preferredWay) const;
+                               int &preferredWay) const;
 
   using CbcObject::feasibleRegion;
   /// This looks at solution and sets bounds to contain solution
   virtual void feasibleRegion();
 
   /// Creates a branching object
-  virtual CbcBranchingObject *createCbcBranch(OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
+  virtual CbcBranchingObject *createCbcBranch(
+      OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
 
-  /** Pass in information on branch just done and create CbcObjectUpdateData instance.
-        If object does not need data then backward pointer will be NULL.
+  /** Pass in information on branch just done and create CbcObjectUpdateData
+     instance. If object does not need data then backward pointer will be NULL.
         Assumes can get information from solver */
-  virtual CbcObjectUpdateData createUpdateInformation(const OsiSolverInterface *solver,
-    const CbcNode *node,
-    const CbcBranchingObject *branchingObject);
+  virtual CbcObjectUpdateData createUpdateInformation(
+      const OsiSolverInterface *solver, const CbcNode *node,
+      const CbcBranchingObject *branchingObject);
   /// Update object by CbcObjectUpdateData
   virtual void updateInformation(const CbcObjectUpdateData &data);
   using CbcObject::solverBranch;
@@ -84,75 +83,45 @@ public:
     */
   virtual OsiSolverBranch *solverBranch() const;
   /// Redoes data when sequence numbers change
-  virtual void redoSequenceEtc(CbcModel *model, int numberColumns, const int *originalColumns);
+  virtual void redoSequenceEtc(CbcModel *model, int numberColumns,
+                               const int *originalColumns);
 
   /// Construct an OsiSOS object
   OsiSOS *osiObject(const OsiSolverInterface *solver) const;
   /// Number of members
-  inline int numberMembers() const
-  {
-    return numberMembers_;
-  }
+  inline int numberMembers() const { return numberMembers_; }
 
   /// Members (indices in range 0 ... numberColumns-1)
-  inline const int *members() const
-  {
-    return members_;
-  }
+  inline const int *members() const { return members_; }
 
   /// SOS type
-  inline int sosType() const
-  {
-    return sosType_;
-  }
+  inline int sosType() const { return sosType_; }
   /// Down number times
-  inline int numberTimesDown() const
-  {
-    return numberTimesDown_;
-  }
+  inline int numberTimesDown() const { return numberTimesDown_; }
   /// Up number times
-  inline int numberTimesUp() const
-  {
-    return numberTimesUp_;
-  }
+  inline int numberTimesUp() const { return numberTimesUp_; }
 
   /** Array of weights */
-  inline const double *weights() const
-  {
-    return weights_;
-  }
+  inline const double *weights() const { return weights_; }
 
   /// Set number of members
-  inline void setNumberMembers(int n)
-  {
-    numberMembers_ = n;
-  }
+  inline void setNumberMembers(int n) { numberMembers_ = n; }
 
   /// Members (indices in range 0 ... numberColumns-1)
-  inline int *mutableMembers() const
-  {
-    return members_;
-  }
+  inline int *mutableMembers() const { return members_; }
 
   /** Array of weights */
-  inline double *mutableWeights() const
-  {
-    return weights_;
-  }
+  inline double *mutableWeights() const { return weights_; }
 
   /** \brief Return true if object can take part in normal heuristics
-    */
-  virtual bool canDoHeuristics() const
-  {
+   */
+  virtual bool canDoHeuristics() const {
     return (sosType_ == 1 && integerValued_);
   }
   /// Set whether set is integer valued or not
-  inline void setIntegerValued(bool yesNo)
-  {
-    integerValued_ = yesNo;
-  }
+  inline void setIntegerValued(bool yesNo) { integerValued_ = yesNo; }
 
-protected:
+ protected:
   /// data
 
   /// Members (indices in range 0 ... numberColumns-1)
@@ -198,15 +167,13 @@ protected:
     pointer to the set.
  */
 class CbcSOSBranchingObject : public CbcBranchingObject {
-
-public:
+ public:
   // Default Constructor
   CbcSOSBranchingObject();
 
   // Useful constructor
-  CbcSOSBranchingObject(CbcModel *model, const CbcSOS *clique,
-    int way,
-    double separator);
+  CbcSOSBranchingObject(CbcModel *model, const CbcSOS *clique, int way,
+                        double separator);
 
   // Copy constructor
   CbcSOSBranchingObject(const CbcSOSBranchingObject &);
@@ -225,29 +192,24 @@ public:
   virtual double branch();
   /** Update bounds in solver as in 'branch' and update given bounds.
         branchState is -1 for 'down' +1 for 'up' */
-  virtual void fix(OsiSolverInterface *solver,
-    double *lower, double *upper,
-    int branchState) const;
+  virtual void fix(OsiSolverInterface *solver, double *lower, double *upper,
+                   int branchState) const;
 
   /** Reset every information so that the branching object appears to point to
         the previous child. This method does not need to modify anything in any
         solver. */
-  virtual void previousBranch()
-  {
+  virtual void previousBranch() {
     CbcBranchingObject::previousBranch();
     computeNonzeroRange();
   }
 
   using CbcBranchingObject::print;
   /** \brief Print something about branch - only if log level high
-    */
+   */
   virtual void print();
 
   /** Return the type (an integer identifier) of \c this */
-  virtual CbcBranchObjType type() const
-  {
-    return SoSBranchObj;
-  }
+  virtual CbcBranchObjType type() const { return SoSBranchObj; }
 
   /** Compare the original object of \c this with the original object of \c
         brObj. Assumes that there is an ordering of the original objects.
@@ -266,12 +228,13 @@ public:
         replaceIfOverlap is true) replace the current branching object with one
         whose feasible region is the overlap.
      */
-  virtual CbcRangeCompare compareBranchingObject(const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
+  virtual CbcRangeCompare compareBranchingObject(
+      const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
 
   /** Fill out the \c firstNonzero_ and \c lastNonzero_ data members */
   void computeNonzeroRange();
 
-protected:
+ protected:
   /// data
   const CbcSOS *set_;
   /// separator
@@ -287,4 +250,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

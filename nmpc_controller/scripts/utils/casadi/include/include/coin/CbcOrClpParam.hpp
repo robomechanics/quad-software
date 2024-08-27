@@ -13,15 +13,17 @@
 #ifndef CbcOrClpParam_H
 #define CbcOrClpParam_H
 /**
-   This has parameter handling stuff which can be shared between Cbc and Clp (and Dylp etc).
+   This has parameter handling stuff which can be shared between Cbc and Clp
+   (and Dylp etc).
 
-   This (and .cpp) should be copied so that it is the same in Cbc/Test and Clp/Test.
-   I know this is not elegant but it seems simplest.
+   This (and .cpp) should be copied so that it is the same in Cbc/Test and
+   Clp/Test. I know this is not elegant but it seems simplest.
 
    It uses COIN_HAS_CBC for parameters wanted by CBC
    It uses COIN_HAS_CLP for parameters wanted by CLP (or CBC using CLP)
    It could use COIN_HAS_DYLP for parameters wanted by DYLP
-   It could use COIN_HAS_DYLP_OR_CLP for parameters wanted by DYLP or CLP etc etc
+   It could use COIN_HAS_DYLP_OR_CLP for parameters wanted by DYLP or CLP etc
+   etc
 
  */
 class OsiSolverInterface;
@@ -293,27 +295,27 @@ enum CbcOrClpParameterType
 
   CBC_PARAM_NOTUSED_INVALID = 1000
 };
-#include <vector>
 #include <string>
+#include <vector>
 
 /// Very simple class for setting parameters
 
 class CbcOrClpParam {
-public:
+ public:
   /**@name Constructor and destructor */
   //@{
   /// Constructors
   CbcOrClpParam();
-  CbcOrClpParam(std::string name, std::string help,
-    double lower, double upper, CbcOrClpParameterType type, int display = 2);
-  CbcOrClpParam(std::string name, std::string help,
-    int lower, int upper, CbcOrClpParameterType type, int display = 2);
+  CbcOrClpParam(std::string name, std::string help, double lower, double upper,
+                CbcOrClpParameterType type, int display = 2);
+  CbcOrClpParam(std::string name, std::string help, int lower, int upper,
+                CbcOrClpParameterType type, int display = 2);
   // Other strings will be added by insert
   CbcOrClpParam(std::string name, std::string help, std::string firstValue,
-    CbcOrClpParameterType type, int whereUsed = 7, int display = 2);
+                CbcOrClpParameterType type, int whereUsed = 7, int display = 2);
   // Action
-  CbcOrClpParam(std::string name, std::string help,
-    CbcOrClpParameterType type, int whereUsed = 7, int display = 2);
+  CbcOrClpParam(std::string name, std::string help, CbcOrClpParameterType type,
+                int whereUsed = 7, int display = 2);
   /// Copy constructor.
   CbcOrClpParam(const CbcOrClpParam &);
   /// Assignment operator. This copies the data
@@ -329,55 +331,35 @@ public:
   /// Adds one help line
   void addHelp(std::string keyWord);
   /// Returns name
-  inline std::string name() const
-  {
-    return name_;
-  }
+  inline std::string name() const { return name_; }
   /// Returns short help
-  inline std::string shortHelp() const
-  {
-    return shortHelp_;
-  }
+  inline std::string shortHelp() const { return shortHelp_; }
   /// Returns long help
-  inline std::string longHelp() const
-  {
-    return longHelp_;
-  }
+  inline std::string longHelp() const { return longHelp_; }
   /// Returns set of valid strings
-  inline const std::vector<std::string>& definedKeywords() const
-  {
+  inline const std::vector<std::string> &definedKeywords() const {
     return definedKeyWords_;
   }
   /// Returns the lower bound for a double-valued parameter
-  inline double lowerDoubleValue() const
-  {
-     return lowerDoubleValue_;
-  }
+  inline double lowerDoubleValue() const { return lowerDoubleValue_; }
   /// Returns the upper bound for a double-valued parameter
-  inline double upperDoubleValue() const
-  {
-     return upperDoubleValue_;
-  }
+  inline double upperDoubleValue() const { return upperDoubleValue_; }
   /// Returns the lower bound for an int-valued parameter
-  inline int lowerIntValue() const
-  {
-     return lowerIntValue_;
-  }
+  inline int lowerIntValue() const { return lowerIntValue_; }
   /// Returns the upper bound for an int-valued parameter
-  inline int upperIntValue() const
-  {
-     return upperIntValue_;
-  }
+  inline int upperIntValue() const { return upperIntValue_; }
   /// Sets a double parameter (nonzero code if error)
   int setDoubleParameter(CbcModel &model, double value);
   /// Sets double parameter and returns printable string and error code
-  const char *setDoubleParameterWithMessage(CbcModel &model, double value, int &returnCode);
+  const char *setDoubleParameterWithMessage(CbcModel &model, double value,
+                                            int &returnCode);
   /// Gets a double parameter
   double doubleParameter(CbcModel &model) const;
   /// Sets a int parameter (nonzero code if error)
   int setIntParameter(CbcModel &model, int value);
   /// Sets int parameter and returns printable string and error code
-  const char *setIntParameterWithMessage(CbcModel &model, int value, int &returnCode);
+  const char *setIntParameterWithMessage(CbcModel &model, int value,
+                                         int &returnCode);
   /// Gets a int parameter
   int intParameter(CbcModel &model) const;
   /// Sets a double parameter (nonzero code if error)
@@ -385,23 +367,27 @@ public:
   /// Gets a double parameter
   double doubleParameter(ClpSimplex *model) const;
   /// Sets double parameter and returns printable string and error code
-  const char *setDoubleParameterWithMessage(ClpSimplex *model, double value, int &returnCode);
+  const char *setDoubleParameterWithMessage(ClpSimplex *model, double value,
+                                            int &returnCode);
   /// Sets a int parameter (nonzero code if error)
   int setIntParameter(ClpSimplex *model, int value);
   /// Sets int parameter and returns printable string and error code
-  const char *setIntParameterWithMessage(ClpSimplex *model, int value, int &returnCode);
+  const char *setIntParameterWithMessage(ClpSimplex *model, int value,
+                                         int &returnCode);
   /// Gets a int parameter
   int intParameter(ClpSimplex *model) const;
   /// Sets a double parameter (nonzero code if error)
   int setDoubleParameter(OsiSolverInterface *model, double value);
   /// Sets double parameter and returns printable string and error code
-  const char *setDoubleParameterWithMessage(OsiSolverInterface *model, double value, int &returnCode);
+  const char *setDoubleParameterWithMessage(OsiSolverInterface *model,
+                                            double value, int &returnCode);
   /// Gets a double parameter
   double doubleParameter(OsiSolverInterface *model) const;
   /// Sets a int parameter (nonzero code if error)
   int setIntParameter(OsiSolverInterface *model, int value);
   /// Sets int parameter and returns printable string and error code
-  const char *setIntParameterWithMessage(OsiSolverInterface *model, int value, int &returnCode);
+  const char *setIntParameterWithMessage(OsiSolverInterface *model, int value,
+                                         int &returnCode);
   /// Gets a int parameter
   int intParameter(OsiSolverInterface *model) const;
   /// Checks a double parameter (nonzero code if error)
@@ -415,8 +401,7 @@ public:
   /// Prints parameter options
   void printOptions() const;
   /// Returns current parameter option
-  inline std::string currentOption() const
-  {
+  inline std::string currentOption() const {
     return definedKeyWords_[currentKeyWord_];
   }
   /// Sets current parameter option
@@ -430,49 +415,32 @@ public:
   /// Returns current parameter option position
   int currentOptionAsInteger() const;
   /** Returns current parameter option position
-	 but if fake keyword returns a fake value and sets
-	 fakeInteger to true value.  If not fake then fakeInteger is -COIN_INT_MAX
+         but if fake keyword returns a fake value and sets
+         fakeInteger to true value.  If not fake then fakeInteger is
+     -COIN_INT_MAX
       */
   int currentOptionAsInteger(int &fakeInteger) const;
   /// Sets int value
   void setIntValue(int value);
   /// Sets int value with message
   const char *setIntValueWithMessage(int value);
-  inline int intValue() const
-  {
-    return intValue_;
-  }
+  inline int intValue() const { return intValue_; }
   /// Sets double value
   void setDoubleValue(double value);
   /// Sets double value with message
   const char *setDoubleValueWithMessage(double value);
-  inline double doubleValue() const
-  {
-    return doubleValue_;
-  }
+  inline double doubleValue() const { return doubleValue_; }
   /// Sets string value
   void setStringValue(std::string value);
-  inline std::string stringValue() const
-  {
-    return stringValue_;
-  }
+  inline std::string stringValue() const { return stringValue_; }
   /// Returns 1 if matches minimum, 2 if matches less, 0 if not matched
   int matches(std::string input) const;
   /// type
-  inline CbcOrClpParameterType type() const
-  {
-    return type_;
-  }
+  inline CbcOrClpParameterType type() const { return type_; }
   /// whether to display
-  inline int displayThis() const
-  {
-    return display_;
-  }
+  inline int displayThis() const { return display_; }
   /// Set Long help
-  inline void setLonghelp(const std::string help)
-  {
-    longHelp_ = help;
-  }
+  inline void setLonghelp(const std::string help) { longHelp_ = help; }
   /// Print Long help
   void printLongHelp() const;
   /// Print action and string
@@ -482,30 +450,23 @@ public:
          2 - used by cbc
          4 - used by ampl
      */
-  inline int whereUsed() const
-  {
-    return whereUsed_;
-  }
+  inline int whereUsed() const { return whereUsed_; }
   /// Gets value of fake keyword
-  inline int fakeKeyWord() const
-  {
-    return fakeKeyWord_;
-  }
+  inline int fakeKeyWord() const { return fakeKeyWord_; }
   /// Sets value of fake keyword
-  inline void setFakeKeyWord(int value, int fakeValue)
-  {
+  inline void setFakeKeyWord(int value, int fakeValue) {
     fakeKeyWord_ = value;
     fakeValue_ = fakeValue;
   }
   /// Sets value of fake keyword to current size of keywords
   void setFakeKeyWord(int fakeValue);
 
-private:
+ private:
   /// gutsOfConstructor
   void gutsOfConstructor();
   //@}
   ////////////////// data //////////////////
-private:
+ private:
   /**@name data
       We might as well throw all type data in - could derive?
      */
@@ -523,7 +484,7 @@ private:
   // Minimum match
   unsigned int lengthMatch_;
   /// set of valid strings
-  std::vector< std::string > definedKeyWords_;
+  std::vector<std::string> definedKeyWords_;
   /// Name
   std::string name_;
   /// Short help
@@ -549,8 +510,8 @@ private:
      */
   int whereUsed_;
   /** If >=0 then integers allowed as a fake keyword
-	 So minusnnnn would got to -nnnn in currentKeyword_
-	 and plusnnnn would go to fakeKeyword_+nnnn
+         So minusnnnn would got to -nnnn in currentKeyword_
+         and plusnnnn would go to fakeKeyword_+nnnn
      */
   int fakeKeyWord_;
   /// Return this as main value if an integer
@@ -572,14 +533,14 @@ void setCbcOrClpPrinting(bool yesNo);
   Subroutine to establish the cbc parameter array. See the description of
   class CbcOrClpParam for details. Pulled from C..Main() for clarity.
 */
-void establishParams(std::vector< CbcOrClpParam > &params);
+void establishParams(std::vector<CbcOrClpParam> &params);
 // Given a parameter type - returns its number in list
 int whichParam(const CbcOrClpParameterType &name,
-  const std::vector< CbcOrClpParam > &parameters);
+               const std::vector<CbcOrClpParam> &parameters);
 // Dump/restore a solution to file
 void saveSolution(const ClpSimplex *lpSolver, std::string fileName);
 void restoreSolution(ClpSimplex *lpSolver, std::string fileName, int mode);
 #endif /* CbcOrClpParam_H */
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

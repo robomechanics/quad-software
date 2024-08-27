@@ -10,22 +10,22 @@
 #ifndef ClpPEPrimalColumnDantzig_H
 #define ClpPEPrimalColumnDantzig_H
 
+#include "ClpFactorization.hpp"
+#include "ClpNonLinearCost.hpp"
+#include "ClpPESimplex.hpp"
+#include "ClpPackedMatrix.hpp"
 #include "ClpPrimalColumnDantzig.hpp"
 #include "ClpPrimalColumnPivot.hpp"
 #include "ClpSimplex.hpp"
-#include "CoinIndexedVector.hpp"
-#include "ClpFactorization.hpp"
-#include "ClpNonLinearCost.hpp"
 #include "ClpSimplexPrimal.hpp"
-#include "ClpPackedMatrix.hpp"
-#include "ClpPESimplex.hpp"
+#include "CoinIndexedVector.hpp"
 
 class ClpPEPrimalColumnDantzig : public ClpPrimalColumnDantzig {
-
-public:
+ public:
   /** constructors */
   ClpPEPrimalColumnDantzig(double psi = 0.5);
-  ClpPEPrimalColumnDantzig(const ClpPEPrimalColumnDantzig &); //copy constructor
+  ClpPEPrimalColumnDantzig(
+      const ClpPEPrimalColumnDantzig &);  // copy constructor
 
   /** destructor */
   ~ClpPEPrimalColumnDantzig();
@@ -37,18 +37,18 @@ public:
   ClpPrimalColumnPivot *clone(bool copyData = true) const;
 
   virtual int pivotColumn(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow1,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+                          CoinIndexedVector *spareRow1,
+                          CoinIndexedVector *spareRow2,
+                          CoinIndexedVector *spareColumn1,
+                          CoinIndexedVector *spareColumn2);
 
   //@}
   /** Save weights - this may initialize weights as well
-	 This is as parent but may initialize ClpPESimplex
+         This is as parent but may initialize ClpPESimplex
      */
   virtual void saveWeights(ClpSimplex *model, int mode);
   //---------------------------------------------------------------------------
-private:
+ private:
   /* this PESimplex object is used to identify the compatible variables */
   ClpPESimplex *modelPE_;
 
@@ -60,7 +60,8 @@ private:
   int iCurrent_;
   int iInterval_;
 
-  /* record if previous iterations concluded that compatibles should not be checked */
+  /* record if previous iterations concluded that compatibles should not be
+   * checked */
   int coDegenCompatibles_;
   int coConsecutiveCompatibles_;
   bool updateCompatibles_;
@@ -68,4 +69,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -6,9 +6,9 @@
 #ifndef CbcBranchDynamic_H
 #define CbcBranchDynamic_H
 
-#include "CoinPackedMatrix.hpp"
-#include "CbcSimpleIntegerDynamicPseudoCost.hpp"
 #include "CbcBranchActual.hpp"
+#include "CbcSimpleIntegerDynamicPseudoCost.hpp"
+#include "CoinPackedMatrix.hpp"
 
 /** Branching decision dynamic class
 
@@ -17,7 +17,7 @@
 */
 
 class CbcBranchDynamicDecision : public CbcBranchDecision {
-public:
+ public:
   // Default Constructor
   CbcBranchDynamicDecision();
 
@@ -52,18 +52,14 @@ public:
       comparison, the parameter \p bestSoFar is redundant, hence unused.
     */
   virtual int betterBranch(CbcBranchingObject *thisOne,
-    CbcBranchingObject *bestSoFar,
-    double changeUp, int numInfUp,
-    double changeDn, int numInfDn);
+                           CbcBranchingObject *bestSoFar, double changeUp,
+                           int numInfUp, double changeDn, int numInfDn);
   /** Sets or gets best criterion so far */
   virtual void setBestCriterion(double value);
   virtual double getBestCriterion() const;
   /** Says whether this method can handle both methods -
         1 better, 2 best, 3 both */
-  virtual int whichMethod()
-  {
-    return 3;
-  }
+  virtual int whichMethod() { return 3; }
 
   /** Saves a clone of current branching object.  Can be used to update
         information on object causing branch - after branch */
@@ -71,9 +67,9 @@ public:
   /** Pass in information on branch just done.
         assumes object can get information from solver */
   virtual void updateInformation(OsiSolverInterface *solver,
-    const CbcNode *node);
+                                 const CbcNode *node);
 
-private:
+ private:
   /// Illegal Assignment operator
   CbcBranchDynamicDecision &operator=(const CbcBranchDynamicDecision &rhs);
 
@@ -108,8 +104,7 @@ private:
 */
 
 class CbcDynamicPseudoCostBranchingObject : public CbcIntegerBranchingObject {
-
-public:
+ public:
   /// Default constructor
   CbcDynamicPseudoCostBranchingObject();
 
@@ -120,9 +115,9 @@ public:
       Specify way = -1 to set the object state to perform the down arm first,
       way = 1 for the up arm.
     */
-  CbcDynamicPseudoCostBranchingObject(CbcModel *model, int variable,
-    int way, double value,
-    CbcSimpleIntegerDynamicPseudoCost *object);
+  CbcDynamicPseudoCostBranchingObject(
+      CbcModel *model, int variable, int way, double value,
+      CbcSimpleIntegerDynamicPseudoCost *object);
 
   /** Create a degenerate branch object
 
@@ -132,13 +127,15 @@ public:
     */
 
   CbcDynamicPseudoCostBranchingObject(CbcModel *model, int variable, int way,
-    double lowerValue, double upperValue);
+                                      double lowerValue, double upperValue);
 
   /// Copy constructor
-  CbcDynamicPseudoCostBranchingObject(const CbcDynamicPseudoCostBranchingObject &);
+  CbcDynamicPseudoCostBranchingObject(
+      const CbcDynamicPseudoCostBranchingObject &);
 
   /// Assignment operator
-  CbcDynamicPseudoCostBranchingObject &operator=(const CbcDynamicPseudoCostBranchingObject &rhs);
+  CbcDynamicPseudoCostBranchingObject &operator=(
+      const CbcDynamicPseudoCostBranchingObject &rhs);
 
   /// Clone
   virtual CbcBranchingObject *clone() const;
@@ -147,9 +144,8 @@ public:
   virtual ~CbcDynamicPseudoCostBranchingObject();
 
   /// Does part of constructor
-  void fillPart(int variable,
-    int way, double value,
-    CbcSimpleIntegerDynamicPseudoCost *object);
+  void fillPart(int variable, int way, double value,
+                CbcSimpleIntegerDynamicPseudoCost *object);
 
   using CbcBranchingObject::branch;
   /** \brief Sets the bounds for the variable according to the current arm
@@ -165,31 +161,18 @@ public:
   virtual int fillStrongInfo(CbcStrongInfo &info);
 
   /// Change in guessed
-  inline double changeInGuessed() const
-  {
-    return changeInGuessed_;
-  }
+  inline double changeInGuessed() const { return changeInGuessed_; }
   /// Set change in guessed
-  inline void setChangeInGuessed(double value)
-  {
-    changeInGuessed_ = value;
-  }
+  inline void setChangeInGuessed(double value) { changeInGuessed_ = value; }
   /// Return object
-  inline CbcSimpleIntegerDynamicPseudoCost *object() const
-  {
-    return object_;
-  }
+  inline CbcSimpleIntegerDynamicPseudoCost *object() const { return object_; }
   /// Set object
-  inline void setObject(CbcSimpleIntegerDynamicPseudoCost *object)
-  {
+  inline void setObject(CbcSimpleIntegerDynamicPseudoCost *object) {
     object_ = object;
   }
 
   /** Return the type (an integer identifier) of \c this */
-  virtual CbcBranchObjType type() const
-  {
-    return DynamicPseudoCostBranchObj;
-  }
+  virtual CbcBranchObjType type() const { return DynamicPseudoCostBranchObj; }
 
   // LL: compareOriginalObject and compareBranchingObject are inherited from
   // CbcIntegerBranchingObject thus need not be declared/defined here. After
@@ -197,7 +180,7 @@ public:
   // decisions, but once the decisions are made they are the same kind as in
   // the underlying class.
 
-protected:
+ protected:
   /// Change in guessed objective value for next branch
   double changeInGuessed_;
   /// Pointer back to object
@@ -207,4 +190,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

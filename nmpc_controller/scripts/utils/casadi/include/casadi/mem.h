@@ -18,10 +18,10 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_MEM_H
 #define CASADI_MEM_H
@@ -71,10 +71,11 @@ typedef struct {
 } casadi_io;
 
 /* Decompress a sparsity pattern */
-inline void casadi_decompress(const casadi_int* sp, casadi_int* nrow, casadi_int* ncol,
-                              casadi_int* nnz, casadi_int* numel,
-                              const casadi_int** colind, const casadi_int** row) {
-  if (sp==0) {
+inline void casadi_decompress(const casadi_int* sp, casadi_int* nrow,
+                              casadi_int* ncol, casadi_int* nnz,
+                              casadi_int* numel, const casadi_int** colind,
+                              const casadi_int** row) {
+  if (sp == 0) {
     /* Scalar sparsity pattern if sp is null */
     static const casadi_int scalar_colind[2] = {0, 1};
     *ncol = *nrow = 1;
@@ -88,7 +89,7 @@ inline void casadi_decompress(const casadi_int* sp, casadi_int* nrow, casadi_int
     *colind = sp;
     *nnz = sp[*ncol];
     *numel = *nrow * *ncol;
-    *row = *nnz==*numel ? 0 : sp + *ncol + 1;
+    *row = *nnz == *numel ? 0 : sp + *ncol + 1;
   }
 }
 
@@ -136,8 +137,8 @@ inline void casadi_init(casadi_mem* mem, casadi_functions* f) {
 #endif
 
   /* Check arguments */
-  assert(mem!=0);
-  assert(f!=0);
+  assert(mem != 0);
+  assert(f != 0);
 
   /* Store function pointers */
   mem->f = f;
@@ -150,15 +151,15 @@ inline void casadi_init(casadi_mem* mem, casadi_functions* f) {
   mem->n_out = f->n_out ? f->n_out() : 1;
 
   /* Work vector sizes */
-  mem->sz_arg=mem->n_in;
-  mem->sz_res=mem->n_out;
-  mem->sz_iw= mem->sz_w = 0;
+  mem->sz_arg = mem->n_in;
+  mem->sz_res = mem->n_out;
+  mem->sz_iw = mem->sz_w = 0;
   if (f->work) {
 #ifndef NDEBUG
     flag =
 #endif
-           f->work(&mem->sz_arg, &mem->sz_res, &mem->sz_iw, &mem->sz_w);
-    assert(flag==0);
+        f->work(&mem->sz_arg, &mem->sz_res, &mem->sz_iw, &mem->sz_w);
+    assert(flag == 0);
   }
 
   /* Check out a memory object */
@@ -173,12 +174,11 @@ inline void casadi_init(casadi_mem* mem, casadi_functions* f) {
   mem->res = 0;
   mem->iw = 0;
   mem->w = 0;
-
 }
 
 /* Free claimed static memory */
 inline void casadi_deinit(casadi_mem* mem) {
-  assert(mem!=0);
+  assert(mem != 0);
 
   /* Release a memory object */
   mem->f->release(mem->mem);
@@ -191,25 +191,24 @@ inline void casadi_deinit(casadi_mem* mem) {
 inline void casadi_init_arrays(casadi_mem* mem) {
   casadi_int i;
   casadi_functions* f;
-  assert(mem!=0);
+  assert(mem != 0);
   f = mem->f;
 
   /* Input meta data */
-  for (i=0; i<mem->n_in; ++i) {
+  for (i = 0; i < mem->n_in; ++i) {
     mem->in[i].name = f->name_in ? f->name_in(i) : 0;
-    casadi_decompress(f->sparsity_in ? f->sparsity_in(i) : 0,
-                      &mem->in[i].nrow, &mem->in[i].ncol,
-                      &mem->in[i].nnz, &mem->in[i].numel,
+    casadi_decompress(f->sparsity_in ? f->sparsity_in(i) : 0, &mem->in[i].nrow,
+                      &mem->in[i].ncol, &mem->in[i].nnz, &mem->in[i].numel,
                       &mem->in[i].colind, &mem->in[i].row);
   }
 
   /* Output meta data */
-  for (i=0; i<mem->n_out; ++i) {
+  for (i = 0; i < mem->n_out; ++i) {
     mem->out[i].name = f->name_out ? f->name_out(i) : 0;
     casadi_decompress(f->sparsity_out ? f->sparsity_out(i) : 0,
-                      &mem->out[i].nrow, &mem->out[i].ncol,
-                      &mem->out[i].nnz, &mem->out[i].numel,
-                      &mem->out[i].colind, &mem->out[i].row);
+                      &mem->out[i].nrow, &mem->out[i].ncol, &mem->out[i].nnz,
+                      &mem->out[i].numel, &mem->out[i].colind,
+                      &mem->out[i].row);
   }
 }
 
@@ -217,20 +216,21 @@ inline void casadi_init_arrays(casadi_mem* mem) {
 #ifndef CASADI_STATIC
 inline int casadi_alloc_arrays(casadi_mem* mem) {
   /* Allocate io memory */
-  mem->in = (casadi_io*)malloc(mem->n_in*sizeof(casadi_io));
-  if (mem->n_in!=0 && mem->in==0) return 1;
-  mem->out = (casadi_io*)malloc(mem->n_out*sizeof(casadi_io));
-  if (mem->n_out!=0 && mem->out==0) return 1;
+  mem->in = (casadi_io*)malloc(mem->n_in * sizeof(casadi_io));
+  if (mem->n_in != 0 && mem->in == 0) return 1;
+  mem->out = (casadi_io*)malloc(mem->n_out * sizeof(casadi_io));
+  if (mem->n_out != 0 && mem->out == 0) return 1;
 
   /* Allocate work vectors */
-  mem->arg = (const casadi_real**)malloc(mem->sz_arg*sizeof(const casadi_real*));
-  if (mem->sz_arg!=0 && mem->arg==0) return 1;
-  mem->res = (casadi_real**)malloc(mem->sz_res*sizeof(casadi_real*));
-  if (mem->sz_res!=0 && mem->res==0) return 1;
-  mem->iw = (casadi_int*)malloc(mem->sz_iw*sizeof(casadi_int));
-  if (mem->sz_iw!=0 && mem->iw==0) return 1;
-  mem->w = (casadi_real*)malloc(mem->sz_w*sizeof(casadi_real));
-  if (mem->sz_w!=0 && mem->w==0) return 1;
+  mem->arg =
+      (const casadi_real**)malloc(mem->sz_arg * sizeof(const casadi_real*));
+  if (mem->sz_arg != 0 && mem->arg == 0) return 1;
+  mem->res = (casadi_real**)malloc(mem->sz_res * sizeof(casadi_real*));
+  if (mem->sz_res != 0 && mem->res == 0) return 1;
+  mem->iw = (casadi_int*)malloc(mem->sz_iw * sizeof(casadi_int));
+  if (mem->sz_iw != 0 && mem->iw == 0) return 1;
+  mem->w = (casadi_real*)malloc(mem->sz_w * sizeof(casadi_real));
+  if (mem->sz_w != 0 && mem->w == 0) return 1;
 
   return 0;
 }
@@ -239,7 +239,7 @@ inline int casadi_alloc_arrays(casadi_mem* mem) {
 /* Free dynamic memory */
 #ifndef CASADI_STATIC
 inline void casadi_free_arrays(casadi_mem* mem) {
-  assert(mem!=0);
+  assert(mem != 0);
 
   /* Free io meta data */
   if (mem->in) free(mem->in);
@@ -255,7 +255,7 @@ inline void casadi_free_arrays(casadi_mem* mem) {
 
 /* Evaluate */
 inline int casadi_eval(casadi_mem* mem) {
-  assert(mem!=0);
+  assert(mem != 0);
   return mem->f->eval(mem->arg, mem->res, mem->iw, mem->w, mem->mem);
 }
 
@@ -268,7 +268,7 @@ inline casadi_mem* casadi_alloc(casadi_functions* f) {
 
   /* Allocate struct */
   casadi_mem* mem = (casadi_mem*)malloc(sizeof(casadi_mem));
-  assert(mem!=0);
+  assert(mem != 0);
 
   /* Initialize struct */
   casadi_init(mem, f);
@@ -277,8 +277,8 @@ inline casadi_mem* casadi_alloc(casadi_functions* f) {
 #ifndef NDEBUG
   flag =
 #endif
-         casadi_alloc_arrays(mem);
-  assert(flag==0);
+      casadi_alloc_arrays(mem);
+  assert(flag == 0);
 
   /* Initialize allocated arrays */
   casadi_init_arrays(mem);
@@ -290,7 +290,7 @@ inline casadi_mem* casadi_alloc(casadi_functions* f) {
 /* Free memory struct */
 #ifndef CASADI_STATIC
 inline void casadi_free(casadi_mem* mem) {
-  assert(mem!=0);
+  assert(mem != 0);
 
   /* Free dynamically allocated arrays */
   casadi_free_arrays(mem);

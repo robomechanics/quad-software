@@ -12,19 +12,18 @@
 #ifndef ClpPEDualRowDantzig_H
 #define ClpPEDualRowDantzig_H
 
-#include "ClpDualRowPivot.hpp"
 #include "ClpDualRowDantzig.hpp"
-#include "ClpSimplex.hpp"
-#include "CoinIndexedVector.hpp"
+#include "ClpDualRowPivot.hpp"
 #include "ClpFactorization.hpp"
 #include "ClpNonLinearCost.hpp"
-#include "ClpSimplexDual.hpp"
-#include "ClpPackedMatrix.hpp"
 #include "ClpPESimplex.hpp"
+#include "ClpPackedMatrix.hpp"
+#include "ClpSimplex.hpp"
+#include "ClpSimplexDual.hpp"
+#include "CoinIndexedVector.hpp"
 
 class ClpPEDualRowDantzig : public ClpDualRowDantzig {
-
-public:
+ public:
   /// Default Constructor
   ClpPEDualRowDantzig(double psi = 0.5);
 
@@ -40,7 +39,7 @@ public:
   /// Clone
   virtual ClpDualRowPivot *clone(bool copyData = true) const;
 
-public:
+ public:
   ///@name Algorithmic methods
   //@{
 
@@ -50,19 +49,19 @@ public:
   /// Update the compatible variables and
   /// call the base class method to update weights
   virtual double updateWeights(CoinIndexedVector *input,
-    CoinIndexedVector *spare,
-    CoinIndexedVector *spare2,
-    CoinIndexedVector *updatedColumn);
+                               CoinIndexedVector *spare,
+                               CoinIndexedVector *spare2,
+                               CoinIndexedVector *updatedColumn);
 
   /** Save weights - this may initialize weights as well
-	 This is as parent but may initialize ClpPESimplex
+         This is as parent but may initialize ClpPESimplex
      */
   virtual void saveWeights(ClpSimplex *model, int mode);
   //@}
 
   //---------------------------------------------------------------------------
 
-private:
+ private:
   /* this PESimplex object is used to identify the compatible variables */
   ClpPESimplex *modelPE_;
 
@@ -74,11 +73,12 @@ private:
   int iCurrent_;
   int iInterval_;
 
-  /* record if previous iterations concluded that compatibles should not be checked */
+  /* record if previous iterations concluded that compatibles should not be
+   * checked */
   bool updateCompatibles_;
   int coDegenCompatibles_, coConsecutiveCompatibles_;
 };
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

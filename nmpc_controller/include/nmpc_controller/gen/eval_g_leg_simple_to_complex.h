@@ -8,7 +8,9 @@
 #define casadi_int long long int
 #endif
 
-extern "C" int eval_g_leg_simple_to_complex(const casadi_real** arg, casadi_real** res, casadi_int* iw, casadi_real* w, int mem);
+extern "C" int eval_g_leg_simple_to_complex(const casadi_real** arg,
+                                            casadi_real** res, casadi_int* iw,
+                                            casadi_real* w, int mem);
 extern "C" int eval_g_leg_simple_to_complex_alloc_mem(void);
 extern "C" int eval_g_leg_simple_to_complex_init_mem(int mem);
 extern "C" void eval_g_leg_simple_to_complex_free_mem(int mem);
@@ -21,6 +23,11 @@ extern "C" casadi_int eval_g_leg_simple_to_complex_n_in(void);
 extern "C" casadi_real eval_g_leg_simple_to_complex_default_in(casadi_int i);
 extern "C" const char* eval_g_leg_simple_to_complex_name_in(casadi_int i);
 extern "C" const char* eval_g_leg_simple_to_complex_name_out(casadi_int i);
-extern "C" const casadi_int* eval_g_leg_simple_to_complex_sparsity_in(casadi_int i);
-extern "C" const casadi_int* eval_g_leg_simple_to_complex_sparsity_out(casadi_int i);
-extern "C" int eval_g_leg_simple_to_complex_work(casadi_int *sz_arg, casadi_int* sz_res, casadi_int *sz_iw, casadi_int *sz_w);
+extern "C" const casadi_int* eval_g_leg_simple_to_complex_sparsity_in(
+    casadi_int i);
+extern "C" const casadi_int* eval_g_leg_simple_to_complex_sparsity_out(
+    casadi_int i);
+extern "C" int eval_g_leg_simple_to_complex_work(casadi_int* sz_arg,
+                                                 casadi_int* sz_res,
+                                                 casadi_int* sz_iw,
+                                                 casadi_int* sz_w);

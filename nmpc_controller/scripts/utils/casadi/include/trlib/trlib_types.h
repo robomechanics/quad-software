@@ -8,10 +8,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,9 +28,9 @@
 typedef long trlib_int_t;
 typedef double trlib_flt_t;
 
-#define TRLIB_EPS            (2.2204460492503131e-16)
-#define TRLIB_EPS_POW_4      (5.4774205922939014e-07)
-#define TRLIB_EPS_POW_5      (1.4901161193847656e-08)
-#define TRLIB_EPS_POW_75     (1.8189894035458565e-12)
+#define TRLIB_EPS (2.2204460492503131e-16)
+#define TRLIB_EPS_POW_4 (5.4774205922939014e-07)
+#define TRLIB_EPS_POW_5 (1.4901161193847656e-08)
+#define TRLIB_EPS_POW_75 (1.8189894035458565e-12)
 
 #endif

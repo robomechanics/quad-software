@@ -14,8 +14,7 @@
 */
 
 class CbcGeneral : public CbcObject {
-
-public:
+ public:
   // Default Constructor
   CbcGeneral();
 
@@ -38,23 +37,25 @@ public:
 
   /// Infeasibility - large is 0.5
   virtual double infeasibility(const OsiBranchingInformation *info,
-    int &preferredWay) const;
+                               int &preferredWay) const;
 
   using CbcObject::feasibleRegion;
   /// This looks at solution and sets bounds to contain solution
   virtual void feasibleRegion() = 0;
 
   /// Creates a branching object
-  virtual CbcBranchingObject *createCbcBranch(OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
+  virtual CbcBranchingObject *createCbcBranch(
+      OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
 
   /// Redoes data when sequence numbers change
-  virtual void redoSequenceEtc(CbcModel *model, int numberColumns, const int *originalColumns) = 0;
+  virtual void redoSequenceEtc(CbcModel *model, int numberColumns,
+                               const int *originalColumns) = 0;
 
-protected:
+ protected:
   /// data
 };
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

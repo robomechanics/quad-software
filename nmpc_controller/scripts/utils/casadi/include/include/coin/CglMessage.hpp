@@ -34,8 +34,7 @@ enum CGL_Message {
 /** This deals with Cgl messages (as against Osi messages etc)
  */
 class CglMessage : public CoinMessages {
-
-public:
+ public:
   /**@name Constructors etc */
   //@{
   /** Constructor */
@@ -46,4 +45,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

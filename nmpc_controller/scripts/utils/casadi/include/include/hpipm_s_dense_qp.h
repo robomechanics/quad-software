@@ -1,87 +1,86 @@
 /**************************************************************************************************
-*                                                                                                 *
-* This file is part of HPIPM.                                                                     *
-*                                                                                                 *
-* HPIPM -- High-Performance Interior Point Method.                                                *
-* Copyright (C) 2019 by Gianluca Frison.                                                          *
-* Developed at IMTEK (University of Freiburg) under the supervision of Moritz Diehl.              *
-* All rights reserved.                                                                            *
-*                                                                                                 *
-* The 2-Clause BSD License                                                                        *
-*                                                                                                 *
-* Redistribution and use in source and binary forms, with or without                              *
-* modification, are permitted provided that the following conditions are met:                     *
-*                                                                                                 *
-* 1. Redistributions of source code must retain the above copyright notice, this                  *
-*    list of conditions and the following disclaimer.                                             *
-* 2. Redistributions in binary form must reproduce the above copyright notice,                    *
-*    this list of conditions and the following disclaimer in the documentation                    *
-*    and/or other materials provided with the distribution.                                       *
-*                                                                                                 *
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND                 *
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED                   *
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE                          *
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR                 *
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES                  *
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;                    *
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND                     *
-* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT                      *
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS                   *
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                                    *
-*                                                                                                 *
-* Author: Gianluca Frison, gianluca.frison (at) imtek.uni-freiburg.de                             *
-*                                                                                                 *
-**************************************************************************************************/
-
-
+ *                                                                                                 *
+ * This file is part of HPIPM. *
+ *                                                                                                 *
+ * HPIPM -- High-Performance Interior Point Method. * Copyright (C) 2019 by
+ *Gianluca Frison.                                                          *
+ * Developed at IMTEK (University of Freiburg) under the supervision of Moritz
+ *Diehl.              * All rights reserved. *
+ *                                                                                                 *
+ * The 2-Clause BSD License *
+ *                                                                                                 *
+ * Redistribution and use in source and binary forms, with or without *
+ * modification, are permitted provided that the following conditions are met: *
+ *                                                                                                 *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *this                  * list of conditions and the following disclaimer. *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ ** this list of conditions and the following disclaimer in the documentation *
+ *    and/or other materials provided with the distribution. *
+ *                                                                                                 *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *AND                 * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *LIMITED TO, THE IMPLIED                   * WARRANTIES OF MERCHANTABILITY AND
+ *FITNESS FOR A PARTICULAR PURPOSE ARE                          * DISCLAIMED. IN
+ *NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR * ANY DIRECT,
+ *INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES *
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ ** LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ** ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT *
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ ** SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. *
+ *                                                                                                 *
+ * Author: Gianluca Frison, gianluca.frison (at) imtek.uni-freiburg.de *
+ *                                                                                                 *
+ **************************************************************************************************/
 
 #ifndef HPIPM_S_DENSE_QP_H_
 #define HPIPM_S_DENSE_QP_H_
 
-
-
-#include <blasfeo_target.h>
 #include <blasfeo_common.h>
+#include <blasfeo_target.h>
 
 #include "hpipm_s_dense_qp_dim.h"
-
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-
-struct s_dense_qp
-	{
-	struct s_dense_qp_dim *dim;
-	struct blasfeo_smat *Hv; // hessian & gradient
-	struct blasfeo_smat *A; // dynamics matrix
-	struct blasfeo_smat *Ct; // constraints matrix
-	struct blasfeo_svec *gz; // gradient & gradient of slacks
-	struct blasfeo_svec *b; // dynamics vector
-	struct blasfeo_svec *d; // constraints vector
-	struct blasfeo_svec *d_mask; // inequality constraints mask vector
-	struct blasfeo_svec *m; // rhs of complementarity condition
-	struct blasfeo_svec *Z; // (diagonal) hessian of slacks
-	int *idxb; // indices of box constrained variables within [u; x]
-	int *idxs_rev; // index of soft constraints (reverse storage)
-	hpipm_size_t memsize; // memory size in bytes
-	};
-
-
+struct s_dense_qp {
+  struct s_dense_qp_dim *dim;
+  struct blasfeo_smat *Hv;      // hessian & gradient
+  struct blasfeo_smat *A;       // dynamics matrix
+  struct blasfeo_smat *Ct;      // constraints matrix
+  struct blasfeo_svec *gz;      // gradient & gradient of slacks
+  struct blasfeo_svec *b;       // dynamics vector
+  struct blasfeo_svec *d;       // constraints vector
+  struct blasfeo_svec *d_mask;  // inequality constraints mask vector
+  struct blasfeo_svec *m;       // rhs of complementarity condition
+  struct blasfeo_svec *Z;       // (diagonal) hessian of slacks
+  int *idxb;             // indices of box constrained variables within [u; x]
+  int *idxs_rev;         // index of soft constraints (reverse storage)
+  hpipm_size_t memsize;  // memory size in bytes
+};
 
 //
 hpipm_size_t s_dense_qp_memsize(struct s_dense_qp_dim *dim);
 //
-void s_dense_qp_create(struct s_dense_qp_dim *dim, struct s_dense_qp *qp, void *memory);
+void s_dense_qp_create(struct s_dense_qp_dim *dim, struct s_dense_qp *qp,
+                       void *memory);
 
 // setters - colmaj
 //
-void s_dense_qp_set_all(float *H, float *g, float *A, float *b, int *idxb, float *d_lb, float *d_ub, float *C, float *d_lg, float *d_ug, float *Zl, float *Zu, float *zl, float *zu, int *idxs, float *d_ls, float *d_us, struct s_dense_qp *qp);
+void s_dense_qp_set_all(float *H, float *g, float *A, float *b, int *idxb,
+                        float *d_lb, float *d_ub, float *C, float *d_lg,
+                        float *d_ug, float *Zl, float *Zu, float *zl, float *zu,
+                        int *idxs, float *d_ls, float *d_us,
+                        struct s_dense_qp *qp);
 //
-void s_dense_qp_get_all(struct s_dense_qp *qp, float *H, float *g, float *A, float *b, int *idxb, float *d_lb, float *d_ub, float *C, float *d_lg, float *d_ug, float *Zl, float *Zu, float *zl, float *zu, int *idxs, float *d_ls, float *d_us);
+void s_dense_qp_get_all(struct s_dense_qp *qp, float *H, float *g, float *A,
+                        float *b, int *idxb, float *d_lb, float *d_ub, float *C,
+                        float *d_lg, float *d_ug, float *Zl, float *Zu,
+                        float *zl, float *zu, int *idxs, float *d_ls,
+                        float *d_us);
 //
 void s_dense_qp_set(char *field, void *value, struct s_dense_qp *qp);
 //
@@ -191,17 +190,22 @@ void s_dense_qp_get_us_mask(struct s_dense_qp *qp, float *us);
 
 // setters - rowmaj
 //
-void s_dense_qp_set_all_rowmaj(float *H, float *g, float *A, float *b, int *idxb, float *d_lb, float *d_ub, float *C, float *d_lg, float *d_ug, float *Zl, float *Zu, float *zl, float *zu, int *idxs, float *d_ls, float *d_us, struct s_dense_qp *qp);
+void s_dense_qp_set_all_rowmaj(float *H, float *g, float *A, float *b,
+                               int *idxb, float *d_lb, float *d_ub, float *C,
+                               float *d_lg, float *d_ug, float *Zl, float *Zu,
+                               float *zl, float *zu, int *idxs, float *d_ls,
+                               float *d_us, struct s_dense_qp *qp);
 
 // getters - rowmaj
 //
-void s_dense_qp_get_all_rowmaj(struct s_dense_qp *qp, float *H, float *g, float *A, float *b, int *idxb, float *d_lb, float *d_ub, float *C, float *d_lg, float *d_ug, float *Zl, float *Zu, float *zl, float *zu, int *idxs, float *d_ls, float *d_us);
-
+void s_dense_qp_get_all_rowmaj(struct s_dense_qp *qp, float *H, float *g,
+                               float *A, float *b, int *idxb, float *d_lb,
+                               float *d_ub, float *C, float *d_lg, float *d_ug,
+                               float *Zl, float *Zu, float *zl, float *zu,
+                               int *idxs, float *d_ls, float *d_us);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-
-
-#endif // HPIPM_S_DENSE_QP_H_
+#endif  // HPIPM_S_DENSE_QP_H_

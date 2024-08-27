@@ -6,14 +6,14 @@
 #ifndef CoinMessageHandler_H
 #define CoinMessageHandler_H
 
-#include "CoinUtilsConfig.h"
-#include "CoinPragma.hpp"
-#include "CoinTypes.hpp"
-
-#include <iostream>
 #include <cstdio>
+#include <iostream>
 #include <string>
 #include <vector>
+
+#include "CoinPragma.hpp"
+#include "CoinTypes.hpp"
+#include "CoinUtilsConfig.h"
 
 /** \file CoinMessageHandler.hpp
     \brief This is a first attempt at a message handler.
@@ -56,15 +56,13 @@
  */
 
 class CoinOneMessage {
-
-public:
+ public:
   /**@name Constructors etc */
   //@{
   /** Default constructor. */
   CoinOneMessage();
   /** Normal constructor */
-  CoinOneMessage(int externalNumber, char detail,
-    const char *message);
+  CoinOneMessage(int externalNumber, char detail, const char *message);
   /** Destructor */
   ~CoinOneMessage();
   /** The copy constructor */
@@ -82,39 +80,21 @@ public:
   /**@name Get and set methods */
   //@{
   /** Get message ID number */
-  inline int externalNumber() const
-  {
-    return externalNumber_;
-  }
+  inline int externalNumber() const { return externalNumber_; }
   /** \brief Set message ID number
-  
+
     In the default CoinMessageHandler, this number is printed in the message
     prefix and is used to determine the message severity level.
   */
-  inline void setExternalNumber(int number)
-  {
-    externalNumber_ = number;
-  }
+  inline void setExternalNumber(int number) { externalNumber_ = number; }
   /// Severity
-  inline char severity() const
-  {
-    return severity_;
-  }
+  inline char severity() const { return severity_; }
   /// Set detail level
-  inline void setDetail(int level)
-  {
-    detail_ = static_cast< char >(level);
-  }
+  inline void setDetail(int level) { detail_ = static_cast<char>(level); }
   /// Get detail level
-  inline int detail() const
-  {
-    return detail_;
-  }
+  inline int detail() const { return detail_; }
   /// Return the message text
-  inline char *message() const
-  {
-    return message_;
-  }
+  inline char *message() const { return message_; }
   //@}
 
   /**@name member data */
@@ -138,18 +118,13 @@ public:
 */
 
 class CoinMessages {
-
-public:
+ public:
   /** \brief Supported languages
-  
+
     These are the languages that are supported.  At present only
     us_en is serious and the rest are for testing.
   */
-  enum Language {
-    us_en = 0,
-    uk_en,
-    it
-  };
+  enum Language { us_en = 0, uk_en, it };
 
   /**@name Constructors etc */
   //@{
@@ -178,15 +153,9 @@ public:
   */
   void replaceMessage(int messageNumber, const char *message);
   /** Language.  Need to think about iso codes */
-  inline Language language() const
-  {
-    return language_;
-  }
+  inline Language language() const { return language_; }
   /** Set language */
-  void setLanguage(Language newlanguage)
-  {
-    language_ = newlanguage;
-  }
+  void setLanguage(Language newlanguage) { language_ = newlanguage; }
   /// Change detail level for one message
   void setDetailMessage(int newLevel, int messageNumber);
   /** \brief Change detail level for several messages
@@ -196,16 +165,12 @@ public:
     If numberMessages >= 10000 or messageNumbers is NULL, the detail level
     is changed on all messages.
   */
-  void setDetailMessages(int newLevel, int numberMessages,
-    int *messageNumbers);
+  void setDetailMessages(int newLevel, int numberMessages, int *messageNumbers);
   /** Change detail level for all messages with low <= ID number < high */
   void setDetailMessages(int newLevel, int low, int high);
 
   /// Returns class
-  inline int getClass() const
-  {
-    return class_;
-  }
+  inline int getClass() const { return class_; }
   /// Moves to compact format
   void toCompact();
   /// Moves from compact format
@@ -232,10 +197,7 @@ public:
 };
 
 // for convenience eol
-enum CoinMessageMarker {
-  CoinMessageEol = 0,
-  CoinMessageNewline = 1
-};
+enum CoinMessageMarker { CoinMessageEol = 0, CoinMessageNewline = 1 };
 
 /** Base class for message handling
 
@@ -254,17 +216,17 @@ enum CoinMessageMarker {
     The general approach to using the COIN messaging facility is as follows:
     <ul>
       <li> Define your messages. For each message, you must supply an external
-	 ID number, a log (detail) level, and a format string. Typically, you
-	 define a convenience structure for this, something that's easy to
-	 use to create an array of initialised message definitions at compile
-	 time.
+         ID number, a log (detail) level, and a format string. Typically, you
+         define a convenience structure for this, something that's easy to
+         use to create an array of initialised message definitions at compile
+         time.
       <li> Create a CoinMessages object, sized to accommodate the number of
         messages you've defined. (Incremental growth will happen if
-	necessary as messages are loaded, but it's inefficient.)
+        necessary as messages are loaded, but it's inefficient.)
       <li> Load the messages into the CoinMessages object. Typically this
-	entails creating a CoinOneMessage object for each message and
-	passing it as a parameter to CoinMessages::addMessage(). You specify
-	the message's internal ID as the other parameter to addMessage.
+        entails creating a CoinOneMessage object for each message and
+        passing it as a parameter to CoinMessages::addMessage(). You specify
+        the message's internal ID as the other parameter to addMessage.
       <li> Create and use a CoinMessageHandler object to print messages.
     </ul>
     See, for example, CoinMessage.hpp and CoinMessage.cpp for an example of
@@ -299,7 +261,7 @@ enum CoinMessageMarker {
     CoinMessageHandler can print integers (normal, long, and long long),
     doubles, characters, and strings. See the descriptions of the
     various << operators.
-    
+
     When processing a standard message with a format string, the formatting
     codes specified in the format string will be passed to the sprintf
     function, along with the argument. When generating a message with no
@@ -343,17 +305,16 @@ enum CoinMessageMarker {
 */
 
 class CoinMessageHandler {
-
   friend bool CoinMessageHandlerUnitTest();
 
-public:
+ public:
   /**@name Virtual methods that the derived classes may provide */
   //@{
   /** Print message, return 0 normally.
-  */
+   */
   virtual int print();
   /** Check message severity - if too bad then abort
-  */
+   */
   virtual void checkSeverity();
   //@}
 
@@ -375,15 +336,12 @@ public:
   /**@name Get and set methods */
   //@{
   /// Get detail level of a message.
-  inline int detail(int messageNumber, const CoinMessages &normalMessage) const
-  {
+  inline int detail(int messageNumber,
+                    const CoinMessages &normalMessage) const {
     return normalMessage.message_[messageNumber]->detail();
   }
   /** Get current log (detail) level. */
-  inline int logLevel() const
-  {
-    return logLevel_;
-  }
+  inline int logLevel() const { return logLevel_; }
   /** \brief Set current log (detail) level.
 
     If the log level is equal or greater than the detail level of a message,
@@ -403,10 +361,7 @@ public:
   */
   void setLogLevel(int value);
   /** Get alternative log level. */
-  inline int logLevel(int which) const
-  {
-    return logLevels_[which];
-  }
+  inline int logLevel(int which) const { return logLevels_[which]; }
   /*! \brief Set alternative log level value.
 
     Can be used to store alternative log level information within the handler.
@@ -427,100 +382,72 @@ public:
     As the parameter for a double field is processed, the value is saved
     and can be retrieved using this function.
   */
-  inline double doubleValue(int position) const
-  {
+  inline double doubleValue(int position) const {
     return doubleValue_[position];
   }
   /*! \brief Number of double fields already processed.
 
     Incremented each time a field of type double is processed.
   */
-  inline int numberDoubleFields() const
-  {
-    return static_cast< int >(doubleValue_.size());
+  inline int numberDoubleFields() const {
+    return static_cast<int>(doubleValue_.size());
   }
   /*! \brief Values of integer fields already processed.
 
     As the parameter for a integer field is processed, the value is saved
     and can be retrieved using this function.
   */
-  inline CoinBigIndex intValue(int position) const
-  {
+  inline CoinBigIndex intValue(int position) const {
     return longValue_[position];
   }
   /*! \brief Number of integer fields already processed.
 
     Incremented each time a field of type integer is processed.
   */
-  inline int numberIntFields() const
-  {
-    return static_cast< int >(longValue_.size());
+  inline int numberIntFields() const {
+    return static_cast<int>(longValue_.size());
   }
   /*! \brief Values of char fields already processed.
 
     As the parameter for a char field is processed, the value is saved
     and can be retrieved using this function.
   */
-  inline char charValue(int position) const
-  {
-    return charValue_[position];
-  }
+  inline char charValue(int position) const { return charValue_[position]; }
   /*! \brief Number of char fields already processed.
 
     Incremented each time a field of type char is processed.
   */
-  inline int numberCharFields() const
-  {
-    return static_cast< int >(charValue_.size());
+  inline int numberCharFields() const {
+    return static_cast<int>(charValue_.size());
   }
   /*! \brief Values of string fields already processed.
 
     As the parameter for a string field is processed, the value is saved
     and can be retrieved using this function.
   */
-  inline std::string stringValue(int position) const
-  {
+  inline std::string stringValue(int position) const {
     return stringValue_[position];
   }
   /*! \brief Number of string fields already processed.
 
     Incremented each time a field of type string is processed.
   */
-  inline int numberStringFields() const
-  {
-    return static_cast< int >(stringValue_.size());
+  inline int numberStringFields() const {
+    return static_cast<int>(stringValue_.size());
   }
 
   /// Current message
-  inline CoinOneMessage currentMessage() const
-  {
-    return currentMessage_;
-  }
+  inline CoinOneMessage currentMessage() const { return currentMessage_; }
   /// Source of current message
-  inline std::string currentSource() const
-  {
-    return source_;
-  }
+  inline std::string currentSource() const { return source_; }
   /// Output buffer
-  inline const char *messageBuffer() const
-  {
-    return messageBuffer_;
-  }
+  inline const char *messageBuffer() const { return messageBuffer_; }
   /// Highest message number (indicates any errors)
-  inline int highestNumber() const
-  {
-    return highestNumber_;
-  }
+  inline int highestNumber() const { return highestNumber_; }
   /// Get current file pointer
-  inline FILE *filePointer() const
-  {
-    return fp_;
-  }
+  inline FILE *filePointer() const { return fp_; }
   /// Set new file pointer
-  inline void setFilePointer(FILE *fp)
-  {
-    fp_ = fp;
-  }
+  inline void setFilePointer(FILE *fp) { fp_ = fp; }
   //@}
 
   /**@name Actions to create a message  */
@@ -531,8 +458,7 @@ public:
     The message will be printed if the current log level is equal or greater
     than the log level of the message.
   */
-  CoinMessageHandler &message(int messageNumber,
-    const CoinMessages &messages);
+  CoinMessageHandler &message(int messageNumber, const CoinMessages &messages);
 
   /*! \brief Start or continue a message
 
@@ -550,7 +476,7 @@ public:
   CoinMessageHandler &message(int detail = -1);
 
   /*! \brief Print a complete message
-  
+
     Generate a standard prefix and append \c msg `as is'. This is intended as
     a transition mechanism.  The standard prefix is generated (if enabled),
     and \c msg is appended. The message must be ended with a CoinMessageEol
@@ -562,8 +488,7 @@ public:
 
   */
   CoinMessageHandler &message(int externalNumber, const char *source,
-    const char *msg,
-    char severity, int detail = -1);
+                              const char *msg, char severity, int detail = -1);
 
   /*! \brief Process an integer parameter value.
 
@@ -610,7 +535,7 @@ public:
   */
   CoinMessageHandler &operator<<(CoinMessageMarker);
   /** Finish (and print) the message.
-  
+
     Equivalent to using the CoinMessageEol marker.
   */
   int finish();
@@ -638,14 +563,14 @@ public:
 #define COIN_NUM_LOG 4
 /// Maximum length of constructed message (characters)
 #define COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE 1000
-protected:
+ protected:
   /**@name Protected member data */
   //@{
   /// values in message
-  std::vector< double > doubleValue_;
-  std::vector< CoinBigIndex > longValue_;
-  std::vector< char > charValue_;
-  std::vector< std::string > stringValue_;
+  std::vector<double> doubleValue_;
+  std::vector<CoinBigIndex> longValue_;
+  std::vector<char> charValue_;
+  std::vector<std::string> stringValue_;
   /// Log level
   int logLevel_;
   /// Log levels
@@ -668,7 +593,7 @@ protected:
       1 - Put in values, move along format, but don't print.
       2 - A complete message was provided; nothing more to do but print
           when CoinMessageEol is processed. Any << operators are treated
-	  as noops.
+          as noops.
       3 - do nothing except look for CoinMessageEol (i.e., the message
           detail level was not sufficient to cause it to print).
   */
@@ -683,7 +608,7 @@ protected:
   int g_precision_;
   //@}
 
-private:
+ private:
   /** The body of the copy constructor and the assignment operator */
   void gutsOfCopy(const CoinMessageHandler &rhs);
 
@@ -694,7 +619,7 @@ private:
   char *nextPerCent(char *start, const bool initial = false);
 
   /*! \brief Internal printing function.
-  
+
     Makes it easier to split up print into clean, print and check severity
   */
   int internalPrint();
@@ -703,7 +628,7 @@ private:
   void calcPrintStatus(int msglvl, int msgclass);
 };
 
-//#############################################################################
+// #############################################################################
 /** A function that tests the methods in the CoinMessageHandler class. The
     only reason for it not to be a member method is that this way it doesn't
     have to be compiled into the library. And that's a gain, because the
@@ -714,4 +639,4 @@ bool CoinMessageHandlerUnitTest();
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

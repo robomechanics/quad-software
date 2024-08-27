@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "CoinWarmStartBasis.hpp"
-#include "CoinSearchTree.hpp"
 #include "CbcBranchBase.hpp"
+#include "CoinSearchTree.hpp"
+#include "CoinWarmStartBasis.hpp"
 
 class OsiSolverInterface;
 class OsiSolverBranch;
@@ -28,7 +28,7 @@ class CbcNode;
 class CbcSubProblem;
 class CbcGeneralBranchingObject;
 
-//#############################################################################
+// #############################################################################
 /** Information required to recreate the subproblem at this node
 
   When a subproblem is initially created, it is represented by a CbcNode
@@ -48,13 +48,13 @@ class CbcGeneralBranchingObject;
   Specifically,
   <ul>
     <li> Once it's determined how the node will branch, the reference count
-	 is set to the number of potential children (<i>i.e.</i>, the number
-	 of arms of the branch).
+         is set to the number of potential children (<i>i.e.</i>, the number
+         of arms of the branch).
     <li> As each child is created by CbcNode::branch() (converting a potential
-	 child to the active subproblem), the reference count is decremented.
+         child to the active subproblem), the reference count is decremented.
     <li> If the child survives and will become a node in the search tree
-	 (converting the active subproblem into an actual child), increment the
-	 reference count.
+         (converting the active subproblem into an actual child), increment the
+         reference count.
   </ul>
   Notice that the active subproblem lives in a sort of limbo, neither a
   potential or an actual node in the branch-and-cut tree.
@@ -66,8 +66,7 @@ class CbcGeneralBranchingObject;
 */
 
 class CbcNodeInfo {
-
-public:
+ public:
   /** \name Constructors & destructors */
   //@{
   /** Default Constructor
@@ -108,10 +107,12 @@ public:
         information at node and adds any cuts to the addCuts array.
     */
   virtual void applyToModel(CbcModel *model, CoinWarmStartBasis *&basis,
-    CbcCountRowCut **addCuts,
-    int &currentNumberCuts) const = 0;
-  /// Just apply bounds to one variable - force means overwrite by lower,upper (1=>infeasible)
-  virtual int applyBounds(int iColumn, double &lower, double &upper, int force) = 0;
+                            CbcCountRowCut **addCuts,
+                            int &currentNumberCuts) const = 0;
+  /// Just apply bounds to one variable - force means overwrite by lower,upper
+  /// (1=>infeasible)
+  virtual int applyBounds(int iColumn, double &lower, double &upper,
+                          int force) = 0;
 
   /** Builds up row basis backwards (until original model).
         Returns NULL or previous one to apply .
@@ -124,15 +125,17 @@ public:
   virtual void allBranchesGone() {}
 #ifndef JJF_ONE
   /// Increment number of references
-  inline void increment(int amount = 1)
-  {
-    numberPointingToThis_ += amount; /*printf("CbcNodeInfo %x incremented by %d to %d\n",this,amount,numberPointingToThis_);*/
+  inline void increment(int amount = 1) {
+    numberPointingToThis_ +=
+        amount; /*printf("CbcNodeInfo %x incremented by %d to
+                   %d\n",this,amount,numberPointingToThis_);*/
   }
 
   /// Decrement number of references and return number left
-  inline int decrement(int amount = 1)
-  {
-    numberPointingToThis_ -= amount; /*printf("CbcNodeInfo %x decremented by %d to %d\n",this,amount,numberPointingToThis_);*/
+  inline int decrement(int amount = 1) {
+    numberPointingToThis_ -=
+        amount; /*printf("CbcNodeInfo %x decremented by %d to
+                   %d\n",this,amount,numberPointingToThis_);*/
     return numberPointingToThis_;
   }
 #else
@@ -146,70 +149,48 @@ public:
       Initialize the reference counts used for tree maintenance.
     */
 
-  inline void initializeInfo(int number)
-  {
+  inline void initializeInfo(int number) {
     numberPointingToThis_ = number;
     numberBranchesLeft_ = number;
   }
 
   /// Return number of branches left in object
-  inline int numberBranchesLeft() const
-  {
-    return numberBranchesLeft_;
-  }
+  inline int numberBranchesLeft() const { return numberBranchesLeft_; }
 
   /// Set number of branches left in object
-  inline void setNumberBranchesLeft(int value)
-  {
-    numberBranchesLeft_ = value;
-  }
+  inline void setNumberBranchesLeft(int value) { numberBranchesLeft_ = value; }
 
   /// Return number of objects pointing to this
-  inline int numberPointingToThis() const
-  {
-    return numberPointingToThis_;
-  }
+  inline int numberPointingToThis() const { return numberPointingToThis_; }
 
   /// Set number of objects pointing to this
-  inline void setNumberPointingToThis(int number)
-  {
+  inline void setNumberPointingToThis(int number) {
     numberPointingToThis_ = number;
   }
 
   /// Increment number of objects pointing to this
-  inline void incrementNumberPointingToThis()
-  {
-    numberPointingToThis_++;
-  }
+  inline void incrementNumberPointingToThis() { numberPointingToThis_++; }
 
   /// Say one branch taken
-  inline int branchedOn()
-  {
+  inline int branchedOn() {
     numberPointingToThis_--;
     numberBranchesLeft_--;
     return numberBranchesLeft_;
   }
 
   /// Say thrown away
-  inline void throwAway()
-  {
+  inline void throwAway() {
     numberPointingToThis_ -= numberBranchesLeft_;
     numberBranchesLeft_ = 0;
   }
 
   /// Parent of this
-  CbcNodeInfo *parent() const
-  {
-    return parent_;
-  }
+  CbcNodeInfo *parent() const { return parent_; }
   /// Set parent null
-  inline void nullParent()
-  {
-    parent_ = NULL;
-  }
+  inline void nullParent() { parent_ = NULL; }
 
-  void addCuts(OsiCuts &cuts, int numberToBranch, //int * whichGenerator,
-    int numberPointingToThis);
+  void addCuts(OsiCuts &cuts, int numberToBranch,  // int * whichGenerator,
+               int numberPointingToThis);
   void addCuts(int numberCuts, CbcCountRowCut **cuts, int numberToBranch);
   /** Delete cuts (decrements counts)
         Slow unless cuts in same order as saved
@@ -233,91 +214,48 @@ public:
   void incrementParentCuts(CbcModel *model, int change = 1);
 
   /// Array of pointers to cuts
-  inline CbcCountRowCut **cuts() const
-  {
-    return cuts_;
-  }
+  inline CbcCountRowCut **cuts() const { return cuts_; }
 
   /// Number of row cuts (this node)
-  inline int numberCuts() const
-  {
-    return numberCuts_;
-  }
-  inline void setNumberCuts(int value)
-  {
-    numberCuts_ = value;
-  }
+  inline int numberCuts() const { return numberCuts_; }
+  inline void setNumberCuts(int value) { numberCuts_ = value; }
 
   /// Set owner null
-  inline void nullOwner()
-  {
-    owner_ = NULL;
-  }
-  const inline CbcNode *owner() const
-  {
-    return owner_;
-  }
-  inline CbcNode *mutableOwner() const
-  {
-    return owner_;
-  }
+  inline void nullOwner() { owner_ = NULL; }
+  const inline CbcNode *owner() const { return owner_; }
+  inline CbcNode *mutableOwner() const { return owner_; }
   /// The node number
-  inline int nodeNumber() const
-  {
-    return nodeNumber_;
-  }
-  inline void setNodeNumber(int node)
-  {
-    nodeNumber_ = node;
-  }
+  inline int nodeNumber() const { return nodeNumber_; }
+  inline void setNodeNumber(int node) { nodeNumber_ = node; }
   /** Deactivate node information.
         1 - bounds
         2 - cuts
         4 - basis!
-	8 - just marked
-	16 - symmetry branching worked
+        8 - just marked
+        16 - symmetry branching worked
     */
   void deactivate(int mode = 3);
   /// Say if normal
-  inline bool allActivated() const
-  {
-    return ((active_ & 7) == 7);
-  }
+  inline bool allActivated() const { return ((active_ & 7) == 7); }
   /// Say if marked
-  inline bool marked() const
-  {
-    return ((active_ & 8) != 0);
-  }
+  inline bool marked() const { return ((active_ & 8) != 0); }
   /// Mark
-  inline void mark()
-  {
-    active_ |= 8;
-  }
+  inline void mark() { active_ |= 8; }
   /// Unmark
-  inline void unmark()
-  {
-    active_ &= ~8;
-  }
+  inline void unmark() { active_ &= ~8; }
   /// Get symmetry value (true worked at this node)
-  inline bool symmetryWorked() const
-  {
-    return (active_ & 16) != 0;
-  }
+  inline bool symmetryWorked() const { return (active_ & 16) != 0; }
   /// Say symmetry worked at this node)
-  inline void setSymmetryWorked()
-  {
-    active_ |= 16;
-  }
+  inline void setSymmetryWorked() { active_ |= 16; }
 
   /// Branching object for the parent
-  inline const OsiBranchingObject *parentBranch() const
-  {
+  inline const OsiBranchingObject *parentBranch() const {
     return parentBranch_;
   }
   /// If we need to take off parent based data
   void unsetParentBasedData();
 
-protected:
+ protected:
   /** Number of other nodes pointing to this node.
 
       Number of existing and potential search tree nodes pointing to this node.
@@ -363,7 +301,7 @@ protected:
     */
   int active_;
 
-private:
+ private:
   /// Illegal Assignment operator
   CbcNodeInfo &operator=(const CbcNodeInfo &rhs);
 
@@ -371,7 +309,7 @@ private:
   void setParentBasedData();
 };
 
-#endif // CbcNodeInfo_H
+#endif  // CbcNodeInfo_H
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

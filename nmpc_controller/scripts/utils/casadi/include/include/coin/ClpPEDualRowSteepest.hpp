@@ -16,7 +16,7 @@
 #include "ClpPESimplex.hpp"
 class CoinIndexedVector;
 
-//#############################################################################
+// #############################################################################
 
 /** Dual Row Pivot Steepest Edge Algorithm Class
 
@@ -25,8 +25,7 @@ See Forrest-Goldfarb paper for algorithm
 */
 
 class ClpPEDualRowSteepest : public ClpDualRowSteepest {
-
-public:
+ public:
   /** Default Constructor
          mode: 0 is uninitialized, 1 full, 2 is partial uninitialized,
          3 starts as 2 but may switch to 1.
@@ -48,7 +47,7 @@ public:
   /// Clone
   virtual ClpDualRowPivot *clone(bool copyData = true) const;
 
-public:
+ public:
   ///@name Algorithmic methods
   //@{
 
@@ -56,28 +55,24 @@ public:
   virtual int pivotRow();
 
   /** Save weights - this may initialize weights as well
-	 This is as parent but may initialize ClpPESimplex
+         This is as parent but may initialize ClpPESimplex
      */
   virtual void saveWeights(ClpSimplex *model, int mode);
   /** Updates primal solution (and maybe list of candidates)
          Uses input vector which it deletes
          Computes change in objective function
-	 As ordinary steepest but checks for zero moves
+         As ordinary steepest but checks for zero moves
      */
-  virtual void updatePrimalSolution(CoinIndexedVector *input,
-    double theta,
-    double &changeInObjective);
+  virtual void updatePrimalSolution(CoinIndexedVector *input, double theta,
+                                    double &changeInObjective);
   //@}
 
   // Psi
-  inline double psi() const
-  {
-    return psi_;
-  }
+  inline double psi() const { return psi_; }
 
   //---------------------------------------------------------------------------
 
-private:
+ private:
   /* this PESimplex object is used to identify the compatible variables */
   ClpPESimplex *modelPE_;
 
@@ -89,7 +84,8 @@ private:
   int iCurrent_;
   int iInterval_;
 
-  /* record if previous iterations concluded that compatibles should not be checked */
+  /* record if previous iterations concluded that compatibles should not be
+   * checked */
   bool updateCompatibles_;
   int coDegenCompatibles_, coConsecutiveCompatibles_;
 };
@@ -97,4 +93,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

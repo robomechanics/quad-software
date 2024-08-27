@@ -13,37 +13,26 @@
 #include "IpPDSystemSolver.hpp"
 #include "SensBacksolver.hpp"
 
-namespace Ipopt
-{
+namespace Ipopt {
 
-class SIPOPTLIB_EXPORT SimpleBacksolver: public SensBacksolver
-{
-public:
+class SIPOPTLIB_EXPORT SimpleBacksolver : public SensBacksolver {
+ public:
+  SimpleBacksolver(SmartPtr<PDSystemSolver> pd_solver);
 
-   SimpleBacksolver(
-      SmartPtr<PDSystemSolver> pd_solver
-   );
+  ~SimpleBacksolver() {}
 
-   ~SimpleBacksolver()
-   { }
+  bool InitializeImpl(const OptionsList& options, const std::string& prefix);
 
-   bool InitializeImpl(
-      const OptionsList& options,
-      const std::string& prefix
-   );
+  bool Solve(SmartPtr<IteratesVector> delta_lhs,
+             SmartPtr<const IteratesVector> delta_rhs);
 
-   bool Solve(
-      SmartPtr<IteratesVector>       delta_lhs,
-      SmartPtr<const IteratesVector> delta_rhs
-   );
+ private:
+  SimpleBacksolver();
 
-private:
-   SimpleBacksolver();
-
-   SmartPtr<PDSystemSolver> pd_solver_;
-   bool allow_inexact_;
+  SmartPtr<PDSystemSolver> pd_solver_;
+  bool allow_inexact_;
 };
 
-}
+}  // namespace Ipopt
 
 #endif

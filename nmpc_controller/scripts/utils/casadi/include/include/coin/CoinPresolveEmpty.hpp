@@ -16,7 +16,7 @@ const int DROP_COL = 4;
 
 /*! \class drop_empty_cols_action
     \brief Physically removes empty columns in presolve, and reinserts
-	   empty columns in postsolve.
+           empty columns in postsolve.
 
   Physical removal of rows and columns should be the last activities
   performed during presolve. Do them exactly once. The row-major matrix
@@ -32,7 +32,7 @@ const int DROP_COL = 4;
 */
 
 class drop_empty_cols_action : public CoinPresolveAction {
-private:
+ private:
   const int nactions_;
 
   struct action {
@@ -44,25 +44,19 @@ private:
   };
   const action *const actions_;
 
-  drop_empty_cols_action(int nactions,
-    const action *const actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-  {
-  }
+  drop_empty_cols_action(int nactions, const action *const actions,
+                         const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nactions_(nactions), actions_(actions) {}
 
-public:
+ public:
   const char *name() const { return ("drop_empty_cols_action"); }
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *,
-    const int *ecols,
-    int necols,
-    const CoinPresolveAction *);
+                                            const int *ecols, int necols,
+                                            const CoinPresolveAction *);
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next);
+                                            const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -71,7 +65,7 @@ public:
 
 /*! \class drop_empty_rows_action
     \brief Physically removes empty rows in presolve, and reinserts
-	   empty rows in postsolve.
+           empty rows in postsolve.
 
   Physical removal of rows and columns should be the last activities
   performed during presolve. Do them exactly once. The row-major matrix
@@ -84,31 +78,26 @@ public:
   \todo Confirm behaviour when a solution is present in presolve.
 */
 class drop_empty_rows_action : public CoinPresolveAction {
-private:
+ private:
   struct action {
     double rlo;
     double rup;
     int row;
-    int fill_row; // which row was moved into position row to fill it
+    int fill_row;  // which row was moved into position row to fill it
   };
 
   const int nactions_;
   const action *const actions_;
 
-  drop_empty_rows_action(int nactions,
-    const action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-  {
-  }
+  drop_empty_rows_action(int nactions, const action *actions,
+                         const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nactions_(nactions), actions_(actions) {}
 
-public:
+ public:
   const char *name() const { return ("drop_empty_rows_action"); }
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next);
+                                            const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -117,4 +106,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

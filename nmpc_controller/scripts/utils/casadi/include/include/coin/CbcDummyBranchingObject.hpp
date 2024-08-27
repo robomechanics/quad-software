@@ -16,8 +16,7 @@
 */
 
 class CbcDummyBranchingObject : public CbcBranchingObject {
-
-public:
+ public:
   /// Default constructor
   CbcDummyBranchingObject(CbcModel *model = NULL);
 
@@ -35,7 +34,7 @@ public:
 
   using CbcBranchingObject::branch;
   /** \brief Dummy branch
-    */
+   */
   virtual double branch();
 
 #ifdef JJF_ZERO
@@ -48,14 +47,11 @@ public:
 
   using CbcBranchingObject::print;
   /** \brief Print something about branch - only if log level high
-    */
+   */
   virtual void print();
 
   /** Return the type (an integer identifier) of \c this */
-  virtual CbcBranchObjType type() const
-  {
-    return DummyBranchObj;
-  }
+  virtual CbcBranchObjType type() const { return DummyBranchObj; }
 
   /** Compare the original object of \c this with the original object of \c
         brObj. Assumes that there is an ordering of the original objects.
@@ -74,10 +70,11 @@ public:
         replaceIfOverlap is true) replace the current branching object with one
         whose feasible region is the overlap.
      */
-  virtual CbcRangeCompare compareBranchingObject(const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
+  virtual CbcRangeCompare compareBranchingObject(
+      const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
 };
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

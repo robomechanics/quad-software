@@ -44,163 +44,177 @@ SIMDE_BEGIN_DECLS_
  */
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsraq_n_s8(a, b, n) vrsraq_n_s8((a), (b), (n))
+#define simde_vrsraq_n_s8(a, b, n) vrsraq_n_s8((a), (b), (n))
 #else
-  #define simde_vrsraq_n_s8(a, b, n) simde_vaddq_s8((a), simde_vrshrq_n_s8((b), (n)))
+#define simde_vrsraq_n_s8(a, b, n) \
+  simde_vaddq_s8((a), simde_vrshrq_n_s8((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsraq_n_s8
-  #define vrsraq_n_s8(a, b, n) simde_vrsraq_n_s8((a), (b), (n))
+#undef vrsraq_n_s8
+#define vrsraq_n_s8(a, b, n) simde_vrsraq_n_s8((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsraq_n_s16(a, b, n) vrsraq_n_s16((a), (b), (n))
+#define simde_vrsraq_n_s16(a, b, n) vrsraq_n_s16((a), (b), (n))
 #else
-  #define simde_vrsraq_n_s16(a, b, n) simde_vaddq_s16((a), simde_vrshrq_n_s16((b), (n)))
+#define simde_vrsraq_n_s16(a, b, n) \
+  simde_vaddq_s16((a), simde_vrshrq_n_s16((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsraq_n_s16
-  #define vrsraq_n_s16(a, b, n) simde_vrsraq_n_s16((a), (b), (n))
+#undef vrsraq_n_s16
+#define vrsraq_n_s16(a, b, n) simde_vrsraq_n_s16((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsraq_n_s32(a, b, n) vrsraq_n_s32((a), (b), (n))
+#define simde_vrsraq_n_s32(a, b, n) vrsraq_n_s32((a), (b), (n))
 #else
-  #define simde_vrsraq_n_s32(a, b, n) simde_vaddq_s32((a), simde_vrshrq_n_s32((b), (n)))
+#define simde_vrsraq_n_s32(a, b, n) \
+  simde_vaddq_s32((a), simde_vrshrq_n_s32((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsraq_n_s32
-  #define vrsraq_n_s32(a, b, n) simde_vrsraq_n_s32((a), (b), (n))
+#undef vrsraq_n_s32
+#define vrsraq_n_s32(a, b, n) simde_vrsraq_n_s32((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsraq_n_s64(a, b, n) vrsraq_n_s64((a), (b), (n))
+#define simde_vrsraq_n_s64(a, b, n) vrsraq_n_s64((a), (b), (n))
 #else
-  #define simde_vrsraq_n_s64(a, b, n) simde_vaddq_s64((a), simde_vrshrq_n_s64((b), (n)))
+#define simde_vrsraq_n_s64(a, b, n) \
+  simde_vaddq_s64((a), simde_vrshrq_n_s64((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsraq_n_s64
-  #define vrsraq_n_s64(a, b, n) simde_vrsraq_n_s64((a), (b), (n))
+#undef vrsraq_n_s64
+#define vrsraq_n_s64(a, b, n) simde_vrsraq_n_s64((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsraq_n_u8(a, b, n) vrsraq_n_u8((a), (b), (n))
+#define simde_vrsraq_n_u8(a, b, n) vrsraq_n_u8((a), (b), (n))
 #else
-  #define simde_vrsraq_n_u8(a, b, n) simde_vaddq_u8((a), simde_vrshrq_n_u8((b), (n)))
+#define simde_vrsraq_n_u8(a, b, n) \
+  simde_vaddq_u8((a), simde_vrshrq_n_u8((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsraq_n_u8
-  #define vrsraq_n_u8(a, b, n) simde_vrsraq_n_u8((a), (b), (n))
+#undef vrsraq_n_u8
+#define vrsraq_n_u8(a, b, n) simde_vrsraq_n_u8((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsraq_n_u16(a, b, n) vrsraq_n_u16((a), (b), (n))
+#define simde_vrsraq_n_u16(a, b, n) vrsraq_n_u16((a), (b), (n))
 #else
-  #define simde_vrsraq_n_u16(a, b, n) simde_vaddq_u16((a), simde_vrshrq_n_u16((b), (n)))
+#define simde_vrsraq_n_u16(a, b, n) \
+  simde_vaddq_u16((a), simde_vrshrq_n_u16((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsraq_n_u16
-  #define vrsraq_n_u16(a, b, n) simde_vrsraq_n_u16((a), (b), (n))
+#undef vrsraq_n_u16
+#define vrsraq_n_u16(a, b, n) simde_vrsraq_n_u16((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsraq_n_u32(a, b, n) vrsraq_n_u32((a), (b), (n))
+#define simde_vrsraq_n_u32(a, b, n) vrsraq_n_u32((a), (b), (n))
 #else
-  #define simde_vrsraq_n_u32(a, b, n) simde_vaddq_u32((a), simde_vrshrq_n_u32((b), (n)))
+#define simde_vrsraq_n_u32(a, b, n) \
+  simde_vaddq_u32((a), simde_vrshrq_n_u32((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsraq_n_u32
-  #define vrsraq_n_u32(a, b, n) simde_vrsraq_n_u32((a), (b), (n))
+#undef vrsraq_n_u32
+#define vrsraq_n_u32(a, b, n) simde_vrsraq_n_u32((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsraq_n_u64(a, b, n) vrsraq_n_u64((a), (b), (n))
+#define simde_vrsraq_n_u64(a, b, n) vrsraq_n_u64((a), (b), (n))
 #else
-  #define simde_vrsraq_n_u64(a, b, n) simde_vaddq_u64((a), simde_vrshrq_n_u64((b), (n)))
+#define simde_vrsraq_n_u64(a, b, n) \
+  simde_vaddq_u64((a), simde_vrshrq_n_u64((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsraq_n_u64
-  #define vrsraq_n_u64(a, b, n) simde_vrsraq_n_u64((a), (b), (n))
+#undef vrsraq_n_u64
+#define vrsraq_n_u64(a, b, n) simde_vrsraq_n_u64((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsra_n_s8(a, b, n) vrsra_n_s8((a), (b), (n))
+#define simde_vrsra_n_s8(a, b, n) vrsra_n_s8((a), (b), (n))
 #else
-  #define simde_vrsra_n_s8(a, b, n) simde_vadd_s8((a), simde_vrshr_n_s8((b), (n)))
+#define simde_vrsra_n_s8(a, b, n) simde_vadd_s8((a), simde_vrshr_n_s8((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsra_n_s8
-  #define vrsra_n_s8(a, b, n) simde_vrsra_n_s8((a), (b), (n))
+#undef vrsra_n_s8
+#define vrsra_n_s8(a, b, n) simde_vrsra_n_s8((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsra_n_s16(a, b, n) vrsra_n_s16((a), (b), (n))
+#define simde_vrsra_n_s16(a, b, n) vrsra_n_s16((a), (b), (n))
 #else
-  #define simde_vrsra_n_s16(a, b, n) simde_vadd_s16((a), simde_vrshr_n_s16((b), (n)))
+#define simde_vrsra_n_s16(a, b, n) \
+  simde_vadd_s16((a), simde_vrshr_n_s16((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsra_n_s16
-  #define vrsra_n_s16(a, b, n) simde_vrsra_n_s16((a), (b), (n))
+#undef vrsra_n_s16
+#define vrsra_n_s16(a, b, n) simde_vrsra_n_s16((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsra_n_s32(a, b, n) vrsra_n_s32((a), (b), (n))
+#define simde_vrsra_n_s32(a, b, n) vrsra_n_s32((a), (b), (n))
 #else
-  #define simde_vrsra_n_s32(a, b, n) simde_vadd_s32((a), simde_vrshr_n_s32((b), (n)))
+#define simde_vrsra_n_s32(a, b, n) \
+  simde_vadd_s32((a), simde_vrshr_n_s32((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsra_n_s32
-  #define vrsra_n_s32(a, b, n) simde_vrsra_n_s32((a), (b), (n))
+#undef vrsra_n_s32
+#define vrsra_n_s32(a, b, n) simde_vrsra_n_s32((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsra_n_s64(a, b, n) vrsra_n_s64((a), (b), (n))
+#define simde_vrsra_n_s64(a, b, n) vrsra_n_s64((a), (b), (n))
 #else
-  #define simde_vrsra_n_s64(a, b, n) simde_vadd_s64((a), simde_vrshr_n_s64((b), (n)))
+#define simde_vrsra_n_s64(a, b, n) \
+  simde_vadd_s64((a), simde_vrshr_n_s64((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsra_n_s64
-  #define vrsra_n_s64(a, b, n) simde_vrsra_n_s64((a), (b), (n))
+#undef vrsra_n_s64
+#define vrsra_n_s64(a, b, n) simde_vrsra_n_s64((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsra_n_u8(a, b, n) vrsra_n_u8((a), (b), (n))
+#define simde_vrsra_n_u8(a, b, n) vrsra_n_u8((a), (b), (n))
 #else
-  #define simde_vrsra_n_u8(a, b, n) simde_vadd_u8((a), simde_vrshr_n_u8((b), (n)))
+#define simde_vrsra_n_u8(a, b, n) simde_vadd_u8((a), simde_vrshr_n_u8((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsra_n_u8
-  #define vrsra_n_u8(a, b, n) simde_vrsra_n_u8((a), (b), (n))
+#undef vrsra_n_u8
+#define vrsra_n_u8(a, b, n) simde_vrsra_n_u8((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsra_n_u16(a, b, n) vrsra_n_u16((a), (b), (n))
+#define simde_vrsra_n_u16(a, b, n) vrsra_n_u16((a), (b), (n))
 #else
-  #define simde_vrsra_n_u16(a, b, n) simde_vadd_u16((a), simde_vrshr_n_u16((b), (n)))
+#define simde_vrsra_n_u16(a, b, n) \
+  simde_vadd_u16((a), simde_vrshr_n_u16((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsra_n_u16
-  #define vrsra_n_u16(a, b, n) simde_vrsra_n_u16((a), (b), (n))
+#undef vrsra_n_u16
+#define vrsra_n_u16(a, b, n) simde_vrsra_n_u16((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsra_n_u32(a, b, n) vrsra_n_u32((a), (b), (n))
+#define simde_vrsra_n_u32(a, b, n) vrsra_n_u32((a), (b), (n))
 #else
-  #define simde_vrsra_n_u32(a, b, n) simde_vadd_u32((a), simde_vrshr_n_u32((b), (n)))
+#define simde_vrsra_n_u32(a, b, n) \
+  simde_vadd_u32((a), simde_vrshr_n_u32((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsra_n_u32
-  #define vrsra_n_u32(a, b, n) simde_vrsra_n_u32((a), (b), (n))
+#undef vrsra_n_u32
+#define vrsra_n_u32(a, b, n) simde_vrsra_n_u32((a), (b), (n))
 #endif
 
 #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-  #define simde_vrsra_n_u64(a, b, n) vrsra_n_u64((a), (b), (n))
+#define simde_vrsra_n_u64(a, b, n) vrsra_n_u64((a), (b), (n))
 #else
-  #define simde_vrsra_n_u64(a, b, n) simde_vadd_u64((a), simde_vrshr_n_u64((b), (n)))
+#define simde_vrsra_n_u64(a, b, n) \
+  simde_vadd_u64((a), simde_vrshr_n_u64((b), (n)))
 #endif
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrsra_n_u64
-  #define vrsra_n_u64(a, b, n) simde_vrsra_n_u64((a), (b), (n))
+#undef vrsra_n_u64
+#define vrsra_n_u64(a, b, n) simde_vrsra_n_u64((a), (b), (n))
 #endif
 
 SIMDE_END_DECLS_

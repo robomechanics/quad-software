@@ -3,7 +3,6 @@
 #include <alpaqa/problem/problem-counters.hpp>
 #include <alpaqa/problem/type-erased-problem.hpp>
 #include <alpaqa/util/timed.hpp>
-
 #include <functional>
 #include <type_traits>
 
@@ -22,10 +21,10 @@ namespace alpaqa {
 ///         you can use the @ref decouple_evaluations function.
 template <class Problem>
 struct ProblemWithCounters {
-    USING_ALPAQA_CONFIG_TEMPLATE(std::remove_cvref_t<Problem>::config_t);
-    using Box = typename TypeErasedProblem<config_t>::Box;
+  USING_ALPAQA_CONFIG_TEMPLATE(std::remove_cvref_t<Problem>::config_t);
+  using Box = typename TypeErasedProblem<config_t>::Box;
 
-    // clang-format off
+  // clang-format off
     void eval_proj_diff_g(crvec z, rvec e) const { ++evaluations->proj_diff_g; return timed(evaluations->time.proj_diff_g, std::bind(&std::remove_cvref_t<Problem>::eval_proj_diff_g, &problem, z, e)); }
     void eval_proj_multipliers(rvec y, real_t M) const { ++evaluations->proj_multipliers; return timed(evaluations->time.proj_multipliers, std::bind(&std::remove_cvref_t<Problem>::eval_proj_multipliers, &problem, y, M)); }
     real_t eval_prox_grad_step(real_t γ, crvec x, crvec grad_ψ, rvec x̂, rvec p) const { ++evaluations->prox_grad_step; return timed(evaluations->time.prox_grad_step, std::bind(&std::remove_cvref_t<Problem>::eval_prox_grad_step, &problem, γ, x, grad_ψ, x̂, p)); }
@@ -74,41 +73,44 @@ struct ProblemWithCounters {
     [[nodiscard]] bool provides_get_box_C() const requires requires (Problem p) { { p.provides_get_box_C() } -> std::convertible_to<bool>; } { return problem.provides_get_box_C(); }
     [[nodiscard]] bool provides_get_box_D() const requires requires (Problem p) { { p.provides_get_box_D() } -> std::convertible_to<bool>; } { return problem.provides_get_box_D(); }
     [[nodiscard]] bool provides_check() const requires requires (Problem p) { { p.provides_check() } -> std::convertible_to<bool>; } { return problem.provides_check(); }
-    // clang-format on
+  // clang-format on
 
-    [[nodiscard]] length_t get_n() const { return problem.get_n(); }
-    [[nodiscard]] length_t get_m() const { return problem.get_m(); }
+  [[nodiscard]] length_t get_n() const { return problem.get_n(); }
+  [[nodiscard]] length_t get_m() const { return problem.get_m(); }
 
-    std::shared_ptr<EvalCounter> evaluations = std::make_shared<EvalCounter>();
-    Problem problem;
+  std::shared_ptr<EvalCounter> evaluations = std::make_shared<EvalCounter>();
+  Problem problem;
 
-    ProblemWithCounters()
-        requires std::is_default_constructible_v<Problem>
-    = default;
-    template <class P>
-    explicit ProblemWithCounters(P &&problem)
-        requires std::is_same_v<std::remove_cvref_t<P>, std::remove_cvref_t<Problem>>
-        : problem{std::forward<P>(problem)} {}
-    template <class... Args>
-    explicit ProblemWithCounters(std::in_place_t, Args &&...args)
-        requires(!std::is_lvalue_reference_v<Problem>)
-        : problem{std::forward<Args>(args)...} {}
+  ProblemWithCounters()
+    requires std::is_default_constructible_v<Problem>
+  = default;
+  template <class P>
+  explicit ProblemWithCounters(P &&problem)
+    requires std::is_same_v<std::remove_cvref_t<P>,
+                            std::remove_cvref_t<Problem>>
+      : problem{std::forward<P>(problem)} {}
+  template <class... Args>
+  explicit ProblemWithCounters(std::in_place_t, Args &&...args)
+    requires(!std::is_lvalue_reference_v<Problem>)
+      : problem{std::forward<Args>(args)...} {}
 
-    /// Reset all evaluation counters and timers to zero. Affects all instances
-    /// that share the same evaluations. If you only want to reset the counters
-    /// of this instance, use @ref decouple_evaluations first.
-    void reset_evaluations() { evaluations.reset(); }
-    /// Give this instance its own evaluation counters and timers, decoupling
-    /// it from any other instances they might have previously been shared with.
-    /// The evaluation counters and timers are preserved (a copy is made).
-    void decouple_evaluations() { evaluations = std::make_shared<EvalCounter>(*evaluations); }
+  /// Reset all evaluation counters and timers to zero. Affects all instances
+  /// that share the same evaluations. If you only want to reset the counters
+  /// of this instance, use @ref decouple_evaluations first.
+  void reset_evaluations() { evaluations.reset(); }
+  /// Give this instance its own evaluation counters and timers, decoupling
+  /// it from any other instances they might have previously been shared with.
+  /// The evaluation counters and timers are preserved (a copy is made).
+  void decouple_evaluations() {
+    evaluations = std::make_shared<EvalCounter>(*evaluations);
+  }
 
-  private:
-    template <class TimeT, class FunT>
-    static decltype(auto) timed(TimeT &time, FunT &&f) {
-        util::Timed timed{time};
-        return std::forward<FunT>(f)();
-    }
+ private:
+  template <class TimeT, class FunT>
+  static decltype(auto) timed(TimeT &time, FunT &&f) {
+    util::Timed timed{time};
+    return std::forward<FunT>(f)();
+  }
 };
 
 /// Wraps the given problem into a @ref ProblemWithCounters and keeps track of
@@ -118,9 +120,9 @@ struct ProblemWithCounters {
 /// counters, all copies share the same counters.
 template <class Problem>
 [[nodiscard]] auto problem_with_counters(Problem &&p) {
-    using Prob        = std::remove_cvref_t<Problem>;
-    using ProbWithCnt = ProblemWithCounters<Prob>;
-    return ProbWithCnt{std::forward<Problem>(p)};
+  using Prob = std::remove_cvref_t<Problem>;
+  using ProbWithCnt = ProblemWithCounters<Prob>;
+  return ProbWithCnt{std::forward<Problem>(p)};
 }
 
 /// Wraps the given problem into a @ref ProblemWithCounters and keeps track of
@@ -131,11 +133,11 @@ template <class Problem>
 /// evaluation counters, all copies share the same counters.
 template <class Problem>
 [[nodiscard]] auto problem_with_counters_ref(Problem &p) {
-    using Prob        = std::remove_cvref_t<Problem>;
-    using ProbWithCnt = ProblemWithCounters<const Prob &>;
-    return ProbWithCnt{p};
+  using Prob = std::remove_cvref_t<Problem>;
+  using ProbWithCnt = ProblemWithCounters<const Prob &>;
+  return ProbWithCnt{p};
 }
 
 /// @}
 
-} // namespace alpaqa
+}  // namespace alpaqa

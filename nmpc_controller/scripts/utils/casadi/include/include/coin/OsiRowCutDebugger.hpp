@@ -8,7 +8,7 @@
 /*! \file OsiRowCutDebugger.hpp
 
   \brief Provides a facility to validate cut constraints to ensure that they
-  	 do not cut off a given solution.
+         do not cut off a given solution.
 */
 
 #include <string>
@@ -41,16 +41,16 @@
 */
 class OsiRowCutDebugger {
   friend void OsiRowCutDebuggerUnitTest(const OsiSolverInterface *siP,
-    const std::string &mpsDir);
+                                        const std::string &mpsDir);
 
-public:
+ public:
   /*! @name Validate Row Cuts
-  
+
     Check that the specified cuts do not cut off the known solution.
   */
   //@{
   /*! \brief Check that the set of cuts does not cut off the solution known
-  	     to the debugger.
+             to the debugger.
 
     Check if any generated cuts cut off the solution known to the debugger!
     If so then print offending cuts.  Return the number of invalid cuts.
@@ -58,14 +58,14 @@ public:
   virtual int validateCuts(const OsiCuts &cs, int first, int last) const;
 
   /*! \brief Check that the cut does not cut off the solution known to the
-  	     debugger.
-  
+             debugger.
+
     Return true if cut is invalid
   */
   virtual bool invalidCut(const OsiRowCut &rowcut) const;
 
   /*! \brief Returns true if the solution held in the solver is compatible
-  	     with the known solution.
+             with the known solution.
 
     More specifically, returns true if the known solution satisfies the column
     bounds held in the solver.
@@ -74,7 +74,7 @@ public:
   //@}
 
   /*! @name Activate the Debugger
-  
+
     The debugger is considered to be active when it holds a known solution.
   */
   //@{
@@ -98,7 +98,7 @@ public:
     Returns true if debugger activates successfully.
   */
   bool activate(const OsiSolverInterface &si, const double *solution,
-    bool keepContinuous = false);
+                bool keepContinuous = false);
 
   /// Returns true if the debugger is active
   bool active() const;
@@ -107,10 +107,7 @@ public:
   /*! @name Query or Manipulate the Known Solution */
   //@{
   /// Return the known solution
-  inline const double *optimalSolution() const
-  {
-    return knownSolution_;
-  }
+  inline const double *optimalSolution() const { return knownSolution_; }
 
   /// Return the number of columns in the known solution
   inline int numberColumns() const { return (numberColumns_); }
@@ -150,7 +147,7 @@ public:
     See #activate(const OsiSolverInterface&,const double*,bool).
   */
   OsiRowCutDebugger(const OsiSolverInterface &si, const double *solution,
-    bool enforceOptimality = false);
+                    bool enforceOptimality = false);
 
   /// Copy constructor
   OsiRowCutDebugger(const OsiRowCutDebugger &);
@@ -162,7 +159,7 @@ public:
   virtual ~OsiRowCutDebugger();
   //@}
 
-private:
+ private:
   // Private member data
 
   /**@name Private member data */
@@ -171,7 +168,7 @@ private:
   double knownValue_;
 
   /*! \brief Number of columns in known solution
-  
+
     This must match the number of columns reported by the solver.
   */
   int numberColumns_;
@@ -187,4 +184,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -7,21 +7,20 @@
 #define CbcBranchCut_H
 
 #include "CbcBranchBase.hpp"
-#include "OsiRowCut.hpp"
 #include "CoinPackedMatrix.hpp"
+#include "OsiRowCut.hpp"
 
 /** Define a cut branching class.
     At present empty - all stuff in descendants
 */
 
 class CbcBranchCut : public CbcObject {
-
-public:
+ public:
   // Default Constructor
   CbcBranchCut();
 
   /** In to maintain normal methods
-    */
+   */
   CbcBranchCut(CbcModel *model);
   // Copy constructor
   CbcBranchCut(const CbcBranchCut &);
@@ -37,7 +36,7 @@ public:
 
   /// Infeasibility
   virtual double infeasibility(const OsiBranchingInformation *info,
-    int &preferredWay) const;
+                               int &preferredWay) const;
 
   using CbcObject::feasibleRegion;
   /** Set bounds to contain the current solution.
@@ -52,11 +51,12 @@ public:
   virtual void feasibleRegion();
 
   /** \brief Return true if branch created by object should fix variables
-    */
+   */
   virtual bool boundBranch() const;
 
   /// Creates a branching object
-  virtual CbcBranchingObject *createCbcBranch(OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
+  virtual CbcBranchingObject *createCbcBranch(
+      OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
 
   /** \brief Given a valid solution (with reduced costs, etc.),
         return a branching object which would give a new feasible
@@ -68,8 +68,8 @@ public:
       to bounds on the variable, the branching object will move in the other
       direction.  If no movement is possible, the method returns NULL.
 
-      Only the bounds on this variable are considered when determining if the new
-      point is feasible.
+      Only the bounds on this variable are considered when determining if the
+     new point is feasible.
 
       At present this does nothing
     */
@@ -94,7 +94,7 @@ public:
      */
   virtual void resetBounds();
 
-protected:
+ protected:
   /// data
 };
 /** Cut branching object
@@ -103,8 +103,7 @@ protected:
 */
 
 class CbcCutBranchingObject : public CbcBranchingObject {
-
-public:
+ public:
   /// Default constructor
   CbcCutBranchingObject();
 
@@ -113,7 +112,8 @@ public:
         Cut down will applied on way=-1, up on way==1
         Assumed down will be first so way_ set to -1
     */
-  CbcCutBranchingObject(CbcModel *model, OsiRowCut &down, OsiRowCut &up, bool canFix);
+  CbcCutBranchingObject(CbcModel *model, OsiRowCut &down, OsiRowCut &up,
+                        bool canFix);
 
   /// Copy constructor
   CbcCutBranchingObject(const CbcCutBranchingObject &);
@@ -129,25 +129,22 @@ public:
 
   using CbcBranchingObject::branch;
   /** \brief Sets the bounds for variables or adds a cut depending on the
-               current arm of the branch and advances the object state to the next arm.
-           Returns change in guessed objective on next branch
+               current arm of the branch and advances the object state to the
+     next arm. Returns change in guessed objective on next branch
     */
   virtual double branch();
 
   using CbcBranchingObject::print;
   /** \brief Print something about branch - only if log level high
-    */
+   */
   virtual void print();
 
   /** \brief Return true if branch should fix variables
-    */
+   */
   virtual bool boundBranch() const;
 
   /** Return the type (an integer identifier) of \c this */
-  virtual CbcBranchObjType type() const
-  {
-    return CutBranchingObj;
-  }
+  virtual CbcBranchObjType type() const { return CutBranchingObj; }
 
   /** Compare the original object of \c this with the original object of \c
         brObj. Assumes that there is an ordering of the original objects.
@@ -166,9 +163,10 @@ public:
         replaceIfOverlap is true) replace the current branching object with one
         whose feasible region is the overlap.
      */
-  virtual CbcRangeCompare compareBranchingObject(const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
+  virtual CbcRangeCompare compareBranchingObject(
+      const CbcBranchingObject *brObj, const bool replaceIfOverlap = false);
 
-protected:
+ protected:
   /// Cut for the down arm (way_ = -1)
   OsiRowCut down_;
   /// Cut for the up arm (way_ = 1)
@@ -179,4 +177,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

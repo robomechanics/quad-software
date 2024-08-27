@@ -11,12 +11,14 @@
 /* include all defines and ugly stuff */
 #include "Coin_C_defines.h"
 
-/* accidentally used a bool for Clp_modifyCoefficient, so need to include stdbool.h
- * Clp_modifyCoefficient signature will change to use int with Clp 1.18
- * stdbool.h is available with C99
- * __STDC_VERSION__ isn't available when compiling C++ - look at C++ version instead
+/* accidentally used a bool for Clp_modifyCoefficient, so need to include
+ * stdbool.h Clp_modifyCoefficient signature will change to use int with
+ * Clp 1.18 stdbool.h is available with C99
+ * __STDC_VERSION__ isn't available when compiling C++ - look at C++ version
+ * instead
  */
-#if (defined(__cplusplus) && __cplusplus >= 199901L) || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
+#if (defined(__cplusplus) && __cplusplus >= 199901L) || \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
 #include <stdbool.h>
 #endif
 
@@ -38,12 +40,13 @@ extern "C" {
 #endif
 
 /**@name Version info
-      * 
-      * A Clp library has a version number of the form <major>.<minor>.<release>,
-      * where each of major, minor, and release are nonnegative integers.
-      * For a checkout of the Clp stable branch, release is 9999.
-      * For a checkout of the Clp development branch, major, minor, and release are 9999.
-      */
+ *
+ * A Clp library has a version number of the form <major>.<minor>.<release>,
+ * where each of major, minor, and release are nonnegative integers.
+ * For a checkout of the Clp stable branch, release is 9999.
+ * For a checkout of the Clp development branch, major, minor, and release are
+ * 9999.
+ */
 /*@{*/
 /** Clp library version number as string. */
 COINLIBAPI const char *COINLINKAGE Clp_Version(void);
@@ -59,13 +62,13 @@ COINLIBAPI int COINLINKAGE Clp_VersionRelease(void);
         These do not have an exact analogue in C++.
         The user does not need to know structure of Clp_Simplex or Clp_Solve.
 
-        For (almost) all Clp_* functions outside this group there is an exact C++
-        analogue created by taking the first parameter out, removing the Clp_
+        For (almost) all Clp_* functions outside this group there is an exact
+   C++ analogue created by taking the first parameter out, removing the Clp_
         from name and applying the method to an object of type ClpSimplex.
-        
+
         Similarly, for all ClpSolve_* functions there is an exact C++
-        analogue created by taking the first parameter out, removing the ClpSolve_
-        from name and applying the method to an object of type ClpSolve.
+        analogue created by taking the first parameter out, removing the
+   ClpSolve_ from name and applying the method to an object of type ClpSolve.
      */
 /*@{*/
 
@@ -82,89 +85,94 @@ COINLIBAPI void COINLINKAGE ClpSolve_delete(Clp_Solve *solve);
 /**@name Load model - loads some stuff and initializes others */
 /*@{*/
 /** Loads a problem (the constraints on the
-         rows are given by lower and upper bounds). If a pointer is NULL then the
-         following values are the default:
-         <ul>
-         <li> <code>colub</code>: all columns have upper bound infinity
-         <li> <code>collb</code>: all columns have lower bound 0
-         <li> <code>rowub</code>: all rows have upper bound infinity
+         rows are given by lower and upper bounds). If a pointer is NULL then
+   the following values are the default: <ul> <li> <code>colub</code>: all
+   columns have upper bound infinity <li> <code>collb</code>: all columns have
+   lower bound 0 <li> <code>rowub</code>: all rows have upper bound infinity
          <li> <code>rowlb</code>: all rows have lower bound -infinity
          <li> <code>obj</code>: all variables have 0 objective coefficient
          </ul>
      */
 /** Just like the other loadProblem() method except that the matrix is
      given in a standard column major ordered format (without gaps). */
-COINLIBAPI void COINLINKAGE Clp_loadProblem(Clp_Simplex *model, const int numcols, const int numrows,
-  const CoinBigIndex *start, const int *index,
-  const double *value,
-  const double *collb, const double *colub,
-  const double *obj,
-  const double *rowlb, const double *rowub);
+COINLIBAPI void COINLINKAGE
+Clp_loadProblem(Clp_Simplex *model, const int numcols, const int numrows,
+                const CoinBigIndex *start, const int *index,
+                const double *value, const double *collb, const double *colub,
+                const double *obj, const double *rowlb, const double *rowub);
 
 /* read quadratic part of the objective (the matrix part) */
-COINLIBAPI void COINLINKAGE
-Clp_loadQuadraticObjective(Clp_Simplex *model,
-  const int numberColumns,
-  const CoinBigIndex *start,
-  const int *column,
-  const double *element);
+COINLIBAPI void COINLINKAGE Clp_loadQuadraticObjective(
+    Clp_Simplex *model, const int numberColumns, const CoinBigIndex *start,
+    const int *column, const double *element);
 /** Read an mps file from the given filename */
 COINLIBAPI int COINLINKAGE Clp_readMps(Clp_Simplex *model, const char *filename,
-  int keepNames,
-  int ignoreErrors);
+                                       int keepNames, int ignoreErrors);
 /** Write an mps file to the given filename */
 /** Format type is 0 = normal, 1 = extra or 2 = hex.
     Number across is 1 or 2.
     Use objSense = -1D to flip the objective function around. */
-COINLIBAPI int COINLINKAGE Clp_writeMps(Clp_Simplex *model, const char *filename,
-  int formatType,
-  int numberAcross,
-  double objSense);
+COINLIBAPI int COINLINKAGE Clp_writeMps(Clp_Simplex *model,
+                                        const char *filename, int formatType,
+                                        int numberAcross, double objSense);
 /** Copy in integer informations */
-COINLIBAPI void COINLINKAGE Clp_copyInIntegerInformation(Clp_Simplex *model, const char *information);
+COINLIBAPI void COINLINKAGE
+Clp_copyInIntegerInformation(Clp_Simplex *model, const char *information);
 /** Drop integer informations */
 COINLIBAPI void COINLINKAGE Clp_deleteIntegerInformation(Clp_Simplex *model);
 /** Resizes rim part of model  */
-COINLIBAPI void COINLINKAGE Clp_resize(Clp_Simplex *model, int newNumberRows, int newNumberColumns);
+COINLIBAPI void COINLINKAGE Clp_resize(Clp_Simplex *model, int newNumberRows,
+                                       int newNumberColumns);
 /** Deletes rows */
-COINLIBAPI void COINLINKAGE Clp_deleteRows(Clp_Simplex *model, int number, const int *which);
+COINLIBAPI void COINLINKAGE Clp_deleteRows(Clp_Simplex *model, int number,
+                                           const int *which);
 /** Add rows */
-COINLIBAPI void COINLINKAGE Clp_addRows(Clp_Simplex *model, int number, const double *rowLower,
-  const double *rowUpper,
-  const CoinBigIndex *rowStarts, const int *columns,
-  const double *elements);
+COINLIBAPI void COINLINKAGE Clp_addRows(Clp_Simplex *model, int number,
+                                        const double *rowLower,
+                                        const double *rowUpper,
+                                        const CoinBigIndex *rowStarts,
+                                        const int *columns,
+                                        const double *elements);
 
 /** Deletes columns */
-COINLIBAPI void COINLINKAGE Clp_deleteColumns(Clp_Simplex *model, int number, const int *which);
+COINLIBAPI void COINLINKAGE Clp_deleteColumns(Clp_Simplex *model, int number,
+                                              const int *which);
 /** Add columns */
-COINLIBAPI void COINLINKAGE Clp_addColumns(Clp_Simplex *model, int number, const double *columnLower,
-  const double *columnUpper,
-  const double *objective,
-  const CoinBigIndex *columnStarts, const int *rows,
-  const double *elements);
+COINLIBAPI void COINLINKAGE Clp_addColumns(
+    Clp_Simplex *model, int number, const double *columnLower,
+    const double *columnUpper, const double *objective,
+    const CoinBigIndex *columnStarts, const int *rows, const double *elements);
 /** Change row lower bounds */
-COINLIBAPI void COINLINKAGE Clp_chgRowLower(Clp_Simplex *model, const double *rowLower);
+COINLIBAPI void COINLINKAGE Clp_chgRowLower(Clp_Simplex *model,
+                                            const double *rowLower);
 /** Change row upper bounds */
-COINLIBAPI void COINLINKAGE Clp_chgRowUpper(Clp_Simplex *model, const double *rowUpper);
+COINLIBAPI void COINLINKAGE Clp_chgRowUpper(Clp_Simplex *model,
+                                            const double *rowUpper);
 /** Change column lower bounds */
-COINLIBAPI void COINLINKAGE Clp_chgColumnLower(Clp_Simplex *model, const double *columnLower);
+COINLIBAPI void COINLINKAGE Clp_chgColumnLower(Clp_Simplex *model,
+                                               const double *columnLower);
 /** Change column upper bounds */
-COINLIBAPI void COINLINKAGE Clp_chgColumnUpper(Clp_Simplex *model, const double *columnUpper);
+COINLIBAPI void COINLINKAGE Clp_chgColumnUpper(Clp_Simplex *model,
+                                               const double *columnUpper);
 /** Change objective coefficients */
-COINLIBAPI void COINLINKAGE Clp_chgObjCoefficients(Clp_Simplex *model, const double *objIn);
+COINLIBAPI void COINLINKAGE Clp_chgObjCoefficients(Clp_Simplex *model,
+                                                   const double *objIn);
 /** Change matrix coefficients
- * 
+ *
  * \note Clp 1.18 will change the type of @param keepZero to int.
  */
-#if (defined(__cplusplus) && __cplusplus >= 199901L) || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
-COINLIBAPI void COINLINKAGE Clp_modifyCoefficient(Clp_Simplex *model, int row, int column, double newElement,
-  bool keepZero);
+#if (defined(__cplusplus) && __cplusplus >= 199901L) || \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
+COINLIBAPI void COINLINKAGE Clp_modifyCoefficient(Clp_Simplex *model, int row,
+                                                  int column, double newElement,
+                                                  bool keepZero);
 #endif
 /** Drops names - makes lengthnames 0 and names empty */
 COINLIBAPI void COINLINKAGE Clp_dropNames(Clp_Simplex *model);
 /** Copies in names */
-COINLIBAPI void COINLINKAGE Clp_copyNames(Clp_Simplex *model, const char *const *rowNames,
-  const char *const *columnNames);
+COINLIBAPI void COINLINKAGE Clp_copyNames(Clp_Simplex *model,
+                                          const char *const *rowNames,
+                                          const char *const *columnNames);
 
 /*@}*/
 /**@name gets and sets - you will find some synonyms at the end of this file */
@@ -175,30 +183,40 @@ COINLIBAPI int COINLINKAGE Clp_numberRows(Clp_Simplex *model);
 COINLIBAPI int COINLINKAGE Clp_numberColumns(Clp_Simplex *model);
 /** Primal tolerance to use */
 COINLIBAPI double COINLINKAGE Clp_primalTolerance(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setPrimalTolerance(Clp_Simplex *model, double value);
+COINLIBAPI void COINLINKAGE Clp_setPrimalTolerance(Clp_Simplex *model,
+                                                   double value);
 /** Dual tolerance to use */
 COINLIBAPI double COINLINKAGE Clp_dualTolerance(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setDualTolerance(Clp_Simplex *model, double value);
+COINLIBAPI void COINLINKAGE Clp_setDualTolerance(Clp_Simplex *model,
+                                                 double value);
 /** Dual objective limit */
 COINLIBAPI double COINLINKAGE Clp_dualObjectiveLimit(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setDualObjectiveLimit(Clp_Simplex *model, double value);
+COINLIBAPI void COINLINKAGE Clp_setDualObjectiveLimit(Clp_Simplex *model,
+                                                      double value);
 /** Objective offset */
 COINLIBAPI double COINLINKAGE Clp_objectiveOffset(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setObjectiveOffset(Clp_Simplex *model, double value);
+COINLIBAPI void COINLINKAGE Clp_setObjectiveOffset(Clp_Simplex *model,
+                                                   double value);
 /** Fills in array with problem name  */
-COINLIBAPI void COINLINKAGE Clp_problemName(Clp_Simplex *model, int maxNumberCharacters, char *array);
+COINLIBAPI void COINLINKAGE Clp_problemName(Clp_Simplex *model,
+                                            int maxNumberCharacters,
+                                            char *array);
 /* Sets problem name.  Must have \0 at end.  */
-COINLIBAPI int COINLINKAGE
-Clp_setProblemName(Clp_Simplex *model, int maxNumberCharacters, char *array);
+COINLIBAPI int COINLINKAGE Clp_setProblemName(Clp_Simplex *model,
+                                              int maxNumberCharacters,
+                                              char *array);
 /** Number of iterations */
 COINLIBAPI int COINLINKAGE Clp_numberIterations(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setNumberIterations(Clp_Simplex *model, int numberIterations);
+COINLIBAPI void COINLINKAGE Clp_setNumberIterations(Clp_Simplex *model,
+                                                    int numberIterations);
 /** Maximum number of iterations */
 COINLIBAPI int maximumIterations(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setMaximumIterations(Clp_Simplex *model, int value);
+COINLIBAPI void COINLINKAGE Clp_setMaximumIterations(Clp_Simplex *model,
+                                                     int value);
 /** Maximum time in seconds (from when set called) */
 COINLIBAPI double COINLINKAGE Clp_maximumSeconds(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setMaximumSeconds(Clp_Simplex *model, double value);
+COINLIBAPI void COINLINKAGE Clp_setMaximumSeconds(Clp_Simplex *model,
+                                                  double value);
 /** Returns true if hit maximum iterations (or time) */
 COINLIBAPI int COINLINKAGE Clp_hitMaximumIterations(Clp_Simplex *model);
 /** Status of problem:
@@ -210,19 +228,23 @@ COINLIBAPI int COINLINKAGE Clp_hitMaximumIterations(Clp_Simplex *model);
      */
 COINLIBAPI int COINLINKAGE Clp_status(Clp_Simplex *model);
 /** Set problem status */
-COINLIBAPI void COINLINKAGE Clp_setProblemStatus(Clp_Simplex *model, int problemStatus);
+COINLIBAPI void COINLINKAGE Clp_setProblemStatus(Clp_Simplex *model,
+                                                 int problemStatus);
 /** Secondary status of problem - may get extended
          0 - none
          1 - primal infeasible because dual limit reached
          2 - scaled problem optimal - unscaled has primal infeasibilities
          3 - scaled problem optimal - unscaled has dual infeasibilities
-         4 - scaled problem optimal - unscaled has both dual and primal infeasibilities
+         4 - scaled problem optimal - unscaled has both dual and primal
+   infeasibilities
      */
 COINLIBAPI int COINLINKAGE Clp_secondaryStatus(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setSecondaryStatus(Clp_Simplex *model, int status);
+COINLIBAPI void COINLINKAGE Clp_setSecondaryStatus(Clp_Simplex *model,
+                                                   int status);
 /** Direction of optimization (1 - minimize, -1 - maximize, 0 - ignore */
 COINLIBAPI double COINLINKAGE Clp_optimizationDirection(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setOptimizationDirection(Clp_Simplex *model, double value);
+COINLIBAPI void COINLINKAGE Clp_setOptimizationDirection(Clp_Simplex *model,
+                                                         double value);
 /** Primal row solution */
 COINLIBAPI double *COINLINKAGE Clp_primalRowSolution(Clp_Simplex *model);
 /** Primal column solution */
@@ -244,7 +266,8 @@ COINLIBAPI double *COINLINKAGE Clp_columnUpper(Clp_Simplex *model);
 /** Number of elements in matrix */
 COINLIBAPI CoinBigIndex COINLINKAGE Clp_getNumElements(Clp_Simplex *model);
 /* Column starts in matrix */
-COINLIBAPI const CoinBigIndex *COINLINKAGE Clp_getVectorStarts(Clp_Simplex *model);
+COINLIBAPI const CoinBigIndex *COINLINKAGE
+Clp_getVectorStarts(Clp_Simplex *model);
 /* Row indices in matrix */
 COINLIBAPI const int *COINLINKAGE Clp_getIndices(Clp_Simplex *model);
 /* Column vector lengths in matrix */
@@ -256,18 +279,18 @@ COINLIBAPI double COINLINKAGE Clp_objectiveValue(Clp_Simplex *model);
 /** Integer information */
 COINLIBAPI char *COINLINKAGE Clp_integerInformation(Clp_Simplex *model);
 /** Gives Infeasibility ray.
-      * 
-      * Use Clp_freeRay to free the returned array.
-      * 
-      * @return infeasibility ray, or NULL returned if none/wrong.
-      */
+ *
+ * Use Clp_freeRay to free the returned array.
+ *
+ * @return infeasibility ray, or NULL returned if none/wrong.
+ */
 COINLIBAPI double *COINLINKAGE Clp_infeasibilityRay(Clp_Simplex *model);
 /** Gives ray in which the problem is unbounded.
-      * 
-      * Use Clp_freeRay to free the returned array.
-      * 
-      * @return unbounded ray, or NULL returned if none/wrong.
-      */
+ *
+ * Use Clp_freeRay to free the returned array.
+ *
+ * @return unbounded ray, or NULL returned if none/wrong.
+ */
 COINLIBAPI double *COINLINKAGE Clp_unboundedRay(Clp_Simplex *model);
 /** Frees a infeasibility or unbounded ray. */
 COINLIBAPI void COINLINKAGE Clp_freeRay(Clp_Simplex *model, double *ray);
@@ -276,22 +299,25 @@ COINLIBAPI int COINLINKAGE Clp_statusExists(Clp_Simplex *model);
 /** Return address of status array (char[numberRows+numberColumns]) */
 COINLIBAPI unsigned char *COINLINKAGE Clp_statusArray(Clp_Simplex *model);
 /** Copy in status vector */
-COINLIBAPI void COINLINKAGE Clp_copyinStatus(Clp_Simplex *model, const unsigned char *statusArray);
+COINLIBAPI void COINLINKAGE Clp_copyinStatus(Clp_Simplex *model,
+                                             const unsigned char *statusArray);
 /* status values are as in ClpSimplex.hpp i.e. 0 - free, 1 basic, 2 at upper,
         3 at lower, 4 superbasic, (5 fixed) */
 /* Get variable basis info */
-COINLIBAPI int COINLINKAGE Clp_getColumnStatus(Clp_Simplex *model, int sequence);
+COINLIBAPI int COINLINKAGE Clp_getColumnStatus(Clp_Simplex *model,
+                                               int sequence);
 /* Get row basis info */
 COINLIBAPI int COINLINKAGE Clp_getRowStatus(Clp_Simplex *model, int sequence);
 /* Set variable basis info (and value if at bound) */
 COINLIBAPI void COINLINKAGE Clp_setColumnStatus(Clp_Simplex *model,
-  int sequence, int value);
+                                                int sequence, int value);
 /* Set row basis info (and value if at bound) */
-COINLIBAPI void COINLINKAGE Clp_setRowStatus(Clp_Simplex *model,
-  int sequence, int value);
+COINLIBAPI void COINLINKAGE Clp_setRowStatus(Clp_Simplex *model, int sequence,
+                                             int value);
 
 /** User pointer for whatever reason */
-COINLIBAPI void COINLINKAGE Clp_setUserPointer(Clp_Simplex *model, void *pointer);
+COINLIBAPI void COINLINKAGE Clp_setUserPointer(Clp_Simplex *model,
+                                               void *pointer);
 COINLIBAPI void *COINLINKAGE Clp_getUserPointer(Clp_Simplex *model);
 /*@}*/
 /**@name Message handling.  Call backs are handled by ONE function */
@@ -299,7 +325,7 @@ COINLIBAPI void *COINLINKAGE Clp_getUserPointer(Clp_Simplex *model);
 /** Pass in Callback function.
       Message numbers up to 1000000 are Clp, Coin ones have 1000000 added */
 COINLIBAPI void COINLINKAGE Clp_registerCallBack(Clp_Simplex *model,
-  clp_callback userCallBack);
+                                                 clp_callback userCallBack);
 /** Unset Callback function */
 COINLIBAPI void COINLINKAGE Clp_clearCallBack(Clp_Simplex *model);
 /** Amount of print out:
@@ -315,13 +341,17 @@ COINLIBAPI int COINLINKAGE Clp_logLevel(Clp_Simplex *model);
 /** length of names (0 means no names0 */
 COINLIBAPI int COINLINKAGE Clp_lengthNames(Clp_Simplex *model);
 /** Fill in array (at least lengthNames+1 long) with a row name */
-COINLIBAPI void COINLINKAGE Clp_rowName(Clp_Simplex *model, int iRow, char *name);
+COINLIBAPI void COINLINKAGE Clp_rowName(Clp_Simplex *model, int iRow,
+                                        char *name);
 /** Fill in array (at least lengthNames+1 long) with a column name */
-COINLIBAPI void COINLINKAGE Clp_columnName(Clp_Simplex *model, int iColumn, char *name);
+COINLIBAPI void COINLINKAGE Clp_columnName(Clp_Simplex *model, int iColumn,
+                                           char *name);
 /** Set row name - Nice if they are short - 8 chars or less I think */
-COINLIBAPI void COINLINKAGE Clp_setRowName(Clp_Simplex *model, int iRow, char *name);
+COINLIBAPI void COINLINKAGE Clp_setRowName(Clp_Simplex *model, int iRow,
+                                           char *name);
 /** Set column name - Nice if they are short - 8 chars or less I think */
-COINLIBAPI void COINLINKAGE Clp_setColumnName(Clp_Simplex *model, int iColumn, char *name);
+COINLIBAPI void COINLINKAGE Clp_setColumnName(Clp_Simplex *model, int iColumn,
+                                              char *name);
 
 /*@}*/
 
@@ -332,7 +362,8 @@ COINLIBAPI void COINLINKAGE Clp_setColumnName(Clp_Simplex *model, int iColumn, c
       */
 COINLIBAPI int COINLINKAGE Clp_initialSolve(Clp_Simplex *model);
 /** Pass solve options. (Exception to direct analogue rule) */
-COINLIBAPI int COINLINKAGE Clp_initialSolveWithOptions(Clp_Simplex *model, Clp_Solve *);
+COINLIBAPI int COINLINKAGE Clp_initialSolveWithOptions(Clp_Simplex *model,
+                                                       Clp_Solve *);
 /** Dual initial solve */
 COINLIBAPI int COINLINKAGE Clp_initialDualSolve(Clp_Simplex *model);
 /** Primal initial solve */
@@ -349,7 +380,8 @@ COINLIBAPI int COINLINKAGE Clp_primal(Clp_Simplex *model, int ifValuesPass);
 /** Solve the problem with the idiot code */
 COINLIBAPI void COINLINKAGE Clp_idiot(Clp_Simplex *model, int tryhard);
 #endif
-/** Sets or unsets scaling, 0 -off, 1 equilibrium, 2 geometric, 3, auto, 4 dynamic(later) */
+/** Sets or unsets scaling, 0 -off, 1 equilibrium, 2 geometric, 3, auto, 4
+ * dynamic(later) */
 COINLIBAPI void COINLINKAGE Clp_scaling(Clp_Simplex *model, int mode);
 /** Gets scalingFlag */
 COINLIBAPI int COINLINKAGE Clp_scalingFlag(Clp_Simplex *model);
@@ -381,7 +413,8 @@ COINLIBAPI double COINLINKAGE Clp_dualBound(Clp_Simplex *model);
 COINLIBAPI void COINLINKAGE Clp_setDualBound(Clp_Simplex *model, double value);
 /** Infeasibility cost */
 COINLIBAPI double COINLINKAGE Clp_infeasibilityCost(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setInfeasibilityCost(Clp_Simplex *model, double value);
+COINLIBAPI void COINLINKAGE Clp_setInfeasibilityCost(Clp_Simplex *model,
+                                                     double value);
 /** Perturbation:
          50  - switch on perturbation
          100 - auto perturb if takes too long (1.0e-6 largest nonzero)
@@ -410,10 +443,12 @@ COINLIBAPI int COINLINKAGE Clp_numberPrimalInfeasibilities(Clp_Simplex *model);
      Does not save scaling values.
      It does not know about all types of virtual functions.
      */
-COINLIBAPI int COINLINKAGE Clp_saveModel(Clp_Simplex *model, const char *fileName);
+COINLIBAPI int COINLINKAGE Clp_saveModel(Clp_Simplex *model,
+                                         const char *fileName);
 /** Restore model from file, returns 0 if success,
          deletes current model */
-COINLIBAPI int COINLINKAGE Clp_restoreModel(Clp_Simplex *model, const char *fileName);
+COINLIBAPI int COINLINKAGE Clp_restoreModel(Clp_Simplex *model,
+                                            const char *fileName);
 
 /** Just check solution (for external use) - sets sum of
          infeasibilities etc */
@@ -438,7 +473,8 @@ COINLIBAPI int COINLINKAGE Clp_isProvenPrimalInfeasible(Clp_Simplex *model);
 /** Is dual infeasiblity proven? */
 COINLIBAPI int COINLINKAGE Clp_isProvenDualInfeasible(Clp_Simplex *model);
 /** Is the given primal objective limit reached? */
-COINLIBAPI int COINLINKAGE Clp_isPrimalObjectiveLimitReached(Clp_Simplex *model);
+COINLIBAPI int COINLINKAGE
+Clp_isPrimalObjectiveLimitReached(Clp_Simplex *model);
 /** Is the given dual objective limit reached? */
 COINLIBAPI int COINLINKAGE Clp_isDualObjectiveLimitReached(Clp_Simplex *model);
 /** Iteration limit reached? */
@@ -451,7 +487,8 @@ COINLIBAPI void COINLINKAGE Clp_setObjSense(Clp_Simplex *model, double objsen);
 COINLIBAPI const double *COINLINKAGE Clp_getRowActivity(Clp_Simplex *model);
 /** Primal column solution */
 COINLIBAPI const double *COINLINKAGE Clp_getColSolution(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setColSolution(Clp_Simplex *model, const double *input);
+COINLIBAPI void COINLINKAGE Clp_setColSolution(Clp_Simplex *model,
+                                               const double *input);
 /** Dual row solution */
 COINLIBAPI const double *COINLINKAGE Clp_getRowPrice(Clp_Simplex *model);
 /** Reduced costs */
@@ -469,17 +506,20 @@ COINLIBAPI const double *COINLINKAGE Clp_getColUpper(Clp_Simplex *model);
 /** Objective value */
 COINLIBAPI double COINLINKAGE Clp_getObjValue(Clp_Simplex *model);
 /** Print model for debugging purposes */
-COINLIBAPI void COINLINKAGE Clp_printModel(Clp_Simplex *model, const char *prefix);
+COINLIBAPI void COINLINKAGE Clp_printModel(Clp_Simplex *model,
+                                           const char *prefix);
 /* Small element value - elements less than this set to zero,
         default is 1.0e-20 */
 COINLIBAPI double COINLINKAGE Clp_getSmallElementValue(Clp_Simplex *model);
-COINLIBAPI void COINLINKAGE Clp_setSmallElementValue(Clp_Simplex *model, double value);
+COINLIBAPI void COINLINKAGE Clp_setSmallElementValue(Clp_Simplex *model,
+                                                     double value);
 /*@}*/
 
 /**@name Get and set ClpSolve options
-     */
+ */
 /*@{*/
-COINLIBAPI void COINLINKAGE ClpSolve_setSpecialOption(Clp_Solve *, int which, int value, int extraInfo);
+COINLIBAPI void COINLINKAGE ClpSolve_setSpecialOption(Clp_Solve *, int which,
+                                                      int value, int extraInfo);
 COINLIBAPI int COINLINKAGE ClpSolve_getSpecialOption(Clp_Solve *, int which);
 
 /** method: (see ClpSolve::SolveType)
@@ -491,7 +531,8 @@ COINLIBAPI int COINLINKAGE ClpSolve_getSpecialOption(Clp_Solve *, int which);
          5 - automatic
          6 - not implemented
        -- pass extraInfo == -1 for default behavior */
-COINLIBAPI void COINLINKAGE ClpSolve_setSolveType(Clp_Solve *, int method, int extraInfo);
+COINLIBAPI void COINLINKAGE ClpSolve_setSolveType(Clp_Solve *, int method,
+                                                  int extraInfo);
 COINLIBAPI int COINLINKAGE ClpSolve_getSolveType(Clp_Solve *);
 
 /** amount: (see ClpSolve::PresolveType)
@@ -500,25 +541,30 @@ COINLIBAPI int COINLINKAGE ClpSolve_getSolveType(Clp_Solve *);
          2 - presolve number
          3 - presolve number cost
        -- pass extraInfo == -1 for default behavior */
-COINLIBAPI void COINLINKAGE ClpSolve_setPresolveType(Clp_Solve *, int amount, int extraInfo);
+COINLIBAPI void COINLINKAGE ClpSolve_setPresolveType(Clp_Solve *, int amount,
+                                                     int extraInfo);
 COINLIBAPI int COINLINKAGE ClpSolve_getPresolveType(Clp_Solve *);
 
 COINLIBAPI int COINLINKAGE ClpSolve_getPresolvePasses(Clp_Solve *);
 COINLIBAPI int COINLINKAGE ClpSolve_getExtraInfo(Clp_Solve *, int which);
-COINLIBAPI void COINLINKAGE ClpSolve_setInfeasibleReturn(Clp_Solve *, int trueFalse);
+COINLIBAPI void COINLINKAGE ClpSolve_setInfeasibleReturn(Clp_Solve *,
+                                                         int trueFalse);
 COINLIBAPI int COINLINKAGE ClpSolve_infeasibleReturn(Clp_Solve *);
 
 COINLIBAPI int COINLINKAGE ClpSolve_doDual(Clp_Solve *);
 COINLIBAPI void COINLINKAGE ClpSolve_setDoDual(Clp_Solve *, int doDual);
 
 COINLIBAPI int COINLINKAGE ClpSolve_doSingleton(Clp_Solve *);
-COINLIBAPI void COINLINKAGE ClpSolve_setDoSingleton(Clp_Solve *, int doSingleton);
+COINLIBAPI void COINLINKAGE ClpSolve_setDoSingleton(Clp_Solve *,
+                                                    int doSingleton);
 
 COINLIBAPI int COINLINKAGE ClpSolve_doDoubleton(Clp_Solve *);
-COINLIBAPI void COINLINKAGE ClpSolve_setDoDoubleton(Clp_Solve *, int doDoubleton);
+COINLIBAPI void COINLINKAGE ClpSolve_setDoDoubleton(Clp_Solve *,
+                                                    int doDoubleton);
 
 COINLIBAPI int COINLINKAGE ClpSolve_doTripleton(Clp_Solve *);
-COINLIBAPI void COINLINKAGE ClpSolve_setDoTripleton(Clp_Solve *, int doTripleton);
+COINLIBAPI void COINLINKAGE ClpSolve_setDoTripleton(Clp_Solve *,
+                                                    int doTripleton);
 
 COINLIBAPI int COINLINKAGE ClpSolve_doTighten(Clp_Solve *);
 COINLIBAPI void COINLINKAGE ClpSolve_setDoTighten(Clp_Solve *, int doTighten);
@@ -527,7 +573,8 @@ COINLIBAPI int COINLINKAGE ClpSolve_doForcing(Clp_Solve *);
 COINLIBAPI void COINLINKAGE ClpSolve_setDoForcing(Clp_Solve *, int doForcing);
 
 COINLIBAPI int COINLINKAGE ClpSolve_doImpliedFree(Clp_Solve *);
-COINLIBAPI void COINLINKAGE ClpSolve_setDoImpliedFree(Clp_Solve *, int doImpliedFree);
+COINLIBAPI void COINLINKAGE ClpSolve_setDoImpliedFree(Clp_Solve *,
+                                                      int doImpliedFree);
 
 COINLIBAPI int COINLINKAGE ClpSolve_doDupcol(Clp_Solve *);
 COINLIBAPI void COINLINKAGE ClpSolve_setDoDupcol(Clp_Solve *, int doDupcol);
@@ -536,10 +583,12 @@ COINLIBAPI int COINLINKAGE ClpSolve_doDuprow(Clp_Solve *);
 COINLIBAPI void COINLINKAGE ClpSolve_setDoDuprow(Clp_Solve *, int doDuprow);
 
 COINLIBAPI int COINLINKAGE ClpSolve_doSingletonColumn(Clp_Solve *);
-COINLIBAPI void COINLINKAGE ClpSolve_setDoSingletonColumn(Clp_Solve *, int doSingleton);
+COINLIBAPI void COINLINKAGE ClpSolve_setDoSingletonColumn(Clp_Solve *,
+                                                          int doSingleton);
 
 COINLIBAPI int COINLINKAGE ClpSolve_presolveActions(Clp_Solve *);
-COINLIBAPI void COINLINKAGE ClpSolve_setPresolveActions(Clp_Solve *, int action);
+COINLIBAPI void COINLINKAGE ClpSolve_setPresolveActions(Clp_Solve *,
+                                                        int action);
 
 COINLIBAPI int COINLINKAGE ClpSolve_substitution(Clp_Solve *);
 COINLIBAPI void COINLINKAGE ClpSolve_setSubstitution(Clp_Solve *, int value);
@@ -551,4 +600,4 @@ COINLIBAPI void COINLINKAGE ClpSolve_setSubstitution(Clp_Solve *, int value);
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

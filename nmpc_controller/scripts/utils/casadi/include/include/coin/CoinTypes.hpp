@@ -7,7 +7,8 @@
 #define _CoinTypes_hpp
 
 #include "CoinUtilsConfig.h"
-/* On some systems, we require stdint.h to have the 64bit integer type defined. */
+/* On some systems, we require stdint.h to have the 64bit integer type defined.
+ */
 #ifdef COINUTILS_HAS_STDINT_H
 #include <stdint.h>
 #endif
@@ -64,4 +65,4 @@ typedef double CoinFactorizationDouble;
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

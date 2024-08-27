@@ -7,13 +7,14 @@
 #ifndef PROXSUITE_PROXQP_RESULTS_HPP
 #define PROXSUITE_PROXQP_RESULTS_HPP
 
-#include <proxsuite/helpers/optional.hpp>
 #include <Eigen/Core>
+#include <proxsuite/helpers/optional.hpp>
 #include <proxsuite/linalg/veg/type_traits/core.hpp>
 #include <proxsuite/linalg/veg/vec.hpp>
 #include <proxsuite/proxqp/settings.hpp>
-#include "proxsuite/proxqp/status.hpp"
+
 #include "proxsuite/proxqp/sparse/fwd.hpp"
+#include "proxsuite/proxqp/status.hpp"
 
 namespace proxsuite {
 namespace proxqp {
@@ -24,9 +25,8 @@ namespace proxqp {
 /*!
  * Info class of dense and sparse solver.
  */
-template<typename T>
-struct Info
-{
+template <typename T>
+struct Info {
   ///// final proximal regularization parameters
   T mu_eq;
   T mu_eq_inv;
@@ -60,10 +60,8 @@ struct Info
 /*!
  * Results class of dense and sparse solver.
  */
-template<typename T>
-struct Results
-{
-
+template <typename T>
+struct Results {
   ///// SOLUTION STORAGE
 
   sparse::Vec<T> x;
@@ -80,11 +78,7 @@ struct Results
    * @param n_in dimension of the number of inequality constraints.
    */
   Results(isize dim = 0, isize n_eq = 0, isize n_in = 0)
-    : x(dim)
-    , y(n_eq)
-    , z(n_in)
-  {
-
+      : x(dim), y(n_eq), z(n_in) {
     x.setZero();
     y.setZero();
     z.setZero();
@@ -113,15 +107,13 @@ struct Results
    * cleanups the Result variables and set the info variables to their initial
    * values.
    */
-  void cleanup(optional<Settings<T>> settings = nullopt)
-  {
+  void cleanup(optional<Settings<T>> settings = nullopt) {
     x.setZero();
     y.setZero();
     z.setZero();
     cold_start(settings);
   }
-  void cleanup_statistics()
-  {
+  void cleanup_statistics() {
     info.run_time = 0;
     info.setup_time = 0;
     info.solve_time = 0;
@@ -136,8 +128,7 @@ struct Results
     info.status = QPSolverOutput::PROXQP_MAX_ITER_REACHED;
     info.sparse_backend = SparseBackend::Automatic;
   }
-  void cold_start(optional<Settings<T>> settings = nullopt)
-  {
+  void cold_start(optional<Settings<T>> settings = nullopt) {
     info.rho = 1e-6;
     info.mu_eq_inv = 1e3;
     info.mu_eq = 1e-3;
@@ -153,8 +144,7 @@ struct Results
     }
     cleanup_statistics();
   }
-  void cleanup_all_except_prox_parameters()
-  {
+  void cleanup_all_except_prox_parameters() {
     x.setZero();
     y.setZero();
     z.setZero();
@@ -162,36 +152,31 @@ struct Results
   }
 };
 
-template<typename T>
-bool
-operator==(const Info<T>& info1, const Info<T>& info2)
-{
+template <typename T>
+bool operator==(const Info<T>& info1, const Info<T>& info2) {
   bool value =
-    info1.mu_eq == info2.mu_eq && info1.mu_eq_inv == info2.mu_eq_inv &&
-    info1.mu_in == info2.mu_in && info1.mu_in_inv == info2.mu_in_inv &&
-    info1.rho == info2.rho && info1.nu == info2.nu &&
-    info1.iter == info2.iter && info1.iter_ext == info2.iter_ext &&
-    info1.mu_updates == info2.mu_updates &&
-    info1.rho_updates == info2.rho_updates && info1.status == info2.status &&
-    info1.setup_time == info2.setup_time &&
-    info1.solve_time == info2.solve_time && info1.run_time == info2.run_time &&
-    info1.objValue == info2.objValue && info1.pri_res == info2.pri_res &&
-    info1.dua_res == info2.dua_res && info1.duality_gap == info2.duality_gap &&
-    info1.duality_gap == info2.duality_gap;
+      info1.mu_eq == info2.mu_eq && info1.mu_eq_inv == info2.mu_eq_inv &&
+      info1.mu_in == info2.mu_in && info1.mu_in_inv == info2.mu_in_inv &&
+      info1.rho == info2.rho && info1.nu == info2.nu &&
+      info1.iter == info2.iter && info1.iter_ext == info2.iter_ext &&
+      info1.mu_updates == info2.mu_updates &&
+      info1.rho_updates == info2.rho_updates && info1.status == info2.status &&
+      info1.setup_time == info2.setup_time &&
+      info1.solve_time == info2.solve_time &&
+      info1.run_time == info2.run_time && info1.objValue == info2.objValue &&
+      info1.pri_res == info2.pri_res && info1.dua_res == info2.dua_res &&
+      info1.duality_gap == info2.duality_gap &&
+      info1.duality_gap == info2.duality_gap;
   return value;
 }
 
-template<typename T>
-bool
-operator!=(const Info<T>& info1, const Info<T>& info2)
-{
+template <typename T>
+bool operator!=(const Info<T>& info1, const Info<T>& info2) {
   return !(info1 == info2);
 }
 
-template<typename T>
-bool
-operator==(const Results<T>& results1, const Results<T>& results2)
-{
+template <typename T>
+bool operator==(const Results<T>& results1, const Results<T>& results2) {
   bool value = results1.x == results2.x && results1.y == results2.y &&
                //  results1.z == results2.z && results1.active_constraints ==
                //  results2.active_constraints &&
@@ -199,14 +184,12 @@ operator==(const Results<T>& results1, const Results<T>& results2)
   return value;
 }
 
-template<typename T>
-bool
-operator!=(const Results<T>& results1, const Results<T>& results2)
-{
+template <typename T>
+bool operator!=(const Results<T>& results1, const Results<T>& results2) {
   return !(results1 == results2);
 }
 
-} // namespace proxqp
-} // namespace proxsuite
+}  // namespace proxqp
+}  // namespace proxsuite
 
 #endif /* end of include guard PROXSUITE_PROXQP_RESULTS_HPP */

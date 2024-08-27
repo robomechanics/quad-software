@@ -23,4 +23,4 @@ bool spral_random_logical(int *state);
 } /* extern "C" */
 #endif
 
-#endif // SPRAL_RANDOM_H
+#endif  // SPRAL_RANDOM_H

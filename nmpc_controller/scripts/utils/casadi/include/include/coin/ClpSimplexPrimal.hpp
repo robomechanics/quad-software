@@ -21,8 +21,7 @@
 */
 
 class ClpSimplexPrimal : public ClpSimplex {
-
-public:
+ public:
   /**@name Description of algorithm */
   //@{
   /** Primal algorithm
@@ -150,11 +149,10 @@ public:
          Reasons to come out (normal mode/user mode):
          -1 normal
          -2 factorize now - good iteration/ NA
-         -3 slight inaccuracy - refactorize - iteration done/ same but factor done
-         -4 inaccuracy - refactorize - no iteration/ NA
-         -5 something flagged - go round again/ pivot not possible
-         +2 looks unbounded
-         +3 max iterations (iteration done)
+         -3 slight inaccuracy - refactorize - iteration done/ same but factor
+     done -4 inaccuracy - refactorize - no iteration/ NA -5 something flagged -
+     go round again/ pivot not possible +2 looks unbounded +3 max iterations
+     (iteration done)
 
          With solveType_ ==2 this should
          Pivot in a variable and choose an outgoing one.  Assumes primal
@@ -167,10 +165,8 @@ public:
          Returns number of infeasibilities.
          After rowArray will have cost changes for use next iteration
      */
-  int updatePrimalsInPrimal(CoinIndexedVector *rowArray,
-    double theta,
-    double &objectiveChange,
-    int valuesPass);
+  int updatePrimalsInPrimal(CoinIndexedVector *rowArray, double theta,
+                            double &objectiveChange, int valuesPass);
   /**
          Row array has pivot column
          This chooses pivot row.
@@ -179,27 +175,25 @@ public:
          variables go through bounds
          If valuesPass non-zero then compute dj for direction
      */
-  void primalRow(CoinIndexedVector *rowArray,
-    CoinIndexedVector *rhsArray,
-    CoinIndexedVector *spareArray,
-    int valuesPass);
+  void primalRow(CoinIndexedVector *rowArray, CoinIndexedVector *rhsArray,
+                 CoinIndexedVector *spareArray, int valuesPass);
   /**
          Chooses primal pivot column
          updateArray has cost updates (also use pivotRow_ from last iteration)
          Would be faster with separate region to scan
          and will have this (with square of infeasibility) when steepest
-         For easy problems we can just choose one of the first columns we look at
+         For easy problems we can just choose one of the first columns we look
+     at
      */
   void primalColumn(CoinIndexedVector *updateArray,
-    CoinIndexedVector *spareRow1,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+                    CoinIndexedVector *spareRow1, CoinIndexedVector *spareRow2,
+                    CoinIndexedVector *spareColumn1,
+                    CoinIndexedVector *spareColumn2);
 
   /** Checks if tentative optimal actually means unbounded in primal
          Returns -3 if not, 2 if is unbounded */
   int checkUnbounded(CoinIndexedVector *ray, CoinIndexedVector *spare,
-    double changeCost);
+                     double changeCost);
   /**  Refactorizes if necessary
           Checks if finished.  Updates status.
           lastCleaned refers to iteration at which some objective/feasibility
@@ -211,10 +205,9 @@ public:
           saveModel is normally NULL but may not be if doing Sprint
      */
   void statusOfProblemInPrimal(int &lastCleaned, int type,
-    ClpSimplexProgress *progress,
-    bool doFactorization,
-    int ifValuesPass,
-    ClpSimplex *saveModel = NULL);
+                               ClpSimplexProgress *progress,
+                               bool doFactorization, int ifValuesPass,
+                               ClpSimplex *saveModel = NULL);
   /// Perturbs problem (method depends on perturbation())
   void perturb(int type);
   /// Take off effect of perturbation and say whether to try dual
@@ -241,4 +234,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

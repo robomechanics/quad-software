@@ -1,7 +1,6 @@
 #pragma once
 
 #include <alpaqa/util/quadmath/quadmath.hpp>
-
 #include <cmath>
 #include <complex>
 #include <concepts>
@@ -22,4 +21,4 @@ template <typename T>
 concept float_or_complex_float =
     std::floating_point<T> || is_complex_float_v<T>;
 
-} // namespace alpaqa
+}  // namespace alpaqa

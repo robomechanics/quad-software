@@ -7,24 +7,24 @@
 #ifndef __IPREFERENCED_HPP__
 #define __IPREFERENCED_HPP__
 
-#include "IpTypes.hpp"
-#include "IpDebug.hpp"
-
 #include <list>
+
+#include "IpDebug.hpp"
+#include "IpTypes.hpp"
 
 #if IPOPT_CHECKLEVEL > 3
 #define IP_DEBUG_REFERENCED
 #endif
 
-namespace Ipopt
-{
+namespace Ipopt {
 
 /** Pseudo-class, from which everything has to inherit that wants to
  *  use be registered as a Referencer for a ReferencedObject.
  */
-class Referencer { };
+class Referencer {};
 
-/** Storing the reference count of all the smart pointers that currently reference it.
+/** Storing the reference count of all the smart pointers that currently
+ reference it.
  *
  * This is part of the implementation of an intrusive smart pointer
  * design.  See the documentation for the SmartPtr class for more details.
@@ -166,97 +166,77 @@ class Referencer { };
  * technique where the reference count is stored in the object being
  * referenced.
  */
-class IPOPTLIB_EXPORT ReferencedObject
-{
-public:
-   ReferencedObject()
-      : reference_count_(0)
-   { }
+class IPOPTLIB_EXPORT ReferencedObject {
+ public:
+  ReferencedObject() : reference_count_(0) {}
 
-   virtual ~ReferencedObject()
-   {
-      DBG_ASSERT(reference_count_ == 0);
-   }
+  virtual ~ReferencedObject() { DBG_ASSERT(reference_count_ == 0); }
 
-   inline Index ReferenceCount() const;
+  inline Index ReferenceCount() const;
 
-   inline
-   void AddRef(
-      const Referencer* referencer
-   ) const;
+  inline void AddRef(const Referencer* referencer) const;
 
-   inline
-   void ReleaseRef(
-      const Referencer* referencer
-   ) const;
+  inline void ReleaseRef(const Referencer* referencer) const;
 
-private:
-   mutable Index reference_count_;
+ private:
+  mutable Index reference_count_;
 
-#   ifdef IP_DEBUG_REFERENCED
-   mutable std::list<const Referencer*> referencers_;
-#   endif
-
+#ifdef IP_DEBUG_REFERENCED
+  mutable std::list<const Referencer*> referencers_;
+#endif
 };
 
 /* inline methods */
-inline Index ReferencedObject::ReferenceCount() const
-{
-   //    DBG_START_METH("ReferencedObject::ReferenceCount()", 0);
-   //    DBG_PRINT((1,"Returning reference_count_ = %" IPOPT_INDEX_FORMAT "\n", reference_count_));
-   return reference_count_;
+inline Index ReferencedObject::ReferenceCount() const {
+  //    DBG_START_METH("ReferencedObject::ReferenceCount()", 0);
+  //    DBG_PRINT((1,"Returning reference_count_ = %" IPOPT_INDEX_FORMAT "\n",
+  //    reference_count_));
+  return reference_count_;
 }
 
-inline
-void ReferencedObject::AddRef(
-   const Referencer* referencer
-) const
-{
-   //    DBG_START_METH("ReferencedObject::AddRef(const Referencer* referencer)", 0);
-   reference_count_++;
-   //    DBG_PRINT((1, "New reference_count_ = %" IPOPT_INDEX_FORMAT "\n", reference_count_));
-#   ifdef IP_DEBUG_REFERENCED
-   referencers_.push_back(referencer);
-#   else
-   (void) referencer;
-#   endif
+inline void ReferencedObject::AddRef(const Referencer* referencer) const {
+  //    DBG_START_METH("ReferencedObject::AddRef(const Referencer* referencer)",
+  //    0);
+  reference_count_++;
+  //    DBG_PRINT((1, "New reference_count_ = %" IPOPT_INDEX_FORMAT "\n",
+  //    reference_count_));
+#ifdef IP_DEBUG_REFERENCED
+  referencers_.push_back(referencer);
+#else
+  (void)referencer;
+#endif
 }
 
-inline
-void ReferencedObject::ReleaseRef(
-   const Referencer* referencer
-) const
-{
-   //    DBG_START_METH("ReferencedObject::ReleaseRef(const Referencer* referencer)",
-   //                   0);
-   reference_count_--;
-   //    DBG_PRINT((1, "New reference_count_ = %" IPOPT_INDEX_FORMAT "\n", reference_count_));
+inline void ReferencedObject::ReleaseRef(const Referencer* referencer) const {
+  //    DBG_START_METH("ReferencedObject::ReleaseRef(const Referencer*
+  //    referencer)",
+  //                   0);
+  reference_count_--;
+  //    DBG_PRINT((1, "New reference_count_ = %" IPOPT_INDEX_FORMAT "\n",
+  //    reference_count_));
 
-#   ifdef IP_DEBUG_REFERENCED
+#ifdef IP_DEBUG_REFERENCED
 
-   bool found = false;
-   std::list<const Referencer*>::iterator iter;
-   for( iter = referencers_.begin(); iter != referencers_.end(); ++iter )
-   {
-      if ((*iter) == referencer)
-      {
-         found = true;
-         break;
-      }
-   }
+  bool found = false;
+  std::list<const Referencer*>::iterator iter;
+  for (iter = referencers_.begin(); iter != referencers_.end(); ++iter) {
+    if ((*iter) == referencer) {
+      found = true;
+      break;
+    }
+  }
 
-   // cannot call release on a reference that was never added...
-   DBG_ASSERT(found);
+  // cannot call release on a reference that was never added...
+  DBG_ASSERT(found);
 
-   if (found)
-   {
-      referencers_.erase(iter);
-   }
-#   else
-   (void) referencer;
-#   endif
+  if (found) {
+    referencers_.erase(iter);
+  }
+#else
+  (void)referencer;
+#endif
 }
 
-} // namespace Ipopt
+}  // namespace Ipopt
 
 #endif

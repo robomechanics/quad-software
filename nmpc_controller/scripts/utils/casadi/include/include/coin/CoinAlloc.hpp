@@ -6,8 +6,9 @@
 #ifndef CoinAlloc_hpp
 #define CoinAlloc_hpp
 
-#include "CoinUtilsConfig.h"
 #include <cstdlib>
+
+#include "CoinUtilsConfig.h"
 
 #if !defined(COINUTILS_MEMPOOL_MAXPOOLED)
 #define COINUTILS_MEMPOOL_MAXPOOLED -1
@@ -28,7 +29,7 @@
    better for performance. One must play with it.
 */
 
-//#############################################################################
+// #############################################################################
 
 #if (COINUTILS_MEMPOOL_ALIGNMENT == 16)
 static const std::size_t CoinAllocPtrShift = 4;
@@ -37,19 +38,20 @@ static const std::size_t CoinAllocRoundMask = ~((std::size_t)15);
 static const std::size_t CoinAllocPtrShift = 3;
 static const std::size_t CoinAllocRoundMask = ~((std::size_t)7);
 #else
-#error "COINUTILS_MEMPOOL_ALIGNMENT must be defined as 8 or 16 (or this code needs to be changed :-)"
+#error \
+    "COINUTILS_MEMPOOL_ALIGNMENT must be defined as 8 or 16 (or this code needs to be changed :-)"
 #endif
 
-//#############################################################################
+// #############################################################################
 
 #ifndef COIN_MEMPOOL_SAVE_BLOCKHEADS
 #define COIN_MEMPOOL_SAVE_BLOCKHEADS 0
 #endif
 
-//#############################################################################
+// #############################################################################
 
 class CoinMempool {
-private:
+ private:
 #if (COIN_MEMPOOL_SAVE_BLOCKHEADS == 1)
   char **block_heads;
   std::size_t block_num;
@@ -62,32 +64,29 @@ private:
   char *first_free_;
   const std::size_t entry_size_;
 
-private:
+ private:
   CoinMempool(const CoinMempool &);
   CoinMempool &operator=(const CoinMempool &);
 
-private:
+ private:
   char *allocate_new_block();
-  inline void lock_mutex()
-  {
+  inline void lock_mutex() {
 #if defined(COINUTILS_PTHREADS) && (COINUTILS_PTHREAD == 1)
     pthread_mutex_lock(&mutex_);
 #endif
   }
-  inline void unlock_mutex()
-  {
+  inline void unlock_mutex() {
 #if defined(COINUTILS_PTHREADS) && (COINUTILS_PTHREAD == 1)
     pthread_mutex_unlock(&mutex_);
 #endif
   }
 
-public:
+ public:
   CoinMempool(std::size_t size = 0);
   ~CoinMempool();
 
   char *alloc();
-  inline void dealloc(char *p)
-  {
+  inline void dealloc(char *p) {
     char **pp = (char **)p;
     lock_mutex();
     *pp = first_free_;
@@ -96,7 +95,7 @@ public:
   }
 };
 
-//#############################################################################
+// #############################################################################
 
 /** A memory pool allocator.
 
@@ -111,42 +110,41 @@ public:
 */
 
 class CoinAlloc {
-private:
+ private:
   CoinMempool *pool_;
   int maxpooled_;
 
-public:
+ public:
   CoinAlloc();
   ~CoinAlloc() {}
 
-  inline void *alloc(const std::size_t n)
-  {
+  inline void *alloc(const std::size_t n) {
     if (maxpooled_ <= 0) {
       return std::malloc(n);
     }
     char *p = NULL;
-    const std::size_t to_alloc = ((n + COINUTILS_MEMPOOL_ALIGNMENT - 1) & CoinAllocRoundMask) + COINUTILS_MEMPOOL_ALIGNMENT;
+    const std::size_t to_alloc =
+        ((n + COINUTILS_MEMPOOL_ALIGNMENT - 1) & CoinAllocRoundMask) +
+        COINUTILS_MEMPOOL_ALIGNMENT;
     CoinMempool *pool = NULL;
     if (maxpooled_ > 0 && to_alloc >= (size_t)maxpooled_) {
-      p = static_cast< char * >(std::malloc(to_alloc));
-      if (p == NULL)
-        throw std::bad_alloc();
+      p = static_cast<char *>(std::malloc(to_alloc));
+      if (p == NULL) throw std::bad_alloc();
     } else {
       pool = pool_ + (to_alloc >> CoinAllocPtrShift);
       p = pool->alloc();
     }
     *((CoinMempool **)p) = pool;
-    return static_cast< void * >(p + COINUTILS_MEMPOOL_ALIGNMENT);
+    return static_cast<void *>(p + COINUTILS_MEMPOOL_ALIGNMENT);
   }
 
-  inline void dealloc(void *p)
-  {
+  inline void dealloc(void *p) {
     if (maxpooled_ <= 0) {
       std::free(p);
       return;
     }
     if (p) {
-      char *base = static_cast< char * >(p) - COINUTILS_MEMPOOL_ALIGNMENT;
+      char *base = static_cast<char *>(p) - COINUTILS_MEMPOOL_ALIGNMENT;
       CoinMempool *pool = *((CoinMempool **)base);
       if (!pool) {
         std::free(base);
@@ -159,16 +157,17 @@ public:
 
 extern CoinAlloc CoinAllocator;
 
-//#############################################################################
+// #############################################################################
 
-#if defined(COINUTILS_MEMPOOL_OVERRIDE_NEW) && (COINUTILS_MEMPOOL_OVERRIDE_NEW == 1)
+#if defined(COINUTILS_MEMPOOL_OVERRIDE_NEW) && \
+    (COINUTILS_MEMPOOL_OVERRIDE_NEW == 1)
 void *operator new(std::size_t size) throw(std::bad_alloc);
 void *operator new[](std::size_t) throw(std::bad_alloc);
-void operator delete(void *)throw();
+void operator delete(void *) throw();
 void operator delete[](void *) throw();
 void *operator new(std::size_t, const std::nothrow_t &) throw();
 void *operator new[](std::size_t, const std::nothrow_t &) throw();
-void operator delete(void *, const std::nothrow_t &)throw();
+void operator delete(void *, const std::nothrow_t &) throw();
 void operator delete[](void *, const std::nothrow_t &) throw();
 #endif
 
@@ -176,4 +175,4 @@ void operator delete[](void *, const std::nothrow_t &) throw();
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

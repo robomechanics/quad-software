@@ -18,10 +18,10 @@ typedef ptrdiff_t alpaqa_length_t;
 typedef alpaqa_length_t alpaqa_index_t;
 
 typedef struct {
-    uint64_t abi_version ALPAQA_DL_ABI_VERSION_DEFAULT;
-    alpaqa_length_t n, m;
+  uint64_t abi_version ALPAQA_DL_ABI_VERSION_DEFAULT;
+  alpaqa_length_t n, m;
 
-    // clang-format off
+  // clang-format off
     alpaqa_real_t (*eval_f)(
         void *instance,
         const alpaqa_real_t *x);
@@ -158,28 +158,28 @@ typedef struct {
         void *instance,
         alpaqa_real_t *lambda,
         alpaqa_length_t *size);
-    // clang-format on
+  // clang-format on
 } alpaqa_problem_functions_t;
 
 /// Opaque type for a C++-only map of extra functions.
 typedef struct alpaqa_function_dict_s alpaqa_function_dict_t;
 
 typedef struct {
-    /// Owning pointer.
-    void *instance;
-    /// Non-owning pointer, lifetime at least as long as @ref instance.
-    alpaqa_problem_functions_t *functions;
-    /// Pointer to the function to clean up @ref instance.
-    void (*cleanup)(void *);
-    /// Pointer to a map of extra functions (C++ only).
-    alpaqa_function_dict_t *extra_functions;
+  /// Owning pointer.
+  void *instance;
+  /// Non-owning pointer, lifetime at least as long as @ref instance.
+  alpaqa_problem_functions_t *functions;
+  /// Pointer to the function to clean up @ref instance.
+  void (*cleanup)(void *);
+  /// Pointer to a map of extra functions (C++ only).
+  alpaqa_function_dict_t *extra_functions;
 } alpaqa_problem_register_t;
 
 typedef struct {
-    uint64_t abi_version ALPAQA_DL_ABI_VERSION_DEFAULT;
-    alpaqa_length_t N, nx, nu, nh, nh_N, nc, nc_N;
+  uint64_t abi_version ALPAQA_DL_ABI_VERSION_DEFAULT;
+  alpaqa_length_t N, nx, nu, nh, nh_N, nc, nc_N;
 
-    // clang-format off
+  // clang-format off
     void (*get_U)(
         void *instance,
         alpaqa_real_t *lb,
@@ -323,18 +323,18 @@ typedef struct {
         const alpaqa_real_t *x,
         const alpaqa_real_t *M,
         alpaqa_real_t *out);
-    // clang-format on
+  // clang-format on
 } alpaqa_control_problem_functions_t;
 
 typedef struct {
-    /// Owning pointer.
-    void *instance;
-    /// Non-owning pointer, lifetime at least as long as @ref instance.
-    alpaqa_control_problem_functions_t *functions;
-    /// Pointer to the function to clean up @ref instance.
-    void (*cleanup)(void *);
-    /// Pointer to a map of extra functions (C++ only).
-    alpaqa_function_dict_t *extra_functions;
+  /// Owning pointer.
+  void *instance;
+  /// Non-owning pointer, lifetime at least as long as @ref instance.
+  alpaqa_control_problem_functions_t *functions;
+  /// Pointer to the function to clean up @ref instance.
+  void (*cleanup)(void *);
+  /// Pointer to a map of extra functions (C++ only).
+  alpaqa_function_dict_t *extra_functions;
 } alpaqa_control_problem_register_t;
 
 #ifdef __cplusplus
@@ -342,11 +342,11 @@ typedef struct {
 #endif
 
 #ifndef __cplusplus
-#define ALPAQA_PROBLEM_FUNCTIONS_INIT(self)                                    \
-    do {                                                                       \
-        memset((self), 0, sizeof(*(self)));                                    \
-        (self)->abi_version = ALPAQA_DL_ABI_VERSION;                           \
-    } while (0)
+#define ALPAQA_PROBLEM_FUNCTIONS_INIT(self)      \
+  do {                                           \
+    memset((self), 0, sizeof(*(self)));          \
+    (self)->abi_version = ALPAQA_DL_ABI_VERSION; \
+  } while (0)
 #endif
 
 #if defined(__cplusplus) && __cplusplus > 201703L
@@ -357,15 +357,15 @@ typedef struct {
 #include <string>
 
 struct alpaqa_function_dict_s {
-    std::map<std::string, std::any> dict{};
+  std::map<std::string, std::any> dict{};
 };
 
 namespace alpaqa {
 
-using function_dict_t             = alpaqa_function_dict_t;
-using problem_register_t          = alpaqa_problem_register_t;
-using control_problem_register_t  = alpaqa_control_problem_register_t;
-using problem_functions_t         = alpaqa_problem_functions_t;
+using function_dict_t = alpaqa_function_dict_t;
+using problem_register_t = alpaqa_problem_register_t;
+using control_problem_register_t = alpaqa_control_problem_register_t;
+using problem_functions_t = alpaqa_problem_functions_t;
 using control_problem_functions_t = alpaqa_control_problem_functions_t;
 
 /// Make the given function available to alpaqa.
@@ -374,77 +374,76 @@ using control_problem_functions_t = alpaqa_control_problem_functions_t;
 template <class Func>
 void register_function(function_dict_t *&extra_functions, std::string name,
                        Func &&func) {
-    if (extra_functions == nullptr)
-        extra_functions = new function_dict_t{};
-    extra_functions->dict.insert_or_assign(
-        std::move(name), std::function{std::forward<Func>(func)});
+  if (extra_functions == nullptr) extra_functions = new function_dict_t{};
+  extra_functions->dict.insert_or_assign(
+      std::move(name), std::function{std::forward<Func>(func)});
 }
 
 template <class Func>
 void register_function(problem_register_t &result, std::string name,
                        Func &&func) {
-    register_function(result.extra_functions, std::move(name),
-                      std::forward<Func>(func));
+  register_function(result.extra_functions, std::move(name),
+                    std::forward<Func>(func));
 }
 
 template <class Func>
 void register_function(control_problem_register_t &result, std::string name,
                        Func &&func) {
-    register_function(result.extra_functions, std::move(name),
-                      std::forward<Func>(func));
+  register_function(result.extra_functions, std::move(name),
+                    std::forward<Func>(func));
 }
 
 template <class Result, class T, class Ret, class... Args>
 void register_member_function(Result &result, std::string name,
                               Ret (T::*member)(Args...)) {
-    register_function(result, std::move(name),
-                      [member](void *self_, Args... args) -> Ret {
-                          auto *self = reinterpret_cast<T *>(self_);
-                          return (self->*member)(std::forward<Args>(args)...);
-                      });
+  register_function(result, std::move(name),
+                    [member](void *self_, Args... args) -> Ret {
+                      auto *self = reinterpret_cast<T *>(self_);
+                      return (self->*member)(std::forward<Args>(args)...);
+                    });
 }
 
 template <class Result, class T, class Ret, class... Args>
 void register_member_function(Result &result, std::string name,
                               Ret (T::*member)(Args...) const) {
-    register_function(result, std::move(name),
-                      [member](const void *self_, Args... args) -> Ret {
-                          const auto *self = reinterpret_cast<const T *>(self_);
-                          return (self->*member)(std::forward<Args>(args)...);
-                      });
+  register_function(result, std::move(name),
+                    [member](const void *self_, Args... args) -> Ret {
+                      const auto *self = reinterpret_cast<const T *>(self_);
+                      return (self->*member)(std::forward<Args>(args)...);
+                    });
 }
 
 namespace detail {
 template <auto Member, class Class, class Ret, class... Args>
 static auto member_caller(Ret (Class::*)(Args...)) {
-    return [](void *self_, Args... args) -> Ret {
-        auto *self = reinterpret_cast<Class *>(self_);
-        return (self->*Member)(std::forward<Args>(args)...);
-    };
+  return [](void *self_, Args... args) -> Ret {
+    auto *self = reinterpret_cast<Class *>(self_);
+    return (self->*Member)(std::forward<Args>(args)...);
+  };
 }
 
 template <auto Member, class Class, class Ret, class... Args>
 static auto member_caller(Ret (Class::*)(Args...) const) {
-    return []<class Self>(Self * self_, Args... args) -> Ret
-               requires std::is_void_v<Self>
-    {
-        const auto *self = reinterpret_cast<const Class *>(self_);
-        return (self->*Member)(std::forward<Args>(args)...);
-    };
+  return []<class Self>(Self *self_, Args... args) -> Ret
+           requires std::is_void_v<Self>
+  {
+    const auto *self = reinterpret_cast<const Class *>(self_);
+    return (self->*Member)(std::forward<Args>(args)...);
+  };
 }
 
 template <auto Member, class Class, class Ret>
 static auto member_caller(Ret Class::*) {
-    return []<class Self>(Self * self_) -> decltype(auto)
-               requires std::is_void_v<Self>
-    {
-        using CClass = std::conditional_t<std::is_const_v<Self>,
-                                          std::add_const_t<Class>, Class>;
-        auto *self   = reinterpret_cast<CClass *>(self_);
-        return self->*Member;
-    };
+  return []<class Self>(Self *self_) -> decltype(auto)
+           requires std::is_void_v<Self>
+  {
+    using CClass = std::conditional_t<std::is_const_v<Self>,
+                                      std::add_const_t<Class>, Class>;
+    auto *self = reinterpret_cast<CClass *>(self_);
+    return self->*Member;
+  };
 }
-} // namespace detail
+}  // namespace detail
 
 /// Wrap the given member function of signature into a lambda function that
 /// accepts the instance as a void pointer.
@@ -455,7 +454,7 @@ static auto member_caller(Ret Class::*) {
 /// - `Type Class::member` → `const Type &(const void *self)`
 template <auto Member>
 static auto member_caller() {
-    return detail::member_caller<Member>(Member);
+  return detail::member_caller<Member>(Member);
 }
 
 /// Cleans up the extra functions registered by @ref register_function.
@@ -466,10 +465,10 @@ static auto member_caller() {
 ///         and do not automatically clean up their resources when destroyed,
 ///         you have to do it manually by calling this function.
 inline void unregister_functions(function_dict_t *&extra_functions) {
-    delete extra_functions;
+  delete extra_functions;
 }
 
-} // namespace alpaqa
+}  // namespace alpaqa
 
 #endif
 

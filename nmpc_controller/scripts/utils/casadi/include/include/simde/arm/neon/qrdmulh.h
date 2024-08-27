@@ -22,7 +22,8 @@
  *
  * Copyright:
  *   2020      Evan Nemerson <evan@nemerson.com>
- *   2020      Sean Maher <seanptmaher@gmail.com> (Copyright owned by Google, LLC)
+ *   2020      Sean Maher <seanptmaher@gmail.com> (Copyright owned by Google,
+ * LLC)
  */
 
 #if !defined(SIMDE_ARM_NEON_QRDMULH_H)
@@ -35,128 +36,126 @@ SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-int16_t
-simde_vqrdmulhh_s16(int16_t a, int16_t b) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vqrdmulhh_s16(a, b);
-  #else
-    return HEDLEY_STATIC_CAST(int16_t, (((1 << 15) + ((HEDLEY_STATIC_CAST(int32_t, (HEDLEY_STATIC_CAST(int32_t, a) * HEDLEY_STATIC_CAST(int32_t, b)))) << 1)) >> 16) & 0xffff);
-  #endif
+int16_t simde_vqrdmulhh_s16(int16_t a, int16_t b) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vqrdmulhh_s16(a, b);
+#else
+  return HEDLEY_STATIC_CAST(
+      int16_t, (((1 << 15) + ((HEDLEY_STATIC_CAST(
+                                  int32_t, (HEDLEY_STATIC_CAST(int32_t, a) *
+                                            HEDLEY_STATIC_CAST(int32_t, b))))
+                              << 1)) >>
+                16) &
+                   0xffff);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vqrdmulhh_s16
-  #define vqrdmulhh_s16(a, b) simde_vqrdmulhh_s16((a), (b))
+#undef vqrdmulhh_s16
+#define vqrdmulhh_s16(a, b) simde_vqrdmulhh_s16((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-int32_t
-simde_vqrdmulhs_s32(int32_t a, int32_t b) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vqrdmulhs_s32(a, b);
-  #else
-    return HEDLEY_STATIC_CAST(int32_t, (((HEDLEY_STATIC_CAST(int64_t, 1) << 31) + ((HEDLEY_STATIC_CAST(int64_t, (HEDLEY_STATIC_CAST(int64_t, a) * HEDLEY_STATIC_CAST(int64_t, b)))) << 1)) >> 32) & 0xffffffff);
-  #endif
+int32_t simde_vqrdmulhs_s32(int32_t a, int32_t b) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vqrdmulhs_s32(a, b);
+#else
+  return HEDLEY_STATIC_CAST(
+      int32_t,
+      (((HEDLEY_STATIC_CAST(int64_t, 1) << 31) +
+        ((HEDLEY_STATIC_CAST(int64_t, (HEDLEY_STATIC_CAST(int64_t, a) *
+                                       HEDLEY_STATIC_CAST(int64_t, b))))
+         << 1)) >>
+       32) &
+          0xffffffff);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vqrdmulhs_s32
-  #define vqrdmulhs_s32(a, b) simde_vqrdmulhs_s32((a), (b))
+#undef vqrdmulhs_s32
+#define vqrdmulhs_s32(a, b) simde_vqrdmulhs_s32((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int16x4_t
-simde_vqrdmulh_s16(simde_int16x4_t a, simde_int16x4_t b) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vqrdmulh_s16(a, b);
-  #else
-    simde_int16x4_private
-      r_,
-      a_ = simde_int16x4_to_private(a),
-      b_ = simde_int16x4_to_private(b);
+simde_int16x4_t simde_vqrdmulh_s16(simde_int16x4_t a, simde_int16x4_t b) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vqrdmulh_s16(a, b);
+#else
+  simde_int16x4_private r_, a_ = simde_int16x4_to_private(a),
+                            b_ = simde_int16x4_to_private(b);
 
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = simde_vqrdmulhh_s16(a_.values[i], b_.values[i]);
+  }
 
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-      r_.values[i] = simde_vqrdmulhh_s16(a_.values[i], b_.values[i]);
-    }
-
-    return simde_int16x4_from_private(r_);
-  #endif
+  return simde_int16x4_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vqrdmulh_s16
-  #define vqrdmulh_s16(a, b) simde_vqrdmulh_s16((a), (b))
+#undef vqrdmulh_s16
+#define vqrdmulh_s16(a, b) simde_vqrdmulh_s16((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int32x2_t
-simde_vqrdmulh_s32(simde_int32x2_t a, simde_int32x2_t b) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vqrdmulh_s32(a, b);
-  #else
-    simde_int32x2_private
-      r_,
-      a_ = simde_int32x2_to_private(a),
-      b_ = simde_int32x2_to_private(b);
+simde_int32x2_t simde_vqrdmulh_s32(simde_int32x2_t a, simde_int32x2_t b) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vqrdmulh_s32(a, b);
+#else
+  simde_int32x2_private r_, a_ = simde_int32x2_to_private(a),
+                            b_ = simde_int32x2_to_private(b);
 
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-      r_.values[i] = simde_vqrdmulhs_s32(a_.values[i], b_.values[i]);
-    }
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = simde_vqrdmulhs_s32(a_.values[i], b_.values[i]);
+  }
 
-    return simde_int32x2_from_private(r_);
-  #endif
+  return simde_int32x2_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vqrdmulh_s32
-  #define vqrdmulh_s32(a, b) simde_vqrdmulh_s32((a), (b))
+#undef vqrdmulh_s32
+#define vqrdmulh_s32(a, b) simde_vqrdmulh_s32((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int16x8_t
-simde_vqrdmulhq_s16(simde_int16x8_t a, simde_int16x8_t b) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vqrdmulhq_s16(a, b);
-  #else
-    simde_int16x8_private
-      r_,
-      a_ = simde_int16x8_to_private(a),
-      b_ = simde_int16x8_to_private(b);
+simde_int16x8_t simde_vqrdmulhq_s16(simde_int16x8_t a, simde_int16x8_t b) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vqrdmulhq_s16(a, b);
+#else
+  simde_int16x8_private r_, a_ = simde_int16x8_to_private(a),
+                            b_ = simde_int16x8_to_private(b);
 
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-      r_.values[i] = simde_vqrdmulhh_s16(a_.values[i], b_.values[i]);
-    }
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = simde_vqrdmulhh_s16(a_.values[i], b_.values[i]);
+  }
 
-    return simde_int16x8_from_private(r_);
-  #endif
+  return simde_int16x8_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vqrdmulhq_s16
-  #define vqrdmulhq_s16(a, b) simde_vqrdmulhq_s16((a), (b))
+#undef vqrdmulhq_s16
+#define vqrdmulhq_s16(a, b) simde_vqrdmulhq_s16((a), (b))
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_int32x4_t
-simde_vqrdmulhq_s32(simde_int32x4_t a, simde_int32x4_t b) {
-  #if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
-    return vqrdmulhq_s32(a, b);
-  #else
-    simde_int32x4_private
-      r_,
-      a_ = simde_int32x4_to_private(a),
-      b_ = simde_int32x4_to_private(b);
+simde_int32x4_t simde_vqrdmulhq_s32(simde_int32x4_t a, simde_int32x4_t b) {
+#if defined(SIMDE_ARM_NEON_A32V7_NATIVE)
+  return vqrdmulhq_s32(a, b);
+#else
+  simde_int32x4_private r_, a_ = simde_int32x4_to_private(a),
+                            b_ = simde_int32x4_to_private(b);
 
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-      r_.values[i] = simde_vqrdmulhs_s32(a_.values[i], b_.values[i]);
-    }
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = simde_vqrdmulhs_s32(a_.values[i], b_.values[i]);
+  }
 
-    return simde_int32x4_from_private(r_);
-  #endif
+  return simde_int32x4_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vqrdmulhq_s32
-  #define vqrdmulhq_s32(a, b) simde_vqrdmulhq_s32((a), (b))
+#undef vqrdmulhq_s32
+#define vqrdmulhq_s32(a, b) simde_vqrdmulhq_s32((a), (b))
 #endif
 
 SIMDE_END_DECLS_

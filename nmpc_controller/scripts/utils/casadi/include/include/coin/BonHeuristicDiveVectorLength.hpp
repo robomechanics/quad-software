@@ -1,4 +1,4 @@
-// Copyright (C) 2007, International Business Machines Corporation and others. 
+// Copyright (C) 2007, International Business Machines Corporation and others.
 // All Rights Reserved.
 // This code is published under the Eclipse Public License.
 //
@@ -16,59 +16,54 @@
 /** DiveVectorLength class
  */
 
-namespace Bonmin
-{
-  class HeuristicDiveVectorLength : public HeuristicDive {
-  public:
-    /// Default Constructor 
-    HeuristicDiveVectorLength ();
+namespace Bonmin {
+class HeuristicDiveVectorLength : public HeuristicDive {
+ public:
+  /// Default Constructor
+  HeuristicDiveVectorLength();
 
-    /// Constructor with setup
-    HeuristicDiveVectorLength(BonminSetup * setup);
+  /// Constructor with setup
+  HeuristicDiveVectorLength(BonminSetup* setup);
 
-    /// Copy constructor
-    HeuristicDiveVectorLength(const HeuristicDiveVectorLength &copy);
+  /// Copy constructor
+  HeuristicDiveVectorLength(const HeuristicDiveVectorLength& copy);
 
-    /// Destructor
-    ~HeuristicDiveVectorLength() 
-    {
-      delete [] columnLength_;
-    }
+  /// Destructor
+  ~HeuristicDiveVectorLength() { delete[] columnLength_; }
 
-    /// Assignment operator
-    HeuristicDiveVectorLength & operator=(const HeuristicDiveVectorLength & rhs);
+  /// Assignment operator
+  HeuristicDiveVectorLength& operator=(const HeuristicDiveVectorLength& rhs);
 
-    /// Clone
-    virtual CbcHeuristic * clone() const;
+  /// Clone
+  virtual CbcHeuristic* clone() const;
 
-    /** Change setup used for heuristic.*/
-    virtual void setSetup(BonminSetup * setup){
-      HeuristicDive::setSetup(setup);
-      Initialize(setup->options());
-    }
+  /** Change setup used for heuristic.*/
+  virtual void setSetup(BonminSetup* setup) {
+    HeuristicDive::setSetup(setup);
+    Initialize(setup->options());
+  }
 
-    /// sets internal variables
-    virtual void setInternalVariables(TMINLP2TNLP* minlp);
+  /// sets internal variables
+  virtual void setInternalVariables(TMINLP2TNLP* minlp);
 
-    /// Selects the next variable to branch on
-    /** If bestColumn = -1, it means that no variable was found
-    */
-    virtual void selectVariableToBranch(TMINLP2TNLP* minlp,
-					const vector<int> & integerColumns,
-					const double* newSolution,
-					int& bestColumn,
-					int& bestRound);
+  /// Selects the next variable to branch on
+  /** If bestColumn = -1, it means that no variable was found
+   */
+  virtual void selectVariableToBranch(TMINLP2TNLP* minlp,
+                                      const vector<int>& integerColumns,
+                                      const double* newSolution,
+                                      int& bestColumn, int& bestRound);
 
-    /** Register the options common to all local search based heuristics.*/
-    static void registerOptions(Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions);
-    
-    /** Initiaize using passed options.*/
-    void Initialize(Ipopt::SmartPtr<Ipopt::OptionsList> options);
+  /** Register the options common to all local search based heuristics.*/
+  static void registerOptions(
+      Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions);
 
-  private:
-    /// the number of nonzero elements in each column
-    int* columnLength_;
+  /** Initiaize using passed options.*/
+  void Initialize(Ipopt::SmartPtr<Ipopt::OptionsList> options);
 
-  };
-}
+ private:
+  /// the number of nonzero elements in each column
+  int* columnLength_;
+};
+}  // namespace Bonmin
 #endif

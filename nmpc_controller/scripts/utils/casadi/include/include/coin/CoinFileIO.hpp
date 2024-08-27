@@ -9,7 +9,7 @@
 
 /// Base class for FileIO classes.
 class CoinFileIOBase {
-public:
+ public:
   /// Constructor.
   /// @param fileName The name of the file used by this object.
   CoinFileIOBase(const std::string &fileName);
@@ -21,15 +21,12 @@ public:
   const char *getFileName() const;
 
   /// Return the method of reading being used
-  inline std::string getReadType() const
-  {
-    return readType_.c_str();
-  }
+  inline std::string getReadType() const { return readType_.c_str(); }
 
-protected:
+ protected:
   std::string readType_;
 
-private:
+ private:
   CoinFileIOBase();
   CoinFileIOBase(const CoinFileIOBase &);
 
@@ -38,7 +35,7 @@ private:
 
 /// Abstract base class for file input classes.
 class CoinFileInput : public CoinFileIOBase {
-public:
+ public:
   /// indicates whether CoinFileInput supports gzip'ed files
   static bool haveGzipSupport();
   /// indicates whether CoinFileInput supports bzip2'ed files
@@ -80,7 +77,7 @@ public:
 
 /// This reads plain text files
 class CoinPlainFileInput : public CoinFileInput {
-public:
+ public:
   CoinPlainFileInput(const std::string &fileName);
   /// When already opened
   CoinPlainFileInput(FILE *fp);
@@ -90,18 +87,18 @@ public:
 
   virtual char *gets(char *buffer, int size);
 
-private:
+ private:
   FILE *f_;
 };
 
 /// Abstract base class for file output classes.
 class CoinFileOutput : public CoinFileIOBase {
-public:
+ public:
   /// The compression method.
   enum Compression {
-    COMPRESS_NONE = 0, ///< No compression.
-    COMPRESS_GZIP = 1, ///< gzip compression.
-    COMPRESS_BZIP2 = 2 ///< bzip2 compression.
+    COMPRESS_NONE = 0,  ///< No compression.
+    COMPRESS_GZIP = 1,  ///< gzip compression.
+    COMPRESS_BZIP2 = 2  ///< bzip2 compression.
   };
 
   /// Returns whether the specified compression method is supported
@@ -119,7 +116,7 @@ public:
   /// @param fileName The file that should be read.
   /// @param compression Compression method used.
   static CoinFileOutput *create(const std::string &fileName,
-    Compression compression);
+                                Compression compression);
 
   /// Constructor (don't use this, use the create method instead).
   /// @param fileName The name of the file used by this object.
@@ -144,10 +141,7 @@ public:
   virtual bool puts(const char *s);
 
   /// Convenience method: just a 'puts(s.c_str())'.
-  inline bool puts(const std::string &s)
-  {
-    return puts(s.c_str());
-  }
+  inline bool puts(const std::string &s) { return puts(s.c_str()); }
 };
 
 /*! \relates CoinFileInput
@@ -161,15 +155,15 @@ bool fileAbsPath(const std::string &path);
 
 /*! \relates CoinFileInput
     \brief Test if the file is readable, using likely versions of the file
-	   name, and return the name that worked.
+           name, and return the name that worked.
 
    The file name is constructed from \p name using the following rules:
    <ul>
      <li> An absolute path is not modified.
      <li> If the name begins with `~', an attempt is made to replace `~'
-	  with the value of the environment variable HOME.
+          with the value of the environment variable HOME.
      <li> If a default prefix (\p dfltPrefix) is provided, it is
-	  prepended to the name.
+          prepended to the name.
    </ul>
    If the constructed file name cannot be opened, and CoinUtils was built
    with support for compressed files, fileCoinReadable will try any
@@ -178,8 +172,8 @@ bool fileAbsPath(const std::string &path);
    The value returned in \p name is the file name that actually worked.
 */
 bool fileCoinReadable(std::string &name,
-  const std::string &dfltPrefix = std::string(""));
+                      const std::string &dfltPrefix = std::string(""));
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

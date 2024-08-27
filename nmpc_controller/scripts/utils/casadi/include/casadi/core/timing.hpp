@@ -18,81 +18,81 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_TIMING_HPP
 #define CASADI_TIMING_HPP
 
-#include "generic_type.hpp"
-
 #include <chrono>
 #include <ctime>
 
+#include "generic_type.hpp"
+
 namespace casadi {
-  /// \cond INTERNAL
+/// \cond INTERNAL
 
-  /**
-  Timer class
+/**
+Timer class
 
 
-  FStats hack;
-  hack.tic();
-  ....
-  hack.toc();
+FStats hack;
+hack.tic();
+....
+hack.toc();
 
-  */
-  class CASADI_EXPORT FStats {
-    private:
-      /// Time point used for wall time computation
-      std::chrono::time_point<std::chrono::high_resolution_clock> start_wall;
+*/
+class CASADI_EXPORT FStats {
+ private:
+  /// Time point used for wall time computation
+  std::chrono::time_point<std::chrono::high_resolution_clock> start_wall;
 
-      /// Time point used for proc time computation
-      std::clock_t start_proc;
+  /// Time point used for proc time computation
+  std::clock_t start_proc;
 
-      /// Time point used for wall time computation
-      std::chrono::time_point<std::chrono::high_resolution_clock> stop_wall;
+  /// Time point used for wall time computation
+  std::chrono::time_point<std::chrono::high_resolution_clock> stop_wall;
 
-      /// Time point used for proc time computation
-      std::clock_t stop_proc;
+  /// Time point used for proc time computation
+  std::clock_t stop_proc;
 
-    public:
-      /// Constructor
-      FStats();
+ public:
+  /// Constructor
+  FStats();
 
-      /// Reset the statistics
-      void reset();
+  /// Reset the statistics
+  void reset();
 
-      /// Start timing
-      void tic();
+  /// Start timing
+  void tic();
 
-      /// Stop timing
-      void toc();
+  /// Stop timing
+  void toc();
 
-      /// Accumulated number of calls since last reset
-      casadi_int n_call = 0;
+  /// Accumulated number of calls since last reset
+  casadi_int n_call = 0;
 
-      /// Accumulated wall time [s] since last reset
-      double t_wall = 0;
+  /// Accumulated wall time [s] since last reset
+  double t_wall = 0;
 
-      /// Accumulated proc time [s] since last reset
-      double t_proc = 0;
+  /// Accumulated proc time [s] since last reset
+  double t_proc = 0;
 
-      void join(FStats& rhs);
+  void join(FStats& rhs);
+};
 
-  };
+class CASADI_EXPORT ScopedTiming {
+ public:
+  ScopedTiming(FStats& f);
+  ~ScopedTiming();
 
-  class CASADI_EXPORT ScopedTiming {
-    public:
-      ScopedTiming(FStats& f);
-      ~ScopedTiming();
-    private:
-      FStats& f_;
-  };
+ private:
+  FStats& f_;
+};
 
 /// \endcond
-} // namespace casadi
+}  // namespace casadi
 
-#endif // CASADI_TIMING_HPP
+#endif  // CASADI_TIMING_HPP

@@ -18,22 +18,24 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
 
 #ifndef CASADI_DM_FWD_HPP
 #define CASADI_DM_FWD_HPP
-#include "matrix_fwd.hpp"
-#include <vector>
 #include <map>
+#include <vector>
+
+#include "matrix_fwd.hpp"
 
 namespace casadi {
 
-  typedef Matrix<double> DM;
-  typedef std::vector<DM> DMVector;
-  typedef std::vector<DMVector> DMVectorVector;
-  typedef std::map<std::string, DM> DMDict;
-} // namespace casadi
+typedef Matrix<double> DM;
+typedef std::vector<DM> DMVector;
+typedef std::vector<DMVector> DMVectorVector;
+typedef std::map<std::string, DM> DMDict;
+}  // namespace casadi
 
-#endif // CASADI_DM_FWD_HPP
+#endif  // CASADI_DM_FWD_HPP

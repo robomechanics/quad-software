@@ -18,10 +18,10 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_NLPSOL_HPP
 #define CASADI_NLPSOL_HPP
@@ -30,138 +30,148 @@
 
 namespace casadi {
 
-  /** \defgroup main_nlpsol Title
-      \par
+/** \defgroup main_nlpsol Title
+    \par
 
-      Create an NLP solver
-      Creates a solver for the following parametric nonlinear program (NLP):
-      \verbatim
+    Create an NLP solver
+    Creates a solver for the following parametric nonlinear program (NLP):
+    \verbatim
 
-      min          F(x, p)
-      x
+    min          F(x, p)
+    x
 
-      subject to
-      LBX <=   x    <= UBX
-      LBG <= G(x, p) <= UBG
-      p  == P
+    subject to
+    LBX <=   x    <= UBX
+    LBG <= G(x, p) <= UBG
+    p  == P
 
-      nx: number of decision variables
-      ng: number of constraints
-      np: number of parameters
+    nx: number of decision variables
+    ng: number of constraints
+    np: number of parameters
 
-      \endverbatim
+    \endverbatim
 
-      \generalsection{Nlpsol}
-      \pluginssection{Nlpsol}
+    \generalsection{Nlpsol}
+    \pluginssection{Nlpsol}
 
-      \author Joel Andersson
-      \date 2011-2015
+    \author Joel Andersson
+    \date 2011-2015
 
-      \identifier{21q} */
+    \identifier{21q} */
 
-  /** \defgroup nlpsol Title
-  * @copydoc main_nlpsol
-  *  @{
-  */
+/** \defgroup nlpsol Title
+ * @copydoc main_nlpsol
+ *  @{
+ */
 
-  /** \if EXPANDED
-  * @copydoc main_nlpsol
-  * \endif
-  */
-  ///@{
-  CASADI_EXPORT Function nlpsol(const std::string& name, const std::string& solver,
-                                const SXDict& nlp, const Dict& opts=Dict());
-  CASADI_EXPORT Function nlpsol(const std::string& name, const std::string& solver,
-                                const MXDict& nlp, const Dict& opts=Dict());
-  CASADI_EXPORT Function nlpsol(const std::string& name, const std::string& solver,
-                                const std::string& fname, const Dict& opts=Dict());
-  CASADI_EXPORT Function nlpsol(const std::string& name, const std::string& solver,
-                                const Importer& compiler, const Dict& opts=Dict());
-  CASADI_EXPORT Function nlpsol(const std::string& name, const std::string& solver,
-                                const NlpBuilder& nl, const Dict& opts=Dict());
-  CASADI_EXPORT Function nlpsol(const std::string& name, const std::string& solver,
-                                const Function& nlp, const Dict& opts=Dict());
-  ///@}
+/** \if EXPANDED
+ * @copydoc main_nlpsol
+ * \endif
+ */
+///@{
+CASADI_EXPORT Function nlpsol(const std::string& name,
+                              const std::string& solver, const SXDict& nlp,
+                              const Dict& opts = Dict());
+CASADI_EXPORT Function nlpsol(const std::string& name,
+                              const std::string& solver, const MXDict& nlp,
+                              const Dict& opts = Dict());
+CASADI_EXPORT Function nlpsol(const std::string& name,
+                              const std::string& solver,
+                              const std::string& fname,
+                              const Dict& opts = Dict());
+CASADI_EXPORT Function nlpsol(const std::string& name,
+                              const std::string& solver,
+                              const Importer& compiler,
+                              const Dict& opts = Dict());
+CASADI_EXPORT Function nlpsol(const std::string& name,
+                              const std::string& solver, const NlpBuilder& nl,
+                              const Dict& opts = Dict());
+CASADI_EXPORT Function nlpsol(const std::string& name,
+                              const std::string& solver, const Function& nlp,
+                              const Dict& opts = Dict());
+///@}
 
-  /** \brief Get input scheme of NLP solvers
+/** \brief Get input scheme of NLP solvers
 
-  * \if EXPANDED
-  * @copydoc scheme_NlpsolInput
-  * \endif
+* \if EXPANDED
+* @copydoc scheme_NlpsolInput
+* \endif
 
-      \identifier{1sy} */
-  CASADI_EXPORT std::vector<std::string> nlpsol_in();
+    \identifier{1sy} */
+CASADI_EXPORT std::vector<std::string> nlpsol_in();
 
-  /** \brief Get NLP solver output scheme of NLP solvers
+/** \brief Get NLP solver output scheme of NLP solvers
 
-  * \if EXPANDED
-  * @copydoc scheme_NlpsolOutput
-  * \endif
+* \if EXPANDED
+* @copydoc scheme_NlpsolOutput
+* \endif
 
-      \identifier{1sz} */
-  CASADI_EXPORT std::vector<std::string> nlpsol_out();
+    \identifier{1sz} */
+CASADI_EXPORT std::vector<std::string> nlpsol_out();
 
-  /** \brief Get NLP solver input scheme name by index
+/** \brief Get NLP solver input scheme name by index
 
-  * \if EXPANDED
-  * @copydoc scheme_NlpsolInput
-  * \endif
+* \if EXPANDED
+* @copydoc scheme_NlpsolInput
+* \endif
 
-      \identifier{1t0} */
-  CASADI_EXPORT std::string nlpsol_in(casadi_int ind);
+    \identifier{1t0} */
+CASADI_EXPORT std::string nlpsol_in(casadi_int ind);
 
-  /** \brief Get output scheme name by index
+/** \brief Get output scheme name by index
 
-  * \if EXPANDED
-  * @copydoc scheme_NlpsolOutput
-  * \endif
+* \if EXPANDED
+* @copydoc scheme_NlpsolOutput
+* \endif
 
-      \identifier{1t1} */
-  CASADI_EXPORT std::string nlpsol_out(casadi_int ind);
+    \identifier{1t1} */
+CASADI_EXPORT std::string nlpsol_out(casadi_int ind);
 
-  /** \brief Number of NLP solver inputs
+/** \brief Number of NLP solver inputs
 
-      \identifier{1t2} */
-  CASADI_EXPORT casadi_int nlpsol_n_in();
+    \identifier{1t2} */
+CASADI_EXPORT casadi_int nlpsol_n_in();
 
-  /** \brief Number of NLP solver outputs
+/** \brief Number of NLP solver outputs
 
-      \identifier{1t3} */
-  CASADI_EXPORT casadi_int nlpsol_n_out();
+    \identifier{1t3} */
+CASADI_EXPORT casadi_int nlpsol_n_out();
 
-  ///@{
-  /** \brief Default input for an NLP solver
+///@{
+/** \brief Default input for an NLP solver
 
-      \identifier{1t4} */
-  CASADI_EXPORT double nlpsol_default_in(casadi_int ind);
-  CASADI_EXPORT std::vector<double> nlpsol_default_in();
-  ///@}
+    \identifier{1t4} */
+CASADI_EXPORT double nlpsol_default_in(casadi_int ind);
+CASADI_EXPORT std::vector<double> nlpsol_default_in();
+///@}
 
-  /** \brief Get all options for a plugin
+/** \brief Get all options for a plugin
 
-      \identifier{1t5} */
-  CASADI_EXPORT std::vector<std::string> nlpsol_options(const std::string& name);
+    \identifier{1t5} */
+CASADI_EXPORT std::vector<std::string> nlpsol_options(const std::string& name);
 
-  /** \brief Get type info for a particular option
+/** \brief Get type info for a particular option
 
-      \identifier{1t6} */
-  CASADI_EXPORT std::string nlpsol_option_type(const std::string& name, const std::string& op);
+    \identifier{1t6} */
+CASADI_EXPORT std::string nlpsol_option_type(const std::string& name,
+                                             const std::string& op);
 
-  /** \brief Get documentation for a particular option
+/** \brief Get documentation for a particular option
 
-      \identifier{1t7} */
-  CASADI_EXPORT std::string nlpsol_option_info(const std::string& name, const std::string& op);
+    \identifier{1t7} */
+CASADI_EXPORT std::string nlpsol_option_info(const std::string& name,
+                                             const std::string& op);
 
-  /// Check if a particular plugin is available
-  CASADI_EXPORT bool has_nlpsol(const std::string& name);
+/// Check if a particular plugin is available
+CASADI_EXPORT bool has_nlpsol(const std::string& name);
 
-  /// Explicitly load a plugin dynamically
-  CASADI_EXPORT void load_nlpsol(const std::string& name);
+/// Explicitly load a plugin dynamically
+CASADI_EXPORT void load_nlpsol(const std::string& name);
 
-  /// Get the documentation string for a plugin
-  CASADI_EXPORT std::string doc_nlpsol(const std::string& name);
+/// Get the documentation string for a plugin
+CASADI_EXPORT std::string doc_nlpsol(const std::string& name);
 
-  /** @} */
+/** @} */
 
 #ifndef SWIG
 /// Input arguments of an NLP function
@@ -227,8 +237,8 @@ enum NlpsolOutput {
   NLPSOL_LAM_P,
   NLPSOL_NUM_OUT
 };
-#endif // SWIG
+#endif  // SWIG
 
-} // namespace casadi
+}  // namespace casadi
 
-#endif // CASADI_NLPSOL_HPP
+#endif  // CASADI_NLPSOL_HPP

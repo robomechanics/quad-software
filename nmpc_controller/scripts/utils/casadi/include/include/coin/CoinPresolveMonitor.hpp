@@ -27,7 +27,7 @@
   used for debugging. That's not too attractive either.
 */
 class CoinPresolveMonitor {
-public:
+ public:
   /*! \brief Default constructor
 
     Creates an empty monitor.
@@ -49,7 +49,7 @@ public:
   CoinPresolveMonitor(const CoinPostsolveMatrix *mtx, bool isRow, int k);
 
   /*! \brief Compare the present row or column against the stored copy and
-  	     report differences.
+             report differences.
 
     Load the current row or column from a CoinPresolveMatrix and compare.
     Differences are printed to std::cout.
@@ -57,14 +57,14 @@ public:
   void checkAndTell(const CoinPresolveMatrix *mtx);
 
   /*! \brief Compare the present row or column against the stored copy and
-  	     report differences.
+             report differences.
 
     Load the current row or column from a CoinPostsolveMatrix and compare.
     Differences are printed to std::cout.
   */
   void checkAndTell(const CoinPostsolveMatrix *mtx);
 
-private:
+ private:
   /// Extract a row from a CoinPresolveMatrix
   CoinPackedVector *extractRow(int i, const CoinPresolveMatrix *mtx) const;
 
@@ -102,4 +102,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

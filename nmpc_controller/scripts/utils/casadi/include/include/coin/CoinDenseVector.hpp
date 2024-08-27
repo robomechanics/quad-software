@@ -12,26 +12,27 @@
 #endif
 
 #include <cassert>
-#include <cstdlib>
 #include <cmath>
+#include <cstdlib>
+
 #include "CoinHelperFunctions.hpp"
 
-//#############################################################################
+// #############################################################################
 /** A function that tests the methods in the CoinDenseVector class. The
     only reason for it not to be a member method is that this way it doesn't
     have to be compiled into the library. And that's a gain, because the
     library should be compiled with optimization on, but this method should be
     compiled with debugging. */
-template < typename T >
+template <typename T>
 void CoinDenseVectorUnitTest(T dummy);
 
-//#############################################################################
+// #############################################################################
 /** Dense Vector
 
 Stores a dense (or expanded) vector of floating point values.
 Type of vector elements is controlled by templating.
 (Some working quantities such as accumulated sums
-are explicitly declared of type double). This allows the 
+are explicitly declared of type double). This allows the
 components of the vector integer, single or double precision.
 
 Here is a sample usage:
@@ -64,18 +65,18 @@ Here is a sample usage:
     assert( r.sum() == 10.+40.+1.+50. );
 @endverbatim
 */
-template < typename T >
+template <typename T>
 class CoinDenseVector {
-private:
+ private:
   /**@name Private member data */
   //@{
   /// Size of element vector
   int nElements_;
-  ///Vector elements
+  /// Vector elements
   T *elements_;
   //@}
 
-public:
+ public:
   /**@name Get methods. */
   //@{
   /// Get the size
@@ -124,44 +125,35 @@ public:
   /**@name norms, sum and scale */
   //@{
   /// 1-norm of vector
-  inline T oneNorm() const
-  {
+  inline T oneNorm() const {
     T norm = 0;
-    for (int i = 0; i < nElements_; i++)
-      norm += CoinAbs(elements_[i]);
+    for (int i = 0; i < nElements_; i++) norm += CoinAbs(elements_[i]);
     return norm;
   }
   /// 2-norm of vector
-  inline double twoNorm() const
-  {
+  inline double twoNorm() const {
     double norm = 0.;
-    for (int i = 0; i < nElements_; i++)
-      norm += elements_[i] * elements_[i];
+    for (int i = 0; i < nElements_; i++) norm += elements_[i] * elements_[i];
     // std namespace removed because it was causing a compile
     // problem with Microsoft Visual C++
     return /*std::*/ sqrt(norm);
   }
   /// infinity-norm of vector
-  inline T infNorm() const
-  {
+  inline T infNorm() const {
     T norm = 0;
     for (int i = 0; i < nElements_; i++)
       norm = CoinMax(norm, CoinAbs(elements_[i]));
     return norm;
   }
   /// sum of vector elements
-  inline T sum() const
-  {
+  inline T sum() const {
     T sume = 0;
-    for (int i = 0; i < nElements_; i++)
-      sume += elements_[i];
+    for (int i = 0; i < nElements_; i++) sume += elements_[i];
     return sume;
   }
   /// scale vector elements
-  inline void scale(T factor)
-  {
-    for (int i = 0; i < nElements_; i++)
-      elements_[i] *= factor;
+  inline void scale(T factor) {
+    for (int i = 0; i < nElements_; i++) elements_[i] *= factor;
     return;
   }
   //@}
@@ -193,7 +185,7 @@ public:
   ~CoinDenseVector();
   //@}
 
-private:
+ private:
   /**@name Private methods */
   //@{
   /// Copy internal data
@@ -203,7 +195,7 @@ private:
   //@}
 };
 
-//#############################################################################
+// #############################################################################
 
 /**@name Arithmetic operators on dense vectors.
 
@@ -213,184 +205,160 @@ private:
  */
 //@{
 /// Return the sum of two dense vectors
-template < typename T >
-inline CoinDenseVector< T > operator+(const CoinDenseVector< T > &op1,
-  const CoinDenseVector< T > &op2)
-{
+template <typename T>
+inline CoinDenseVector<T> operator+(const CoinDenseVector<T> &op1,
+                                    const CoinDenseVector<T> &op2) {
   assert(op1.size() == op2.size());
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   const T *elements2 = op2.getElements();
   T *elements3 = op3.getElements();
-  for (int i = 0; i < size; i++)
-    elements3[i] = elements1[i] + elements2[i];
+  for (int i = 0; i < size; i++) elements3[i] = elements1[i] + elements2[i];
   return op3;
 }
 
 /// Return the difference of two dense vectors
-template < typename T >
-inline CoinDenseVector< T > operator-(const CoinDenseVector< T > &op1,
-  const CoinDenseVector< T > &op2)
-{
+template <typename T>
+inline CoinDenseVector<T> operator-(const CoinDenseVector<T> &op1,
+                                    const CoinDenseVector<T> &op2) {
   assert(op1.size() == op2.size());
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   const T *elements2 = op2.getElements();
   T *elements3 = op3.getElements();
-  for (int i = 0; i < size; i++)
-    elements3[i] = elements1[i] - elements2[i];
+  for (int i = 0; i < size; i++) elements3[i] = elements1[i] - elements2[i];
   return op3;
 }
 
 /// Return the element-wise product of two dense vectors
-template < typename T >
-inline CoinDenseVector< T > operator*(const CoinDenseVector< T > &op1,
-  const CoinDenseVector< T > &op2)
-{
+template <typename T>
+inline CoinDenseVector<T> operator*(const CoinDenseVector<T> &op1,
+                                    const CoinDenseVector<T> &op2) {
   assert(op1.size() == op2.size());
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   const T *elements2 = op2.getElements();
   T *elements3 = op3.getElements();
-  for (int i = 0; i < size; i++)
-    elements3[i] = elements1[i] * elements2[i];
+  for (int i = 0; i < size; i++) elements3[i] = elements1[i] * elements2[i];
   return op3;
 }
 
 /// Return the element-wise ratio of two dense vectors
-template < typename T >
-inline CoinDenseVector< T > operator/(const CoinDenseVector< T > &op1,
-  const CoinDenseVector< T > &op2)
-{
+template <typename T>
+inline CoinDenseVector<T> operator/(const CoinDenseVector<T> &op1,
+                                    const CoinDenseVector<T> &op2) {
   assert(op1.size() == op2.size());
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   const T *elements2 = op2.getElements();
   T *elements3 = op3.getElements();
-  for (int i = 0; i < size; i++)
-    elements3[i] = elements1[i] / elements2[i];
+  for (int i = 0; i < size; i++) elements3[i] = elements1[i] / elements2[i];
   return op3;
 }
 //@}
 
-/**@name Arithmetic operators on dense vector and a constant. 
+/**@name Arithmetic operators on dense vector and a constant.
    These functions create a dense vector as a result. That dense vector will
    have the same indices as <code>op1</code> and the specified operation is
    done entry-wise with the given value. */
 //@{
 /// Return the sum of a dense vector and a constant
-template < typename T >
-inline CoinDenseVector< T > operator+(const CoinDenseVector< T > &op1, T value)
-{
+template <typename T>
+inline CoinDenseVector<T> operator+(const CoinDenseVector<T> &op1, T value) {
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   T *elements3 = op3.getElements();
   double dvalue = value;
-  for (int i = 0; i < size; i++)
-    elements3[i] = elements1[i] + dvalue;
+  for (int i = 0; i < size; i++) elements3[i] = elements1[i] + dvalue;
   return op3;
 }
 
 /// Return the difference of a dense vector and a constant
-template < typename T >
-inline CoinDenseVector< T > operator-(const CoinDenseVector< T > &op1, T value)
-{
+template <typename T>
+inline CoinDenseVector<T> operator-(const CoinDenseVector<T> &op1, T value) {
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   T *elements3 = op3.getElements();
   double dvalue = value;
-  for (int i = 0; i < size; i++)
-    elements3[i] = elements1[i] - dvalue;
+  for (int i = 0; i < size; i++) elements3[i] = elements1[i] - dvalue;
   return op3;
 }
 
 /// Return the element-wise product of a dense vector and a constant
-template < typename T >
-inline CoinDenseVector< T > operator*(const CoinDenseVector< T > &op1, T value)
-{
+template <typename T>
+inline CoinDenseVector<T> operator*(const CoinDenseVector<T> &op1, T value) {
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   T *elements3 = op3.getElements();
   double dvalue = value;
-  for (int i = 0; i < size; i++)
-    elements3[i] = elements1[i] * dvalue;
+  for (int i = 0; i < size; i++) elements3[i] = elements1[i] * dvalue;
   return op3;
 }
 
 /// Return the element-wise ratio of a dense vector and a constant
-template < typename T >
-inline CoinDenseVector< T > operator/(const CoinDenseVector< T > &op1, T value)
-{
+template <typename T>
+inline CoinDenseVector<T> operator/(const CoinDenseVector<T> &op1, T value) {
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   T *elements3 = op3.getElements();
   double dvalue = value;
-  for (int i = 0; i < size; i++)
-    elements3[i] = elements1[i] / dvalue;
+  for (int i = 0; i < size; i++) elements3[i] = elements1[i] / dvalue;
   return op3;
 }
 
 /// Return the sum of a constant and a dense vector
-template < typename T >
-inline CoinDenseVector< T > operator+(T value, const CoinDenseVector< T > &op1)
-{
+template <typename T>
+inline CoinDenseVector<T> operator+(T value, const CoinDenseVector<T> &op1) {
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   T *elements3 = op3.getElements();
   double dvalue = value;
-  for (int i = 0; i < size; i++)
-    elements3[i] = elements1[i] + dvalue;
+  for (int i = 0; i < size; i++) elements3[i] = elements1[i] + dvalue;
   return op3;
 }
 
 /// Return the difference of a constant and a dense vector
-template < typename T >
-inline CoinDenseVector< T > operator-(T value, const CoinDenseVector< T > &op1)
-{
+template <typename T>
+inline CoinDenseVector<T> operator-(T value, const CoinDenseVector<T> &op1) {
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   T *elements3 = op3.getElements();
   double dvalue = value;
-  for (int i = 0; i < size; i++)
-    elements3[i] = dvalue - elements1[i];
+  for (int i = 0; i < size; i++) elements3[i] = dvalue - elements1[i];
   return op3;
 }
 
 /// Return the element-wise product of a constant and a dense vector
-template < typename T >
-inline CoinDenseVector< T > operator*(T value, const CoinDenseVector< T > &op1)
-{
+template <typename T>
+inline CoinDenseVector<T> operator*(T value, const CoinDenseVector<T> &op1) {
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   T *elements3 = op3.getElements();
   double dvalue = value;
-  for (int i = 0; i < size; i++)
-    elements3[i] = elements1[i] * dvalue;
+  for (int i = 0; i < size; i++) elements3[i] = elements1[i] * dvalue;
   return op3;
 }
 
 /// Return the element-wise ratio of a a constant and dense vector
-template < typename T >
-inline CoinDenseVector< T > operator/(T value, const CoinDenseVector< T > &op1)
-{
+template <typename T>
+inline CoinDenseVector<T> operator/(T value, const CoinDenseVector<T> &op1) {
   int size = op1.size();
-  CoinDenseVector< T > op3(size);
+  CoinDenseVector<T> op3(size);
   const T *elements1 = op1.getElements();
   T *elements3 = op3.getElements();
   double dvalue = value;
-  for (int i = 0; i < size; i++)
-    elements3[i] = dvalue / elements1[i];
+  for (int i = 0; i < size; i++) elements3[i] = dvalue / elements1[i];
   return op3;
 }
 //@}
@@ -398,4 +366,4 @@ inline CoinDenseVector< T > operator/(T value, const CoinDenseVector< T > &op1)
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

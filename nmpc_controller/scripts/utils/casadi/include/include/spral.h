@@ -10,4 +10,4 @@
 #include "spral_ssids.h"
 #include "spral_ssmfe.h"
 
-#endif // SPRAL_H
+#endif  // SPRAL_H

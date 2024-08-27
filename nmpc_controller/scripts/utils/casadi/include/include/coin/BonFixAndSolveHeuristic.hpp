@@ -11,33 +11,32 @@
 #include "BonLocalSolverBasedHeuristic.hpp"
 
 namespace Bonmin {
-  class FixAndSolveHeuristic:public LocalSolverBasedHeuristic {
-    public:
-     /** Default constructor*/
-     FixAndSolveHeuristic();
-    /** Constructor with setup.*/
-    FixAndSolveHeuristic(BonminSetup * setup);
+class FixAndSolveHeuristic : public LocalSolverBasedHeuristic {
+ public:
+  /** Default constructor*/
+  FixAndSolveHeuristic();
+  /** Constructor with setup.*/
+  FixAndSolveHeuristic(BonminSetup *setup);
 
-     /** Copy constructor.*/
-     FixAndSolveHeuristic(const FixAndSolveHeuristic &other);
-     /** Virtual constructor.*/
-     virtual CbcHeuristic * clone() const{
-      return new FixAndSolveHeuristic(*this);
-     }
+  /** Copy constructor.*/
+  FixAndSolveHeuristic(const FixAndSolveHeuristic &other);
+  /** Virtual constructor.*/
+  virtual CbcHeuristic *clone() const {
+    return new FixAndSolveHeuristic(*this);
+  }
 
-     /** Destructor*/
-     virtual ~FixAndSolveHeuristic();
+  /** Destructor*/
+  virtual ~FixAndSolveHeuristic();
 
-     /** Runs heuristic*/
-     int solution(double & objectiveValue,
-                  double * newSolution);
-   /** Register the options common to all local search based heuristics.*/
-   static void registerOptions(Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions);
+  /** Runs heuristic*/
+  int solution(double &objectiveValue, double *newSolution);
+  /** Register the options common to all local search based heuristics.*/
+  static void registerOptions(
+      Ipopt::SmartPtr<Bonmin::RegisteredOptions> roptions);
 
-   /** Initiaize using passed options.*/
-   void Initialize(Ipopt::SmartPtr<Ipopt::OptionsList> options);
-  };
+  /** Initiaize using passed options.*/
+  void Initialize(Ipopt::SmartPtr<Ipopt::OptionsList> options);
+};
 
-}/* Ends Bonmin namepace.*/
+}  // namespace Bonmin
 #endif
-

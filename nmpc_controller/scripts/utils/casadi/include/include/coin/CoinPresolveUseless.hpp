@@ -20,20 +20,19 @@ class useless_constraint_action : public CoinPresolveAction {
   const int nactions_;
   const action *const actions_;
 
-  useless_constraint_action(int nactions,
-    const action *actions,
-    const CoinPresolveAction *next);
+  useless_constraint_action(int nactions, const action *actions,
+                            const CoinPresolveAction *next);
 
-public:
+ public:
   const char *name() const;
 
   // These rows are asserted to be useless,
   // that is, given a solution the row activity
   // must be in range.
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const int *useless_rows,
-    int nuseless_rows,
-    const CoinPresolveAction *next);
+                                            const int *useless_rows,
+                                            int nuseless_rows,
+                                            const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -51,13 +50,13 @@ public:
   implies a tighter bound on a variable than the original column bound. These
   tighter column bounds are then used to calculate row activity and identify
   constraints that are useless given the presence of the necessary
-  constraints. 
+  constraints.
 */
 
 const CoinPresolveAction *testRedundant(CoinPresolveMatrix *prob,
-  const CoinPresolveAction *next);
+                                        const CoinPresolveAction *next);
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

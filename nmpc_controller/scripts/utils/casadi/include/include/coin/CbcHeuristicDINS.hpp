@@ -11,7 +11,7 @@
 #include "CbcHeuristic.hpp"
 
 class CbcHeuristicDINS : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicDINS();
 
@@ -46,30 +46,18 @@ public:
         Sets solution values if good, sets objective value (only if good)
         This does Relaxation Induced Neighborhood Search
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// This version fixes stuff and does IP
-  int solutionFix(double &objectiveValue,
-    double *newSolution,
-    const int *keep);
+  int solutionFix(double &objectiveValue, double *newSolution, const int *keep);
 
   /// Sets how often to do it
-  inline void setHowOften(int value)
-  {
-    howOften_ = value;
-  }
+  inline void setHowOften(int value) { howOften_ = value; }
   /// Sets maximum number of solutions kept
-  inline void setMaximumKeep(int value)
-  {
-    maximumKeepSolutions_ = value;
-  }
+  inline void setMaximumKeep(int value) { maximumKeepSolutions_ = value; }
   /// Sets tightness of extra constraint
-  inline void setConstraint(int value)
-  {
-    localSpace_ = value;
-  }
+  inline void setConstraint(int value) { localSpace_ = value; }
 
-protected:
+ protected:
   // Data
 
   /// Number of solutions so we can do something at solution
@@ -95,4 +83,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

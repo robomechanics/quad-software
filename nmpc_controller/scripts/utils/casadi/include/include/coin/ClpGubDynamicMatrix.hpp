@@ -6,24 +6,22 @@
 #ifndef ClpGubDynamicMatrix_H
 #define ClpGubDynamicMatrix_H
 
-#include "CoinPragma.hpp"
-
 #include "ClpGubMatrix.hpp"
+#include "CoinPragma.hpp"
 /** This implements Gub rows plus a ClpPackedMatrix.
-    This a dynamic version which stores the gub part and dynamically creates matrix.
-    All bounds are assumed to be zero and infinity
+    This a dynamic version which stores the gub part and dynamically creates
+   matrix. All bounds are assumed to be zero and infinity
 
     This is just a simple example for real column generation
 */
 
 class ClpGubDynamicMatrix : public ClpGubMatrix {
-
-public:
+ public:
   /**@name Main functions provided */
   //@{
   /// Partial pricing
   virtual void partialPricing(ClpSimplex *model, double start, double end,
-    int &bestSequence, int &numberWanted);
+                              int &bestSequence, int &numberWanted);
   /** This is local to Gub to allow synchronization:
          mode=0 when status of basis is good
          mode=1 when variable is flagged
@@ -40,21 +38,21 @@ public:
   /**
         update information for a pivot (and effective rhs)
      */
-  virtual int updatePivot(ClpSimplex *model, double oldInValue, double oldOutValue);
+  virtual int updatePivot(ClpSimplex *model, double oldInValue,
+                          double oldOutValue);
   /// Add a new variable to a set
   void insertNonBasic(int sequence, int iSet);
-  /** Returns effective RHS offset if it is being used.  This is used for long problems
-         or big gub or anywhere where going through full columns is
+  /** Returns effective RHS offset if it is being used.  This is used for long
+     problems or big gub or anywhere where going through full columns is
          expensive.  This may re-compute */
   virtual double *rhsOffset(ClpSimplex *model, bool forceRefresh = false,
-    bool check = false);
+                            bool check = false);
 
   using ClpPackedMatrix::times;
   /** Return <code>y + A * scalar *x</code> in <code>y</code>.
          @pre <code>x</code> must be of size <code>numColumns()</code>
          @pre <code>y</code> must be of size <code>numRows()</code> */
-  virtual void times(double scalar,
-    const double *x, double *y) const;
+  virtual void times(double scalar, const double *x, double *y) const;
   /** Just for debug
          Returns sum and number of primal infeasibilities. Recomputes keys
      */
@@ -79,13 +77,13 @@ public:
          It assumes factorization frequency will not be changed.
          This resizes model !!!!
       */
-  ClpGubDynamicMatrix(ClpSimplex *model, int numberSets,
-    int numberColumns, const int *starts,
-    const double *lower, const double *upper,
-    const CoinBigIndex *startColumn, const int *row,
-    const double *element, const double *cost,
-    const double *lowerColumn = NULL, const double *upperColumn = NULL,
-    const unsigned char *status = NULL);
+  ClpGubDynamicMatrix(ClpSimplex *model, int numberSets, int numberColumns,
+                      const int *starts, const double *lower,
+                      const double *upper, const CoinBigIndex *startColumn,
+                      const int *row, const double *element, const double *cost,
+                      const double *lowerColumn = NULL,
+                      const double *upperColumn = NULL,
+                      const unsigned char *status = NULL);
 
   ClpGubDynamicMatrix &operator=(const ClpGubDynamicMatrix &);
   /// Clone
@@ -100,128 +98,64 @@ public:
     atLowerBound = 0x03
   };
   /// Whether flagged
-  inline bool flagged(int i) const
-  {
-    return (dynamicStatus_[i] & 8) != 0;
+  inline bool flagged(int i) const { return (dynamicStatus_[i] & 8) != 0; }
+  inline void setFlagged(int i) {
+    dynamicStatus_[i] = static_cast<unsigned char>(dynamicStatus_[i] | 8);
   }
-  inline void setFlagged(int i)
-  {
-    dynamicStatus_[i] = static_cast< unsigned char >(dynamicStatus_[i] | 8);
+  inline void unsetFlagged(int i) {
+    dynamicStatus_[i] = static_cast<unsigned char>(dynamicStatus_[i] & ~8);
   }
-  inline void unsetFlagged(int i)
-  {
-    dynamicStatus_[i] = static_cast< unsigned char >(dynamicStatus_[i] & ~8);
-  }
-  inline void setDynamicStatus(int sequence, DynamicStatus status)
-  {
+  inline void setDynamicStatus(int sequence, DynamicStatus status) {
     unsigned char &st_byte = dynamicStatus_[sequence];
-    st_byte = static_cast< unsigned char >(st_byte & ~7);
-    st_byte = static_cast< unsigned char >(st_byte | status);
+    st_byte = static_cast<unsigned char>(st_byte & ~7);
+    st_byte = static_cast<unsigned char>(st_byte | status);
   }
-  inline DynamicStatus getDynamicStatus(int sequence) const
-  {
-    return static_cast< DynamicStatus >(dynamicStatus_[sequence] & 7);
+  inline DynamicStatus getDynamicStatus(int sequence) const {
+    return static_cast<DynamicStatus>(dynamicStatus_[sequence] & 7);
   }
   /// Saved value of objective offset
-  inline double objectiveOffset() const
-  {
-    return objectiveOffset_;
-  }
+  inline double objectiveOffset() const { return objectiveOffset_; }
   /// Starts of each column
-  inline CoinBigIndex *startColumn() const
-  {
-    return startColumn_;
-  }
+  inline CoinBigIndex *startColumn() const { return startColumn_; }
   /// rows
-  inline int *row() const
-  {
-    return row_;
-  }
+  inline int *row() const { return row_; }
   /// elements
-  inline double *element() const
-  {
-    return element_;
-  }
+  inline double *element() const { return element_; }
   /// costs
-  inline double *cost() const
-  {
-    return cost_;
-  }
+  inline double *cost() const { return cost_; }
   /// full starts
-  inline int *fullStart() const
-  {
-    return fullStart_;
-  }
+  inline int *fullStart() const { return fullStart_; }
   /// ids of active columns (just index here)
-  inline int *id() const
-  {
-    return id_;
-  }
+  inline int *id() const { return id_; }
   /// Optional lower bounds on columns
-  inline double *lowerColumn() const
-  {
-    return lowerColumn_;
-  }
+  inline double *lowerColumn() const { return lowerColumn_; }
   /// Optional upper bounds on columns
-  inline double *upperColumn() const
-  {
-    return upperColumn_;
-  }
+  inline double *upperColumn() const { return upperColumn_; }
   /// Optional true lower bounds on sets
-  inline double *lowerSet() const
-  {
-    return lowerSet_;
-  }
+  inline double *lowerSet() const { return lowerSet_; }
   /// Optional true upper bounds on sets
-  inline double *upperSet() const
-  {
-    return upperSet_;
-  }
+  inline double *upperSet() const { return upperSet_; }
   /// size
-  inline int numberGubColumns() const
-  {
-    return numberGubColumns_;
-  }
+  inline int numberGubColumns() const { return numberGubColumns_; }
   /// first free
-  inline int firstAvailable() const
-  {
-    return firstAvailable_;
-  }
+  inline int firstAvailable() const { return firstAvailable_; }
   /// set first free
-  inline void setFirstAvailable(int value)
-  {
-    firstAvailable_ = value;
-  }
+  inline void setFirstAvailable(int value) { firstAvailable_ = value; }
   /// first dynamic
-  inline int firstDynamic() const
-  {
-    return firstDynamic_;
-  }
+  inline int firstDynamic() const { return firstDynamic_; }
   /// number of columns in dynamic model
-  inline int lastDynamic() const
-  {
-    return lastDynamic_;
-  }
+  inline int lastDynamic() const { return lastDynamic_; }
   /// size of working matrix (max)
-  inline CoinBigIndex numberElements() const
-  {
-    return numberElements_;
-  }
+  inline CoinBigIndex numberElements() const { return numberElements_; }
   /// Status region for gub slacks
-  inline unsigned char *gubRowStatus() const
-  {
-    return status_;
-  }
+  inline unsigned char *gubRowStatus() const { return status_; }
   /// Status region for gub variables
-  inline unsigned char *dynamicStatus() const
-  {
-    return dynamicStatus_;
-  }
+  inline unsigned char *dynamicStatus() const { return dynamicStatus_; }
   /// Returns which set a variable is in
   int whichSet(int sequence) const;
   //@}
 
-protected:
+ protected:
   /**@name Data members
         The data members are protected to allow access for derived classes. */
   //@{
@@ -267,4 +201,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

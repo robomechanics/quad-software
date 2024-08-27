@@ -37,37 +37,37 @@ class CoinRelFltEq;
 
   For example if the matrix:
   @verbatim
-     3  1  0   -2   -1  0  0   -1                 
-     0  2  1.1  0    0  0  0    0                       
-     0  0  1    0    0  1  0    0         
-     0  0  0    2.8  0  0 -1.2  0   
+     3  1  0   -2   -1  0  0   -1
+     0  2  1.1  0    0  0  0    0
+     0  0  1    0    0  1  0    0
+     0  0  0    2.8  0  0 -1.2  0
    5.6  0  0    0    1  0  0    1.9
 
-  was stored by rows (with no extra space) in 
-  CoinPackedMatrix r then: 
-    r.getElements() returns a vector containing: 
-      3 1 -2 -1 -1 2 1.1 1 1 2.8 -1.2 5.6 1 1.9 
-    r.getIndices() returns a vector containing: 
-      0 1  3  4  7 1 2   2 5 3    6   0   4 7 
-    r.getVectorStarts() returns a vector containing: 
-      0 5 7 9 11 14 
-    r.getNumElements() returns 14. 
-    r.getMajorDim() returns 5. 
-    r.getVectorSize(0) returns 5. 
-    r.getVectorSize(1) returns 2. 
-    r.getVectorSize(2) returns 2. 
-    r.getVectorSize(3) returns 2. 
-    r.getVectorSize(4) returns 3. 
- 
-  If stored by columns (with no extra space) then: 
-    c.getElements() returns a vector containing: 
-      3 5.6 1 2 1.1 1 -2 2.8 -1 1 1 -1.2 -1 1.9 
-    c.getIndices() returns a vector containing: 
-      0  4  0 1 1   2  0 3    0 4 2  3    0 4 
-    c.getVectorStarts() returns a vector containing: 
-      0 2 4 6 8 10 11 12 14 
-    c.getNumElements() returns 14. 
-    c.getMajorDim() returns 8. 
+  was stored by rows (with no extra space) in
+  CoinPackedMatrix r then:
+    r.getElements() returns a vector containing:
+      3 1 -2 -1 -1 2 1.1 1 1 2.8 -1.2 5.6 1 1.9
+    r.getIndices() returns a vector containing:
+      0 1  3  4  7 1 2   2 5 3    6   0   4 7
+    r.getVectorStarts() returns a vector containing:
+      0 5 7 9 11 14
+    r.getNumElements() returns 14.
+    r.getMajorDim() returns 5.
+    r.getVectorSize(0) returns 5.
+    r.getVectorSize(1) returns 2.
+    r.getVectorSize(2) returns 2.
+    r.getVectorSize(3) returns 2.
+    r.getVectorSize(4) returns 3.
+
+  If stored by columns (with no extra space) then:
+    c.getElements() returns a vector containing:
+      3 5.6 1 2 1.1 1 -2 2.8 -1 1 1 -1.2 -1 1.9
+    c.getIndices() returns a vector containing:
+      0  4  0 1 1   2  0 3    0 4 2  3    0 4
+    c.getVectorStarts() returns a vector containing:
+      0 2 4 6 8 10 11 12 14
+    c.getNumElements() returns 14.
+    c.getMajorDim() returns 8.
   @endverbatim
 
   Compiling this class with CLP_NO_VECTOR defined will excise all methods
@@ -79,7 +79,7 @@ class CoinRelFltEq;
 class CoinPackedMatrix {
   friend void CoinPackedMatrixUnitTest();
 
-public:
+ public:
   //---------------------------------------------------------------------------
   /**@name Query members */
   //@{
@@ -88,10 +88,10 @@ public:
   /** Return the current setting of the extra major. */
   inline double getExtraMajor() const { return extraMajor_; }
 
-  /** Reserve sufficient space for appending major-ordered vectors. 
-	If create is true, empty columns are created (for column generation) */
+  /** Reserve sufficient space for appending major-ordered vectors.
+        If create is true, empty columns are created (for column generation) */
   void reserve(const int newMaxMajorDim, const CoinBigIndex newMaxSize,
-    bool create = false);
+               bool create = false);
   /** Clear the data, but do not free any arrays */
   void clear();
 
@@ -105,68 +105,60 @@ public:
   inline CoinBigIndex getNumElements() const { return size_; }
 
   /** Number of columns. */
-  inline int getNumCols() const
-  {
-    return colOrdered_ ? majorDim_ : minorDim_;
-  }
+  inline int getNumCols() const { return colOrdered_ ? majorDim_ : minorDim_; }
 
   /** Number of rows. */
-  inline int getNumRows() const
-  {
-    return colOrdered_ ? minorDim_ : majorDim_;
-  }
+  inline int getNumRows() const { return colOrdered_ ? minorDim_ : majorDim_; }
 
   /*! \brief A vector containing the elements in the packed matrix.
-    
-	Returns #elements_. Note that there might be gaps in this vector,
-	entries that do not belong to any major-dimension vector. To get
-	the actual elements one should look at this vector together with
-	vectorStarts (#start_) and vectorLengths (#length_).
+
+        Returns #elements_. Note that there might be gaps in this vector,
+        entries that do not belong to any major-dimension vector. To get
+        the actual elements one should look at this vector together with
+        vectorStarts (#start_) and vectorLengths (#length_).
     */
   inline const double *getElements() const { return element_; }
 
   /*! \brief A vector containing the minor indices of the elements in
-    	       the packed matrix.
+               the packed matrix.
 
-	Returns #index_. Note that there might be gaps in this list,
-	entries that do not belong to any major-dimension vector. To get
-	the actual elements one should look at this vector together with
-	vectorStarts (#start_) and vectorLengths (#length_).
+        Returns #index_. Note that there might be gaps in this list,
+        entries that do not belong to any major-dimension vector. To get
+        the actual elements one should look at this vector together with
+        vectorStarts (#start_) and vectorLengths (#length_).
     */
   inline const int *getIndices() const { return index_; }
 
   /*! \brief The size of the <code>vectorStarts</code> array
 
-	See #start_.
+        See #start_.
     */
-  inline int getSizeVectorStarts() const
-  {
+  inline int getSizeVectorStarts() const {
     return ((majorDim_ > 0) ? (majorDim_ + 1) : (0));
   }
 
   /*! \brief The size of the <code>vectorLengths</code> array
-    
+
         See #length_.
     */
   inline int getSizeVectorLengths() const { return majorDim_; }
 
   /*! \brief The positions where the major-dimension vectors start in
-    	       elements and indices.
+               elements and indices.
 
-	See #start_.
+        See #start_.
     */
   inline const CoinBigIndex *getVectorStarts() const { return start_; }
 
   /*! \brief The lengths of the major-dimension vectors.
-    
+
         See #length_.
     */
   inline const int *getVectorLengths() const { return length_; }
 
   /** The position of the first element in the i'th major-dimension vector.
-     */
-  CoinBigIndex getVectorFirst(const int i) const
-  {
+   */
+  CoinBigIndex getVectorFirst(const int i) const {
 #ifndef COIN_FAST_CODE
     if (i < 0 || i >= majorDim_)
       throw CoinError("bad index", "vectorFirst", "CoinPackedMatrix");
@@ -175,8 +167,7 @@ public:
   }
   /** The position of the last element (well, one entry <em>past</em> the
         last) in the i'th major-dimension vector. */
-  CoinBigIndex getVectorLast(const int i) const
-  {
+  CoinBigIndex getVectorLast(const int i) const {
 #ifndef COIN_FAST_CODE
     if (i < 0 || i >= majorDim_)
       throw CoinError("bad index", "vectorLast", "CoinPackedMatrix");
@@ -184,8 +175,7 @@ public:
     return start_[i] + length_[i];
   }
   /** The length of i'th vector. */
-  inline int getVectorSize(const int i) const
-  {
+  inline int getVectorSize(const int i) const {
 #ifndef COIN_FAST_CODE
     if (i < 0 || i >= majorDim_)
       throw CoinError("bad index", "vectorSize", "CoinPackedMatrix");
@@ -194,28 +184,25 @@ public:
   }
 #ifndef CLP_NO_VECTOR
   /** Return the i'th vector in matrix. */
-  const CoinShallowPackedVector getVector(int i) const
-  {
+  const CoinShallowPackedVector getVector(int i) const {
 #ifndef COIN_FAST_CODE
     if (i < 0 || i >= majorDim_)
       throw CoinError("bad index", "vector", "CoinPackedMatrix");
 #endif
-    return CoinShallowPackedVector(length_[i],
-      index_ + start_[i],
-      element_ + start_[i],
-      false);
+    return CoinShallowPackedVector(length_[i], index_ + start_[i],
+                                   element_ + start_[i], false);
   }
 #endif
   /** Returns an array containing major indices.  The array is
-	  getNumElements long and if getVectorStarts() is 0,2,5 then
-	  the array would start 0,0,1,1,1,2...
-	  This method is provided to go back from a packed format
-	  to a triple format.  It returns NULL if there are gaps in
-	  matrix so user should use removeGaps() if there are any gaps.
-	  It does this as this array has to match getElements() and 
-	  getIndices() and because it makes no sense otherwise.
-	  The returned array is allocated with <code>new int[]</code>,
-	  free it with  <code>delete[]</code>. */
+          getNumElements long and if getVectorStarts() is 0,2,5 then
+          the array would start 0,0,1,1,1,2...
+          This method is provided to go back from a packed format
+          to a triple format.  It returns NULL if there are gaps in
+          matrix so user should use removeGaps() if there are any gaps.
+          It does this as this array has to match getElements() and
+          getIndices() and because it makes no sense otherwise.
+          The returned array is allocated with <code>new int[]</code>,
+          free it with  <code>delete[]</code>. */
   int *getMajorIndices() const;
   //@}
 
@@ -223,7 +210,7 @@ public:
   /**@name Modifying members */
   //@{
   /*! \brief Set the dimensions of the matrix.
-    
+
       The method name is deceptive; the effect is to append empty columns
       and/or rows to the matrix to reach the specified dimensions.
       A negative number for either dimension means that that dimension
@@ -238,7 +225,7 @@ public:
   void setExtraMajor(const double newMajor);
 #ifndef CLP_NO_VECTOR
   /*! Append a column to the end of the matrix.
-    
+
        When compiled with COIN_DEBUG defined this method throws an exception
        if the column vector specifies a nonexistent row index.  Otherwise the
        method assumes that every index fits into the matrix.
@@ -246,13 +233,12 @@ public:
   void appendCol(const CoinPackedVectorBase &vec);
 #endif
   /*! Append a column to the end of the matrix.
-    
+
        When compiled with COIN_DEBUG defined this method throws an exception
        if the column vector specifies a nonexistent row index.  Otherwise the
        method assumes that every index fits into the matrix.
     */
-  void appendCol(const int vecsize,
-    const int *vecind, const double *vecelem);
+  void appendCol(const int vecsize, const int *vecind, const double *vecelem);
 #ifndef CLP_NO_VECTOR
   /*! Append a set of columns to the end of the matrix.
 
@@ -260,20 +246,18 @@ public:
        if any of the column vectors specify a nonexistent row index. Otherwise
        the method assumes that every index fits into the matrix.
     */
-  void appendCols(const int numcols,
-    const CoinPackedVectorBase *const *cols);
+  void appendCols(const int numcols, const CoinPackedVectorBase *const *cols);
 #endif
   /*! Append a set of columns to the end of the matrix.
-    
+
       Returns the number of errors (nonexistent or duplicate row index).
       No error checking is performed if \p numberRows < 0.
     */
-  int appendCols(const int numcols,
-    const CoinBigIndex *columnStarts, const int *row,
-    const double *element, int numberRows = -1);
+  int appendCols(const int numcols, const CoinBigIndex *columnStarts,
+                 const int *row, const double *element, int numberRows = -1);
 #ifndef CLP_NO_VECTOR
   /*! Append a row to the end of the matrix.
-  
+
        When compiled with COIN_DEBUG defined this method throws an exception
        if the row vector specifies a nonexistent column index.  Otherwise the
        method assumes that every index fits into the matrix.
@@ -286,26 +270,24 @@ public:
        if the row vector specifies a nonexistent column index.  Otherwise the
        method assumes that every index fits into the matrix.
     */
-  void appendRow(const int vecsize,
-    const int *vecind, const double *vecelem);
+  void appendRow(const int vecsize, const int *vecind, const double *vecelem);
 #ifndef CLP_NO_VECTOR
   /*! Append a set of rows to the end of the matrix.
-    
+
        When compiled with COIN_DEBUG defined this method throws an exception
        if any of the row vectors specify a nonexistent column index. Otherwise
        the method assumes that every index fits into the matrix.
     */
-  void appendRows(const int numrows,
-    const CoinPackedVectorBase *const *rows);
+  void appendRows(const int numrows, const CoinPackedVectorBase *const *rows);
 #endif
   /*! Append a set of rows to the end of the matrix.
-    
+
       Returns the number of errors (nonexistent or duplicate column index).
       No error checking is performed if \p numberColumns < 0.
     */
-  int appendRows(const int numrows,
-    const CoinBigIndex *rowStarts, const int *column,
-    const double *element, int numberColumns = -1);
+  int appendRows(const int numrows, const CoinBigIndex *rowStarts,
+                 const int *column, const double *element,
+                 int numberColumns = -1);
 
   /** Append the argument to the "right" of the current matrix. Imagine this
         as adding new columns (don't worry about how the matrices are ordered,
@@ -324,40 +306,40 @@ public:
   void deleteRows(const int numDel, const int *indDel);
 
   /** Replace the elements of a vector.  The indices remain the same.
-	At most the number specified will be replaced.
+        At most the number specified will be replaced.
         The index is between 0 and major dimension of matrix */
-  void replaceVector(const int index,
-    const int numReplace, const double *newElements);
+  void replaceVector(const int index, const int numReplace,
+                     const double *newElements);
   /** Modify one element of packed matrix.  An element may be added.
         This works for either ordering
-	If the new element is zero it will be deleted unless
-	keepZero true */
+        If the new element is zero it will be deleted unless
+        keepZero true */
   void modifyCoefficient(int row, int column, double newElement,
-    bool keepZero = false);
+                         bool keepZero = false);
   /** Return one element of packed matrix.
         This works for either ordering
-	If it is not present will return 0.0 */
+        If it is not present will return 0.0 */
   double getCoefficient(int row, int column) const;
 
-  /** Eliminate all elements in matrix whose 
-	absolute value is less than threshold.
-	The column starts are not affected.  Returns number of elements
-	eliminated.  Elements eliminated are at end of each vector
+  /** Eliminate all elements in matrix whose
+        absolute value is less than threshold.
+        The column starts are not affected.  Returns number of elements
+        eliminated.  Elements eliminated are at end of each vector
     */
   CoinBigIndex compress(double threshold);
-  /** Eliminate all duplicate AND small elements in matrix 
-	The column starts are not affected.  Returns number of elements
-	eliminated.  
+  /** Eliminate all duplicate AND small elements in matrix
+        The column starts are not affected.  Returns number of elements
+        eliminated.
     */
   CoinBigIndex eliminateDuplicates(double threshold);
   /** Sort all columns so indices are increasing.in each column */
   void orderMatrix();
   /** Really clean up matrix.
-	a) eliminate all duplicate AND small elements in matrix 
-	b) remove all gaps and set extraGap_ and extraMajor_ to 0.0
-	c) reallocate arrays and make max lengths equal to lengths
-	d) orders elements
-	returns number of elements eliminated
+        a) eliminate all duplicate AND small elements in matrix
+        b) remove all gaps and set extraGap_ and extraMajor_ to 0.0
+        c) reallocate arrays and make max lengths equal to lengths
+        d) orders elements
+        returns number of elements eliminated
     */
   CoinBigIndex cleanMatrix(double threshold = 1.0e-20);
   //@}
@@ -366,19 +348,19 @@ public:
   /**@name Methods that reorganize the whole matrix */
   //@{
   /** Remove the gaps from the matrix if there were any
-	Can also remove small elements fabs() <= removeValue*/
+        Can also remove small elements fabs() <= removeValue*/
   void removeGaps(double removeValue = -1.0);
 
   /** Extract a submatrix from matrix. Those major-dimension vectors of
-	the matrix comprise the submatrix whose indices are given in the
-	arguments. Does not allow duplicates. */
-  void submatrixOf(const CoinPackedMatrix &matrix,
-    const int numMajor, const int *indMajor);
+        the matrix comprise the submatrix whose indices are given in the
+        arguments. Does not allow duplicates. */
+  void submatrixOf(const CoinPackedMatrix &matrix, const int numMajor,
+                   const int *indMajor);
   /** Extract a submatrix from matrix. Those major-dimension vectors of
-	the matrix comprise the submatrix whose indices are given in the
-	arguments. Allows duplicates and keeps order. */
+        the matrix comprise the submatrix whose indices are given in the
+        arguments. Allows duplicates and keeps order. */
   void submatrixOfWithDuplicates(const CoinPackedMatrix &matrix,
-    const int numMajor, const int *indMajor);
+                                 const int numMajor, const int *indMajor);
 #if 0
     /** Extract a submatrix from matrix. Those major/minor-dimension vectors of
 	the matrix comprise the submatrix whose indices are given in the
@@ -394,18 +376,17 @@ public:
   /** Copy the arguments to the matrix. If <code>len</code> is a NULL pointer
         then the matrix is assumed to have no gaps in it and <code>len</code>
         will be created accordingly. */
-  void copyOf(const bool colordered,
-    const int minor, const int major, const CoinBigIndex numels,
-    const double *elem, const int *ind,
-    const CoinBigIndex *start, const int *len,
-    const double extraMajor = 0.0, const double extraGap = 0.0);
+  void copyOf(const bool colordered, const int minor, const int major,
+              const CoinBigIndex numels, const double *elem, const int *ind,
+              const CoinBigIndex *start, const int *len,
+              const double extraMajor = 0.0, const double extraGap = 0.0);
   /** Copy method. This method makes an exact replica of the argument,
-        including the extra space parameters. 
-	If there is room it will re-use arrays */
+        including the extra space parameters.
+        If there is room it will re-use arrays */
   void copyReuseArrays(const CoinPackedMatrix &rhs);
 
   /*! \brief Make a reverse-ordered copy.
-    
+
       This method makes an exact replica of the argument with the major
       vector orientation changed from row (column) to column (row).
       The extra space parameters are also copied and reversed.
@@ -414,19 +395,17 @@ public:
   void reverseOrderedCopyOf(const CoinPackedMatrix &rhs);
 
   /** Assign the arguments to the matrix. If <code>len</code> is a NULL
-	pointer then the matrix is assumed to have no gaps in it and
-	<code>len</code> will be created accordingly. <br>
+        pointer then the matrix is assumed to have no gaps in it and
+        <code>len</code> will be created accordingly. <br>
         <strong>NOTE 1</strong>: After this method returns the pointers
         passed to the method will be NULL pointers! <br>
         <strong>NOTE 2</strong>: When the matrix is eventually destructed the
         arrays will be deleted by <code>delete[]</code>. Hence one should use
         this method ONLY if all array swere allocated by <code>new[]</code>! */
-  void assignMatrix(const bool colordered,
-    const int minor, const int major,
-    const CoinBigIndex numels,
-    double *&elem, int *&ind,
-    CoinBigIndex *&start, int *&len,
-    const int maxmajor = -1, const CoinBigIndex maxsize = -1);
+  void assignMatrix(const bool colordered, const int minor, const int major,
+                    const CoinBigIndex numels, double *&elem, int *&ind,
+                    CoinBigIndex *&start, int *&len, const int maxmajor = -1,
+                    const CoinBigIndex maxsize = -1);
 
   /** Assignment operator. This copies out the data, but uses the current
         matrix's extra space parameters. */
@@ -443,11 +422,11 @@ public:
   /*! \brief Transpose the matrix.
 
         \note
-	If you start with a column-ordered matrix and invoke transpose, you
-	will have a row-ordered transposed matrix. To change the major vector
-	orientation (e.g., to transform a column-ordered matrix to a
-	column-ordered transposed matrix), invoke transpose() followed by
-	#reverseOrdering().
+        If you start with a column-ordered matrix and invoke transpose, you
+        will have a row-ordered transposed matrix. To change the major vector
+        orientation (e.g., to transform a column-ordered matrix to a
+        column-ordered transposed matrix), invoke transpose() followed by
+        #reverseOrdering().
     */
   void transpose();
 
@@ -492,12 +471,12 @@ public:
   /**@name Queries */
   //@{
   /** Count the number of entries in every minor-dimension vector and
-	  return an array containing these lengths. The returned array is
-	  allocated with <code>new int[]</code>, free it with
-	  <code>delete[]</code>. */
+          return an array containing these lengths. The returned array is
+          allocated with <code>new int[]</code>, free it with
+          <code>delete[]</code>. */
   int *countOrthoLength() const;
   /** Count the number of entries in every minor-dimension vector and
-	  fill in an array containing these lengths.  */
+          fill in an array containing these lengths.  */
   void countOrthoLength(int *counts) const;
   /** Major dimension. For row ordered matrix this would be the number of
           rows. */
@@ -506,18 +485,18 @@ public:
           rows. Use with great care.*/
   inline void setMajorDim(int value) { majorDim_ = value; }
   /** Minor dimension. For row ordered matrix this would be the number of
-	  columns. */
+          columns. */
   inline int getMinorDim() const { return minorDim_; }
   /** Set minor dimension. For row ordered matrix this would be the number of
           columns. Use with great care.*/
   inline void setMinorDim(int value) { minorDim_ = value; }
   /** Current maximum for major dimension. For row ordered matrix this many
           rows can be added without reallocating the vector related to the
-	  major dimension (<code>start_</code> and <code>length_</code>). */
+          major dimension (<code>start_</code> and <code>length_</code>). */
   inline int getMaxMajorDim() const { return maxMajorDim_; }
 
   /** Dump the matrix on stdout. When in dire straits this method can
-	  help. */
+          help. */
   void dumpMatrix(const char *fname = NULL) const;
 
   /// Print a single matrix element.
@@ -540,26 +519,26 @@ public:
 #endif
   /** Append a major-dimension vector to the end of the matrix. */
   void appendMajorVector(const int vecsize, const int *vecind,
-    const double *vecelem);
+                         const double *vecelem);
 #ifndef CLP_NO_VECTOR
   /** Append several major-dimensonvectors to the end of the matrix */
   void appendMajorVectors(const int numvecs,
-    const CoinPackedVectorBase *const *vecs);
+                          const CoinPackedVectorBase *const *vecs);
 
   /** Append a minor-dimension vector to the end of the matrix. */
   void appendMinorVector(const CoinPackedVectorBase &vec);
 #endif
   /** Append a minor-dimension vector to the end of the matrix. */
   void appendMinorVector(const int vecsize, const int *vecind,
-    const double *vecelem);
+                         const double *vecelem);
 #ifndef CLP_NO_VECTOR
   /** Append several minor-dimension vectors to the end of the matrix */
   void appendMinorVectors(const int numvecs,
-    const CoinPackedVectorBase *const *vecs);
+                          const CoinPackedVectorBase *const *vecs);
 #endif
   /*! \brief Append a set of rows (columns) to the end of a column (row)
-    	       ordered matrix.
-    
+               ordered matrix.
+
       This case is when we know there are no gaps and majorDim_ will not
       change.
 
@@ -569,9 +548,8 @@ public:
       Apparently this method was needed in ClpPackedMatrix and giving it
       proper visibility was too much trouble. Should be moved.
     */
-  void appendMinorFast(const int number,
-    const CoinBigIndex *starts, const int *index,
-    const double *element);
+  void appendMinorFast(const int number, const CoinBigIndex *starts,
+                       const int *index, const double *element);
   //@}
 
   //-------------------------------------------------------------------------
@@ -585,26 +563,26 @@ public:
     */
   //@{
   /** Append the columns of the argument to the right end of this matrix.
-	  @pre <code>minorDim_ == matrix.minorDim_</code> <br>
-	  This method throws an exception if the minor dimensions are not the
-	  same. */
+          @pre <code>minorDim_ == matrix.minorDim_</code> <br>
+          This method throws an exception if the minor dimensions are not the
+          same. */
   void majorAppendSameOrdered(const CoinPackedMatrix &matrix);
   /** Append the columns of the argument to the bottom end of this matrix.
-	  @pre <code>majorDim_ == matrix.majorDim_</code> <br>
-	  This method throws an exception if the major dimensions are not the
-	  same. */
+          @pre <code>majorDim_ == matrix.majorDim_</code> <br>
+          This method throws an exception if the major dimensions are not the
+          same. */
   void minorAppendSameOrdered(const CoinPackedMatrix &matrix);
   /** Append the rows of the argument to the right end of this matrix.
-	  @pre <code>minorDim_ == matrix.majorDim_</code> <br>
-	  This method throws an exception if the minor dimension of the
-	  current matrix is not the same as the major dimension of the
-	  argument matrix. */
+          @pre <code>minorDim_ == matrix.majorDim_</code> <br>
+          This method throws an exception if the minor dimension of the
+          current matrix is not the same as the major dimension of the
+          argument matrix. */
   void majorAppendOrthoOrdered(const CoinPackedMatrix &matrix);
   /** Append the rows of the argument to the bottom end of this matrix.
-	  @pre <code>majorDim_ == matrix.minorDim_</code> <br>
-	  This method throws an exception if the major dimension of the
-	  current matrix is not the same as the minor dimension of the
-	  argument matrix. */
+          @pre <code>majorDim_ == matrix.minorDim_</code> <br>
+          This method throws an exception if the major dimension of the
+          current matrix is not the same as the minor dimension of the
+          argument matrix. */
   void minorAppendOrthoOrdered(const CoinPackedMatrix &matrix);
   //@}
 
@@ -612,10 +590,10 @@ public:
   /**@name Delete vectors */
   //@{
   /** Delete the major-dimension vectors whose indices are listed in
-	  <code>indDel</code>. */
+          <code>indDel</code>. */
   void deleteMajorVectors(const int numDel, const int *indDel);
   /** Delete the minor-dimension vectors whose indices are listed in
-	  <code>indDel</code>. */
+          <code>indDel</code>. */
   void deleteMinorVectors(const int numDel, const int *indDel);
   //@}
 
@@ -623,25 +601,25 @@ public:
   /**@name Various dot products. */
   //@{
   /** Return <code>A * x</code> (multiplied from the "right" direction) in
-	  <code>y</code>.
-	  @pre <code>x</code> must be of size <code>majorDim()</code>
-	  @pre <code>y</code> must be of size <code>minorDim()</code> */
+          <code>y</code>.
+          @pre <code>x</code> must be of size <code>majorDim()</code>
+          @pre <code>y</code> must be of size <code>minorDim()</code> */
   void timesMajor(const double *x, double *y) const;
 #ifndef CLP_NO_VECTOR
   /** Return <code>A * x</code> (multiplied from the "right" direction) in
-	  <code>y</code>. Same as the previous method, just <code>x</code> is
-	  given in the form of a packed vector. */
+          <code>y</code>. Same as the previous method, just <code>x</code> is
+          given in the form of a packed vector. */
   void timesMajor(const CoinPackedVectorBase &x, double *y) const;
 #endif
   /** Return <code>A * x</code> (multiplied from the "right" direction) in
-	  <code>y</code>.
-	  @pre <code>x</code> must be of size <code>minorDim()</code>
-	  @pre <code>y</code> must be of size <code>majorDim()</code> */
+          <code>y</code>.
+          @pre <code>x</code> must be of size <code>minorDim()</code>
+          @pre <code>y</code> must be of size <code>majorDim()</code> */
   void timesMinor(const double *x, double *y) const;
 #ifndef CLP_NO_VECTOR
   /** Return <code>A * x</code> (multiplied from the "right" direction) in
-	  <code>y</code>. Same as the previous method, just <code>x</code> is
-	  given in the form of a packed vector. */
+          <code>y</code>. Same as the previous method, just <code>x</code> is
+          given in the form of a packed vector. */
   void timesMinor(const CoinPackedVectorBase &x, double *y) const;
 #endif
   //@}
@@ -658,19 +636,19 @@ public:
        The operator used to test for equality can be specified using the
        \p FloatEqual template parameter.
    */
-  template < class FloatEqual >
-  bool
-  isEquivalent(const CoinPackedMatrix &rhs, const FloatEqual &eq) const
-  {
+  template <class FloatEqual>
+  bool isEquivalent(const CoinPackedMatrix &rhs, const FloatEqual &eq) const {
     // Both must be column order or both row ordered and must be of same size
-    if ((isColOrdered() ^ rhs.isColOrdered()) || (getNumCols() != rhs.getNumCols()) || (getNumRows() != rhs.getNumRows()) || (getNumElements() != rhs.getNumElements()))
+    if ((isColOrdered() ^ rhs.isColOrdered()) ||
+        (getNumCols() != rhs.getNumCols()) ||
+        (getNumRows() != rhs.getNumRows()) ||
+        (getNumElements() != rhs.getNumElements()))
       return false;
 
     for (int i = getMajorDim() - 1; i >= 0; --i) {
       CoinShallowPackedVector pv = getVector(i);
       CoinShallowPackedVector rhsPv = rhs.getVector(i);
-      if (!pv.isEquivalent(rhsPv, eq))
-        return false;
+      if (!pv.isEquivalent(rhsPv, eq)) return false;
     }
     return true;
   }
@@ -689,12 +667,12 @@ public:
        they have the same dimensions, and each (major) vector is equivalent.
        This method is optimised for speed. CoinPackedVector#isEquivalent is
        replaced with more efficient code for repeated comparison of
-       equal-length vectors. The CoinRelFltEq operator is used. 
+       equal-length vectors. The CoinRelFltEq operator is used.
    */
   bool isEquivalent(const CoinPackedMatrix &rhs, const CoinRelFltEq &eq) const;
 #endif
   /*! \brief Test for equivalence.
-   
+
      The test for element equality is the default CoinRelFltEq operator.
    */
   bool isEquivalent(const CoinPackedMatrix &rhs) const;
@@ -707,9 +685,9 @@ public:
    */
   //@{
   /** A vector containing the elements in the packed matrix. Note that there
-	might be gaps in this list, entries that do not belong to any
-	major-dimension vector. To get the actual elements one should look at
-	this vector together with #start_ and #length_. */
+        might be gaps in this list, entries that do not belong to any
+        major-dimension vector. To get the actual elements one should look at
+        this vector together with #start_ and #length_. */
   inline double *getMutableElements() const { return element_; }
   /** A vector containing the minor indices of the elements in the packed
         matrix. Note that there might be gaps in this list, entries that do not
@@ -724,30 +702,27 @@ public:
   /** The lengths of the major-dimension vectors. */
   inline int *getMutableVectorLengths() const { return length_; }
   /// Change the size of the bulk store after modifying - be careful
-  inline void setNumElements(CoinBigIndex value)
-  {
-    size_ = value;
-  }
+  inline void setNumElements(CoinBigIndex value) { size_ = value; }
   /*! NULLify element array
-    
+
       Used when space is very tight. Does not free the space!
     */
   inline void nullElementArray() { element_ = NULL; }
 
   /*! NULLify start array
-    
+
       Used when space is very tight. Does not free the space!
     */
   inline void nullStartArray() { start_ = NULL; }
 
   /*! NULLify length array
-    
+
       Used when space is very tight. Does not free the space!
     */
   inline void nullLengthArray() { length_ = NULL; }
 
   /*! NULLify index array
-    
+
       Used when space is very tight. Does not free the space!
     */
   inline void nullIndexArray() { index_ = NULL; }
@@ -760,41 +735,37 @@ public:
   CoinPackedMatrix();
 
   /// A constructor where the ordering and the gaps are specified
-  CoinPackedMatrix(const bool colordered,
-    const double extraMajor, const double extraGap);
+  CoinPackedMatrix(const bool colordered, const double extraMajor,
+                   const double extraGap);
 
-  CoinPackedMatrix(const bool colordered,
-    const int minor, const int major, const CoinBigIndex numels,
-    const double *elem, const int *ind,
-    const CoinBigIndex *start, const int *len,
-    const double extraMajor, const double extraGap);
+  CoinPackedMatrix(const bool colordered, const int minor, const int major,
+                   const CoinBigIndex numels, const double *elem,
+                   const int *ind, const CoinBigIndex *start, const int *len,
+                   const double extraMajor, const double extraGap);
 
-  CoinPackedMatrix(const bool colordered,
-    const int minor, const int major, const CoinBigIndex numels,
-    const double *elem, const int *ind,
-    const CoinBigIndex *start, const int *len);
+  CoinPackedMatrix(const bool colordered, const int minor, const int major,
+                   const CoinBigIndex numels, const double *elem,
+                   const int *ind, const CoinBigIndex *start, const int *len);
 
   /** Create packed matrix from triples.
        If colordered is true then the created matrix will be column ordered.
-       Duplicate matrix elements are allowed. The created matrix will have 
+       Duplicate matrix elements are allowed. The created matrix will have
        the sum of the duplicates. <br>
        For example if: <br>
          rowIndices[0]=2; colIndices[0]=5; elements[0]=2.0 <br>
          rowIndices[1]=2; colIndices[1]=5; elements[1]=0.5 <br>
-       then the created matrix will contain a value of 2.5 in row 2 and column 5.<br>
-       The matrix is created without gaps.
+       then the created matrix will contain a value of 2.5 in row 2 and
+     column 5.<br> The matrix is created without gaps.
    */
-  CoinPackedMatrix(const bool colordered,
-    const int *rowIndices,
-    const int *colIndices,
-    const double *elements,
-    CoinBigIndex numels);
+  CoinPackedMatrix(const bool colordered, const int *rowIndices,
+                   const int *colIndices, const double *elements,
+                   CoinBigIndex numels);
 
   /// Copy constructor
   CoinPackedMatrix(const CoinPackedMatrix &m);
 
   /*! \brief Copy constructor with fine tuning
-  
+
     This constructor allows for the specification of an exact amount of extra
     space and/or reverse ordering.
 
@@ -807,15 +778,14 @@ public:
 
     The usual multipliers, #extraMajor_ and #extraGap_, are set to zero.
   */
-  CoinPackedMatrix(const CoinPackedMatrix &m,
-    int extraForMajor, int extraElements,
-    bool reverseOrdering = false);
+  CoinPackedMatrix(const CoinPackedMatrix &m, int extraForMajor,
+                   int extraElements, bool reverseOrdering = false);
 
   /** Subset constructor (without gaps).  Duplicates are allowed
       and order is as given */
-  CoinPackedMatrix(const CoinPackedMatrix &wholeModel,
-    int numberRows, const int *whichRows,
-    int numberColumns, const int *whichColumns);
+  CoinPackedMatrix(const CoinPackedMatrix &wholeModel, int numberRows,
+                   const int *whichRows, int numberColumns,
+                   const int *whichColumns);
 
   /// Destructor
   virtual ~CoinPackedMatrix();
@@ -825,81 +795,77 @@ public:
   //@{
   /*! \brief Scan the matrix for anomalies.
 
-	Returns the number of anomalies. Scans the structure for gaps,
-	obviously bogus indices and coefficients, and inconsistencies. Gaps
-	are not an error unless #hasGaps() says the matrix should be
-	gap-free. Zeroes are not an error unless \p zeroesAreError is set to
-	true.
-	
-	Values for verbosity are:
-	- 0: No messages, just the return value
-	- 1: Messages about errors
-	- 2: If there are no errors, a message indicating the matrix was
-	     checked is printed (positive confirmation).
-	- 3: Adds a bit more information about the matrix.
-	- 4: Prints warnings about zeroes even if they're not considered
-	     errors.
+        Returns the number of anomalies. Scans the structure for gaps,
+        obviously bogus indices and coefficients, and inconsistencies. Gaps
+        are not an error unless #hasGaps() says the matrix should be
+        gap-free. Zeroes are not an error unless \p zeroesAreError is set to
+        true.
 
-	Obviously bogus coefficients are coefficients that are NaN or have
-	absolute value greater than 1e50. Zeros have absolute value less
-	than 1e-50.
+        Values for verbosity are:
+        - 0: No messages, just the return value
+        - 1: Messages about errors
+        - 2: If there are no errors, a message indicating the matrix was
+             checked is printed (positive confirmation).
+        - 3: Adds a bit more information about the matrix.
+        - 4: Prints warnings about zeroes even if they're not considered
+             errors.
+
+        Obviously bogus coefficients are coefficients that are NaN or have
+        absolute value greater than 1e50. Zeros have absolute value less
+        than 1e-50.
       */
   int verifyMtx(int verbosity = 1, bool zeroesAreError = false) const;
   //@}
 
   //--------------------------------------------------------------------------
-protected:
+ protected:
   void gutsOfDestructor();
-  void gutsOfCopyOf(const bool colordered,
-    const int minor, const int major, const CoinBigIndex numels,
-    const double *elem, const int *ind,
-    const CoinBigIndex *start, const int *len,
-    const double extraMajor = 0.0, const double extraGap = 0.0);
+  void gutsOfCopyOf(const bool colordered, const int minor, const int major,
+                    const CoinBigIndex numels, const double *elem,
+                    const int *ind, const CoinBigIndex *start, const int *len,
+                    const double extraMajor = 0.0, const double extraGap = 0.0);
   /// When no gaps we can do faster
-  void gutsOfCopyOfNoGaps(const bool colordered,
-    const int minor, const int major,
-    const double *elem, const int *ind,
-    const CoinBigIndex *start);
-  void gutsOfOpEqual(const bool colordered,
-    const int minor, const int major, const CoinBigIndex numels,
-    const double *elem, const int *ind,
-    const CoinBigIndex *start, const int *len);
+  void gutsOfCopyOfNoGaps(const bool colordered, const int minor,
+                          const int major, const double *elem, const int *ind,
+                          const CoinBigIndex *start);
+  void gutsOfOpEqual(const bool colordered, const int minor, const int major,
+                     const CoinBigIndex numels, const double *elem,
+                     const int *ind, const CoinBigIndex *start, const int *len);
   void resizeForAddingMajorVectors(const int numVec, const int *lengthVec);
   void resizeForAddingMinorVectors(const int *addedEntries);
 
   /*! \brief Append a set of rows (columns) to the end of a row (colum)
-    	       ordered matrix.
-	
+               ordered matrix.
+
       If \p numberOther > 0 the method will check if any of the new rows
       (columns) contain duplicate indices or invalid indices and return the
       number of errors. A valid minor index must satisfy
       \code 0 <= k < numberOther \endcode
       If \p numberOther < 0 no checking is performed.
     */
-  int appendMajor(const int number,
-    const CoinBigIndex *starts, const int *index,
-    const double *element, int numberOther = -1);
+  int appendMajor(const int number, const CoinBigIndex *starts,
+                  const int *index, const double *element,
+                  int numberOther = -1);
   /*! \brief Append a set of rows (columns) to the end of a column (row)
-    	       ordered matrix.
-    
+               ordered matrix.
+
       If \p numberOther > 0 the method will check if any of the new rows
       (columns) contain duplicate indices or indices outside the current
       range for the major dimension and return the number of violations.
       If \p numberOther <= 0 the major dimension will be expanded as
       necessary and there are no checks for duplicate indices.
     */
-  int appendMinor(const int number,
-    const CoinBigIndex *starts, const int *index,
-    const double *element, int numberOther = -1);
+  int appendMinor(const int number, const CoinBigIndex *starts,
+                  const int *index, const double *element,
+                  int numberOther = -1);
 
-private:
-  inline CoinBigIndex getLastStart() const
-  {
+ private:
+  inline CoinBigIndex getLastStart() const {
     return majorDim_ == 0 ? 0 : start_[majorDim_];
   }
 
   //--------------------------------------------------------------------------
-protected:
+ protected:
   /**@name Data members
       The data members are protected to allow access for derived classes. */
   //@{
@@ -940,7 +906,7 @@ protected:
   //@}
 };
 
-//#############################################################################
+// #############################################################################
 /*! \brief Test the methods in the CoinPackedMatrix class.
 
     The only reason for it not to be a member method is that this way
@@ -953,4 +919,4 @@ void CoinPackedMatrixUnitTest();
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

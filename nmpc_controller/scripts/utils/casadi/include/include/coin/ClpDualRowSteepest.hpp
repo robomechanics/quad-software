@@ -9,7 +9,7 @@
 #include "ClpDualRowPivot.hpp"
 class CoinIndexedVector;
 
-//#############################################################################
+// #############################################################################
 
 /** Dual Row Pivot Steepest Edge Algorithm Class
 
@@ -18,8 +18,7 @@ See Forrest-Goldfarb paper for algorithm
 */
 
 class ClpDualRowSteepest : public ClpDualRowPivot {
-
-public:
+ public:
   ///@name Algorithmic methods
   //@{
 
@@ -29,17 +28,16 @@ public:
   /** Updates weights and returns pivot alpha.
          Also does FT update */
   virtual double updateWeights(CoinIndexedVector *input,
-    CoinIndexedVector *spare,
-    CoinIndexedVector *spare2,
-    CoinIndexedVector *updatedColumn);
+                               CoinIndexedVector *spare,
+                               CoinIndexedVector *spare2,
+                               CoinIndexedVector *updatedColumn);
 
   /** Updates primal solution (and maybe list of candidates)
          Uses input vector which it deletes
          Computes change in objective function
      */
-  virtual void updatePrimalSolution(CoinIndexedVector *input,
-    double theta,
-    double &changeInObjective);
+  virtual void updatePrimalSolution(CoinIndexedVector *input, double theta,
+                                    double &changeInObjective);
 
   /** Saves any weights round factorization as pivot rows may change
          Save model
@@ -55,10 +53,7 @@ public:
   /// Pass in saved weights
   void passInSavedWeights(const CoinIndexedVector *saved);
   /// Get saved weights
-  inline CoinIndexedVector *savedWeights()
-  {
-    return savedWeights_;
-  }
+  inline CoinIndexedVector *savedWeights() { return savedWeights_; }
   /// Gets rid of last update
   virtual void unrollWeights();
   /// Gets rid of all arrays
@@ -70,10 +65,10 @@ public:
   //@}
 
   /** enums for persistence
-     */
+   */
   enum Persistence {
-    normal = 0x00, // create (if necessary) and destroy
-    keep = 0x01 // create (if necessary) and leave
+    normal = 0x00,  // create (if necessary) and destroy
+    keep = 0x01     // create (if necessary) and leave
   };
 
   ///@name Constructors and destructors
@@ -106,29 +101,17 @@ public:
   /**@name gets and sets */
   //@{
   /// Mode
-  inline int mode() const
-  {
-    return mode_;
-  }
+  inline int mode() const { return mode_; }
   /// Set mode
-  inline void setMode(int mode)
-  {
-    mode_ = mode;
-  }
+  inline void setMode(int mode) { mode_ = mode; }
   /// Set/ get persistence
-  inline void setPersistence(Persistence life)
-  {
-    persistence_ = life;
-  }
-  inline Persistence persistence() const
-  {
-    return persistence_;
-  }
+  inline void setPersistence(Persistence life) { persistence_ = life; }
+  inline Persistence persistence() const { return persistence_; }
   //@}
 
   //---------------------------------------------------------------------------
 
-protected:
+ protected:
   ///@name Protected member data
   /** Status
          0) Normal
@@ -157,4 +140,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

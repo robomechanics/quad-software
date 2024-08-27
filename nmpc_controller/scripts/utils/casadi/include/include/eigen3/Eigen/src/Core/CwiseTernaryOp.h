@@ -53,39 +53,38 @@ template <typename TernaryOp, typename Arg1, typename Arg2, typename Arg3,
 class CwiseTernaryOpImpl;
 
 /** \class CwiseTernaryOp
-  * \ingroup Core_Module
-  *
-  * \brief Generic expression where a coefficient-wise ternary operator is
+ * \ingroup Core_Module
+ *
+ * \brief Generic expression where a coefficient-wise ternary operator is
  * applied to two expressions
-  *
-  * \tparam TernaryOp template functor implementing the operator
-  * \tparam Arg1Type the type of the first argument
-  * \tparam Arg2Type the type of the second argument
-  * \tparam Arg3Type the type of the third argument
-  *
-  * This class represents an expression where a coefficient-wise ternary
+ *
+ * \tparam TernaryOp template functor implementing the operator
+ * \tparam Arg1Type the type of the first argument
+ * \tparam Arg2Type the type of the second argument
+ * \tparam Arg3Type the type of the third argument
+ *
+ * This class represents an expression where a coefficient-wise ternary
  * operator is applied to three expressions.
-  * It is the return type of ternary operators, by which we mean only those
+ * It is the return type of ternary operators, by which we mean only those
  * ternary operators where
-  * all three arguments are Eigen expressions.
-  * For example, the return type of betainc(matrix1, matrix2, matrix3) is a
+ * all three arguments are Eigen expressions.
+ * For example, the return type of betainc(matrix1, matrix2, matrix3) is a
  * CwiseTernaryOp.
-  *
-  * Most of the time, this is the only way that it is used, so you typically
+ *
+ * Most of the time, this is the only way that it is used, so you typically
  * don't have to name
-  * CwiseTernaryOp types explicitly.
-  *
-  * \sa MatrixBase::ternaryExpr(const MatrixBase<Argument2> &, const
+ * CwiseTernaryOp types explicitly.
+ *
+ * \sa MatrixBase::ternaryExpr(const MatrixBase<Argument2> &, const
  * MatrixBase<Argument3> &, const CustomTernaryOp &) const, class CwiseBinaryOp,
  * class CwiseUnaryOp, class CwiseNullaryOp
-  */
+ */
 template <typename TernaryOp, typename Arg1Type, typename Arg2Type,
           typename Arg3Type>
 class CwiseTernaryOp : public CwiseTernaryOpImpl<
                            TernaryOp, Arg1Type, Arg2Type, Arg3Type,
                            typename internal::traits<Arg1Type>::StorageKind>,
-                       internal::no_assignment_operator
-{
+                       internal::no_assignment_operator {
  public:
   typedef typename internal::remove_all<Arg1Type>::type Arg1;
   typedef typename internal::remove_all<Arg2Type>::type Arg2;
@@ -113,14 +112,16 @@ class CwiseTernaryOp : public CwiseTernaryOpImpl<
     EIGEN_STATIC_ASSERT_SAME_MATRIX_SIZE(Arg1, Arg3)
 
     // The index types should match
-    EIGEN_STATIC_ASSERT((internal::is_same<
-                         typename internal::traits<Arg1Type>::StorageKind,
-                         typename internal::traits<Arg2Type>::StorageKind>::value),
-                        STORAGE_KIND_MUST_MATCH)
-    EIGEN_STATIC_ASSERT((internal::is_same<
-                         typename internal::traits<Arg1Type>::StorageKind,
-                         typename internal::traits<Arg3Type>::StorageKind>::value),
-                        STORAGE_KIND_MUST_MATCH)
+    EIGEN_STATIC_ASSERT(
+        (internal::is_same<
+            typename internal::traits<Arg1Type>::StorageKind,
+            typename internal::traits<Arg2Type>::StorageKind>::value),
+        STORAGE_KIND_MUST_MATCH)
+    EIGEN_STATIC_ASSERT(
+        (internal::is_same<
+            typename internal::traits<Arg1Type>::StorageKind,
+            typename internal::traits<Arg3Type>::StorageKind>::value),
+        STORAGE_KIND_MUST_MATCH)
 
     eigen_assert(a1.rows() == a2.rows() && a1.cols() == a2.cols() &&
                  a1.rows() == a3.rows() && a1.cols() == a3.cols());

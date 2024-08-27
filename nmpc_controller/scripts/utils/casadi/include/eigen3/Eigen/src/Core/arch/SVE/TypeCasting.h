@@ -34,16 +34,18 @@ EIGEN_STRONG_INLINE PacketXi pcast<PacketXf, PacketXi>(const PacketXf& a) {
 }
 
 template <>
-EIGEN_STRONG_INLINE PacketXf preinterpret<PacketXf, PacketXi>(const PacketXi& a) {
+EIGEN_STRONG_INLINE PacketXf
+preinterpret<PacketXf, PacketXi>(const PacketXi& a) {
   return svreinterpret_f32_s32(a);
 }
 
 template <>
-EIGEN_STRONG_INLINE PacketXi preinterpret<PacketXi, PacketXf>(const PacketXf& a) {
+EIGEN_STRONG_INLINE PacketXi
+preinterpret<PacketXi, PacketXf>(const PacketXf& a) {
   return svreinterpret_s32_f32(a);
 }
 
 }  // namespace internal
 }  // namespace Eigen
 
-#endif // EIGEN_TYPE_CASTING_SVE_H
+#endif  // EIGEN_TYPE_CASTING_SVE_H

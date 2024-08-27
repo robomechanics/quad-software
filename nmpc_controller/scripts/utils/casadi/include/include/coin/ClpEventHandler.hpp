@@ -12,9 +12,10 @@
 This is just here to allow for event handling.  By event I mean a Clp event
 e.g. end of values pass.
 
-One use would be to let a user handle a system event e.g. Control-C.  This could be done
-by deriving a class MyEventHandler which knows about such events.  If one occurs
-MyEventHandler::event() could clear event status and return 3 (stopped).
+One use would be to let a user handle a system event e.g. Control-C.  This could
+be done by deriving a class MyEventHandler which knows about such events.  If
+one occurs MyEventHandler::event() could clear event status and return 3
+(stopped).
 
 Clp would then return to user code.
 
@@ -25,39 +26,38 @@ User can derive and construct from CbcModel  - not pretty
 */
 
 class ClpEventHandler {
-
-public:
+ public:
   /** enums for what sort of event.
 
          These will also be returned in ClpModel::secondaryStatus() as int
      */
   enum Event {
-    endOfIteration = 100, // used to set secondary status
-    endOfFactorization, // after gutsOfSolution etc
+    endOfIteration = 100,  // used to set secondary status
+    endOfFactorization,    // after gutsOfSolution etc
     endOfValuesPass,
-    node, // for Cbc
-    treeStatus, // for Cbc
-    solution, // for Cbc
-    theta, // hit in parametrics
-    pivotRow, // used to choose pivot row
-    presolveStart, // ClpSolve presolve start
-    presolveSize, // sees if ClpSolve presolve too big or too small
-    presolveInfeasible, // ClpSolve presolve infeasible
-    presolveBeforeSolve, // ClpSolve presolve before solve
-    presolveAfterFirstSolve, // ClpSolve presolve after solve
-    presolveAfterSolve, // ClpSolve presolve after solve
-    presolveEnd, // ClpSolve presolve end
-    goodFactorization, // before gutsOfSolution
-    complicatedPivotIn, // in modifyCoefficients
-    noCandidateInPrimal, // tentative end
-    looksEndInPrimal, // About to declare victory (or defeat)
-    endInPrimal, // Victory (or defeat)
+    node,                     // for Cbc
+    treeStatus,               // for Cbc
+    solution,                 // for Cbc
+    theta,                    // hit in parametrics
+    pivotRow,                 // used to choose pivot row
+    presolveStart,            // ClpSolve presolve start
+    presolveSize,             // sees if ClpSolve presolve too big or too small
+    presolveInfeasible,       // ClpSolve presolve infeasible
+    presolveBeforeSolve,      // ClpSolve presolve before solve
+    presolveAfterFirstSolve,  // ClpSolve presolve after solve
+    presolveAfterSolve,       // ClpSolve presolve after solve
+    presolveEnd,              // ClpSolve presolve end
+    goodFactorization,        // before gutsOfSolution
+    complicatedPivotIn,       // in modifyCoefficients
+    noCandidateInPrimal,      // tentative end
+    looksEndInPrimal,         // About to declare victory (or defeat)
+    endInPrimal,              // Victory (or defeat)
     beforeStatusOfProblemInPrimal,
     startOfStatusOfProblemInPrimal,
-    complicatedPivotOut, // in modifyCoefficients
-    noCandidateInDual, // tentative end
-    looksEndInDual, // About to declare victory (or defeat)
-    endInDual, // Victory (or defeat)
+    complicatedPivotOut,  // in modifyCoefficients
+    noCandidateInDual,    // tentative end
+    looksEndInDual,       // About to declare victory (or defeat)
+    endInDual,            // Victory (or defeat)
     beforeStatusOfProblemInDual,
     startOfStatusOfProblemInDual,
     startOfIterationInDual,
@@ -72,8 +72,8 @@ public:
     afterChooseIncoming,
     beforeCreateNonLinear,
     afterCreateNonLinear,
-    startOfCrossover, // in Idiot
-    noTheta // At end (because no pivot)
+    startOfCrossover,  // in Idiot
+    noTheta            // At end (because no pivot)
   };
   /**@name Virtual method that the derived classes should provide.
       The base class instance does nothing and as event() is only useful method
@@ -81,13 +81,13 @@ public:
      */
   //@{
   /** This can do whatever it likes.  If return code -1 then carries on
-         if 0 sets ClpModel::status() to 5 (stopped by event) and will return to user.
-         At present if <-1 carries on and if >0 acts as if 0 - this may change.
-	 For ClpSolve 2 -> too big return status of -2 and -> too small 3
+         if 0 sets ClpModel::status() to 5 (stopped by event) and will return to
+     user. At present if <-1 carries on and if >0 acts as if 0 - this may
+     change. For ClpSolve 2 -> too big return status of -2 and -> too small 3
      */
   virtual int event(Event whichEvent);
   /** This can do whatever it likes.  Return code -1 means no action.
-	 This passes in something
+         This passes in something
      */
   virtual int eventWithInfo(Event whichEvent, void *info);
   //@}
@@ -114,13 +114,10 @@ public:
   /** set model. */
   void setSimplex(ClpSimplex *model);
   /// Get model
-  inline ClpSimplex *simplex() const
-  {
-    return model_;
-  }
+  inline ClpSimplex *simplex() const { return model_; }
   //@}
 
-protected:
+ protected:
   /**@name Data members
         The data members are protected to allow access for derived classes. */
   //@{
@@ -136,10 +133,9 @@ would otherwise give up
 */
 
 class ClpDisasterHandler {
-
-public:
+ public:
   /**@name Virtual methods that the derived classe should provide.
-     */
+   */
   //@{
   /// Into simplex
   virtual void intoSimplex() = 0;
@@ -173,13 +169,10 @@ public:
   /** set model. */
   void setSimplex(ClpSimplex *model);
   /// Get model
-  inline ClpSimplex *simplex() const
-  {
-    return model_;
-  }
+  inline ClpSimplex *simplex() const { return model_; }
   //@}
 
-protected:
+ protected:
   /**@name Data members
         The data members are protected to allow access for derived classes. */
   //@{
@@ -190,4 +183,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

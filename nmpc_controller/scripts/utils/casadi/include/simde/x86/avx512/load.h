@@ -34,31 +34,30 @@ SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512i
-simde_mm512_load_si512 (void const * mem_addr) {
-  #if defined(SIMDE_X86_AVX512F_NATIVE)
-    return _mm512_load_si512(SIMDE_ALIGN_ASSUME_LIKE(mem_addr, simde__m512i));
-  #else
-    simde__m512i r;
-    simde_memcpy(&r, SIMDE_ALIGN_ASSUME_LIKE(mem_addr, simde__m512i), sizeof(r));
-    return r;
-  #endif
+simde__m512i simde_mm512_load_si512(void const* mem_addr) {
+#if defined(SIMDE_X86_AVX512F_NATIVE)
+  return _mm512_load_si512(SIMDE_ALIGN_ASSUME_LIKE(mem_addr, simde__m512i));
+#else
+  simde__m512i r;
+  simde_memcpy(&r, SIMDE_ALIGN_ASSUME_LIKE(mem_addr, simde__m512i), sizeof(r));
+  return r;
+#endif
 }
 #define simde_mm512_load_epi8(mem_addr) simde_mm512_load_si512(mem_addr)
 #define simde_mm512_load_epi16(mem_addr) simde_mm512_load_si512(mem_addr)
 #define simde_mm512_load_epi32(mem_addr) simde_mm512_load_si512(mem_addr)
 #define simde_mm512_load_epi64(mem_addr) simde_mm512_load_si512(mem_addr)
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_load_epi8
-  #undef _mm512_load_epi16
-  #undef _mm512_load_epi32
-  #undef _mm512_load_epi64
-  #undef _mm512_load_si512
-  #define _mm512_load_si512(a) simde_mm512_load_si512(a)
-  #define _mm512_load_epi8(a) simde_mm512_load_si512(a)
-  #define _mm512_load_epi16(a) simde_mm512_load_si512(a)
-  #define _mm512_load_epi32(a) simde_mm512_load_si512(a)
-  #define _mm512_load_epi64(a) simde_mm512_load_si512(a)
+#undef _mm512_load_epi8
+#undef _mm512_load_epi16
+#undef _mm512_load_epi32
+#undef _mm512_load_epi64
+#undef _mm512_load_si512
+#define _mm512_load_si512(a) simde_mm512_load_si512(a)
+#define _mm512_load_epi8(a) simde_mm512_load_si512(a)
+#define _mm512_load_epi16(a) simde_mm512_load_si512(a)
+#define _mm512_load_epi32(a) simde_mm512_load_si512(a)
+#define _mm512_load_epi64(a) simde_mm512_load_si512(a)
 #endif
 
 SIMDE_END_DECLS_

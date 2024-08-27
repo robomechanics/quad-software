@@ -9,7 +9,7 @@
 class ClpSimplex;
 class CoinIndexedVector;
 
-//#############################################################################
+// #############################################################################
 
 /** Dual Row Pivot Abstract Base Class
 
@@ -20,8 +20,7 @@ e.g. Dantzig choice then some functions may be null.
 */
 
 class ClpDualRowPivot {
-
-public:
+ public:
   ///@name Algorithmic methods
   //@{
 
@@ -31,10 +30,9 @@ public:
   /** Updates weights and returns pivot alpha.
          Also does FT update */
   virtual double updateWeights(CoinIndexedVector *input,
-    CoinIndexedVector *spare,
-    CoinIndexedVector *spare2,
-    CoinIndexedVector *updatedColumn)
-    = 0;
+                               CoinIndexedVector *spare,
+                               CoinIndexedVector *spare2,
+                               CoinIndexedVector *updatedColumn) = 0;
 
   /** Updates primal solution (and maybe list of candidates)
          Uses input vector which it deletes
@@ -43,10 +41,8 @@ public:
          means everything is always in sync
      */
   /* FIXME: this was pure virtul (=0). Why? */
-  virtual void updatePrimalSolution(CoinIndexedVector *input,
-    double theta,
-    double &changeInObjective)
-    = 0;
+  virtual void updatePrimalSolution(CoinIndexedVector *input, double theta,
+                                    double &changeInObjective) = 0;
   /** Saves any weights round factorization as pivot rows may change
          Will be empty unless steepest edge (will save model)
          May also recompute infeasibility stuff
@@ -56,7 +52,7 @@ public:
             (e.g. check for infeasible)
          4) as 2 but restore weights from previous snapshot
          5) for strong branching - initialize to 1 , infeasibilities
-	 6) scale back
+         6) scale back
          7) for strong branching - initialize full weights , infeasibilities
      */
   virtual void saveWeights(ClpSimplex *model, int mode);
@@ -67,10 +63,7 @@ public:
   /// Gets rid of all arrays (may be empty)
   virtual void clearArrays();
   /// Returns true if would not find any row
-  virtual bool looksOptimal() const
-  {
-    return false;
-  }
+  virtual bool looksOptimal() const { return false; }
   /// Called when maximum pivots changes
   virtual void maximumPivotsChanged() {}
   //@}
@@ -97,28 +90,19 @@ public:
   ///@name Other
   //@{
   /// Returns model
-  inline ClpSimplex *model()
-  {
-    return model_;
-  }
+  inline ClpSimplex *model() { return model_; }
 
   /// Sets model (normally to NULL)
-  inline void setModel(ClpSimplex *newmodel)
-  {
-    model_ = newmodel;
-  }
+  inline void setModel(ClpSimplex *newmodel) { model_ = newmodel; }
 
   /// Returns type (above 63 is extra information)
-  inline int type()
-  {
-    return type_;
-  }
+  inline int type() { return type_; }
 
   //@}
 
   //---------------------------------------------------------------------------
 
-protected:
+ protected:
   ///@name Protected member data
   //@{
   /// Pointer to model
@@ -128,9 +112,9 @@ protected:
   //@}
 };
 #ifndef CLP_DUAL_COLUMN_MULTIPLIER
-//#define CLP_DUAL_COLUMN_MULTIPLIER 0.99999
+// #define CLP_DUAL_COLUMN_MULTIPLIER 0.99999
 #endif
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

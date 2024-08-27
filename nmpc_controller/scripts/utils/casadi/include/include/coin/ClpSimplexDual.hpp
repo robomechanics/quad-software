@@ -21,8 +21,7 @@
 */
 
 class ClpSimplexDual : public ClpSimplex {
-
-public:
+ public:
   /**@name Description of algorithm */
   //@{
   /** Dual algorithm
@@ -38,10 +37,10 @@ public:
         to other bound to make dual feasible.  If the distance is greater
         then we make up a fake bound updatedDualBound_ away from one bound.
         If we end up optimal or primal infeasible, we check to see if
-        bounds okay.  If so we have finished, if not we increase updatedDualBound_
-        and continue (after checking if unbounded). I am undecided about
-        free variables - there is coding but I am not sure about it.  At
-        present I put them in basis anyway.
+        bounds okay.  If so we have finished, if not we increase
+     updatedDualBound_ and continue (after checking if unbounded). I am
+     undecided about free variables - there is coding but I am not sure about
+     it.  At present I put them in basis anyway.
 
         The code is designed to take advantage of sparsity so arrays are
         seldom zeroed out from scratch or gone over in their entirety.
@@ -124,15 +123,14 @@ public:
          status and number of iterations
      */
   int strongBranching(int numberVariables, const int *variables,
-    double *newLower, double *newUpper,
-    double **outputSolution,
-    int *outputStatus, int *outputIterations,
-    bool stopOnFirstInfeasible = true,
-    bool alwaysFinish = false,
-    int startFinishOptions = 0);
+                      double *newLower, double *newUpper,
+                      double **outputSolution, int *outputStatus,
+                      int *outputIterations, bool stopOnFirstInfeasible = true,
+                      bool alwaysFinish = false, int startFinishOptions = 0);
   /// This does first part of StrongBranching
   ClpFactorization *setupForStrongBranching(char *arrays, int numberRows,
-    int numberColumns, bool solveLp = false);
+                                            int numberColumns,
+                                            bool solveLp = false);
   /// This cleans up after strong branching
   void cleanupAfterStrongBranching(ClpFactorization *factorization);
   //@}
@@ -161,22 +159,18 @@ public:
          The output vector has movement of primal
          solution (row length array) */
   int updateDualsInDual(CoinIndexedVector *rowArray,
-    CoinIndexedVector *columnArray,
-    CoinIndexedVector *outputArray,
-    double theta,
-    double &objectiveChange,
-    bool fullRecompute);
+                        CoinIndexedVector *columnArray,
+                        CoinIndexedVector *outputArray, double theta,
+                        double &objectiveChange, bool fullRecompute);
   /** The duals are updated by the given arrays.
          This is in values pass - so no changes to primal is made
      */
   void updateDualsInValuesPass(CoinIndexedVector *rowArray,
-    CoinIndexedVector *columnArray,
-    double theta);
+                               CoinIndexedVector *columnArray, double theta);
   /** While updateDualsInDual sees what effect is of flip
          this does actual flipping.
      */
-  void flipBounds(CoinIndexedVector *rowArray,
-    CoinIndexedVector *columnArray);
+  void flipBounds(CoinIndexedVector *rowArray, CoinIndexedVector *columnArray);
   /**
          Row array has row part of pivot row
          Column array has column part.
@@ -188,27 +182,25 @@ public:
          variables are being flipped.
          Returns best possible pivot value
      */
-  double dualColumn(CoinIndexedVector *rowArray,
-    CoinIndexedVector *columnArray,
-    CoinIndexedVector *spareArray,
-    CoinIndexedVector *spareArray2,
-    double accpetablePivot,
-    CoinBigIndex *dubiousWeights);
+  double dualColumn(CoinIndexedVector *rowArray, CoinIndexedVector *columnArray,
+                    CoinIndexedVector *spareArray,
+                    CoinIndexedVector *spareArray2, double accpetablePivot,
+                    CoinBigIndex *dubiousWeights);
   /// Does first bit of dualColumn
   int dualColumn0(const CoinIndexedVector *rowArray,
-    const CoinIndexedVector *columnArray,
-    CoinIndexedVector *spareArray,
-    double acceptablePivot,
-    double &upperReturn, double &badFree);
+                  const CoinIndexedVector *columnArray,
+                  CoinIndexedVector *spareArray, double acceptablePivot,
+                  double &upperReturn, double &badFree);
   /**
          Row array has row part of pivot row
          Column array has column part.
          This sees what is best thing to do in dual values pass
-         if sequenceIn==sequenceOut can change dual on chosen row and leave variable in basis
+         if sequenceIn==sequenceOut can change dual on chosen row and leave
+     variable in basis
      */
   void checkPossibleValuesMove(CoinIndexedVector *rowArray,
-    CoinIndexedVector *columnArray,
-    double acceptablePivot);
+                               CoinIndexedVector *columnArray,
+                               double acceptablePivot);
   /**
          Row array has row part of pivot row
          Column array has column part.
@@ -216,8 +208,8 @@ public:
          If sequenceIn_ < 0 then can't do anything
      */
   void checkPossibleCleanup(CoinIndexedVector *rowArray,
-    CoinIndexedVector *columnArray,
-    double acceptablePivot);
+                            CoinIndexedVector *columnArray,
+                            double acceptablePivot);
   /**
          This sees if we can move duals in dual values pass.
          This is done before any pivoting
@@ -243,7 +235,7 @@ public:
          If 2 sets to original (just changed)
      */
   int changeBounds(int initialize, CoinIndexedVector *outputArray,
-    double &changeCost);
+                   double &changeCost);
   /// Just checks if any fake bounds active - if so returns number
   int checkFakeBounds() const;
   /** As changeBounds but just changes new bounds for a single variable.
@@ -254,7 +246,7 @@ public:
   /** Checks if tentative optimal actually means unbounded in dual
          Returns -3 if not, 2 if is unbounded */
   int checkUnbounded(CoinIndexedVector *ray, CoinIndexedVector *spare,
-    double changeCost);
+                     double changeCost);
   /**  Refactorizes if necessary
           Checks if finished.  Updates status.
           lastCleaned refers to iteration at which some objective/feasibility
@@ -264,9 +256,8 @@ public:
                - 1 normal -if good update save
            - 2 restoring from saved
      */
-  void statusOfProblemInDual(int &lastCleaned, int type,
-    double *givenDjs, ClpDataSave &saveData,
-    int ifValuesPass);
+  void statusOfProblemInDual(int &lastCleaned, int type, double *givenDjs,
+                             ClpDataSave &saveData, int ifValuesPass);
   /** Perturbs problem (method depends on perturbation())
          returns nonzero if should go to dual */
   int perturb();
@@ -281,8 +272,8 @@ public:
   int numberAtFakeBound();
 
   /** Pivot in a variable and choose an outgoing one.  Assumes dual
-         feasible - will not go through a reduced cost.  Returns step length in theta
-         Return codes as before but -1 means no acceptable pivot
+         feasible - will not go through a reduced cost.  Returns step length in
+     theta Return codes as before but -1 means no acceptable pivot
      */
   int pivotResultPart1();
   /** Get next free , -1 if none */
@@ -292,8 +283,8 @@ public:
   int startupSolve(int ifValuesPass, double *saveDuals, int startFinishOptions);
   void finishSolve(int startFinishOptions);
   void gutsOfDual(int ifValuesPass, double *&saveDuals, int initialStatus,
-    ClpDataSave &saveData);
-  //int dual2(int ifValuesPass,int startFinishOptions=0);
+                  ClpDataSave &saveData);
+  // int dual2(int ifValuesPass,int startFinishOptions=0);
   void resetFakeBounds(int type);
 
   //@}
@@ -301,4 +292,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

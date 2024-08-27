@@ -9,8 +9,8 @@
 #define PROXSUITE_PROXQP_SPARSE_WRAPPER_HPP
 #include <proxsuite/proxqp/results.hpp>
 #include <proxsuite/proxqp/settings.hpp>
-#include <proxsuite/proxqp/sparse/solver.hpp>
 #include <proxsuite/proxqp/sparse/helpers.hpp>
+#include <proxsuite/proxqp/sparse/solver.hpp>
 
 namespace proxsuite {
 namespace proxqp {
@@ -24,10 +24,10 @@ namespace sparse {
  *
  * Example usage:
  * ```cpp
-#include <Eigen/Core>
 #include <Eigen/Cholesky>
-#include <proxsuite/proxqp/dense/dense.hpp>
+#include <Eigen/Core>
 #include <proxsuite/linalg/veg/util/dbg.hpp>
+#include <proxsuite/proxqp/dense/dense.hpp>
 #include <util.hpp>
 
 using T = double;
@@ -86,9 +86,8 @@ Qp.results.y + qp.C.transpose() * Qp.results.z) .lpNorm<Eigen::Infinity>();
 }
  * ```
  */
-template<typename T, typename I>
-struct QP
-{
+template <typename T, typename I>
+struct QP {
   Results<T> results;
   Settings<T> settings;
   Model<T, I> model;
@@ -101,12 +100,11 @@ struct QP
    * @param n_in number of inequality constraints.
    */
   QP(isize dim, isize n_eq, isize n_in)
-    : results(dim, n_eq, n_in)
-    , settings()
-    , model(dim, n_eq, n_in)
-    , work()
-    , ruiz(dim, n_eq + n_in, 1e-3, 10, preconditioner::Symmetry::UPPER)
-  {
+      : results(dim, n_eq, n_in),
+        settings(),
+        model(dim, n_eq, n_in),
+        work(),
+        ruiz(dim, n_eq + n_in, 1e-3, 10, preconditioner::Symmetry::UPPER) {
     work.timer.stop();
     work.internal.do_symbolic_fact = true;
     work.internal.is_initialized = false;
@@ -119,11 +117,9 @@ struct QP
    * @param C boolean mask of the inequality constraint matrix input defining
    * the QP model.
    */
-  QP(const SparseMat<bool, I>& H,
-     const SparseMat<bool, I>& A,
+  QP(const SparseMat<bool, I>& H, const SparseMat<bool, I>& A,
      const SparseMat<bool, I>& C)
-    : QP(H.rows(), A.rows(), C.rows())
-  {
+      : QP(H.rows(), A.rows(), C.rows()) {
     if (settings.compute_timings) {
       work.timer.stop();
       work.timer.start();
@@ -132,18 +128,15 @@ struct QP
     SparseMat<bool, I> AT = A.transpose();
     SparseMat<bool, I> CT = C.transpose();
     proxsuite::linalg::sparse::MatRef<bool, I> Href = {
-      proxsuite::linalg::sparse::from_eigen, H_triu
-    };
+        proxsuite::linalg::sparse::from_eigen, H_triu};
     proxsuite::linalg::sparse::MatRef<bool, I> ATref = {
-      proxsuite::linalg::sparse::from_eigen, AT
-    };
+        proxsuite::linalg::sparse::from_eigen, AT};
     proxsuite::linalg::sparse::MatRef<bool, I> CTref = {
-      proxsuite::linalg::sparse::from_eigen, CT
-    };
-    work.setup_symbolic_factorizaton(
-      model, Href.symbolic(), ATref.symbolic(), CTref.symbolic());
+        proxsuite::linalg::sparse::from_eigen, CT};
+    work.setup_symbolic_factorizaton(model, Href.symbolic(), ATref.symbolic(),
+                                     CTref.symbolic());
     if (settings.compute_timings) {
-      results.info.setup_time = work.timer.elapsed().user; // in microseconds
+      results.info.setup_time = work.timer.elapsed().user;  // in microseconds
     }
   }
 
@@ -162,91 +155,75 @@ struct QP
    * @param mu_eq proximal step size wrt equality constrained multiplier.
    * @param mu_in proximal step size wrt inequality constrained multiplier.
    */
-  void init(optional<SparseMat<T, I>> H,
-            optional<VecRef<T>> g,
-            optional<SparseMat<T, I>> A,
-            optional<VecRef<T>> b,
-            optional<SparseMat<T, I>> C,
-            optional<VecRef<T>> l,
-            optional<VecRef<T>> u,
-            bool compute_preconditioner_ = true,
-            optional<T> rho = nullopt,
-            optional<T> mu_eq = nullopt,
-            optional<T> mu_in = nullopt)
-  {
+  void init(optional<SparseMat<T, I>> H, optional<VecRef<T>> g,
+            optional<SparseMat<T, I>> A, optional<VecRef<T>> b,
+            optional<SparseMat<T, I>> C, optional<VecRef<T>> l,
+            optional<VecRef<T>> u, bool compute_preconditioner_ = true,
+            optional<T> rho = nullopt, optional<T> mu_eq = nullopt,
+            optional<T> mu_in = nullopt) {
     if (settings.compute_timings) {
       work.timer.stop();
       work.timer.start();
     }
     if (g != nullopt && g.value().size() != 0) {
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        g.value().size(),
-        model.dim,
-        "the dimension wrt the primal variable x variable for initializing g "
-        "is not valid.");
+          g.value().size(), model.dim,
+          "the dimension wrt the primal variable x variable for initializing g "
+          "is not valid.");
     } else {
       g.reset();
     }
     if (b != nullopt && b.value().size() != 0) {
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        b.value().size(),
-        model.n_eq,
-        "the dimension wrt equality constrained variables for initializing b "
-        "is not valid.");
+          b.value().size(), model.n_eq,
+          "the dimension wrt equality constrained variables for initializing b "
+          "is not valid.");
     } else {
       b.reset();
     }
     if (u != nullopt && u.value().size() != 0) {
-      PROXSUITE_CHECK_ARGUMENT_SIZE(
-        u.value().size(),
-        model.n_in,
-        "the dimension wrt inequality constrained variables for initializing u "
-        "is not valid.");
+      PROXSUITE_CHECK_ARGUMENT_SIZE(u.value().size(), model.n_in,
+                                    "the dimension wrt inequality constrained "
+                                    "variables for initializing u "
+                                    "is not valid.");
     } else {
       u.reset();
     }
     if (l != nullopt && l.value().size() != 0) {
-      PROXSUITE_CHECK_ARGUMENT_SIZE(
-        l.value().size(),
-        model.n_in,
-        "the dimension wrt inequality constrained variables for initializing l "
-        "is not valid.");
+      PROXSUITE_CHECK_ARGUMENT_SIZE(l.value().size(), model.n_in,
+                                    "the dimension wrt inequality constrained "
+                                    "variables for initializing l "
+                                    "is not valid.");
     } else {
       l.reset();
     }
     if (H != nullopt && H.value().size() != 0) {
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        H.value().rows(),
-        model.dim,
-        "the row dimension for initializing H is not valid.");
+          H.value().rows(), model.dim,
+          "the row dimension for initializing H is not valid.");
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        H.value().cols(),
-        model.dim,
-        "the column dimension for initializing H is not valid.");
+          H.value().cols(), model.dim,
+          "the column dimension for initializing H is not valid.");
     } else {
       H.reset();
     }
     if (A != nullopt && A.value().size() != 0) {
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        A.value().rows(),
-        model.n_eq,
-        "the row dimension for initializing A is not valid.");
+          A.value().rows(), model.n_eq,
+          "the row dimension for initializing A is not valid.");
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        A.value().cols(),
-        model.dim,
-        "the column dimension for initializing A is not valid.");
+          A.value().cols(), model.dim,
+          "the column dimension for initializing A is not valid.");
     } else {
       A.reset();
     }
     if (C != nullopt && C.value().size() != 0) {
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        C.value().rows(),
-        model.n_in,
-        "the row dimension for initializing C is not valid.");
+          C.value().rows(), model.n_in,
+          "the row dimension for initializing C is not valid.");
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        C.value().cols(),
-        model.dim,
-        "the column dimension for initializing C is not valid.");
+          C.value().cols(), model.dim,
+          "the column dimension for initializing C is not valid.");
     } else {
       C.reset();
     }
@@ -258,24 +235,24 @@ struct QP
       preconditioner_status = proxsuite::proxqp::PreconditionerStatus::IDENTITY;
     }
     proxsuite::proxqp::sparse::update_proximal_parameters(
-      settings, results, work, rho, mu_eq, mu_in);
+        settings, results, work, rho, mu_eq, mu_in);
 
     if (g != nullopt) {
       model.g = g.value();
-    } // else qpmodel.g remains initialzed to a matrix with zero elements or
-      // zero shape
+    }  // else qpmodel.g remains initialzed to a matrix with zero elements or
+       // zero shape
     if (b != nullopt) {
       model.b = b.value();
-    } // else qpmodel.b remains initialzed to a matrix with zero elements or
-      // zero shape
+    }  // else qpmodel.b remains initialzed to a matrix with zero elements or
+       // zero shape
     if (u != nullopt) {
       model.u = u.value();
-    } // else qpmodel.u remains initialzed to a matrix with zero elements or
-      // zero shape
+    }  // else qpmodel.u remains initialzed to a matrix with zero elements or
+       // zero shape
     if (l != nullopt) {
       model.l = l.value();
-    } // else qpmodel.l remains initialzed to a matrix with zero elements or
-      // zero shape
+    }  // else qpmodel.l remains initialzed to a matrix with zero elements or
+       // zero shape
 
     // avoid allocations when H is not nullopt
     SparseMat<T, I> AT(model.dim, model.n_eq);
@@ -292,36 +269,34 @@ struct QP
     }
     if (H != nullopt) {
       SparseMat<T, I> H_triu =
-        (H.value()).template triangularView<Eigen::Upper>();
+          (H.value()).template triangularView<Eigen::Upper>();
       sparse::QpView<T, I> qp = {
-        { proxsuite::linalg::sparse::from_eigen, H_triu },
-        { proxsuite::linalg::sparse::from_eigen, model.g },
-        { proxsuite::linalg::sparse::from_eigen, AT },
-        { proxsuite::linalg::sparse::from_eigen, model.b },
-        { proxsuite::linalg::sparse::from_eigen, CT },
-        { proxsuite::linalg::sparse::from_eigen, model.l },
-        { proxsuite::linalg::sparse::from_eigen, model.u }
-      };
+          {proxsuite::linalg::sparse::from_eigen, H_triu},
+          {proxsuite::linalg::sparse::from_eigen, model.g},
+          {proxsuite::linalg::sparse::from_eigen, AT},
+          {proxsuite::linalg::sparse::from_eigen, model.b},
+          {proxsuite::linalg::sparse::from_eigen, CT},
+          {proxsuite::linalg::sparse::from_eigen, model.l},
+          {proxsuite::linalg::sparse::from_eigen, model.u}};
       qp_setup(qp, results, model, work, settings, ruiz, preconditioner_status);
     } else {
       SparseMat<T, I> H_triu(model.dim, model.dim);
       H_triu.setZero();
       H_triu = (H.value()).template triangularView<Eigen::Upper>();
       sparse::QpView<T, I> qp = {
-        { proxsuite::linalg::sparse::from_eigen, H_triu },
-        { proxsuite::linalg::sparse::from_eigen, model.g },
-        { proxsuite::linalg::sparse::from_eigen, AT },
-        { proxsuite::linalg::sparse::from_eigen, model.b },
-        { proxsuite::linalg::sparse::from_eigen, CT },
-        { proxsuite::linalg::sparse::from_eigen, model.l },
-        { proxsuite::linalg::sparse::from_eigen, model.u }
-      };
+          {proxsuite::linalg::sparse::from_eigen, H_triu},
+          {proxsuite::linalg::sparse::from_eigen, model.g},
+          {proxsuite::linalg::sparse::from_eigen, AT},
+          {proxsuite::linalg::sparse::from_eigen, model.b},
+          {proxsuite::linalg::sparse::from_eigen, CT},
+          {proxsuite::linalg::sparse::from_eigen, model.l},
+          {proxsuite::linalg::sparse::from_eigen, model.u}};
       qp_setup(qp, results, model, work, settings, ruiz, preconditioner_status);
     }
     work.internal.is_initialized = true;
 
     if (settings.compute_timings) {
-      results.info.setup_time += work.timer.elapsed().user; // in microseconds
+      results.info.setup_time += work.timer.elapsed().user;  // in microseconds
     }
   };
   /*!
@@ -344,18 +319,12 @@ struct QP
    * @note The init method should be called before update. If it has not been
    * done before, init is called depending on the is_initialized flag.
    */
-  void update(const optional<SparseMat<T, I>> H,
-              optional<VecRef<T>> g,
-              const optional<SparseMat<T, I>> A,
-              optional<VecRef<T>> b,
-              const optional<SparseMat<T, I>> C,
-              optional<VecRef<T>> l,
-              optional<VecRef<T>> u,
-              bool update_preconditioner = true,
-              optional<T> rho = nullopt,
-              optional<T> mu_eq = nullopt,
-              optional<T> mu_in = nullopt)
-  {
+  void update(const optional<SparseMat<T, I>> H, optional<VecRef<T>> g,
+              const optional<SparseMat<T, I>> A, optional<VecRef<T>> b,
+              const optional<SparseMat<T, I>> C, optional<VecRef<T>> l,
+              optional<VecRef<T>> u, bool update_preconditioner = true,
+              optional<T> rho = nullopt, optional<T> mu_eq = nullopt,
+              optional<T> mu_in = nullopt) {
     if (!work.internal.is_initialized) {
       init(H, g, A, b, C, l, u, update_preconditioner, rho, mu_eq, mu_in);
       return;
@@ -376,74 +345,64 @@ struct QP
     isize n_eq = model.n_eq;
     isize n_in = model.n_in;
     proxsuite::linalg::sparse::MatMut<T, I> kkt_unscaled =
-      model.kkt_mut_unscaled();
+        model.kkt_mut_unscaled();
 
     auto kkt_top_n_rows = detail::top_rows_mut_unchecked(
-      proxsuite::linalg::veg::unsafe, kkt_unscaled, n);
+        proxsuite::linalg::veg::unsafe, kkt_unscaled, n);
 
     proxsuite::linalg::sparse::MatMut<T, I> H_unscaled =
-      detail::middle_cols_mut(kkt_top_n_rows, 0, n, model.H_nnz);
+        detail::middle_cols_mut(kkt_top_n_rows, 0, n, model.H_nnz);
 
     proxsuite::linalg::sparse::MatMut<T, I> AT_unscaled =
-      detail::middle_cols_mut(kkt_top_n_rows, n, n_eq, model.A_nnz);
+        detail::middle_cols_mut(kkt_top_n_rows, n, n_eq, model.A_nnz);
 
     proxsuite::linalg::sparse::MatMut<T, I> CT_unscaled =
-      detail::middle_cols_mut(kkt_top_n_rows, n + n_eq, n_in, model.C_nnz);
+        detail::middle_cols_mut(kkt_top_n_rows, n + n_eq, n_in, model.C_nnz);
 
     // check the model is valid
     if (g != nullopt) {
-      PROXSUITE_CHECK_ARGUMENT_SIZE(g.value().size(),
-                                    model.dim,
+      PROXSUITE_CHECK_ARGUMENT_SIZE(g.value().size(), model.dim,
                                     "the dimension wrt the primal variable x "
                                     "variable for updating g is not valid.");
     }
     if (b != nullopt) {
-      PROXSUITE_CHECK_ARGUMENT_SIZE(b.value().size(),
-                                    model.n_eq,
+      PROXSUITE_CHECK_ARGUMENT_SIZE(b.value().size(), model.n_eq,
                                     "the dimension wrt equality constrained "
                                     "variables for updating b is not valid.");
     }
     if (u != nullopt) {
-      PROXSUITE_CHECK_ARGUMENT_SIZE(u.value().size(),
-                                    model.n_in,
+      PROXSUITE_CHECK_ARGUMENT_SIZE(u.value().size(), model.n_in,
                                     "the dimension wrt inequality constrained "
                                     "variables for updating u is not valid.");
     }
     if (l != nullopt) {
-      PROXSUITE_CHECK_ARGUMENT_SIZE(l.value().size(),
-                                    model.n_in,
+      PROXSUITE_CHECK_ARGUMENT_SIZE(l.value().size(), model.n_in,
                                     "the dimension wrt inequality constrained "
                                     "variables for updating l is not valid.");
     }
     if (H != nullopt) {
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        H.value().rows(),
-        model.dim,
-        "the row dimension for updating H is not valid.");
+          H.value().rows(), model.dim,
+          "the row dimension for updating H is not valid.");
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        H.value().cols(),
-        model.dim,
-        "the column dimension for updating H is not valid.");
+          H.value().cols(), model.dim,
+          "the column dimension for updating H is not valid.");
     }
     if (A != nullopt) {
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        A.value().rows(),
-        model.n_eq,
-        "the row dimension for updating A is not valid.");
+          A.value().rows(), model.n_eq,
+          "the row dimension for updating A is not valid.");
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        A.value().cols(),
-        model.dim,
-        "the column dimension for updating A is not valid.");
+          A.value().cols(), model.dim,
+          "the column dimension for updating A is not valid.");
     }
     if (C != nullopt) {
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        C.value().rows(),
-        model.n_in,
-        "the row dimension for updating C is not valid.");
+          C.value().rows(), model.n_in,
+          "the row dimension for updating C is not valid.");
       PROXSUITE_CHECK_ARGUMENT_SIZE(
-        C.value().cols(),
-        model.dim,
-        "the column dimension for updating C is not valid.");
+          C.value().cols(), model.dim,
+          "the column dimension for updating C is not valid.");
     }
 
     // update the model
@@ -462,175 +421,157 @@ struct QP
     }
     if (H != nullopt) {
       SparseMat<T, I> H_triu =
-        H.value().template triangularView<Eigen::Upper>();
+          H.value().template triangularView<Eigen::Upper>();
       if (A != nullopt) {
         if (C != nullopt) {
           bool res =
-            have_same_structure(
-              H_unscaled.as_const(),
-              { proxsuite::linalg::sparse::from_eigen, H_triu }) &&
-            have_same_structure(AT_unscaled.as_const(),
-                                { proxsuite::linalg::sparse::from_eigen,
-                                  SparseMat<T, I>(A.value().transpose()) }) &&
-            have_same_structure(CT_unscaled.as_const(),
-                                { proxsuite::linalg::sparse::from_eigen,
-                                  SparseMat<T, I>(C.value().transpose()) });
+              have_same_structure(
+                  H_unscaled.as_const(),
+                  {proxsuite::linalg::sparse::from_eigen, H_triu}) &&
+              have_same_structure(AT_unscaled.as_const(),
+                                  {proxsuite::linalg::sparse::from_eigen,
+                                   SparseMat<T, I>(A.value().transpose())}) &&
+              have_same_structure(CT_unscaled.as_const(),
+                                  {proxsuite::linalg::sparse::from_eigen,
+                                   SparseMat<T, I>(C.value().transpose())});
           /* TO PUT IN DEBUG MODE
           std::cout << "have same structure = " << res << std::endl;
           */
           if (res) {
-            copy(H_unscaled,
-                 { proxsuite::linalg::sparse::from_eigen,
-                   H_triu }); // copy rhs into lhs
+            copy(H_unscaled, {proxsuite::linalg::sparse::from_eigen,
+                              H_triu});  // copy rhs into lhs
             copy(
-              AT_unscaled,
-              { proxsuite::linalg::sparse::from_eigen,
-                SparseMat<T, I>(A.value().transpose()) }); // copy rhs into lhs
+                AT_unscaled,
+                {proxsuite::linalg::sparse::from_eigen,
+                 SparseMat<T, I>(A.value().transpose())});  // copy rhs into lhs
             copy(
-              CT_unscaled,
-              { proxsuite::linalg::sparse::from_eigen,
-                SparseMat<T, I>(C.value().transpose()) }); // copy rhs into lhs
+                CT_unscaled,
+                {proxsuite::linalg::sparse::from_eigen,
+                 SparseMat<T, I>(C.value().transpose())});  // copy rhs into lhs
           }
         } else {
           bool res =
-            have_same_structure(
-              H_unscaled.as_const(),
-              { proxsuite::linalg::sparse::from_eigen, H_triu }) &&
-            have_same_structure(AT_unscaled.as_const(),
-                                { proxsuite::linalg::sparse::from_eigen,
-                                  SparseMat<T, I>(A.value().transpose()) });
+              have_same_structure(
+                  H_unscaled.as_const(),
+                  {proxsuite::linalg::sparse::from_eigen, H_triu}) &&
+              have_same_structure(AT_unscaled.as_const(),
+                                  {proxsuite::linalg::sparse::from_eigen,
+                                   SparseMat<T, I>(A.value().transpose())});
           /* TO PUT IN DEBUG MODE
           std::cout << "have same structure = " << res << std::endl;
           */
           if (res) {
-            copy(H_unscaled,
-                 { proxsuite::linalg::sparse::from_eigen,
-                   H_triu }); // copy rhs into lhs
+            copy(H_unscaled, {proxsuite::linalg::sparse::from_eigen,
+                              H_triu});  // copy rhs into lhs
             copy(
-              AT_unscaled,
-              { proxsuite::linalg::sparse::from_eigen,
-                SparseMat<T, I>(A.value().transpose()) }); // copy rhs into lhs
+                AT_unscaled,
+                {proxsuite::linalg::sparse::from_eigen,
+                 SparseMat<T, I>(A.value().transpose())});  // copy rhs into lhs
           }
         }
       } else if (C != nullopt) {
         bool res =
-          have_same_structure(
-            H_unscaled.as_const(),
-            { proxsuite::linalg::sparse::from_eigen, H_triu }) &&
-          have_same_structure(CT_unscaled.as_const(),
-                              { proxsuite::linalg::sparse::from_eigen,
-                                SparseMat<T, I>(C.value().transpose()) });
+            have_same_structure(
+                H_unscaled.as_const(),
+                {proxsuite::linalg::sparse::from_eigen, H_triu}) &&
+            have_same_structure(CT_unscaled.as_const(),
+                                {proxsuite::linalg::sparse::from_eigen,
+                                 SparseMat<T, I>(C.value().transpose())});
         /* TO PUT IN DEBUG MODE
         std::cout << "have same structure = " << res << std::endl;
         */
         if (res) {
-          copy(H_unscaled,
-               { proxsuite::linalg::sparse::from_eigen,
-                 H_triu }); // copy rhs into lhs
+          copy(H_unscaled, {proxsuite::linalg::sparse::from_eigen,
+                            H_triu});  // copy rhs into lhs
           copy(CT_unscaled,
-               { proxsuite::linalg::sparse::from_eigen,
-                 SparseMat<T, I>(C.value().transpose()) }); // copy rhs into lhs
+               {proxsuite::linalg::sparse::from_eigen,
+                SparseMat<T, I>(C.value().transpose())});  // copy rhs into lhs
         }
       } else {
-
         bool res = have_same_structure(
-          H_unscaled.as_const(),
-          { proxsuite::linalg::sparse::from_eigen, H_triu });
+            H_unscaled.as_const(),
+            {proxsuite::linalg::sparse::from_eigen, H_triu});
         /* TO PUT IN DEBUG MODE
         std::cout << "have same structure = " << res << std::endl;
         */
         if (res) {
-          copy(H_unscaled,
-               { proxsuite::linalg::sparse::from_eigen,
-                 H.value() }); // copy rhs into lhs
+          copy(H_unscaled, {proxsuite::linalg::sparse::from_eigen,
+                            H.value()});  // copy rhs into lhs
         }
       }
     } else if (A != nullopt) {
       if (C != nullopt) {
         bool res =
-          have_same_structure(AT_unscaled.as_const(),
-                              { proxsuite::linalg::sparse::from_eigen,
-                                SparseMat<T, I>(A.value().transpose()) }) &&
-          have_same_structure(CT_unscaled.as_const(),
-                              { proxsuite::linalg::sparse::from_eigen,
-                                SparseMat<T, I>(C.value().transpose()) });
+            have_same_structure(AT_unscaled.as_const(),
+                                {proxsuite::linalg::sparse::from_eigen,
+                                 SparseMat<T, I>(A.value().transpose())}) &&
+            have_same_structure(CT_unscaled.as_const(),
+                                {proxsuite::linalg::sparse::from_eigen,
+                                 SparseMat<T, I>(C.value().transpose())});
         /* TO PUT IN DEBUG MODE
         std::cout << "have same structure = " << res << std::endl;
         */
         if (res) {
           copy(AT_unscaled,
-               { proxsuite::linalg::sparse::from_eigen,
-                 SparseMat<T, I>(A.value().transpose()) }); // copy rhs into lhs
+               {proxsuite::linalg::sparse::from_eigen,
+                SparseMat<T, I>(A.value().transpose())});  // copy rhs into lhs
           copy(CT_unscaled,
-               { proxsuite::linalg::sparse::from_eigen,
-                 SparseMat<T, I>(C.value().transpose()) }); // copy rhs into lhs
+               {proxsuite::linalg::sparse::from_eigen,
+                SparseMat<T, I>(C.value().transpose())});  // copy rhs into lhs
         }
       } else {
-        bool res =
-          have_same_structure(AT_unscaled.as_const(),
-                              { proxsuite::linalg::sparse::from_eigen,
-                                SparseMat<T, I>(A.value().transpose()) });
+        bool res = have_same_structure(
+            AT_unscaled.as_const(), {proxsuite::linalg::sparse::from_eigen,
+                                     SparseMat<T, I>(A.value().transpose())});
         /* TO PUT IN DEBUG MODE
         std::cout << "have same structure = " << res << std::endl;
         */
         if (res) {
           copy(AT_unscaled,
-               { proxsuite::linalg::sparse::from_eigen,
-                 SparseMat<T, I>(A.value().transpose()) }); // copy rhs into lhs
+               {proxsuite::linalg::sparse::from_eigen,
+                SparseMat<T, I>(A.value().transpose())});  // copy rhs into lhs
         }
       }
     } else if (C != nullopt) {
-      bool res =
-        have_same_structure(CT_unscaled.as_const(),
-                            { proxsuite::linalg::sparse::from_eigen,
-                              SparseMat<T, I>(C.value().transpose()) });
+      bool res = have_same_structure(CT_unscaled.as_const(),
+                                     {proxsuite::linalg::sparse::from_eigen,
+                                      SparseMat<T, I>(C.value().transpose())});
       /* TO PUT IN DEBUG MODE
       std::cout << "have same structure = " << res << std::endl;
       */
       if (res) {
         copy(CT_unscaled,
-             { proxsuite::linalg::sparse::from_eigen,
-               SparseMat<T, I>(C.value().transpose()) }); // copy rhs into lhs
+             {proxsuite::linalg::sparse::from_eigen,
+              SparseMat<T, I>(C.value().transpose())});  // copy rhs into lhs
       }
     }
 
     SparseMat<T, I> H_triu =
-      H_unscaled.to_eigen().template triangularView<Eigen::Upper>();
+        H_unscaled.to_eigen().template triangularView<Eigen::Upper>();
     sparse::QpView<T, I> qp = {
-      { proxsuite::linalg::sparse::from_eigen, H_triu },
-      { proxsuite::linalg::sparse::from_eigen, model.g },
-      { proxsuite::linalg::sparse::from_eigen, AT_unscaled.to_eigen() },
-      { proxsuite::linalg::sparse::from_eigen, model.b },
-      { proxsuite::linalg::sparse::from_eigen, CT_unscaled.to_eigen() },
-      { proxsuite::linalg::sparse::from_eigen, model.l },
-      { proxsuite::linalg::sparse::from_eigen, model.u }
-    };
+        {proxsuite::linalg::sparse::from_eigen, H_triu},
+        {proxsuite::linalg::sparse::from_eigen, model.g},
+        {proxsuite::linalg::sparse::from_eigen, AT_unscaled.to_eigen()},
+        {proxsuite::linalg::sparse::from_eigen, model.b},
+        {proxsuite::linalg::sparse::from_eigen, CT_unscaled.to_eigen()},
+        {proxsuite::linalg::sparse::from_eigen, model.l},
+        {proxsuite::linalg::sparse::from_eigen, model.u}};
     proxsuite::proxqp::sparse::update_proximal_parameters(
-      settings, results, work, rho, mu_eq, mu_in);
-    qp_setup(qp,
-             results,
-             model,
-             work,
-             settings,
-             ruiz,
-             preconditioner_status); // store model value + performs scaling
-                                     // according to chosen options
+        settings, results, work, rho, mu_eq, mu_in);
+    qp_setup(qp, results, model, work, settings, ruiz,
+             preconditioner_status);  // store model value + performs scaling
+                                      // according to chosen options
     if (settings.compute_timings) {
-      results.info.setup_time = work.timer.elapsed().user; // in microseconds
+      results.info.setup_time = work.timer.elapsed().user;  // in microseconds
     }
   };
 
   /*!
    * Solves the QP problem using PRXOQP algorithm.
    */
-  void solve()
-  {
-    qp_solve( //
-      results,
-      model,
-      settings,
-      work,
-      ruiz);
+  void solve() {
+    qp_solve(  //
+        results, model, settings, work, ruiz);
   };
   /*!
    * Solves the QP problem using PROXQP algorithm and a warm start.
@@ -638,17 +579,11 @@ struct QP
    * @param y dual equality warm start.
    * @param z dual inequality warm start.
    */
-  void solve(optional<VecRef<T>> x,
-             optional<VecRef<T>> y,
-             optional<VecRef<T>> z)
-  {
+  void solve(optional<VecRef<T>> x, optional<VecRef<T>> y,
+             optional<VecRef<T>> z) {
     proxsuite::proxqp::sparse::warm_start(x, y, z, results, settings, model);
-    qp_solve( //
-      results,
-      model,
-      settings,
-      work,
-      ruiz);
+    qp_solve(  //
+        results, model, settings, work, ruiz);
   };
   /*!
    * Clean-ups solver's results.
@@ -691,37 +626,23 @@ struct QP
  * @param eps_duality_gap_rel relative accuracy threshold for the duality-gap
  * criterion.
  */
-template<typename T, typename I>
-proxqp::Results<T>
-solve(
-  optional<SparseMat<T, I>> H,
-  optional<VecRef<T>> g,
-  optional<SparseMat<T, I>> A,
-  optional<VecRef<T>> b,
-  optional<SparseMat<T, I>> C,
-  optional<VecRef<T>> l,
-  optional<VecRef<T>> u,
-  optional<VecRef<T>> x = nullopt,
-  optional<VecRef<T>> y = nullopt,
-  optional<VecRef<T>> z = nullopt,
-  optional<T> eps_abs = nullopt,
-  optional<T> eps_rel = nullopt,
-  optional<T> rho = nullopt,
-  optional<T> mu_eq = nullopt,
-  optional<T> mu_in = nullopt,
-  optional<bool> verbose = nullopt,
-  bool compute_preconditioner = true,
-  bool compute_timings = false,
-  optional<isize> max_iter = nullopt,
-  proxsuite::proxqp::InitialGuessStatus initial_guess =
-    proxsuite::proxqp::InitialGuessStatus::EQUALITY_CONSTRAINED_INITIAL_GUESS,
-  proxsuite::proxqp::SparseBackend sparse_backend =
-    proxsuite::proxqp::SparseBackend::Automatic,
-  bool check_duality_gap = false,
-  optional<T> eps_duality_gap_abs = nullopt,
-  optional<T> eps_duality_gap_rel = nullopt)
-{
-
+template <typename T, typename I>
+proxqp::Results<T> solve(
+    optional<SparseMat<T, I>> H, optional<VecRef<T>> g,
+    optional<SparseMat<T, I>> A, optional<VecRef<T>> b,
+    optional<SparseMat<T, I>> C, optional<VecRef<T>> l, optional<VecRef<T>> u,
+    optional<VecRef<T>> x = nullopt, optional<VecRef<T>> y = nullopt,
+    optional<VecRef<T>> z = nullopt, optional<T> eps_abs = nullopt,
+    optional<T> eps_rel = nullopt, optional<T> rho = nullopt,
+    optional<T> mu_eq = nullopt, optional<T> mu_in = nullopt,
+    optional<bool> verbose = nullopt, bool compute_preconditioner = true,
+    bool compute_timings = false, optional<isize> max_iter = nullopt,
+    proxsuite::proxqp::InitialGuessStatus initial_guess = proxsuite::proxqp::
+        InitialGuessStatus::EQUALITY_CONSTRAINED_INITIAL_GUESS,
+    proxsuite::proxqp::SparseBackend sparse_backend =
+        proxsuite::proxqp::SparseBackend::Automatic,
+    bool check_duality_gap = false, optional<T> eps_duality_gap_abs = nullopt,
+    optional<T> eps_duality_gap_rel = nullopt) {
   isize n(0);
   isize n_eq(0);
   isize n_in(0);
@@ -765,8 +686,8 @@ solve(
   return Qp.results;
 }
 
-} // namespace sparse
-} // namespace proxqp
-} // namespace proxsuite
+}  // namespace sparse
+}  // namespace proxqp
+}  // namespace proxsuite
 
 #endif /* end of include guard PROXSUITE_PROXQP_SPARSE_WRAPPER_HPP */

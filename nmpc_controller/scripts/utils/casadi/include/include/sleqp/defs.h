@@ -5,10 +5,11 @@
 extern "C" {
 #endif
 
-  typedef enum
-  {
-    SLEQP_SOLVER_GUROBI, SLEQP_SOLVER_HIGHS, SLEQP_SOLVER_SOPLEX
-  } SLEQP_LP_SOLVERS;
+typedef enum {
+  SLEQP_SOLVER_GUROBI,
+  SLEQP_SOLVER_HIGHS,
+  SLEQP_SOLVER_SOPLEX
+} SLEQP_LP_SOLVERS;
 
 #define SLEQP_VERSION "1.0.1"
 
@@ -21,7 +22,7 @@ extern "C" {
 /* #undef SLEQP_HAVE_QR_FACT */
 
 #ifdef SLEQP_HAVE_ATTRIBUTE_FORMAT
-#define SLEQP_FORMAT_PRINTF(index, first)                                      \
+#define SLEQP_FORMAT_PRINTF(index, first) \
   __attribute__((__format__(__printf__, index, first)))
 #else
 #define SLEQP_FORMAT_PRINTF(index, first)

@@ -85,8 +85,10 @@ class ThreadPoolTempl : public Eigen::ThreadPoolInterface {
       thread_data_[i].thread.reset();
   }
 
-  void SetStealPartitions(const std::vector<std::pair<unsigned, unsigned>>& partitions) {
-    eigen_plain_assert(partitions.size() == static_cast<std::size_t>(num_threads_));
+  void SetStealPartitions(
+      const std::vector<std::pair<unsigned, unsigned>>& partitions) {
+    eigen_plain_assert(partitions.size() ==
+                       static_cast<std::size_t>(num_threads_));
 
     // Pass this information to each thread queue.
     for (int i = 0; i < num_threads_; i++) {
@@ -255,7 +257,8 @@ class ThreadPoolTempl : public Eigen::ThreadPoolInterface {
 #ifndef EIGEN_THREAD_LOCAL
     std::unique_ptr<PerThread> new_pt(new PerThread());
     per_thread_map_mutex_.lock();
-    bool insertOK = per_thread_map_.emplace(GlobalThreadIdHash(), std::move(new_pt)).second;
+    bool insertOK =
+        per_thread_map_.emplace(GlobalThreadIdHash(), std::move(new_pt)).second;
     eigen_plain_assert(insertOK);
     EIGEN_UNUSED_VARIABLE(insertOK);
     per_thread_map_mutex_.unlock();
@@ -339,9 +342,10 @@ class ThreadPoolTempl : public Eigen::ThreadPoolInterface {
     unsigned r = Rand(&pt->rand);
     // Reduce r into [0, size) range, this utilizes trick from
     // https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
-    eigen_plain_assert(all_coprimes_[size - 1].size() < (1<<30));
+    eigen_plain_assert(all_coprimes_[size - 1].size() < (1 << 30));
     unsigned victim = ((uint64_t)r * (uint64_t)size) >> 32;
-    unsigned index = ((uint64_t) all_coprimes_[size - 1].size() * (uint64_t)r) >> 32;
+    unsigned index =
+        ((uint64_t)all_coprimes_[size - 1].size() * (uint64_t)r) >> 32;
     unsigned inc = all_coprimes_[size - 1][index];
 
     for (unsigned i = 0; i < size; i++) {
@@ -373,10 +377,7 @@ class ThreadPoolTempl : public Eigen::ThreadPoolInterface {
   }
 
   // Steals work from any other thread in the pool.
-  Task GlobalSteal() {
-    return Steal(0, num_threads_);
-  }
-
+  Task GlobalSteal() { return Steal(0, num_threads_); }
 
   // WaitForWork blocks until new work is available (returns true), or if it is
   // time to exit (returns false). Can optionally return a task to execute in t

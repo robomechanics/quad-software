@@ -12,13 +12,13 @@
 #ifndef ClpPESimplex_H
 #define ClpPESimplex_H
 
+#include <fstream>
+#include <iostream>
+
+#include "ClpPackedMatrix.hpp"
 #include "ClpSimplex.hpp"
 #include "CoinIndexedVector.hpp"
-#include "ClpPackedMatrix.hpp"
 #include "CoinTime.hpp"
-
-#include <iostream>
-#include <fstream>
 
 // #define PE_DEBUG 0
 
@@ -33,15 +33,15 @@ double PEdot(CoinIndexedVector &v1, CoinIndexedVector &v2);
 
 /** compute the product x^T*[A I] for the indices "which" of [A I] */
 void PEtransposeTimesSubsetAll(ClpSimplex *model, int number, const int *which,
-  const double *COIN_RESTRICT x, double *COIN_RESTRICT y,
-  const double *COIN_RESTRICT rowScale,
-  const double *COIN_RESTRICT columnScale);
+                               const double *COIN_RESTRICT x,
+                               double *COIN_RESTRICT y,
+                               const double *COIN_RESTRICT rowScale,
+                               const double *COIN_RESTRICT columnScale);
 
 /** BASE CLASS FOR THE IMPROVED SIMPLEX
-*/
+ */
 class ClpPESimplex {
-
-public:
+ public:
   /** Constructor */
   ClpPESimplex(ClpSimplex *model);
 
@@ -49,15 +49,16 @@ public:
   ~ClpPESimplex();
 
   /** BASIC GET METHODS */
-public:
+ public:
   inline int coPrimalDegenerates() { return coPrimalDegenerates_; }
   inline int coDualDegenerates() { return coDualDegenerates_; }
   inline int coCompatibleCols() { return coCompatibleCols_; }
   inline int coCompatibleRows() { return coCompatibleRows_; }
 
-  inline bool isCompatibleCol(int sequence) { return isCompatibleCol_[sequence]; }
-  inline bool isCompatibleRow(int row)
-  {
+  inline bool isCompatibleCol(int sequence) {
+    return isCompatibleCol_[sequence];
+  }
+  inline bool isCompatibleRow(int row) {
     assert(row >= 0 && row < numberRows_);
     return isCompatibleRow_[row];
   }
@@ -66,7 +67,7 @@ public:
   // check seems to be same model - returns false if size changed
   bool checkSize();
   /** PUBLIC METHODS RELATED TO COMPATIBILITY */
-public:
+ public:
   /** Updates the set of variables that are not at their bounds */
   void updatePrimalDegenerates();
 
@@ -74,20 +75,21 @@ public:
   void updateDualDegenerates();
 
   /** Identify the primal compatible columns
-        The input argument is a temporary array that is needed for the Clp's BTRAN */
+        The input argument is a temporary array that is needed for the Clp's
+     BTRAN */
   void identifyCompatibleCols(int number, const int *which,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *wPrimal);
+                              CoinIndexedVector *spareRow2,
+                              CoinIndexedVector *wPrimal);
 
   /** Identify the dual compatible rows */
   void identifyCompatibleRows(CoinIndexedVector *spare,
-    CoinIndexedVector *wDual);
+                              CoinIndexedVector *wDual);
 
   /** Update the dual compatible rows */
   void updateCompatibleRows(int sequence);
 
   /** DEBUG AND DISPLAY METHODS */
-public:
+ public:
 #if PE_DEBUG >= 1
   /** Print the set of variables within their bounds */
   void printPrimalDegenerates();
@@ -104,10 +106,17 @@ public:
 
   /** Tracking the degenerate iterations after compatible pivots */
   inline double lastObjectiveValue() { return lastObjectiveValue_; }
-  inline void updateLastObjectiveValue() { lastObjectiveValue_ = model_->objectiveValue(); }
-  inline bool isDegeneratePivot() { return fabs(model_->objectiveValue() - lastObjectiveValue_) < model_->dualTolerance(); }
+  inline void updateLastObjectiveValue() {
+    lastObjectiveValue_ = model_->objectiveValue();
+  }
+  inline bool isDegeneratePivot() {
+    return fabs(model_->objectiveValue() - lastObjectiveValue_) <
+           model_->dualTolerance();
+  }
   inline bool isLastPivotCompatible() { return isLastPivotCompatible_; }
-  inline void isLastPivotCompatible(bool yesOrNo) { isLastPivotCompatible_ = yesOrNo; }
+  inline void isLastPivotCompatible(bool yesOrNo) {
+    isLastPivotCompatible_ = yesOrNo;
+  }
 
   /** Start and stop the timer, and print the total recorded time */
   inline void startTimer() { timeTmp_ = CoinCpuTime(); }
@@ -120,9 +129,15 @@ public:
   /** Update and return the number of degenerate pivots and variables */
   inline void addDegeneratePivot() { coDegeneratePivots_++; }
   inline int coDegeneratePivots() { return coDegeneratePivots_; }
-  inline void addDegeneratePivotConsecutive() { coDegeneratePivotsConsecutive_++; }
-  inline void resetDegeneratePivotsConsecutive() { coDegeneratePivotsConsecutive_ = 0; }
-  inline int coDegeneratePivotsConsecutive() { return coDegeneratePivotsConsecutive_; }
+  inline void addDegeneratePivotConsecutive() {
+    coDegeneratePivotsConsecutive_++;
+  }
+  inline void resetDegeneratePivotsConsecutive() {
+    coDegeneratePivotsConsecutive_ = 0;
+  }
+  inline int coDegeneratePivotsConsecutive() {
+    return coDegeneratePivotsConsecutive_;
+  }
   void updateDualDegeneratesAvg(int coPivots);
   inline double coDualDegeneratesAvg() { return coDualDegeneratesAvg_; }
   void updatePrimalDegeneratesAvg(int coPivots);
@@ -133,23 +148,22 @@ public:
   void updateCompatibleColsAvg(int coPivots);
   inline int coCompatiblePivots() { return coCompatiblePivots_; }
   inline void addCompatiblePivot() { coCompatiblePivots_++; }
-  inline int coDegenerateCompatiblePivots() { return coDegenerateCompatiblePivots_; }
-  inline void addDegenerateCompatiblePivot() { coDegenerateCompatiblePivots_++; }
+  inline int coDegenerateCompatiblePivots() {
+    return coDegenerateCompatiblePivots_;
+  }
+  inline void addDegenerateCompatiblePivot() {
+    coDegenerateCompatiblePivots_++;
+  }
 
-  /* Get and update the number of compatible pivots that were done because of the priority factor */
+  /* Get and update the number of compatible pivots that were done because of
+   * the priority factor */
   inline void addPriorityPivot() { coPriorityPivots_++; }
   inline int coPriorityPivots() { return coPriorityPivots_; }
-  inline int doStatistics() const
-  {
-    return doStatistics_;
-  }
-  inline void setDoStatistics(int value)
-  {
-    doStatistics_ = value;
-  }
+  inline int doStatistics() const { return doStatistics_; }
+  inline void setDoStatistics(int value) { doStatistics_ = value; }
 
-protected:
-  /** Indices of the variables that were not at one of their bounds 
+ protected:
+  /** Indices of the variables that were not at one of their bounds
         during the last update (non primal degenerate variables) */
   int coPrimalDegenerates_;
   int *primalDegenerates_;
@@ -173,7 +187,7 @@ protected:
   double *compatibilityRow_;
   bool *isCompatibleRow_;
 
-private:
+ private:
   /** pointer to the original model that shall be solved */
   ClpSimplex *model_;
 
@@ -186,7 +200,7 @@ private:
   int numberColumns_;
 
   /** w vectors that are used to identify the compatible columns and
-    rows. The name w, refers to the notations of the articles on 
+    rows. The name w, refers to the notations of the articles on
     positive edge */
   // now passed in CoinIndexedVector *wPrimal_;
   // now passed in CoinIndexedVector *wDual_;
@@ -202,13 +216,14 @@ private:
   int coCompatibleColsAvg_;
   int coCompatibleRowsAvg_;
   int coUpdateDegenerates_;
-  //int coIdentifyCompatibles_;
+  // int coIdentifyCompatibles_;
   int coDegeneratePivots_;
   int coCompatiblePivots_;
   int coDegenerateCompatiblePivots_;
   int coDegeneratePivotsConsecutive_;
 
-  /** number of compatible pivots that were done because of the priority factor */
+  /** number of compatible pivots that were done because of the priority factor
+   */
   int coPriorityPivots_;
   /// Do statistics
   int doStatistics_;
@@ -217,7 +232,7 @@ private:
   double lastObjectiveValue_;
   bool isLastPivotCompatible_;
 
-  /** Timer attribute recording the additional time spent in 
+  /** Timer attribute recording the additional time spent in
         identifying compatible variables */
   double timeCompatibility_;
   double timeMultRandom_;
@@ -228,4 +243,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

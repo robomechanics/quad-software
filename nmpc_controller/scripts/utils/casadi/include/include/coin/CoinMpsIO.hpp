@@ -11,13 +11,13 @@
 #pragma warning(disable : 4786)
 #endif
 
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "CoinUtilsConfig.h"
-#include "CoinPackedMatrix.hpp"
-#include "CoinMessageHandler.hpp"
 #include "CoinFileIO.hpp"
+#include "CoinMessageHandler.hpp"
+#include "CoinPackedMatrix.hpp"
+#include "CoinUtilsConfig.h"
 class CoinModel;
 
 /// The following lengths are in decreasing order (for 64 bit etc)
@@ -36,7 +36,8 @@ typedef int COINRowIndex;
 #endif
 #define MAX_CARD_LENGTH 5 * COIN_MAX_FIELD_LENGTH + 80
 
-enum COINSectionType { COIN_NO_SECTION,
+enum COINSectionType {
+  COIN_NO_SECTION,
   COIN_NAME_SECTION,
   COIN_ROW_SECTION,
   COIN_COLUMN_SECTION,
@@ -53,7 +54,8 @@ enum COINSectionType { COIN_NO_SECTION,
   COIN_UNKNOWN_SECTION
 };
 
-enum COINMpsType { COIN_N_ROW,
+enum COINMpsType {
+  COIN_N_ROW,
   COIN_E_ROW,
   COIN_L_ROW,
   COIN_G_ROW,
@@ -88,8 +90,7 @@ enum COINMpsType { COIN_N_ROW,
 class CoinMpsIO;
 /// Very simple code for reading MPS data
 class CoinMpsCardReader {
-
-public:
+ public:
   /**@name Constructor and destructor */
   //@{
   /// Constructor expects file to be open
@@ -111,7 +112,7 @@ public:
       0 - what we expected (and processed so pointer moves past)
       1 - not what we expected
       leading blanks always ignored
-      input types 
+      input types
       0 - anything - stops on non blank card
       1 - name (in columnname)
       2 - value
@@ -121,92 +122,45 @@ public:
   */
   int nextGmsField(int expectedType);
   /// Returns current section type
-  inline COINSectionType whichSection() const
-  {
-    return section_;
-  }
+  inline COINSectionType whichSection() const { return section_; }
   /// Sets current section type
-  inline void setWhichSection(COINSectionType section)
-  {
-    section_ = section;
-  }
+  inline void setWhichSection(COINSectionType section) { section_ = section; }
   /// Sees if free format.
-  inline bool freeFormat() const
-  {
-    return freeFormat_;
-  }
+  inline bool freeFormat() const { return freeFormat_; }
   /// Sets whether free format.  Mainly for blank RHS etc
-  inline void setFreeFormat(bool yesNo)
-  {
-    freeFormat_ = yesNo;
-  }
+  inline void setFreeFormat(bool yesNo) { freeFormat_ = yesNo; }
   /// Only for first field on card otherwise BLANK_COLUMN
   /// e.g. COIN_E_ROW
-  inline COINMpsType mpsType() const
-  {
-    return mpsType_;
-  }
+  inline COINMpsType mpsType() const { return mpsType_; }
   /// Reads and cleans card - taking out trailing blanks - return 1 if EOF
   int cleanCard();
   /// Returns row name of current field
-  inline const char *rowName() const
-  {
-    return rowName_;
-  }
+  inline const char *rowName() const { return rowName_; }
   /// Returns column name of current field
-  inline const char *columnName() const
-  {
-    return columnName_;
-  }
+  inline const char *columnName() const { return columnName_; }
   /// Returns value in current field
-  inline double value() const
-  {
-    return value_;
-  }
+  inline double value() const { return value_; }
   /// Returns value as string in current field
-  inline const char *valueString() const
-  {
-    return valueString_;
-  }
+  inline const char *valueString() const { return valueString_; }
   /// Whole card (for printing)
-  inline const char *card() const
-  {
-    return card_;
-  }
-  /// Whole card - so we look at it (not const so nextBlankOr will work for gms reader)
-  inline char *mutableCard()
-  {
-    return card_;
-  }
+  inline const char *card() const { return card_; }
+  /// Whole card - so we look at it (not const so nextBlankOr will work for gms
+  /// reader)
+  inline char *mutableCard() { return card_; }
   /// set position (again so gms reader will work)
-  inline void setPosition(char *position)
-  {
-    position_ = position;
-  }
+  inline void setPosition(char *position) { position_ = position; }
   /// get position (again so gms reader will work)
-  inline char *getPosition() const
-  {
-    return position_;
-  }
+  inline char *getPosition() const { return position_; }
   /// Returns card number
-  inline CoinBigIndex cardNumber() const
-  {
-    return cardNumber_;
-  }
+  inline CoinBigIndex cardNumber() const { return cardNumber_; }
   /// Returns file input
-  inline CoinFileInput *fileInput() const
-  {
-    return input_;
-  }
+  inline CoinFileInput *fileInput() const { return input_; }
   /// Sets whether strings allowed
-  inline void setStringsAllowed()
-  {
-    stringsAllowed_ = true;
-  }
+  inline void setStringsAllowed() { stringsAllowed_ = true; }
   //@}
 
   ////////////////// data //////////////////
-protected:
+ protected:
   /**@name data */
   //@{
   /// Current value
@@ -246,7 +200,7 @@ protected:
   /// Whether strings allowed
   bool stringsAllowed_;
   //@}
-public:
+ public:
   /**@name methods */
   //@{
   /// type - 0 normal, 1 INTEL IEEE, 2 other IEEE
@@ -260,15 +214,14 @@ public:
   //@}
 };
 
-//#############################################################################
+// #############################################################################
 #ifdef USE_SBB
 class SbbObject;
 class SbbModel;
 #endif
 /// Very simple class for containing data on set
 class CoinSet {
-
-public:
+ public:
   /**@name Constructor and destructor */
   //@{
   /// Default constructor
@@ -289,60 +242,33 @@ public:
   /**@name gets */
   //@{
   /// Returns number of entries
-  inline int numberEntries() const
-  {
-    return numberEntries_;
-  }
+  inline int numberEntries() const { return numberEntries_; }
   /// Sets number of entries
-  inline void setNumberEntries(int number)
-  {
-    numberEntries_ = number;
-  }
+  inline void setNumberEntries(int number) { numberEntries_ = number; }
   /// Returns type of set - 1 =SOS1, 2 =SOS2
-  inline int setType() const
-  {
-    return setType_;
-  }
+  inline int setType() const { return setType_; }
   /// Sets type of set - 1 =SOS1, 2 =SOS2
-  inline void setSetType(int type)
-  {
-    setType_ = type;
-  }
+  inline void setSetType(int type) { setType_ = type; }
   /// Returns list of variables
-  inline const int *which() const
-  {
-    return which_;
-  }
+  inline const int *which() const { return which_; }
   /// Returns weights
-  inline const double *weights() const
-  {
-    return weights_;
-  }
+  inline const double *weights() const { return weights_; }
   /// Returns modifiable list of variables
-  inline int *modifiableWhich() const
-  {
-    return which_;
-  }
+  inline int *modifiableWhich() const { return which_; }
   /// Returns modifiable weights
-  inline double *modifiableWeights() const
-  {
-    return weights_;
-  }
+  inline double *modifiableWeights() const { return weights_; }
   //@}
 
 #ifdef USE_SBB
   /**@name Use in sbb */
   //@{
   /// returns an object of type SbbObject
-  virtual SbbObject *sbbObject(SbbModel *model) const
-  {
-    return NULL;
-  }
+  virtual SbbObject *sbbObject(SbbModel *model) const { return NULL; }
   //@}
 #endif
 
   ////////////////// data //////////////////
-protected:
+ protected:
   /**@name data */
   //@{
   /// Number of entries
@@ -356,15 +282,15 @@ protected:
   //@}
 };
 
-//#############################################################################
+// #############################################################################
 /// Very simple class for containing SOS set
 class CoinSosSet : public CoinSet {
-
-public:
+ public:
   /**@name Constructor and destructor */
   //@{
   /// Constructor
-  CoinSosSet(int numberEntries, const int *which, const double *weights, int type);
+  CoinSosSet(int numberEntries, const int *which, const double *weights,
+             int type);
 
   /// Destructor
   virtual ~CoinSosSet();
@@ -379,13 +305,13 @@ public:
 #endif
 
   ////////////////// data //////////////////
-protected:
+ protected:
   /**@name data */
   //@{
   //@}
 };
 
-//#############################################################################
+// #############################################################################
 
 /** MPS IO Interface
 
@@ -401,12 +327,12 @@ protected:
 class CoinMpsIO {
   friend void CoinMpsIOUnitTest(const std::string &mpsDir);
 
-public:
+ public:
   /** @name Methods to retrieve problem information
 
    These methods return information about the problem held by the CoinMpsIO
    object.
-   
+
    Querying an object that has no data associated with it result in zeros for
    the number of rows and columns, and NULL pointers from the methods that
    return vectors.  Const pointers returned from any data-query method are
@@ -429,41 +355,41 @@ public:
   const double *getColUpper() const;
 
   /** Get pointer to array[getNumRows()] of constraint senses.
-	<ul>
-	<li>'L': <= constraint
-	<li>'E': =  constraint
-	<li>'G': >= constraint
-	<li>'R': ranged constraint
-	<li>'N': free constraint
-	</ul>
+        <ul>
+        <li>'L': <= constraint
+        <li>'E': =  constraint
+        <li>'G': >= constraint
+        <li>'R': ranged constraint
+        <li>'N': free constraint
+        </ul>
     */
   const char *getRowSense() const;
 
   /** Get pointer to array[getNumRows()] of constraint right-hand sides.
 
-	Given constraints with upper (rowupper) and/or lower (rowlower) bounds,
-	the constraint right-hand side (rhs) is set as
-	<ul>
-	  <li> if rowsense()[i] == 'L' then rhs()[i] == rowupper()[i]
-	  <li> if rowsense()[i] == 'G' then rhs()[i] == rowlower()[i]
-	  <li> if rowsense()[i] == 'R' then rhs()[i] == rowupper()[i]
-	  <li> if rowsense()[i] == 'N' then rhs()[i] == 0.0
-	</ul>
+        Given constraints with upper (rowupper) and/or lower (rowlower) bounds,
+        the constraint right-hand side (rhs) is set as
+        <ul>
+          <li> if rowsense()[i] == 'L' then rhs()[i] == rowupper()[i]
+          <li> if rowsense()[i] == 'G' then rhs()[i] == rowlower()[i]
+          <li> if rowsense()[i] == 'R' then rhs()[i] == rowupper()[i]
+          <li> if rowsense()[i] == 'N' then rhs()[i] == 0.0
+        </ul>
     */
   const double *getRightHandSide() const;
 
   /** Get pointer to array[getNumRows()] of row ranges.
 
-	Given constraints with upper (rowupper) and/or lower (rowlower) bounds, 
-	the constraint range (rowrange) is set as
-	<ul>
+        Given constraints with upper (rowupper) and/or lower (rowlower) bounds,
+        the constraint range (rowrange) is set as
+        <ul>
           <li> if rowsense()[i] == 'R' then
                   rowrange()[i] == rowupper()[i] - rowlower()[i]
           <li> if rowsense()[i] != 'R' then
                   rowrange()[i] is 0.0
         </ul>
-	Put another way, only range constraints have a nontrivial value for
-	rowrange.
+        Put another way, only range constraints have a nontrivial value for
+        rowrange.
     */
   const double *getRowRange() const;
 
@@ -501,47 +427,44 @@ public:
 
   /** Returns array[getNumCols()] specifying if a variable is integer.
 
-	At present, simply coded as zero (continuous) and non-zero (integer)
-	May be extended at a later date.
+        At present, simply coded as zero (continuous) and non-zero (integer)
+        May be extended at a later date.
     */
   const char *integerColumns() const;
 
   /** Returns the row name for the specified index.
 
-	Returns 0 if the index is out of range.
+        Returns 0 if the index is out of range.
     */
   const char *rowName(int index) const;
 
   /** Returns the column name for the specified index.
 
-	Returns 0 if the index is out of range.
+        Returns 0 if the index is out of range.
     */
   const char *columnName(int index) const;
 
   /** Returns the index for the specified row name
-  
-	Returns -1 if the name is not found.
+
+        Returns -1 if the name is not found.
         Returns numberRows for the objective row and > numberRows for
-	dropped free rows.
+        dropped free rows.
     */
   int rowIndex(const char *name) const;
 
   /** Returns the index for the specified column name
-  
-	Returns -1 if the name is not found.
+
+        Returns -1 if the name is not found.
     */
   int columnIndex(const char *name) const;
 
   /** Returns the (constant) objective offset
-    
-	This is the RHS entry for the objective row
+
+        This is the RHS entry for the objective row
     */
   double objectiveOffset() const;
   /// Set objective offset
-  inline void setObjectiveOffset(double value)
-  {
-    objectiveOffset_ = value;
-  }
+  inline void setObjectiveOffset(double value) { objectiveOffset_ = value; }
 
   /// Return the problem name
   const char *getProblemName() const;
@@ -558,15 +481,9 @@ public:
   /// Return the bound vector name
   const char *getBoundName() const;
   /// Number of string elements
-  inline int numberStringElements() const
-  {
-    return numberStringElements_;
-  }
+  inline int numberStringElements() const { return numberStringElements_; }
   /// String element
-  inline const char *stringElement(int i) const
-  {
-    return stringElements_[i];
-  }
+  inline const char *stringElement(int i) const { return stringElements_[i]; }
   //@}
 
   /** @name Methods to set problem information
@@ -577,36 +494,32 @@ public:
 
   /// Set the problem data
   void setMpsData(const CoinPackedMatrix &m, const double infinity,
-    const double *collb, const double *colub,
-    const double *obj, const char *integrality,
-    const double *rowlb, const double *rowub,
-    char const *const *const colnames,
-    char const *const *const rownames);
+                  const double *collb, const double *colub, const double *obj,
+                  const char *integrality, const double *rowlb,
+                  const double *rowub, char const *const *const colnames,
+                  char const *const *const rownames);
   void setMpsData(const CoinPackedMatrix &m, const double infinity,
-    const double *collb, const double *colub,
-    const double *obj, const char *integrality,
-    const double *rowlb, const double *rowub,
-    const std::vector< std::string > &colnames,
-    const std::vector< std::string > &rownames);
+                  const double *collb, const double *colub, const double *obj,
+                  const char *integrality, const double *rowlb,
+                  const double *rowub, const std::vector<std::string> &colnames,
+                  const std::vector<std::string> &rownames);
   void setMpsData(const CoinPackedMatrix &m, const double infinity,
-    const double *collb, const double *colub,
-    const double *obj, const char *integrality,
-    const char *rowsen, const double *rowrhs,
-    const double *rowrng,
-    char const *const *const colnames,
-    char const *const *const rownames);
+                  const double *collb, const double *colub, const double *obj,
+                  const char *integrality, const char *rowsen,
+                  const double *rowrhs, const double *rowrng,
+                  char const *const *const colnames,
+                  char const *const *const rownames);
   void setMpsData(const CoinPackedMatrix &m, const double infinity,
-    const double *collb, const double *colub,
-    const double *obj, const char *integrality,
-    const char *rowsen, const double *rowrhs,
-    const double *rowrng,
-    const std::vector< std::string > &colnames,
-    const std::vector< std::string > &rownames);
+                  const double *collb, const double *colub, const double *obj,
+                  const char *integrality, const char *rowsen,
+                  const double *rowrhs, const double *rowrng,
+                  const std::vector<std::string> &colnames,
+                  const std::vector<std::string> &rownames);
 
   /** Pass in an array[getNumCols()] specifying if a variable is integer.
 
-	At present, simply coded as zero (continuous) and non-zero (integer)
-	May be extended at a later date.
+        At present, simply coded as zero (continuous) and non-zero (integer)
+        May be extended at a later date.
     */
   void copyInIntegerInformation(const char *integerInformation);
 
@@ -636,31 +549,21 @@ public:
   /// Get default upper bound for integer variables
   int getDefaultBound() const;
   /// Whether to allow string elements
-  inline int allowStringElements() const
-  {
-    return allowStringElements_;
-  }
+  inline int allowStringElements() const { return allowStringElements_; }
   /// Whether to allow string elements (0 no, 1 yes, 2 yes and try flip)
-  inline void setAllowStringElements(int yesNo)
-  {
+  inline void setAllowStringElements(int yesNo) {
     allowStringElements_ = yesNo;
   }
   /** Small element value - elements less than this set to zero on input
         default is 1.0e-14 */
-  inline double getSmallElementValue() const
-  {
-    return smallElement_;
-  }
-  inline void setSmallElementValue(double value)
-  {
-    smallElement_ = value;
-  }
+  inline double getSmallElementValue() const { return smallElement_; }
+  inline void setSmallElementValue(double value) { smallElement_ = value; }
   //@}
 
   /** @name Methods for problem input and output
 
   Methods to read and write MPS format problem files.
-   
+
   The read and write methods return the number of errors that occurred during
   the IO operation, or -1 if no file is opened.
 
@@ -692,8 +595,8 @@ public:
       Use "stdin" or "-" to read from stdin.
       But do sets as well
     */
-  int readMps(const char *filename, const char *extension,
-    int &numberSets, CoinSet **&sets);
+  int readMps(const char *filename, const char *extension, int &numberSets,
+              CoinSet **&sets);
 
   /** Read a problem in MPS format from a previously opened file
 
@@ -709,33 +612,34 @@ public:
   /// and
   int readMps(int &numberSets, CoinSet **&sets);
   /** Read a basis in MPS format from the given filename.
-	If VALUES on NAME card and solution not NULL fills in solution
-	status values as for CoinWarmStartBasis (but one per char)
-	-1 file error, 0 normal, 1 has solution values
+        If VALUES on NAME card and solution not NULL fills in solution
+        status values as for CoinWarmStartBasis (but one per char)
+        -1 file error, 0 normal, 1 has solution values
 
       Use "stdin" or "-" to read from stdin.
 
       If sizes of names incorrect - read without names
     */
-  int readBasis(const char *filename, const char *extension,
-    double *solution, unsigned char *rowStatus, unsigned char *columnStatus,
-    const std::vector< std::string > &colnames, int numberColumns,
-    const std::vector< std::string > &rownames, int numberRows);
+  int readBasis(const char *filename, const char *extension, double *solution,
+                unsigned char *rowStatus, unsigned char *columnStatus,
+                const std::vector<std::string> &colnames, int numberColumns,
+                const std::vector<std::string> &rownames, int numberRows);
 
   /** Read a problem in GAMS format from the given filename.
 
       Use "stdin" or "-" to read from stdin.
       if convertObjective then massages objective column
     */
-  int readGms(const char *filename, const char *extension = "gms", bool convertObjective = false);
+  int readGms(const char *filename, const char *extension = "gms",
+              bool convertObjective = false);
 
   /** Read a problem in GAMS format from the given filename.
 
       Use "stdin" or "-" to read from stdin.
       But do sets as well
     */
-  int readGms(const char *filename, const char *extension,
-    int &numberSets, CoinSet **&sets);
+  int readGms(const char *filename, const char *extension, int &numberSets,
+              CoinSet **&sets);
 
   /** Read a problem in GAMS format from a previously opened file
 
@@ -747,51 +651,48 @@ public:
   /// and
   int readGms(int &numberSets, CoinSet **&sets);
   /** Read a problem in GMPL (subset of AMPL)  format from the given filenames.
-    */
-  int readGMPL(const char *modelName, const char *dataName = NULL, bool keepNames = false);
+   */
+  int readGMPL(const char *modelName, const char *dataName = NULL,
+               bool keepNames = false);
 
   /** Write the problem in MPS format to a file with the given filename.
 
-	\param compression can be set to three values to indicate what kind
-	of file should be written
-	<ul>
-	  <li> 0: plain text (default)
-	  <li> 1: gzip compressed (.gz is appended to \c filename)
-	  <li> 2: bzip2 compressed (.bz2 is appended to \c filename) (TODO)
-	</ul>
-	If the library was not compiled with the requested compression then
-	writeMps falls back to writing a plain text file.
+        \param compression can be set to three values to indicate what kind
+        of file should be written
+        <ul>
+          <li> 0: plain text (default)
+          <li> 1: gzip compressed (.gz is appended to \c filename)
+          <li> 2: bzip2 compressed (.bz2 is appended to \c filename) (TODO)
+        </ul>
+        If the library was not compiled with the requested compression then
+        writeMps falls back to writing a plain text file.
 
-	\param formatType specifies the precision to used for values in the
-	MPS file
-	<ul>
-	  <li> 0: normal precision (default)
-	  <li> 1: extra accuracy
-	  <li> 2: IEEE hex
-	</ul>
+        \param formatType specifies the precision to used for values in the
+        MPS file
+        <ul>
+          <li> 0: normal precision (default)
+          <li> 1: extra accuracy
+          <li> 2: IEEE hex
+        </ul>
 
-	\param numberAcross specifies whether 1 or 2 (default) values should be
-	specified on every data line in the MPS file.
+        \param numberAcross specifies whether 1 or 2 (default) values should be
+        specified on every data line in the MPS file.
 
-	\param quadratic specifies quadratic objective to be output
+        \param quadratic specifies quadratic objective to be output
     */
-  int writeMps(const char *filename, int compression = 0,
-    int formatType = 0, int numberAcross = 2,
-    CoinPackedMatrix *quadratic = NULL,
-    int numberSOS = 0, const CoinSet *setInfo = NULL) const;
+  int writeMps(const char *filename, int compression = 0, int formatType = 0,
+               int numberAcross = 2, CoinPackedMatrix *quadratic = NULL,
+               int numberSOS = 0, const CoinSet *setInfo = NULL) const;
 
   /// Return card reader object so can see what last card was e.g. QUADOBJ
-  inline const CoinMpsCardReader *reader() const
-  {
-    return cardReader_;
-  }
+  inline const CoinMpsCardReader *reader() const { return cardReader_; }
 
   /** Read in a quadratic objective from the given filename.
 
       If filename is NULL (or the same as the currently open file) then
       reading continues from the current file.
       If not, the file is closed and the specified file is opened.
-      
+
       Code should be added to
       general MPS reader to read this if QSECTION
       Data is assumed to be Q and objective is c + 1/2 xT Q x
@@ -799,25 +700,24 @@ public:
       No check is made for duplicates or non-triangular if checkSymmetry==0.
       If 1 checks lower triangular (so off diagonal should be 2*Q)
       if 2 makes lower triangular and assumes full Q (but adds off diagonals)
-      
+
       Arrays should be deleted by delete []
 
       Returns number of errors:
       <ul>
-	<li> -1: bad file
-	<li> -2: no Quadratic section
-	<li> -3: an empty section
+        <li> -1: bad file
+        <li> -2: no Quadratic section
+        <li> -3: an empty section
         <li> +n: then matching errors etc (symmetry forced)
         <li> -4: no matching errors but fails triangular test
-		 (triangularity forced)
+                 (triangularity forced)
       </ul>
       columnStart is numberColumns+1 long, others numberNonZeros
     */
-  int readQuadraticMps(const char *filename,
-    CoinBigIndex *&columnStart, int *&column, double *&elements,
-    int checkSymmetry);
+  int readQuadraticMps(const char *filename, CoinBigIndex *&columnStart,
+                       int *&column, double *&elements, int checkSymmetry);
 
-  /** Read in a list of cones from the given filename.  
+  /** Read in a list of cones from the given filename.
 
       If filename is NULL (or the same as the currently open file) then
       reading continues from the current file.
@@ -834,13 +734,12 @@ public:
 
       columnStart is numberCones+1 long, other number of columns in matrix
 
-	  coneType is 1 for QUAD, 2 for RQUAD (numberCones long)
+          coneType is 1 for QUAD, 2 for RQUAD (numberCones long)
 */
-  int readConicMps(const char *filename,
-    int *&columnStart, int *&column, int *&coneType, int &numberCones);
+  int readConicMps(const char *filename, int *&columnStart, int *&column,
+                   int *&coneType, int &numberCones);
   /// Set whether to move objective from matrix
-  inline void setConvertObjective(bool trueFalse)
-  {
+  inline void setConvertObjective(bool trueFalse) {
     convertObjective_ = trueFalse;
   }
   /// copies in strings from a CoinModel - returns number
@@ -865,7 +764,7 @@ public:
   /**@name Message handling */
   //@{
   /** Pass in Message handler
-  
+
       Supply a custom message handler. It will not be destroyed when the
       CoinMpsIO object is destroyed.
   */
@@ -875,7 +774,9 @@ public:
   void newLanguage(CoinMessages::Language language);
 
   /// Set the language for messages.
-  inline void setLanguage(CoinMessages::Language language) { newLanguage(language); }
+  inline void setLanguage(CoinMessages::Language language) {
+    newLanguage(language);
+  }
 
   /// Return the message handler
   inline CoinMessageHandler *messageHandler() const { return handler_; }
@@ -893,8 +794,8 @@ public:
 */
   //@{
   /** Release all information which can be re-calculated.
-    
-	E.g., row sense, copies of rows, hash tables for names.
+
+        E.g., row sense, copies of rows, hash tables for names.
     */
   void releaseRedundantInformation();
 
@@ -917,25 +818,19 @@ public:
   void releaseMatrixInformation();
   //@}
 
-protected:
+ protected:
   /**@name Miscellaneous helper functions */
   //@{
 
   /// Utility method used several times to implement public methods
-  void
-  setMpsDataWithoutRowAndColNames(
-    const CoinPackedMatrix &m, const double infinity,
-    const double *collb, const double *colub,
-    const double *obj, const char *integrality,
-    const double *rowlb, const double *rowub);
-  void
-  setMpsDataColAndRowNames(
-    const std::vector< std::string > &colnames,
-    const std::vector< std::string > &rownames);
-  void
-  setMpsDataColAndRowNames(
-    char const *const *const colnames,
-    char const *const *const rownames);
+  void setMpsDataWithoutRowAndColNames(
+      const CoinPackedMatrix &m, const double infinity, const double *collb,
+      const double *colub, const double *obj, const char *integrality,
+      const double *rowlb, const double *rowub);
+  void setMpsDataColAndRowNames(const std::vector<std::string> &colnames,
+                                const std::vector<std::string> &rownames);
+  void setMpsDataColAndRowNames(char const *const *const colnames,
+                                char const *const *const rownames);
 
   /// Does the heavy lifting for destruct and assignment.
   void gutsOfDestructor();
@@ -947,19 +842,18 @@ protected:
   void freeAll();
 
   /** A quick inlined function to convert from lb/ub style constraint
-	definition to sense/rhs/range style */
-  inline void
-  convertBoundToSense(const double lower, const double upper,
-    char &sense, double &right, double &range) const;
+        definition to sense/rhs/range style */
+  inline void convertBoundToSense(const double lower, const double upper,
+                                  char &sense, double &right,
+                                  double &range) const;
   /** A quick inlined function to convert from sense/rhs/range stryle
-	constraint definition to lb/ub style */
-  inline void
-  convertSenseToBound(const char sense, const double right,
-    const double range,
-    double &lower, double &upper) const;
+        constraint definition to lb/ub style */
+  inline void convertSenseToBound(const char sense, const double right,
+                                  const double range, double &lower,
+                                  double &upper) const;
 
   /** Deal with a filename
-  
+
     As the name says.
     Returns +1 if the file name is new, 0 if it's the same as before
     (i.e., matches fileName_), and -1 if there's an error and the file
@@ -971,14 +865,15 @@ protected:
   */
 
   int dealWithFileName(const char *filename, const char *extension,
-    CoinFileInput *&input);
+                       CoinFileInput *&input);
   /** Add string to list
       iRow==numberRows is objective, nr+1 is lo, nr+2 is up
       iColumn==nc is rhs (can't cope with ranges at present)
   */
   void addString(int iRow, int iColumn, const char *value);
   /// Decode string
-  void decodeString(int iString, int &iRow, int &iColumn, const char *&value) const;
+  void decodeString(int iString, int &iRow, int &iColumn,
+                    const char *&value) const;
   //@}
 
   // for hashing
@@ -1030,7 +925,7 @@ protected:
   /// Pointer to dense vector of row right-hand side values
   mutable double *rhs_;
 
-  /** Pointer to dense vector of slack variable upper bounds for range 
+  /** Pointer to dense vector of slack variable upper bounds for range
           constraints (undefined for non-range rows)
       */
   mutable double *rowrange_;
@@ -1060,12 +955,12 @@ protected:
   double objectiveOffset_;
 
   /** Pointer to dense vector specifying if a variable is continuous
-	  (0) or integer (1).
+          (0) or integer (1).
       */
   char *integerType_;
 
   /** Row and column names
-	  Linked to hash table sections (0 - row names, 1 column names)
+          Linked to hash table sections (0 - row names, 1 column names)
       */
   char **names_[2];
   //@}
@@ -1097,7 +992,7 @@ protected:
   /** Flag to say if the message handler is the default handler.
 
           If true, the handler will be destroyed when the CoinMpsIO
-	  object is destroyed; if false, it will not be destroyed.
+          object is destroyed; if false, it will not be destroyed.
       */
   bool defaultHandler_;
   /// Messages
@@ -1117,7 +1012,7 @@ protected:
   //@}
 };
 
-//#############################################################################
+// #############################################################################
 /** A function that tests the methods in the CoinMpsIO class. The
     only reason for it not to be a member method is that this way it doesn't
     have to be compiled into the library. And that's a gain, because the
@@ -1134,9 +1029,10 @@ void CoinMpsIOUnitTest(const std::string &mpsDir);
    2 - IEEE hex - INTEL
    3 - IEEE hex - not INTEL
 */
-void CoinConvertDouble(int section, int formatType, double value, char outputValue[24]);
+void CoinConvertDouble(int section, int formatType, double value,
+                       char outputValue[24]);
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

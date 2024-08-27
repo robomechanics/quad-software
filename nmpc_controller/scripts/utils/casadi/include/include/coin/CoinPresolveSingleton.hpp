@@ -12,7 +12,7 @@
   \file
 */
 
-//const int MAX_SLACK_DOUBLETONS	= 1000;
+// const int MAX_SLACK_DOUBLETONS	= 1000;
 
 /*! \class slack_doubleton_action
     \brief Convert an explicit bound constraint to a column bound
@@ -38,27 +38,22 @@ class slack_doubleton_action : public CoinPresolveAction {
   const int nactions_;
   const action *const actions_;
 
-  slack_doubleton_action(int nactions,
-    const action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-  {
-  }
+  slack_doubleton_action(int nactions, const action *actions,
+                         const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nactions_(nactions), actions_(actions) {}
 
-public:
+ public:
   const char *name() const { return ("slack_doubleton_action"); }
 
   /*! \brief Convert explicit bound constraints to column bounds.
-  
+
     Not now There is a hard limit (#MAX_SLACK_DOUBLETONS) on the number of
     constraints processed in a given call. \p notFinished is set to true
     if candidates remain.
   */
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next,
-    bool &notFinished);
+                                            const CoinPresolveAction *next,
+                                            bool &notFinished);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -89,21 +84,16 @@ class slack_singleton_action : public CoinPresolveAction {
   const int nactions_;
   const action *const actions_;
 
-  slack_singleton_action(int nactions,
-    const action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-  {
-  }
+  slack_singleton_action(int nactions, const action *actions,
+                         const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nactions_(nactions), actions_(actions) {}
 
-public:
+ public:
   const char *name() const { return ("slack_singleton_action"); }
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next,
-    double *rowObjective);
+                                            const CoinPresolveAction *next,
+                                            double *rowObjective);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -112,4 +102,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

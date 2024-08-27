@@ -10,7 +10,7 @@ class OsiCuts;
 class OsiRowCut;
 class CbcNodeInfo;
 
-//#############################################################################
+// #############################################################################
 /** \brief OsiRowCut augmented with bookkeeping
 
   CbcCountRowCut is an OsiRowCut object augmented with bookkeeping
@@ -20,11 +20,11 @@ class CbcNodeInfo;
   The general principles for handling the reference count are as follows:
   <ul>
     <li> Once it's determined how the node will branch, increment the
-	 reference count under the assumption that all children will use
+         reference count under the assumption that all children will use
          all cuts currently tight at the node and will survive to be placed
-	 in the search tree.
+         in the search tree.
     <li> As this assumption is proven incorrect (a cut becomes loose, or a
-	 child is fathomed), decrement the reference count accordingly.
+         child is fathomed), decrement the reference count accordingly.
   </ul>
   When all possible uses of a cut have been demonstrated to be unnecessary,
   the reference count (#numberPointingToThis_) will fall to zero. The
@@ -32,8 +32,7 @@ class CbcNodeInfo;
 */
 
 class CbcCountRowCut : public OsiRowCut {
-
-public:
+ public:
   /** @name Constructors & destructors */
   //@{
 
@@ -45,7 +44,7 @@ public:
 
   /// `Copy' constructor using an OsiRowCut and an CbcNodeInfo
   CbcCountRowCut(const OsiRowCut &, CbcNodeInfo *, int whichOne,
-    int whichGenerator = -1, int numberPointingToThis = 0);
+                 int whichGenerator = -1, int numberPointingToThis = 0);
 
   /** Destructor
 
@@ -72,16 +71,10 @@ public:
   void setInfo(CbcNodeInfo *, int whichOne);
 
   /// Number of other CbcNodeInfo objects pointing to this row cut
-  inline int numberPointingToThis()
-  {
-    return numberPointingToThis_;
-  }
+  inline int numberPointingToThis() { return numberPointingToThis_; }
 
   /// Which generator for cuts - as user order
-  inline int whichCutGenerator() const
-  {
-    return whichCutGenerator_;
-  }
+  inline int whichCutGenerator() const { return whichCutGenerator_; }
 
   /// Returns true if can drop cut if slack basic
   bool canDropCut(const OsiSolverInterface *solver, int row) const;
@@ -91,7 +84,7 @@ public:
   int tempNumber_;
 #endif
 
-private:
+ private:
   /// Standard copy is illegal (reference counts would be incorrect)
   CbcCountRowCut(const CbcCountRowCut &);
 
@@ -108,10 +101,10 @@ private:
   /// Number of other CbcNodeInfo objects pointing to this cut
   int numberPointingToThis_;
 
-  /** Which generator created this cut 
-	(add 10000 if globally valid)
-	if -1 then from global cut pool
-	-2 cut branch
+  /** Which generator created this cut
+        (add 10000 if globally valid)
+        if -1 then from global cut pool
+        -2 cut branch
         -3 unknown
     */
   int whichCutGenerator_;
@@ -121,7 +114,7 @@ private:
    a) stop duplicates
    b) allow half baked cuts
    The whichRow_ field in OsiRowCut2 is used for a type
-   0 - normal 
+   0 - normal
    1 - processed cut (conflict)
    2 - unprocessed cut i.e. dual ray computation
 */
@@ -130,27 +123,15 @@ typedef struct {
   int index, next;
 } CoinHashLink;
 class CbcRowCuts {
-public:
+ public:
   CbcRowCuts(int initialMaxSize = 0, int hashMultiplier = 4);
   ~CbcRowCuts();
   CbcRowCuts(const CbcRowCuts &rhs);
   CbcRowCuts &operator=(const CbcRowCuts &rhs);
-  inline OsiRowCut2 *cut(int sequence) const
-  {
-    return rowCut_[sequence];
-  }
-  inline int numberCuts() const
-  {
-    return numberCuts_;
-  }
-  inline int sizeRowCuts() const
-  {
-    return numberCuts_;
-  }
-  inline OsiRowCut *rowCutPtr(int sequence)
-  {
-    return rowCut_[sequence];
-  }
+  inline OsiRowCut2 *cut(int sequence) const { return rowCut_[sequence]; }
+  inline int numberCuts() const { return numberCuts_; }
+  inline int sizeRowCuts() const { return numberCuts_; }
+  inline OsiRowCut *rowCutPtr(int sequence) { return rowCut_[sequence]; }
   void eraseRowCut(int sequence);
   // Return 0 if added, 1 if not, -1 if not added because of space
   int addCutIfNotDuplicate(const OsiRowCut &cut, int whichType = 0);
@@ -161,7 +142,7 @@ public:
   // Truncate
   void truncate(int numberAfter);
 
-private:
+ private:
   OsiRowCut2 **rowCut_;
   /// Hash table
   CoinHashLink *hash_;
@@ -173,4 +154,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

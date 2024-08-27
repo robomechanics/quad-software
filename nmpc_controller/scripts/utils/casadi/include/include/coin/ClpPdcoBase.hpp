@@ -6,10 +6,9 @@
 #ifndef ClpPdcoBase_H
 #define ClpPdcoBase_H
 
-#include "CoinPragma.hpp"
-
-#include "CoinPackedMatrix.hpp"
 #include "CoinDenseVector.hpp"
+#include "CoinPackedMatrix.hpp"
+#include "CoinPragma.hpp"
 class ClpInterior;
 
 /** Abstract base class for tailoring everything for Pcdo
@@ -23,19 +22,23 @@ class ClpInterior;
 */
 
 class ClpPdcoBase {
-
-public:
+ public:
   /**@name Virtual methods that the derived classes must provide */
   //@{
-  virtual void matVecMult(ClpInterior *model, int mode, double *x, double *y) const = 0;
+  virtual void matVecMult(ClpInterior *model, int mode, double *x,
+                          double *y) const = 0;
 
-  virtual void getGrad(ClpInterior *model, CoinDenseVector< double > &x, CoinDenseVector< double > &grad) const = 0;
+  virtual void getGrad(ClpInterior *model, CoinDenseVector<double> &x,
+                       CoinDenseVector<double> &grad) const = 0;
 
-  virtual void getHessian(ClpInterior *model, CoinDenseVector< double > &x, CoinDenseVector< double > &H) const = 0;
+  virtual void getHessian(ClpInterior *model, CoinDenseVector<double> &x,
+                          CoinDenseVector<double> &H) const = 0;
 
-  virtual double getObj(ClpInterior *model, CoinDenseVector< double > &x) const = 0;
+  virtual double getObj(ClpInterior *model,
+                        CoinDenseVector<double> &x) const = 0;
 
-  virtual void matPrecon(ClpInterior *model, double delta, double *x, double *y) const = 0;
+  virtual void matPrecon(ClpInterior *model, double delta, double *x,
+                         double *y) const = 0;
 
   //@}
   //@{
@@ -43,38 +46,20 @@ public:
   /// Clone
   virtual ClpPdcoBase *clone() const = 0;
   /// Returns type
-  inline int type() const
-  {
-    return type_;
-  };
+  inline int type() const { return type_; };
   /// Sets type
-  inline void setType(int type)
-  {
-    type_ = type;
-  };
+  inline void setType(int type) { type_ = type; };
   /// Returns size of d1
-  inline int sizeD1() const
-  {
-    return 1;
-  };
+  inline int sizeD1() const { return 1; };
   /// Returns d1 as scalar
-  inline double getD1() const
-  {
-    return d1_;
-  };
+  inline double getD1() const { return d1_; };
   /// Returns size of d2
-  inline int sizeD2() const
-  {
-    return 1;
-  };
+  inline int sizeD2() const { return 1; };
   /// Returns d2 as scalar
-  inline double getD2() const
-  {
-    return d2_;
-  };
+  inline double getD2() const { return d2_; };
   //@}
 
-protected:
+ protected:
   /**@name Constructors, destructor<br>
         <strong>NOTE</strong>: All constructors are protected. There's no need
         to expose them, after all, this is an abstract class. */
@@ -82,17 +67,17 @@ protected:
   /** Default constructor. */
   ClpPdcoBase();
   /** Destructor (has to be public) */
-public:
+ public:
   virtual ~ClpPdcoBase();
 
-protected:
+ protected:
   // Copy
   ClpPdcoBase(const ClpPdcoBase &);
   // Assignment
   ClpPdcoBase &operator=(const ClpPdcoBase &);
   //@}
 
-protected:
+ protected:
   /**@name Data members
         The data members are protected to allow access for derived classes. */
   //@{
@@ -107,4 +92,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

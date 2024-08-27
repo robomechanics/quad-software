@@ -6,7 +6,7 @@
 #ifndef CoinWarmStart_H
 #define CoinWarmStart_H
 
-//#############################################################################
+// #############################################################################
 
 class CoinWarmStartDiff;
 
@@ -19,18 +19,18 @@ class CoinWarmStartDiff;
 */
 
 class CoinWarmStart {
-public:
+ public:
   /// Abstract destructor
   virtual ~CoinWarmStart() {}
 
   /// `Virtual constructor'
   virtual CoinWarmStart *clone() const = 0;
 
-  virtual CoinWarmStartDiff *
-  generateDiff(const CoinWarmStart *const) const { return 0; }
+  virtual CoinWarmStartDiff *generateDiff(const CoinWarmStart *const) const {
+    return 0;
+  }
 
-  virtual void
-  applyDiff(const CoinWarmStartDiff *const) {}
+  virtual void applyDiff(const CoinWarmStartDiff *const) {}
 };
 
 /*! \class CoinWarmStartDiff
@@ -42,7 +42,7 @@ public:
 */
 
 class CoinWarmStartDiff {
-public:
+ public:
   /// Abstract destructor
   virtual ~CoinWarmStartDiff() {}
 
@@ -53,4 +53,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

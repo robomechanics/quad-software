@@ -1,86 +1,82 @@
 /**************************************************************************************************
-*                                                                                                 *
-* This file is part of HPIPM.                                                                     *
-*                                                                                                 *
-* HPIPM -- High-Performance Interior Point Method.                                                *
-* Copyright (C) 2019 by Gianluca Frison.                                                          *
-* Developed at IMTEK (University of Freiburg) under the supervision of Moritz Diehl.              *
-* All rights reserved.                                                                            *
-*                                                                                                 *
-* The 2-Clause BSD License                                                                        *
-*                                                                                                 *
-* Redistribution and use in source and binary forms, with or without                              *
-* modification, are permitted provided that the following conditions are met:                     *
-*                                                                                                 *
-* 1. Redistributions of source code must retain the above copyright notice, this                  *
-*    list of conditions and the following disclaimer.                                             *
-* 2. Redistributions in binary form must reproduce the above copyright notice,                    *
-*    this list of conditions and the following disclaimer in the documentation                    *
-*    and/or other materials provided with the distribution.                                       *
-*                                                                                                 *
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND                 *
-* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED                   *
-* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE                          *
-* DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR                 *
-* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES                  *
-* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;                    *
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND                     *
-* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT                      *
-* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS                   *
-* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                                    *
-*                                                                                                 *
-* Author: Gianluca Frison, gianluca.frison (at) imtek.uni-freiburg.de                             *
-*                                                                                                 *
-**************************************************************************************************/
+ *                                                                                                 *
+ * This file is part of HPIPM. *
+ *                                                                                                 *
+ * HPIPM -- High-Performance Interior Point Method. * Copyright (C) 2019 by
+ *Gianluca Frison.                                                          *
+ * Developed at IMTEK (University of Freiburg) under the supervision of Moritz
+ *Diehl.              * All rights reserved. *
+ *                                                                                                 *
+ * The 2-Clause BSD License *
+ *                                                                                                 *
+ * Redistribution and use in source and binary forms, with or without *
+ * modification, are permitted provided that the following conditions are met: *
+ *                                                                                                 *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *this                  * list of conditions and the following disclaimer. *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ ** this list of conditions and the following disclaimer in the documentation *
+ *    and/or other materials provided with the distribution. *
+ *                                                                                                 *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ *AND                 * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *LIMITED TO, THE IMPLIED                   * WARRANTIES OF MERCHANTABILITY AND
+ *FITNESS FOR A PARTICULAR PURPOSE ARE                          * DISCLAIMED. IN
+ *NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR * ANY DIRECT,
+ *INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES *
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ ** LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ** ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT *
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ ** SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. *
+ *                                                                                                 *
+ * Author: Gianluca Frison, gianluca.frison (at) imtek.uni-freiburg.de *
+ *                                                                                                 *
+ **************************************************************************************************/
 
 #ifndef HPIPM_S_OCP_QCQP_H_
 #define HPIPM_S_OCP_QCQP_H_
 
-
-
-#include <blasfeo_target.h>
 #include <blasfeo_common.h>
+#include <blasfeo_target.h>
 
 #include "hpipm_s_ocp_qcqp_dim.h"
-
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
-
-struct s_ocp_qcqp
-	{
-	struct s_ocp_qcqp_dim *dim;
-	struct blasfeo_smat *BAbt; // dynamics matrix & vector work space
-	struct blasfeo_smat *RSQrq; // hessian of cost & vector work space
-	struct blasfeo_smat *DCt; // inequality constraints matrix
-	struct blasfeo_smat **Hq; // hessians of quadratic constraints
-	struct blasfeo_svec *b; // dynamics vector
-	struct blasfeo_svec *rqz; // gradient of cost & gradient of slacks
-	struct blasfeo_svec *d; // inequality constraints vector
-	struct blasfeo_svec *d_mask; // inequality constraints mask vector
-	struct blasfeo_svec *m; // rhs of complementarity condition
-	struct blasfeo_svec *Z; // (diagonal) hessian of slacks
-	int **idxb; // indices of box constrained variables within [u; x]
-	int **idxs_rev; // index of soft constraints (reverse storage)
-	int **idxe; // indices of constraints within [bu, bx, g, q] that are equalities, subset of [0, ..., nbu+nbx+ng+nq-1]
-	int **Hq_nzero; // for each int, the last 3 bits ...abc, {a,b,c}=0 => {R,S,Q}=0
-	hpipm_size_t memsize; // memory size in bytes
-	};
-
-
+struct s_ocp_qcqp {
+  struct s_ocp_qcqp_dim *dim;
+  struct blasfeo_smat *BAbt;    // dynamics matrix & vector work space
+  struct blasfeo_smat *RSQrq;   // hessian of cost & vector work space
+  struct blasfeo_smat *DCt;     // inequality constraints matrix
+  struct blasfeo_smat **Hq;     // hessians of quadratic constraints
+  struct blasfeo_svec *b;       // dynamics vector
+  struct blasfeo_svec *rqz;     // gradient of cost & gradient of slacks
+  struct blasfeo_svec *d;       // inequality constraints vector
+  struct blasfeo_svec *d_mask;  // inequality constraints mask vector
+  struct blasfeo_svec *m;       // rhs of complementarity condition
+  struct blasfeo_svec *Z;       // (diagonal) hessian of slacks
+  int **idxb;      // indices of box constrained variables within [u; x]
+  int **idxs_rev;  // index of soft constraints (reverse storage)
+  int **idxe;      // indices of constraints within [bu, bx, g, q] that are
+                   // equalities, subset of [0, ..., nbu+nbx+ng+nq-1]
+  int **
+      Hq_nzero;  // for each int, the last 3 bits ...abc, {a,b,c}=0 => {R,S,Q}=0
+  hpipm_size_t memsize;  // memory size in bytes
+};
 
 //
 hpipm_size_t s_ocp_qcqp_strsize();
 //
 hpipm_size_t s_ocp_qcqp_memsize(struct s_ocp_qcqp_dim *dim);
 //
-void s_ocp_qcqp_create(struct s_ocp_qcqp_dim *dim, struct s_ocp_qcqp *qp, void *memory);
+void s_ocp_qcqp_create(struct s_ocp_qcqp_dim *dim, struct s_ocp_qcqp *qp,
+                       void *memory);
 //
-void s_ocp_qcqp_copy_all(struct s_ocp_qcqp *qp_orig, struct s_ocp_qcqp *qp_dest);
+void s_ocp_qcqp_copy_all(struct s_ocp_qcqp *qp_orig,
+                         struct s_ocp_qcqp *qp_dest);
 
 // setters
 //
@@ -88,9 +84,11 @@ void s_ocp_qcqp_set_all_zero(struct s_ocp_qcqp *qp);
 //
 void s_ocp_qcqp_set_rhs_zero(struct s_ocp_qcqp *qp);
 //
-void s_ocp_qcqp_set(char *fiels_name, int stage, void *value, struct s_ocp_qcqp *qp);
+void s_ocp_qcqp_set(char *fiels_name, int stage, void *value,
+                    struct s_ocp_qcqp *qp);
 //
-void s_ocp_qcqp_set_el(char *fiels_name, int stage, int index, void *value, struct s_ocp_qcqp *qp);
+void s_ocp_qcqp_set_el(char *fiels_name, int stage, int index, void *value,
+                       struct s_ocp_qcqp *qp);
 //
 void s_ocp_qcqp_set_A(int stage, float *mat, struct s_ocp_qcqp *qp);
 //
@@ -120,13 +118,15 @@ void s_ocp_qcqp_set_lbx(int stage, float *vec, struct s_ocp_qcqp *qp);
 //
 void s_ocp_qcqp_set_lbx_mask(int stage, float *vec, struct s_ocp_qcqp *qp);
 //
-void s_ocp_qcqp_set_el_lbx(int stage, int index, float *elem, struct s_ocp_qcqp *qp);
+void s_ocp_qcqp_set_el_lbx(int stage, int index, float *elem,
+                           struct s_ocp_qcqp *qp);
 //
 void s_ocp_qcqp_set_ubx(int stage, float *vec, struct s_ocp_qcqp *qp);
 //
 void s_ocp_qcqp_set_ubx_mask(int stage, float *vec, struct s_ocp_qcqp *qp);
 //
-void s_ocp_qcqp_set_el_ubx(int stage, int index, float *elem, struct s_ocp_qcqp *qp);
+void s_ocp_qcqp_set_el_ubx(int stage, int index, float *elem,
+                           struct s_ocp_qcqp *qp);
 //
 void s_ocp_qcqp_set_lbu(int stage, float *vec, struct s_ocp_qcqp *qp);
 //
@@ -264,13 +264,13 @@ void s_ocp_qcqp_get_ubu_mask(int stage, struct s_ocp_qcqp *qp, float *vec);
 //
 void s_ocp_qcqp_get_idxb(int stage, struct s_ocp_qcqp *qp, int *vec);
 //
-//void s_ocp_qcqp_get_idxbx(int stage, struct s_ocp_qcqp *qp, int *vec);
+// void s_ocp_qcqp_get_idxbx(int stage, struct s_ocp_qcqp *qp, int *vec);
 //
-//void s_ocp_qcqp_get_Jbx(int stage, struct s_ocp_qcqp *qp, float *vec);
+// void s_ocp_qcqp_get_Jbx(int stage, struct s_ocp_qcqp *qp, float *vec);
 //
-//void s_ocp_qcqp_get_idxbu(int stage, struct s_ocp_qcqp *qp, int *vec);
+// void s_ocp_qcqp_get_idxbu(int stage, struct s_ocp_qcqp *qp, int *vec);
 //
-//void s_ocp_qcqp_get_Jbu(int stage, struct s_ocp_qcqp *qp, float *vec);
+// void s_ocp_qcqp_get_Jbu(int stage, struct s_ocp_qcqp *qp, float *vec);
 //
 void s_ocp_qcqp_get_C(int stage, struct s_ocp_qcqp *qp, float *mat);
 //
@@ -304,19 +304,14 @@ void s_ocp_qcqp_get_idxs(int stage, struct s_ocp_qcqp *qp, int *vec);
 //
 void s_ocp_qcqp_get_idxs_rev(int stage, struct s_ocp_qcqp *qp, int *vec);
 //
-//void s_ocp_qcqp_get_Jsbu(int stage, struct s_ocp_qcqp *qp, float *vec);
+// void s_ocp_qcqp_get_Jsbu(int stage, struct s_ocp_qcqp *qp, float *vec);
 //
-//void s_ocp_qcqp_get_Jsbx(int stage, struct s_ocp_qcqp *qp, float *vec);
+// void s_ocp_qcqp_get_Jsbx(int stage, struct s_ocp_qcqp *qp, float *vec);
 //
-//void s_ocp_qcqp_get_Jsg(int stage, struct s_ocp_qcqp *qp, float *vec);
-
-
+// void s_ocp_qcqp_get_Jsg(int stage, struct s_ocp_qcqp *qp, float *vec);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-
-
-#endif // HPIPM_S_OCP_QCQP_H_
-
+#endif  // HPIPM_S_OCP_QCQP_H_

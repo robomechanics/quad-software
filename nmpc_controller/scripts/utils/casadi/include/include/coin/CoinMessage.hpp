@@ -76,12 +76,11 @@ enum COIN_Message {
 */
 
 class CoinMessage : public CoinMessages {
-
-public:
+ public:
   /**@name Constructors etc */
   //@{
   /*! \brief Constructor
-  
+
     Build a CoinMessages object and load it with the standard set of
     Coin messages.
   */
@@ -92,4 +91,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

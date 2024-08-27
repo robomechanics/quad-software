@@ -65,10 +65,8 @@
  * @param[out]    error       The actual error \f$ \hat{\epsilon} \f$
  * @param[in,out] func_data   The function data
  **/
-typedef SLEQP_RETCODE (*SLEQP_DYN_FUNC_EVAL)(SleqpFunc* func,
-                                             double* obj_val,
-                                             SleqpVec* cons_val,
-                                             double* error,
+typedef SLEQP_RETCODE (*SLEQP_DYN_FUNC_EVAL)(SleqpFunc* func, double* obj_val,
+                                             SleqpVec* cons_val, double* error,
                                              void* func_data);
 
 /**
@@ -101,12 +99,9 @@ typedef SLEQP_RETCODE (*SLEQP_DYN_FUNC_SET_OBJ_WEIGHT)(SleqpFunc* func,
  * @param[in,out] func_data       The function data
  **/
 typedef SLEQP_RETCODE (*SLEQP_DYN_FUNC_SET_CONS_WEIGHTS)(
-  SleqpFunc* func,
-  const double* cons_weights,
-  void* func_data);
+    SleqpFunc* func, const double* cons_weights, void* func_data);
 
-typedef struct
-{
+typedef struct {
   SLEQP_FUNC_SET set_value;
   SLEQP_FUNC_NONZEROS nonzeros;
   SLEQP_DYN_FUNC_SET_ERROR_BOUND set_error_bound;
@@ -128,11 +123,8 @@ typedef struct
  * @param[in]  func_data        The function data
  **/
 SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
-sleqp_dyn_func_create(SleqpFunc** fstar,
-                      SleqpDynFuncCallbacks* callbacks,
-                      int num_variables,
-                      int num_constraints,
-                      void* func_data);
+sleqp_dyn_func_create(SleqpFunc** fstar, SleqpDynFuncCallbacks* callbacks,
+                      int num_variables, int num_constraints, void* func_data);
 
 SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
 sleqp_dyn_func_set_callbacks(SleqpFunc* func, SleqpDynFuncCallbacks* callbacks);

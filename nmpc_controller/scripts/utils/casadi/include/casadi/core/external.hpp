@@ -18,10 +18,10 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_EXTERNAL_HPP
 #define CASADI_EXTERNAL_HPP
@@ -36,26 +36,30 @@ namespace casadi {
  * \param name Name as in the label assigned to a CasADi Function object:
  *             Function(name,...,...)
  *             Will be used to look up symbols/functions named eg. <name>_eval
- *             Use `nm` (linux/osx) or `depends.exe` (win) to check which symbols are present
+ *             Use `nm` (linux/osx) or `depends.exe` (win) to check which
+ symbols are present
  *             in your shared library
  *
  * File name is assumed to be ./<name>.so
 
     \identifier{i0} */
-CASADI_EXPORT Function external(const std::string& name, const Dict& opts=Dict());
+CASADI_EXPORT Function external(const std::string& name,
+                                const Dict& opts = Dict());
 
 /** \brief  Load an external function from a shared library
  *
  * \param name Name as in the label assigned to a CasADi Function object:
  *             Function(name,...,...)
  *             Will be used to look up symbols/functions named eg. <name>_eval
- *             Use `nm` (linux/osx) or `depends.exe` (win) to check which symbols are present
+ *             Use `nm` (linux/osx) or `depends.exe` (win) to check which
+ symbols are present
  *             in your shared library
  * \param bin_name File name of the shared library
 
     \identifier{i1} */
-CASADI_EXPORT Function external(const std::string& name, const std::string& bin_name,
-                                const Dict& opts=Dict());
+CASADI_EXPORT Function external(const std::string& name,
+                                const std::string& bin_name,
+                                const Dict& opts = Dict());
 
 /** \brief  Load a just-in-time compiled external function
 
@@ -63,8 +67,8 @@ CASADI_EXPORT Function external(const std::string& name, const std::string& bin_
 
     \identifier{i2} */
 CASADI_EXPORT Function external(const std::string& name, const Importer& li,
-                                const Dict& opts=Dict());
+                                const Dict& opts = Dict());
 
-} // namespace casadi
+}  // namespace casadi
 
-#endif // CASADI_EXTERNAL_HPP
+#endif  // CASADI_EXTERNAL_HPP

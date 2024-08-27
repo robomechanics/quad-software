@@ -29,8 +29,7 @@ typedef struct SleqpFunc SleqpFunc;
 /**
  * The reason for setting the primal point
  **/
-typedef enum
-{
+typedef enum {
   /** No reason **/
   SLEQP_VALUE_REASON_NONE,
   /** Initial step **/
@@ -50,8 +49,7 @@ typedef enum
 /**
  * Type of the function
  **/
-typedef enum
-{
+typedef enum {
   /** Regular function **/
   SLEQP_FUNC_TYPE_REGULAR,
   /** Least-squares function @see least_squares **/
@@ -69,10 +67,8 @@ typedef enum
  * @param[out]    reject          Whether to manually reject the step
  * @param[in,out] func_data       The function data
  **/
-typedef SLEQP_RETCODE (*SLEQP_FUNC_SET)(SleqpFunc* func,
-                                        SleqpVec* value,
-                                        SLEQP_VALUE_REASON reason,
-                                        bool* reject,
+typedef SLEQP_RETCODE (*SLEQP_FUNC_SET)(SleqpFunc* func, SleqpVec* value,
+                                        SLEQP_VALUE_REASON reason, bool* reject,
                                         void* func_data);
 
 /**
@@ -90,8 +86,7 @@ typedef SLEQP_RETCODE (*SLEQP_FUNC_SET)(SleqpFunc* func,
  * \f$ \nabla_{xx} L(x, \lambda) \f$
  * @param[in,out] func_data       The function data
  **/
-typedef SLEQP_RETCODE (*SLEQP_FUNC_NONZEROS)(SleqpFunc* func,
-                                             int* obj_grad_nnz,
+typedef SLEQP_RETCODE (*SLEQP_FUNC_NONZEROS)(SleqpFunc* func, int* obj_grad_nnz,
                                              int* cons_val_nnz,
                                              int* cons_jac_nnz,
                                              int* hess_prod_nnz,
@@ -104,8 +99,7 @@ typedef SLEQP_RETCODE (*SLEQP_FUNC_NONZEROS)(SleqpFunc* func,
  * @param[out]    obj_val         The objective value \f$ f(x) \f$
  * @param[in,out] func_data       The function data
  **/
-typedef SLEQP_RETCODE (*SLEQP_FUNC_OBJ_VAL)(SleqpFunc* func,
-                                            double* obj_val,
+typedef SLEQP_RETCODE (*SLEQP_FUNC_OBJ_VAL)(SleqpFunc* func, double* obj_val,
                                             void* func_data);
 
 /**
@@ -179,8 +173,7 @@ typedef SLEQP_RETCODE (*SLEQP_FUNC_HESS_PROD)(SleqpFunc* func,
  **/
 typedef SLEQP_RETCODE (*SLEQP_FUNC_FREE)(void* func_data);
 
-typedef struct
-{
+typedef struct {
   SLEQP_FUNC_SET set_value;
   SLEQP_FUNC_NONZEROS nonzeros;
   SLEQP_FUNC_OBJ_VAL obj_val;
@@ -201,23 +194,18 @@ typedef struct
  * @param[in]  func_data        User-provided function data
  **/
 SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
-sleqp_func_create(SleqpFunc** fstar,
-                  SleqpFuncCallbacks* callbacks,
-                  int num_variables,
-                  int num_constraints,
-                  void* func_data);
+sleqp_func_create(SleqpFunc** fstar, SleqpFuncCallbacks* callbacks,
+                  int num_variables, int num_constraints, void* func_data);
 
 /**
  * Returns the number of variables \f$ n \f$.
  **/
-SLEQP_EXPORT int
-sleqp_func_num_vars(const SleqpFunc* func);
+SLEQP_EXPORT int sleqp_func_num_vars(const SleqpFunc* func);
 
 /**
  * Returns the number of constraints \f$ m \f$.
  **/
-SLEQP_EXPORT int
-sleqp_func_num_cons(const SleqpFunc* func);
+SLEQP_EXPORT int sleqp_func_num_cons(const SleqpFunc* func);
 
 /**
  * Sets the callbacks of this function to the specified ones
@@ -235,17 +223,14 @@ sleqp_func_set_callbacks(SleqpFunc* func, SleqpFuncCallbacks* callbacks);
  *
  **/
 SLEQP_EXPORT
-SleqpHessStruct*
-sleqp_func_hess_struct(SleqpFunc* func);
+SleqpHessStruct* sleqp_func_hess_struct(SleqpFunc* func);
 
 /**
  * Returns the function data associated with the given function.
  **/
-SLEQP_EXPORT void*
-sleqp_func_get_data(SleqpFunc* func);
+SLEQP_EXPORT void* sleqp_func_get_data(SleqpFunc* func);
 
-SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
-sleqp_func_capture(SleqpFunc* func);
+SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE sleqp_func_capture(SleqpFunc* func);
 
 SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
 sleqp_func_release(SleqpFunc** fstar);

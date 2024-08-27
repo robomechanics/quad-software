@@ -9,11 +9,11 @@
 // This file is fully docified.
 // There's nothing to docify...
 
-//#############################################################################
+// #############################################################################
 
 #include <csignal>
 
-//#############################################################################
+// #############################################################################
 
 #if defined(_MSC_VER)
 typedef void(__cdecl *CoinSighandler_t)(int);
@@ -107,7 +107,7 @@ typedef __decltype(SIG_DFL) CoinSighandler_t;
 #define CoinSighandler_t_defined
 #endif
 
-//#############################################################################
+// #############################################################################
 
 #ifndef CoinSighandler_t_defined
 #warning("OS and/or compiler is not recognized. Defaulting to:");
@@ -119,9 +119,9 @@ typedef void (*CoinSighandler_t)(int);
 }
 #endif
 
-//#############################################################################
+// #############################################################################
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

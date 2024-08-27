@@ -6,8 +6,8 @@
 #ifndef CbcParam_H
 #define CbcParam_H
 
-#include "OsiSolverInterface.hpp"
 #include "CbcModel.hpp"
+#include "OsiSolverInterface.hpp"
 class ClpSimplex;
 /*! \brief Parameter codes
 
@@ -24,17 +24,18 @@ class ClpSimplex;
   don't fit neatly into the parameters array.
 
   This coding scheme is in flux.
-  CBC_PARAM_STR_NODESTRATEGY, 
-  CBC_PARAM_STR_BRANCHSTRATEGY, 
+  CBC_PARAM_STR_NODESTRATEGY,
+  CBC_PARAM_STR_BRANCHSTRATEGY,
   CBC_PARAM_NOTUSED_ADDCUTSSTRATEGY,
-  CLP_PARAM_ACTION_CLEARCUTS, 
-  CBC_PARAM_NOTUSED_OSLSTUFF, 
+  CLP_PARAM_ACTION_CLEARCUTS,
+  CBC_PARAM_NOTUSED_OSLSTUFF,
   CBC_PARAM_NOTUSED_CBCSTUFF are not used at present (03.10.24).
 */
 
 enum CbcParameterType
 
-{ CBC_PARAM_GENERALQUERY = -100,
+{
+  CBC_PARAM_GENERALQUERY = -100,
   CBC_PARAM_FULLGENERALQUERY,
 
   CLP_PARAM_DBL_PRIMALTOLERANCE = 1,
@@ -150,22 +151,21 @@ enum CbcParameterType
 /// Very simple class for setting parameters
 
 class CbcParam {
-
-public:
+ public:
   /**@name Constructor and destructor */
   //@{
   /// Constructors
   CbcParam();
-  CbcParam(std::string name, std::string help,
-    double lower, double upper, CbcParameterType type, bool display = true);
-  CbcParam(std::string name, std::string help,
-    int lower, int upper, CbcParameterType type, bool display = true);
+  CbcParam(std::string name, std::string help, double lower, double upper,
+           CbcParameterType type, bool display = true);
+  CbcParam(std::string name, std::string help, int lower, int upper,
+           CbcParameterType type, bool display = true);
   // Other strings will be added by insert
   CbcParam(std::string name, std::string help, std::string firstValue,
-    CbcParameterType type, int defaultIndex = 0, bool display = true);
+           CbcParameterType type, int defaultIndex = 0, bool display = true);
   // Action
-  CbcParam(std::string name, std::string help,
-    CbcParameterType type, int indexNumber = -1, bool display = true);
+  CbcParam(std::string name, std::string help, CbcParameterType type,
+           int indexNumber = -1, bool display = true);
   /// Copy constructor.
   CbcParam(const CbcParam &);
   /// Assignment operator. This copies the data
@@ -181,15 +181,9 @@ public:
   /// Adds one help line
   void addHelp(std::string keyWord);
   /// Returns name
-  inline std::string name() const
-  {
-    return name_;
-  };
+  inline std::string name() const { return name_; };
   /// Returns short help
-  inline std::string shortHelp() const
-  {
-    return shortHelp_;
-  };
+  inline std::string shortHelp() const { return shortHelp_; };
   /// Sets a double parameter (nonzero code if error)
   int setDoubleParameter(CbcModel &model, double value) const;
   /// Gets a double parameter
@@ -223,75 +217,41 @@ public:
   /// Prints parameter options
   void printOptions() const;
   /// Returns current parameter option
-  inline std::string currentOption() const
-  {
+  inline std::string currentOption() const {
     return definedKeyWords_[currentKeyWord_];
   }
   /// Sets current parameter option
-  inline void setCurrentOption(int value)
-  {
-    currentKeyWord_ = value;
-  }
+  inline void setCurrentOption(int value) { currentKeyWord_ = value; }
   /// Sets int value
-  inline void setIntValue(int value)
-  {
-    intValue_ = value;
-  }
-  inline int intValue() const
-  {
-    return intValue_;
-  }
+  inline void setIntValue(int value) { intValue_ = value; }
+  inline int intValue() const { return intValue_; }
   /// Sets double value
-  inline void setDoubleValue(double value)
-  {
-    doubleValue_ = value;
-  }
-  inline double doubleValue() const
-  {
-    return doubleValue_;
-  }
+  inline void setDoubleValue(double value) { doubleValue_ = value; }
+  inline double doubleValue() const { return doubleValue_; }
   /// Sets string value
-  inline void setStringValue(std::string value)
-  {
-    stringValue_ = value;
-  }
-  inline std::string stringValue() const
-  {
-    return stringValue_;
-  }
+  inline void setStringValue(std::string value) { stringValue_ = value; }
+  inline std::string stringValue() const { return stringValue_; }
   /// Returns 1 if matches minimum, 2 if matches less, 0 if not matched
   int matches(std::string input) const;
   /// type
-  inline CbcParameterType type() const
-  {
-    return type_;
-  }
+  inline CbcParameterType type() const { return type_; }
   /// whether to display
-  inline bool displayThis() const
-  {
-    return display_;
-  }
+  inline bool displayThis() const { return display_; }
   /// Set Long help
-  inline void setLonghelp(const std::string help)
-  {
-    longHelp_ = help;
-  }
+  inline void setLonghelp(const std::string help) { longHelp_ = help; }
   /// Print Long help
   void printLongHelp() const;
   /// Print action and string
   void printString() const;
   /// type for classification
-  inline int indexNumber() const
-  {
-    return indexNumber_;
-  }
+  inline int indexNumber() const { return indexNumber_; }
 
-private:
+ private:
   /// gutsOfConstructor
   void gutsOfConstructor();
   //@}
   ////////////////// data //////////////////
-private:
+ private:
   /**@name data
      We might as well throw all type data in - could derive?
     */
@@ -309,7 +269,7 @@ private:
   // Minimum match
   unsigned int lengthMatch_;
   /// set of valid strings
-  std::vector< std::string > definedKeyWords_;
+  std::vector<std::string> definedKeyWords_;
   /// Name
   std::string name_;
   /// Short help
@@ -335,4 +295,4 @@ private:
 #endif /* CbcParam_H */
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

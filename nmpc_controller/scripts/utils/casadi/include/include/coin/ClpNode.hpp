@@ -17,8 +17,7 @@ class ClpFactorization;
 class ClpDualRowSteepest;
 class ClpNodeStuff;
 class ClpNode {
-
-public:
+ public:
   /**@name Useful methods */
   //@{
   /** Applies node to model
@@ -40,50 +39,23 @@ public:
   /**@name Gets and sets */
   //@{
   /// Objective value
-  inline double objectiveValue() const
-  {
-    return objectiveValue_;
-  }
+  inline double objectiveValue() const { return objectiveValue_; }
   /// Set objective value
-  inline void setObjectiveValue(double value)
-  {
-    objectiveValue_ = value;
-  }
+  inline void setObjectiveValue(double value) { objectiveValue_ = value; }
   /// Primal solution
-  inline const double *primalSolution() const
-  {
-    return primalSolution_;
-  }
+  inline const double *primalSolution() const { return primalSolution_; }
   /// Dual solution
-  inline const double *dualSolution() const
-  {
-    return dualSolution_;
-  }
+  inline const double *dualSolution() const { return dualSolution_; }
   /// Initial value of integer variable
-  inline double branchingValue() const
-  {
-    return branchingValue_;
-  }
+  inline double branchingValue() const { return branchingValue_; }
   /// Sum infeasibilities
-  inline double sumInfeasibilities() const
-  {
-    return sumInfeasibilities_;
-  }
+  inline double sumInfeasibilities() const { return sumInfeasibilities_; }
   /// Number infeasibilities
-  inline int numberInfeasibilities() const
-  {
-    return numberInfeasibilities_;
-  }
+  inline int numberInfeasibilities() const { return numberInfeasibilities_; }
   /// Relative depth
-  inline int depth() const
-  {
-    return depth_;
-  }
+  inline int depth() const { return depth_; }
   /// Estimated solution value
-  inline double estimatedSolution() const
-  {
-    return estimatedSolution_;
-  }
+  inline double estimatedSolution() const { return estimatedSolution_; }
   /** Way for integer variable -1 down , +1 up */
   int way() const;
   /// Return true if branch exhausted
@@ -91,20 +63,11 @@ public:
   /// Change state of variable i.e. go other way
   void changeState();
   /// Sequence number of integer variable (-1 if none)
-  inline int sequence() const
-  {
-    return sequence_;
-  }
+  inline int sequence() const { return sequence_; }
   /// If odd arrays exist
-  inline bool oddArraysExist() const
-  {
-    return lower_ != NULL;
-  }
+  inline bool oddArraysExist() const { return lower_ != NULL; }
   /// Status array
-  inline const unsigned char *statusArray() const
-  {
-    return status_;
-  }
+  inline const unsigned char *statusArray() const { return status_; }
   //@}
 
   /**@name Constructors, destructor */
@@ -115,7 +78,7 @@ public:
   ClpNode(ClpSimplex *model, const ClpNodeStuff *stuff, int depth);
   /// Does work of constructor (partly so gdb will work)
   void gutsOfConstructor(ClpSimplex *model, const ClpNodeStuff *stuff,
-    int arraysExist, int depth);
+                         int arraysExist, int depth);
   /** Destructor */
   virtual ~ClpNode();
   //@}
@@ -128,11 +91,12 @@ public:
   ClpNode &operator=(const ClpNode &);
   //@}
 
-protected:
+ protected:
   // For state of branch
   typedef struct {
-    unsigned int firstBranch : 1; //  nonzero if first branch on variable is up
-    unsigned int branch : 2; //  0 means do first branch next, 1 second, 2 finished
+    unsigned int firstBranch : 1;  //  nonzero if first branch on variable is up
+    unsigned int
+        branch : 2;  //  0 means do first branch next, 1 second, 2 finished
     unsigned int spare : 29;
   } branchState;
   /**@name Data */
@@ -161,7 +125,8 @@ protected:
   int *upper_;
   /// Pivot variables for factorization
   int *pivotVariables_;
-  /// Variables fixed by reduced costs (at end of branch) 0x10000000 added if fixed to UB
+  /// Variables fixed by reduced costs (at end of branch) 0x10000000 added if
+  /// fixed to UB
   int *fixed_;
   /// State of branch
   branchState branchState_;
@@ -186,8 +151,7 @@ protected:
   //@}
 };
 class ClpNodeStuff {
-
-public:
+ public:
   /**@name Constructors, destructor */
   //@{
   /** Default constructor. */
@@ -210,10 +174,9 @@ public:
   //@{
   /** Fill with pseudocosts */
   void fillPseudoCosts(const double *down, const double *up,
-    const int *priority,
-    const int *numberDown, const int *numberUp,
-    const int *numberDownInfeasible, const int *numberUpInfeasible,
-    int number);
+                       const int *priority, const int *numberDown,
+                       const int *numberUp, const int *numberDownInfeasible,
+                       const int *numberUpInfeasible, int number);
   /// Update pseudo costs
   void update(int way, int sequence, double change, bool feasible);
   /// Return maximum number of nodes
@@ -222,7 +185,7 @@ public:
   int maximumSpace() const;
   //@}
 
-public:
+ public:
   /**@name Data */
   //@{
   /// Integer tolerance
@@ -297,8 +260,7 @@ public:
   //@}
 };
 class ClpHashValue {
-
-public:
+ public:
   /**@name Useful methods */
   //@{
   /// Return index or -1 if not found
@@ -306,10 +268,7 @@ public:
   /// Add value to list and return index
   int addValue(double value);
   /// Number of different entries
-  inline int numberEntries() const
-  {
-    return numberHash_;
-  }
+  inline int numberEntries() const { return numberHash_; }
   //@}
 
   /**@name Constructors, destructor */
@@ -329,7 +288,7 @@ public:
   /// =
   ClpHashValue &operator=(const ClpHashValue &);
   //@}
-private:
+ private:
   /**@name private stuff */
   //@{
   /** returns hash */
@@ -338,7 +297,7 @@ private:
   void resize(bool increaseMax);
   //@}
 
-protected:
+ protected:
   /**@name Data members
         The data members are protected to allow access for derived classes. */
   //@{
@@ -361,4 +320,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

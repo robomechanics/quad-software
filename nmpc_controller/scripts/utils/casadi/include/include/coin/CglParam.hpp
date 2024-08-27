@@ -20,8 +20,7 @@
     also set different default values for the parameters in CglParam.  */
 
 class CglParam {
-
-public:
+ public:
   /**@name Public Set/get methods */
   //@{
 
@@ -50,7 +49,7 @@ public:
   //@{
   /// Default constructor
   CglParam(const double inf = COIN_DBL_MAX, const double eps = 1e-6,
-    const double eps_c = 1e-5, const int max_s = COIN_INT_MAX);
+           const double eps_c = 1e-5, const int max_s = COIN_INT_MAX);
 
   /// Copy constructor
   CglParam(const CglParam &);
@@ -65,7 +64,7 @@ public:
   virtual ~CglParam();
   //@}
 
-protected:
+ protected:
   // Protected member data
 
   /**@name Protected member data */
@@ -90,4 +89,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

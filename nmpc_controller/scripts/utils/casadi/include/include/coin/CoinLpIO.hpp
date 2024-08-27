@@ -17,18 +17,18 @@
 
 #include <cstdio>
 
-#include "CoinPackedMatrix.hpp"
-#include "CoinMessage.hpp"
 #include "CoinFileIO.hpp"
+#include "CoinMessage.hpp"
+#include "CoinPackedMatrix.hpp"
 class CoinSet;
 
 const int MAX_OBJECTIVES = 2;
 
 typedef int COINColumnIndex;
 
-/** Class to read and write Lp files 
+/** Class to read and write Lp files
 
- Lp file format: 
+ Lp file format:
 
 / this is a comment <BR>
 \ this too <BR>
@@ -53,51 +53,51 @@ typedef int COINColumnIndex;
  End
 
 Notes: <UL>
- <LI> Keywords are: Min, Max, Minimize, Maximize, s.t., Subject To, 
-      Bounds, Integers, Generals, Binaries, Semis, End, Free, Inf. 
+ <LI> Keywords are: Min, Max, Minimize, Maximize, s.t., Subject To,
+      Bounds, Integers, Generals, Binaries, Semis, End, Free, Inf.
  <LI> Keywords are not case sensitive and may be in plural or singular form.
       They should not be used as objective, row or column names.
  <LI> Bounds, Integers, Generals, Binaries sections are optional.
  <LI> Generals and Integers are synonymous.
- <LI> Bounds section (if any) must come before Integers, Generals, and 
+ <LI> Bounds section (if any) must come before Integers, Generals, and
       Binaries sections.
  <LI> Row names must be followed by ':' without blank space.
-      Row names are optional. If row names are present, 
+      Row names are optional. If row names are present,
       they must be distinct (if the k-th constraint has no given name, its name
       is set automatically to "consk" for k=0,...,).
-      For valid row names, see the method is_invalid_name(). 
- <LI> Column names must be followed by a blank space. They must be distinct. 
-      For valid column names, see the method is_invalid_name(). 
+      For valid row names, see the method is_invalid_name().
+ <LI> Column names must be followed by a blank space. They must be distinct.
+      For valid column names, see the method is_invalid_name().
  <LI> Multiple objectives may be specified, but when there are multiple
       objectives, they must have names (to indicate where each one starts).
  <LI> The objective function names must be followed by ':' without blank space.
       If there is a single objective, the objective function name is optional.
       If no name is given, the name is set to "obj" by default.
-      For valid objective function names, see the method is_invalid_name(). 
+      For valid objective function names, see the method is_invalid_name().
  <LI> Ranged constraints are written as two constraints.
-      If a name is given for a ranged constraint, the upper bound constraint 
-      has that name and the lower bound constraint has that name with "_low" 
+      If a name is given for a ranged constraint, the upper bound constraint
+      has that name and the lower bound constraint has that name with "_low"
       as suffix. This should be kept in mind when assigning names to ranged
       constraint, as the resulting name must be distinct from all the other
       names and be considered valid by the method is_invalid_name().
  <LI> At most one term related to any single variable may appear in the
       objective function; if more than one term are present, only the last
       one is taken into account.
-      At most one constant term may appear in the objective function; 
-      if present, it must appear last. 
+      At most one constant term may appear in the objective function;
+      if present, it must appear last.
  <LI> Default bounds are 0 for lower bound and +infinity for upper bound.
- <LI> Free variables get default lower bound -infinity and 
+ <LI> Free variables get default lower bound -infinity and
       default upper bound +infinity. Writing "x0 Free" in an
       LP file means "set lower bound on x0 to -infinity".
- <LI> If more than one upper (resp. lower) bound on a variable appears in 
-      the Bounds section, the last one is the one taken into 
-      account. The bounds for a binary variable are set to 0/1 only if this 
-      bound is stronger than the bound obtained from the Bounds section. 
+ <LI> If more than one upper (resp. lower) bound on a variable appears in
+      the Bounds section, the last one is the one taken into
+      account. The bounds for a binary variable are set to 0/1 only if this
+      bound is stronger than the bound obtained from the Bounds section.
  <LI> Numbers larger than DBL_MAX (or larger than 1e+400) in the input file
       might crash the code.
  <LI> A comment must start with '\' or '/'. That symbol must either be
-      the first character of a line or be preceded by a blank space. The 
-      comment ends at the end of the 
+      the first character of a line or be preceded by a blank space. The
+      comment ends at the end of the
       line. Comments are skipped while reading an Lp file and they may be
       inserted anywhere.
 </UL>
@@ -105,7 +105,7 @@ Notes: <UL>
 class CoinLpIO {
   friend void CoinLpIOUnitTest(const std::string &lpDir);
 
-public:
+ public:
   /**@name Constructor and Destructor */
   //@{
   /// Default Constructor
@@ -126,10 +126,10 @@ public:
   /// Destructor
   ~CoinLpIO();
 
-  /** Free the vector previous_names_[section] and set 
+  /** Free the vector previous_names_[section] and set
       card_previous_names_[section] to 0.
-      section = 0 for row names, 
-      section = 1 for column names.  
+      section = 0 for row names,
+      section = 1 for column names.
   */
   void freePreviousNames(const int section);
 
@@ -138,10 +138,10 @@ public:
   //@}
 
   /** A quick inlined function to convert from lb/ub style constraint
-	definition to sense/rhs/range style */
-  inline void
-  convertBoundToSense(const double lower, const double upper,
-    char &sense, double &right, double &range) const;
+        definition to sense/rhs/range style */
+  inline void convertBoundToSense(const double lower, const double upper,
+                                  char &sense, double &right,
+                                  double &range) const;
 
   /**@name Queries */
   //@{
@@ -173,18 +173,18 @@ public:
   /// Get pointer to array[getNumRows()] of row upper bounds
   const double *getRowUpper() const;
   /** Get pointer to array[getNumRows()] of constraint senses.
-	<ul>
-	<li>'L': <= constraint
-	<li>'E': =  constraint
-	<li>'G': >= constraint
-	<li>'R': ranged constraint
-	<li>'N': free constraint
-	</ul>
+        <ul>
+        <li>'L': <= constraint
+        <li>'E': =  constraint
+        <li>'G': >= constraint
+        <li>'R': ranged constraint
+        <li>'N': free constraint
+        </ul>
       */
   const char *getRowSense() const;
 
   /** Get pointer to array[getNumRows()] of constraint right-hand sides.
-      
+
   Given constraints with upper (rowupper) and/or lower (rowlower) bounds,
   the constraint right-hand side (rhs) is set as
   <ul>
@@ -192,13 +192,13 @@ public:
   <li> if rowsense()[i] == 'G' then rhs()[i] == rowlower()[i]
   <li> if rowsense()[i] == 'R' then rhs()[i] == rowupper()[i]
   <li> if rowsense()[i] == 'N' then rhs()[i] == 0.0
-	</ul>
+        </ul>
   */
   const double *getRightHandSide() const;
 
   /** Get pointer to array[getNumRows()] of row ranges.
-      
-  Given constraints with upper (rowupper) and/or lower (rowlower) bounds, 
+
+  Given constraints with upper (rowupper) and/or lower (rowlower) bounds,
   the constraint range (rowrange) is set as
   <ul>
   <li> if rowsense()[i] == 'R' then
@@ -217,7 +217,8 @@ public:
   /// Get pointer to array[getNumCols()] of objective function coefficients
   const double *getObjCoefficients() const;
 
-  /// Get pointer to array[getNumCols()] of objective function coefficients for objective j
+  /// Get pointer to array[getNumCols()] of objective function coefficients for
+  /// objective j
   const double *getObjCoefficients(int j) const;
 
   /// Get pointer to row-wise copy of the coefficient matrix
@@ -237,15 +238,13 @@ public:
   /// non distinct
   /// row names were present or if no previous names were saved or if
   /// the object was holding a different problem before.
-  void getPreviousRowNames(char const *const *prev,
-    int *card_prev) const;
+  void getPreviousRowNames(char const *const *prev, int *card_prev) const;
 
   /// Get pointer to array[*card_prev] of previous column names.
   /// The value of *card_prev might be different than getNumCols() if non
   /// distinct column names were present of if no previous names were saved,
   /// or if the object was holding a different problem before.
-  void getPreviousColNames(char const *const *prev,
-    int *card_prev) const;
+  void getPreviousColNames(char const *const *prev, int *card_prev) const;
 
   /// Get pointer to array[getNumRows()+1] of row names, including
   /// objective function name as last entry.
@@ -273,26 +272,19 @@ public:
   /// Return -1 if the name is not found.
   int columnIndex(const char *name) const;
 
-  ///Returns the (constant) objective offset
+  /// Returns the (constant) objective offset
   double objectiveOffset() const;
 
-  ///Returns the (constant) objective offset for objective j
+  /// Returns the (constant) objective offset for objective j
   double objectiveOffset(int j) const;
 
   /// Set objective offset
-  inline void setObjectiveOffset(double value)
-  {
-    objectiveOffset_[0] = value;
-  }
+  inline void setObjectiveOffset(double value) { objectiveOffset_[0] = value; }
   /// Return true if maximization problem reformulated as minimization
-  inline bool wasMaximization() const
-  {
-    return wasMaximization_;
-  }
+  inline bool wasMaximization() const { return wasMaximization_; }
 
   /// Set objective offset
-  inline void setObjectiveOffset(double value, int j)
-  {
+  inline void setObjectiveOffset(double value, int j) {
     objectiveOffset_[j] = value;
   }
 
@@ -339,62 +331,59 @@ public:
   //@{
   /** Set the data of the object.
       Set it from the coefficient matrix m, the lower bounds
-      collb,  the upper bounds colub, objective function obj_coeff, 
+      collb,  the upper bounds colub, objective function obj_coeff,
       integrality vector integrality, lower/upper bounds on the constraints.
-      The sense of optimization of the objective function is assumed to be 
-      a minimization. 
-      Numbers larger than DBL_MAX (or larger than 1e+400) 
+      The sense of optimization of the objective function is assumed to be
+      a minimization.
+      Numbers larger than DBL_MAX (or larger than 1e+400)
       might crash the code. There are two version. The second one is for
       setting multiple objectives.
   */
-  void setLpDataWithoutRowAndColNames(
-    const CoinPackedMatrix &m,
-    const double *collb, const double *colub,
-    const double *obj_coeff,
-    const char *integrality,
-    const double *rowlb, const double *rowub);
+  void setLpDataWithoutRowAndColNames(const CoinPackedMatrix &m,
+                                      const double *collb, const double *colub,
+                                      const double *obj_coeff,
+                                      const char *integrality,
+                                      const double *rowlb, const double *rowub);
 
-  void setLpDataWithoutRowAndColNames(
-    const CoinPackedMatrix &m,
-    const double *collb, const double *colub,
-    const double *obj_coeff[MAX_OBJECTIVES],
-    int num_objectives,
-    const char *integrality,
-    const double *rowlb, const double *rowub);
+  void setLpDataWithoutRowAndColNames(const CoinPackedMatrix &m,
+                                      const double *collb, const double *colub,
+                                      const double *obj_coeff[MAX_OBJECTIVES],
+                                      int num_objectives,
+                                      const char *integrality,
+                                      const double *rowlb, const double *rowub);
 
   /** Return 0 if buff is a valid name for a row, a column or objective
       function, return a positive number otherwise.
-      If parameter ranged = true, the name is intended for a ranged 
+      If parameter ranged = true, the name is intended for a ranged
       constraint. <BR>
       Return 1 if the name has more than 100 characters (96 characters
       for a ranged constraint name, as "_low" will be added to the name).<BR>
       Return 2 if the name starts with a number.<BR>
-      Return 3 if the name is not built with 
+      Return 3 if the name is not built with
       the letters a to z, A to Z, the numbers 0 to 9 or the characters
       " ! # $ % & ( ) . ; ? @ _ ' ` { } ~ <BR>
       Return 4 if the name is a keyword.<BR>
       Return 5 if the name is empty or NULL. */
   int is_invalid_name(const char *buff, const bool ranged) const;
 
-  /** Return 0 if each of the card_vnames entries of vnames is a valid name, 
-      return a positive number otherwise. The return value, if not 0, is the 
+  /** Return 0 if each of the card_vnames entries of vnames is a valid name,
+      return a positive number otherwise. The return value, if not 0, is the
       return value of is_invalid_name() for the last invalid name
-      in vnames. If check_ranged = true, the names are row names and 
+      in vnames. If check_ranged = true, the names are row names and
       names for ranged constaints must be checked for additional restrictions
       since "_low" will be added to the name if an Lp file is written.
-      When check_ranged = true, card_vnames must have getNumRows()+1 entries, 
+      When check_ranged = true, card_vnames must have getNumRows()+1 entries,
       with entry vnames[getNumRows()] being the
       name of the objective function.
-      For a description of valid names and return values, see the method 
-      is_invalid_name(). 
+      For a description of valid names and return values, see the method
+      is_invalid_name().
 
-      This method must not be called with check_ranged = true before 
+      This method must not be called with check_ranged = true before
       setLpDataWithoutRowAndColNames() has been called, since access
       to the indices of all the ranged constraints is required.
   */
-  int are_invalid_names(char const *const *vnames,
-    const int card_vnames,
-    const bool check_ranged) const;
+  int are_invalid_names(char const *const *vnames, const int card_vnames,
+                        const bool check_ranged) const;
 
   /// Set objective function name to the default "obj" and row
   /// names to the default "cons0", "cons1", ...
@@ -404,18 +393,18 @@ public:
   void setDefaultColNames();
 
   /** Set the row and column names.
-      The array rownames must either be NULL or have exactly getNumRows()+1 
+      The array rownames must either be NULL or have exactly getNumRows()+1
       distinct entries,
       each of them being a valid name (see is_invalid_name()) and the
       last entry being the intended name for the objective function.
       If rownames is NULL, existing row names and objective function
       name are not changed.
       If rownames is deemed invalid, default row names and objective function
-      name are used (see setDefaultRowNames()). The memory location of 
+      name are used (see setDefaultRowNames()). The memory location of
       array rownames (or its entries) should not be related
-      to the memory location of the array (or entries) obtained from 
-      getRowNames() or getPreviousRowNames(), as the call to 
-      setLpDataRowAndColNames() modifies the corresponding arrays. 
+      to the memory location of the array (or entries) obtained from
+      getRowNames() or getPreviousRowNames(), as the call to
+      setLpDataRowAndColNames() modifies the corresponding arrays.
       Unpredictable results
       are obtained if this requirement is ignored.
 
@@ -423,7 +412,7 @@ public:
       NULL or have exactly getNumCols() entries.
   */
   void setLpDataRowAndColNames(char const *const *const rownames,
-    char const *const *const colnames);
+                               char const *const *const colnames);
 
   /** Write the data in Lp format in the file with name filename.
       Coefficients with value less than epsilon away from an integer value
@@ -435,15 +424,13 @@ public:
       Ranged constraints are written as two constraints.
       If row names are used, the upper bound constraint has the
       name of the original ranged constraint and the
-      lower bound constraint has for name the original name with 
+      lower bound constraint has for name the original name with
       "_low" as suffix. If doing so creates two identical row names,
       default row names are used (see setDefaultRowNames()).
   */
-  int writeLp(const char *filename,
-    const double epsilon,
-    const int numberAcross,
-    const int decimals,
-    const bool useRowNames = true);
+  int writeLp(const char *filename, const double epsilon,
+              const int numberAcross, const int decimals,
+              const bool useRowNames = true);
 
   /** Write the data in Lp format in the file pointed to by the paramater fp.
       Coefficients with value less than epsilon away from an integer value
@@ -455,15 +442,12 @@ public:
       Ranged constraints are written as two constraints.
       If row names are used, the upper bound constraint has the
       name of the original ranged constraint and the
-      lower bound constraint has for name the original name with 
+      lower bound constraint has for name the original name with
       "_low" as suffix. If doing so creates two identical row names,
       default row names are used (see setDefaultRowNames()).
   */
-  int writeLp(FILE *fp,
-    const double epsilon,
-    const int numberAcross,
-    const int decimals,
-    const bool useRowNames = true);
+  int writeLp(FILE *fp, const double epsilon, const int numberAcross,
+              const int decimals, const bool useRowNames = true);
 
   /// Write the data in Lp format in the file with name filename.
   /// Write objective function name and row names if useRowNames = true.
@@ -510,21 +494,15 @@ public:
   void loadSOS(int numberSets, const CoinSet **sets);
 
   /// Number of SOS sets
-  inline int numberSets() const
-  {
-    return numberSets_;
-  }
+  inline int numberSets() const { return numberSets_; }
 
   /// Set information
-  inline CoinSet **setInformation() const
-  {
-    return set_;
-  }
+  inline CoinSet **setInformation() const { return set_; }
   //@}
   /**@name Message handling */
   //@{
   /** Pass in Message handler
-  
+
       Supply a custom message handler. It will not be destroyed when the
       CoinMpsIO object is destroyed.
   */
@@ -534,7 +512,9 @@ public:
   void newLanguage(CoinMessages::Language language);
 
   /// Set the language for messages.
-  inline void setLanguage(CoinMessages::Language language) { newLanguage(language); }
+  inline void setLanguage(CoinMessages::Language language) {
+    newLanguage(language);
+  }
 
   /// Return the message handler
   inline CoinMessageHandler *messageHandler() const { return handler_; }
@@ -545,14 +525,14 @@ public:
   inline CoinMessages *messagesPointer() { return &messages_; }
   //@}
 
-protected:
+ protected:
   /// Problem name
   char *problemName_;
 
   /// Message handler
   CoinMessageHandler *handler_;
   /** Flag to say if the message handler is the default handler.
-      
+
       If true, the handler will be destroyed when the CoinMpsIO
       object is destroyed; if false, it will not be destroyed.
   */
@@ -590,7 +570,7 @@ protected:
   /// Pointer to dense vector of row rhs
   mutable double *rhs_;
 
-  /** Pointer to dense vector of slack variable upper bounds for ranged 
+  /** Pointer to dense vector of slack variable upper bounds for ranged
       constraints (undefined for non-ranged constraints)
   */
   mutable double *rowrange_;
@@ -638,11 +618,11 @@ protected:
   /// Maximization reformulation flag
   bool wasMaximization_;
 
-  /** Row names (including objective function name) 
-      and column names when stopHash() for the corresponding 
-      section was last called or for initial names (deemed invalid) 
+  /** Row names (including objective function name)
+      and column names when stopHash() for the corresponding
+      section was last called or for initial names (deemed invalid)
       read from a file.<BR>
-      section = 0 for row names, 
+      section = 0 for row names,
       section = 1 for column names.  */
   char **previous_names_[2];
 
@@ -697,9 +677,8 @@ protected:
   ///
   /// section = 0 for row names,
   /// section = 1 for column names.
-  void startHash(char const *const *const names,
-    const COINColumnIndex number,
-    int section);
+  void startHash(char const *const *const names, const COINColumnIndex number,
+                 int section);
 
   /// Delete hash storage. If section = 0, it also frees objName_.
   /// section = 0 for row names,
@@ -775,53 +754,52 @@ protected:
 
   /// Read a monomial of the objective function.
   /// Return 1 if "subject to" or one of its variants has been read.
-  int read_monom_obj(double *coeff, char **name, int *cnt,
-    char **obj_name, int *num_objectives, int *obj_starts);
+  int read_monom_obj(double *coeff, char **name, int *cnt, char **obj_name,
+                     int *num_objectives, int *obj_starts);
 
   /// Read a monomial of a constraint.
   /// Return a positive number if the sense of the inequality has been
   /// read (see method is_sense() for the return code).
   /// Return -1 otherwise.
   int read_monom_row(char *start_str, double *coeff, char **name,
-    int cnt_coeff) const;
+                     int cnt_coeff) const;
 
   /// Reallocate vectors related to number of coefficients.
   void realloc_coeff(double **coeff, char ***colNames, int *maxcoeff) const;
 
   /// Reallocate vectors related to rows.
   void realloc_row(char ***rowNames, CoinBigIndex **start, double **rhs,
-    double **rowlow, double **rowup, int *maxrow) const;
+                   double **rowlow, double **rowup, int *maxrow) const;
 
   /// Reallocate vectors related to columns.
   void realloc_col(double **collow, double **colup, char **is_int,
-    int *maxcol) const;
+                   int *maxcol) const;
 
   /// Read a constraint.
-  void read_row(char *buff, double **pcoeff, char ***pcolNames,
-    int *cnt_coeff, int *maxcoeff,
-    double *rhs, double *rowlow, double *rowup,
-    int *cnt_row, double inf) const;
+  void read_row(char *buff, double **pcoeff, char ***pcolNames, int *cnt_coeff,
+                int *maxcoeff, double *rhs, double *rowlow, double *rowup,
+                int *cnt_row, double inf) const;
 
   /** Check that current objective name and all row names are distinct
       including row names obtained by adding "_low" for ranged constraints.
-      If there is a conflict in the names, they are replaced by default 
+      If there is a conflict in the names, they are replaced by default
       row names (see setDefaultRowNames()).
 
-      This method must not be called before 
+      This method must not be called before
       setLpDataWithoutRowAndColNames() has been called, since access
       to the indices of all the ranged constraints is required.
 
-      This method must not be called before 
+      This method must not be called before
       setLpDataRowAndColNames() has been called, since access
       to all the row names is required.
   */
   void checkRowNames();
 
   /** Check that current column names are distinct.
-      If not, they are replaced by default 
+      If not, they are replaced by default
       column names (see setDefaultColNames()).
 
-      This method must not be called before 
+      This method must not be called before
       setLpDataRowAndColNames() has been called, since access
       to all the column names is required.
   */
@@ -833,4 +811,4 @@ void CoinLpIOUnitTest(const std::string &lpDir);
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

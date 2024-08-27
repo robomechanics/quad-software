@@ -18,32 +18,32 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_ENUM_HPP
 #define CASADI_ENUM_HPP
 
-#include <string>
+#include <casadi/core/casadi_export.h>
+
 #include <sstream>
+#include <string>
 
 #include "exception.hpp"
-
-#include <casadi/core/casadi_export.h>
 
 /// \cond INTERNAL
 namespace casadi {
 
 /// Helper class: Specify number of entries in an enum
-template<typename T>
+template <typename T>
 struct enum_traits {
   static const size_t n_enum = static_cast<size_t>(T::NUMEL);
 };
 
 /// Helper function: Check if enum exists
-template<typename T>
+template <typename T>
 bool has_enum(const std::string& s) {
   // Look for a match
   for (size_t i = 0; i < enum_traits<T>::n_enum; ++i) {
@@ -54,7 +54,7 @@ bool has_enum(const std::string& s) {
 }
 
 /// Helper function: Convert string to enum
-template<typename T>
+template <typename T>
 T to_enum(const std::string& s, const std::string& s_def = "") {
   // Default value, if empty string
   if (s.empty() && !s_def.empty()) return to_enum<T>(s_def);
@@ -76,7 +76,7 @@ T to_enum(const std::string& s, const std::string& s_def = "") {
 }
 
 /// Helper function: Get all fields
-template<typename T>
+template <typename T>
 std::vector<std::string> enum_names() {
   std::vector<std::string> r(enum_traits<T>::n_enum);
   for (size_t i = 0; i < enum_traits<T>::n_enum; ++i)
@@ -84,7 +84,7 @@ std::vector<std::string> enum_names() {
   return r;
 }
 
-} // namespace casadi
+}  // namespace casadi
 /// \endcond
 
-#endif // CASADI_ENUM_HPP
+#endif  // CASADI_ENUM_HPP

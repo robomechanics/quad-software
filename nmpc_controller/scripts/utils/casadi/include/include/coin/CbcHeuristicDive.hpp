@@ -18,7 +18,7 @@ struct PseudoReducedCost {
  */
 
 class CbcHeuristicDive : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicDive();
 
@@ -56,16 +56,13 @@ public:
         This is called after cuts have been added - so can not add cuts
         This does Fractional Diving
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// inner part of dive
-  int solution(double &objectiveValue, int &numberNodes,
-    int &numberCuts, OsiRowCut **cuts,
-    CbcSubProblem **&nodes,
-    double *newSolution);
+  int solution(double &objectiveValue, int &numberNodes, int &numberCuts,
+               OsiRowCut **cuts, CbcSubProblem **&nodes, double *newSolution);
   /** returns 0 if no solution, 1 if valid solution
         with better objective value than one passed in
-	also returns list of nodes
+        also returns list of nodes
         This does Fractional Diving
     */
   int fathom(CbcModel *model, int &numberNodes, CbcSubProblem **&nodes);
@@ -80,39 +77,23 @@ public:
   void selectBinaryVariables();
 
   /// Set percentage of integer variables to fix at bounds
-  void setPercentageToFix(double value)
-  {
-    percentageToFix_ = value;
-  }
+  void setPercentageToFix(double value) { percentageToFix_ = value; }
 
   /// Set maximum number of iterations
-  void setMaxIterations(int value)
-  {
-    maxIterations_ = value;
-  }
+  void setMaxIterations(int value) { maxIterations_ = value; }
 
   /// Set maximum number of simplex iterations
-  void setMaxSimplexIterations(int value)
-  {
-    maxSimplexIterations_ = value;
-  }
+  void setMaxSimplexIterations(int value) { maxSimplexIterations_ = value; }
   /// Get maximum number of simplex iterations
-  inline int maxSimplexIterations() const
-  {
-    return maxSimplexIterations_;
-  }
+  inline int maxSimplexIterations() const { return maxSimplexIterations_; }
 
   /// Set maximum number of simplex iterations at root node
-  void setMaxSimplexIterationsAtRoot(int value)
-  {
+  void setMaxSimplexIterationsAtRoot(int value) {
     maxSimplexIterationsAtRoot_ = value;
   }
 
   /// Set maximum time allowed
-  void setMaxTime(double value)
-  {
-    maxTime_ = value;
-  }
+  void setMaxTime(double value) { maxTime_ = value; }
 
   /// Tests if the heuristic can run
   virtual bool canHeuristicRun();
@@ -124,10 +105,8 @@ public:
         returned will not be trivially roundable.
     */
   virtual bool selectVariableToBranch(OsiSolverInterface *solver,
-    const double *newSolution,
-    int &bestColumn,
-    int &bestRound)
-    = 0;
+                                      const double *newSolution,
+                                      int &bestColumn, int &bestRound) = 0;
   /** Initializes any data which is going to be used repeatedly
         in selectVariableToBranch */
   virtual void initializeData() {}
@@ -136,11 +115,11 @@ public:
   int reducedCostFix(OsiSolverInterface *solver);
   /// Fix other variables at bounds
   virtual int fixOtherVariables(OsiSolverInterface *solver,
-    const double *solution,
-    PseudoReducedCost *candidate,
-    const double *random);
+                                const double *solution,
+                                PseudoReducedCost *candidate,
+                                const double *random);
 
-protected:
+ protected:
   // Data
 
   // Original matrix by column
@@ -163,16 +142,17 @@ protected:
 
   /// Array of priorities
   typedef struct {
-    unsigned int direction : 3; //  0 bit off, 1 bit (0 down first, 1 up first) 2 bit non zero don't try other way
+    unsigned int direction : 3;  //  0 bit off, 1 bit (0 down first, 1 up first)
+                                 //  2 bit non zero don't try other way
     unsigned int priority : 29;
   } PriorityType;
   PriorityType *priority_;
   // Indexes of binary variables with 0 objective coefficient
   // and in variable bound constraints
-  std::vector< int > binVarIndex_;
+  std::vector<int> binVarIndex_;
 
   // Indexes of variable bound rows for each binary variable
-  std::vector< int > vbRowIndex_;
+  std::vector<int> vbRowIndex_;
 
   // Percentage of integer variables to fix at bounds
   double percentageToFix_;
@@ -195,4 +175,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

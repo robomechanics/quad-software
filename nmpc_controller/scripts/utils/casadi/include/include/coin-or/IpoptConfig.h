@@ -1,4 +1,4 @@
-/* src/Common/config_ipopt.h.  Generated from config_ipopt.h.in by configure.  */
+/* src/Common/config_ipopt.h.  Generated from config_ipopt.h.in by configure. */
 /* src/Common/config_ipopt.h.in. */
 
 #ifndef __CONFIG_IPOPT_H__
@@ -29,13 +29,13 @@
 /* #undef IPOPT_INT64 */
 
 /* Library Visibility Attribute */
-#define IPOPTAMPLINTERFACELIB_EXPORT 
+#define IPOPTAMPLINTERFACELIB_EXPORT
 
 /* Library Visibility Attribute */
-#define IPOPTLIB_EXPORT 
+#define IPOPTLIB_EXPORT
 
 /* Library Visibility Attribute */
-#define SIPOPTLIB_EXPORT 
+#define SIPOPTLIB_EXPORT
 
 /** type corresponding to integers in Fortran
  * @deprecated Use ipindex instead.

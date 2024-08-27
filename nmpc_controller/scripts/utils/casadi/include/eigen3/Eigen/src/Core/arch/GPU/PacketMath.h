@@ -15,7 +15,8 @@ namespace Eigen {
 namespace internal {
 
 // Read-only data cached load available.
-#if defined(EIGEN_HIP_DEVICE_COMPILE) || (defined(EIGEN_CUDA_ARCH) && EIGEN_CUDA_ARCH >= 350)
+#if defined(EIGEN_HIP_DEVICE_COMPILE) || \
+    (defined(EIGEN_CUDA_ARCH) && EIGEN_CUDA_ARCH >= 350)
 #define EIGEN_GPU_HAS_LDG 1
 #endif
 
@@ -33,24 +34,30 @@ namespace internal {
 // we'll use on the host side (SSE, AVX, ...)
 #if defined(EIGEN_GPUCC) && defined(EIGEN_USE_GPU)
 
-template<> struct is_arithmetic<float4>  { enum { value = true }; };
-template<> struct is_arithmetic<double2> { enum { value = true }; };
+template <>
+struct is_arithmetic<float4> {
+  enum { value = true };
+};
+template <>
+struct is_arithmetic<double2> {
+  enum { value = true };
+};
 
-template<> struct packet_traits<float> : default_packet_traits
-{
+template <>
+struct packet_traits<float> : default_packet_traits {
   typedef float4 type;
   typedef float4 half;
   enum {
     Vectorizable = 1,
     AlignedOnScalar = 1,
-    size=4,
+    size = 4,
     HasHalfPacket = 0,
 
-    HasDiv  = 1,
-    HasSin  = 0,
-    HasCos  = 0,
-    HasLog  = 1,
-    HasExp  = 1,
+    HasDiv = 1,
+    HasSin = 0,
+    HasCos = 0,
+    HasLog = 1,
+    HasExp = 1,
     HasSqrt = 1,
     HasRsqrt = 1,
     HasLGamma = 1,
@@ -72,19 +79,19 @@ template<> struct packet_traits<float> : default_packet_traits
   };
 };
 
-template<> struct packet_traits<double> : default_packet_traits
-{
+template <>
+struct packet_traits<double> : default_packet_traits {
   typedef double2 type;
   typedef double2 half;
   enum {
     Vectorizable = 1,
     AlignedOnScalar = 1,
-    size=2,
+    size = 2,
     HasHalfPacket = 0,
 
-    HasDiv  = 1,
-    HasLog  = 1,
-    HasExp  = 1,
+    HasDiv = 1,
+    HasLog = 1,
+    HasExp = 1,
     HasSqrt = 1,
     HasRsqrt = 1,
     HasLGamma = 1,
@@ -106,21 +113,47 @@ template<> struct packet_traits<double> : default_packet_traits
   };
 };
 
+template <>
+struct unpacket_traits<float4> {
+  typedef float type;
+  enum {
+    size = 4,
+    alignment = Aligned16,
+    vectorizable = true,
+    masked_load_available = false,
+    masked_store_available = false
+  };
+  typedef float4 half;
+};
+template <>
+struct unpacket_traits<double2> {
+  typedef double type;
+  enum {
+    size = 2,
+    alignment = Aligned16,
+    vectorizable = true,
+    masked_load_available = false,
+    masked_store_available = false
+  };
+  typedef double2 half;
+};
 
-template<> struct unpacket_traits<float4>  { typedef float  type; enum {size=4, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef float4 half; };
-template<> struct unpacket_traits<double2> { typedef double type; enum {size=2, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef double2 half; };
-
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pset1<float4>(const float&  from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pset1<float4>(const float& from) {
   return make_float4(from, from, from, from);
 }
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pset1<double2>(const double& from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2
+pset1<double2>(const double& from) {
   return make_double2(from, from);
 }
 
-// We need to distinguish ‘clang as the CUDA compiler’ from ‘clang as the host compiler,
-// invoked by NVCC’ (e.g. on MacOS). The former needs to see both host and device implementation
-// of the functions, while the latter can only deal with one of them.
-#if defined(EIGEN_CUDA_ARCH) || defined(EIGEN_HIPCC) || (defined(EIGEN_CUDACC) && EIGEN_COMP_CLANG && !EIGEN_COMP_NVCC)
+// We need to distinguish ‘clang as the CUDA compiler’ from ‘clang as the host
+// compiler, invoked by NVCC’ (e.g. on MacOS). The former needs to see both host
+// and device implementation of the functions, while the latter can only deal
+// with one of them.
+#if defined(EIGEN_CUDA_ARCH) || defined(EIGEN_HIPCC) || \
+    (defined(EIGEN_CUDACC) && EIGEN_COMP_CLANG && !EIGEN_COMP_NVCC)
 namespace {
 
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float bitwise_and(const float& a,
@@ -252,119 +285,176 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2
 pcmp_lt<double2>(const double2& a, const double2& b) {
   return make_double2(lt_mask(a.x, b.x), lt_mask(a.y, b.y));
 }
-#endif // defined(EIGEN_CUDA_ARCH) || defined(EIGEN_HIPCC) || (defined(EIGEN_CUDACC) && EIGEN_COMP_CLANG && !EIGEN_COMP_NVCC)
+#endif  // defined(EIGEN_CUDA_ARCH) || defined(EIGEN_HIPCC) ||
+        // (defined(EIGEN_CUDACC) && EIGEN_COMP_CLANG && !EIGEN_COMP_NVCC)
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 plset<float4>(const float& a) {
-  return make_float4(a, a+1, a+2, a+3);
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 plset<float4>(const float& a) {
+  return make_float4(a, a + 1, a + 2, a + 3);
 }
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 plset<double2>(const double& a) {
-  return make_double2(a, a+1);
-}
-
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 padd<float4>(const float4& a, const float4& b) {
-  return make_float4(a.x+b.x, a.y+b.y, a.z+b.z, a.w+b.w);
-}
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 padd<double2>(const double2& a, const double2& b) {
-  return make_double2(a.x+b.x, a.y+b.y);
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 plset<double2>(const double& a) {
+  return make_double2(a, a + 1);
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 psub<float4>(const float4& a, const float4& b) {
-  return make_float4(a.x-b.x, a.y-b.y, a.z-b.z, a.w-b.w);
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 padd<float4>(const float4& a,
+                                                          const float4& b) {
+  return make_float4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
 }
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 psub<double2>(const double2& a, const double2& b) {
-  return make_double2(a.x-b.x, a.y-b.y);
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 padd<double2>(const double2& a,
+                                                            const double2& b) {
+  return make_double2(a.x + b.x, a.y + b.y);
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pnegate(const float4& a) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 psub<float4>(const float4& a,
+                                                          const float4& b) {
+  return make_float4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
+}
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 psub<double2>(const double2& a,
+                                                            const double2& b) {
+  return make_double2(a.x - b.x, a.y - b.y);
+}
+
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pnegate(const float4& a) {
   return make_float4(-a.x, -a.y, -a.z, -a.w);
 }
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pnegate(const double2& a) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pnegate(const double2& a) {
   return make_double2(-a.x, -a.y);
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pconj(const float4& a) { return a; }
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pconj(const double2& a) { return a; }
-
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pmul<float4>(const float4& a, const float4& b) {
-  return make_float4(a.x*b.x, a.y*b.y, a.z*b.z, a.w*b.w);
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pconj(const float4& a) {
+  return a;
 }
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pmul<double2>(const double2& a, const double2& b) {
-  return make_double2(a.x*b.x, a.y*b.y);
-}
-
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pdiv<float4>(const float4& a, const float4& b) {
-  return make_float4(a.x/b.x, a.y/b.y, a.z/b.z, a.w/b.w);
-}
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pdiv<double2>(const double2& a, const double2& b) {
-  return make_double2(a.x/b.x, a.y/b.y);
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pconj(const double2& a) {
+  return a;
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pmin<float4>(const float4& a, const float4& b) {
-  return make_float4(fminf(a.x, b.x), fminf(a.y, b.y), fminf(a.z, b.z), fminf(a.w, b.w));
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pmul<float4>(const float4& a,
+                                                          const float4& b) {
+  return make_float4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
 }
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pmin<double2>(const double2& a, const double2& b) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pmul<double2>(const double2& a,
+                                                            const double2& b) {
+  return make_double2(a.x * b.x, a.y * b.y);
+}
+
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pdiv<float4>(const float4& a,
+                                                          const float4& b) {
+  return make_float4(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
+}
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pdiv<double2>(const double2& a,
+                                                            const double2& b) {
+  return make_double2(a.x / b.x, a.y / b.y);
+}
+
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pmin<float4>(const float4& a,
+                                                          const float4& b) {
+  return make_float4(fminf(a.x, b.x), fminf(a.y, b.y), fminf(a.z, b.z),
+                     fminf(a.w, b.w));
+}
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pmin<double2>(const double2& a,
+                                                            const double2& b) {
   return make_double2(fmin(a.x, b.x), fmin(a.y, b.y));
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pmax<float4>(const float4& a, const float4& b) {
-  return make_float4(fmaxf(a.x, b.x), fmaxf(a.y, b.y), fmaxf(a.z, b.z), fmaxf(a.w, b.w));
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pmax<float4>(const float4& a,
+                                                          const float4& b) {
+  return make_float4(fmaxf(a.x, b.x), fmaxf(a.y, b.y), fmaxf(a.z, b.z),
+                     fmaxf(a.w, b.w));
 }
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pmax<double2>(const double2& a, const double2& b) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pmax<double2>(const double2& a,
+                                                            const double2& b) {
   return make_double2(fmax(a.x, b.x), fmax(a.y, b.y));
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pload<float4>(const float* from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 pload<float4>(const float* from) {
   return *reinterpret_cast<const float4*>(from);
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 pload<double2>(const double* from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2
+pload<double2>(const double* from) {
   return *reinterpret_cast<const double2*>(from);
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 ploadu<float4>(const float* from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 ploadu<float4>(const float* from) {
   return make_float4(from[0], from[1], from[2], from[3]);
 }
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 ploadu<double2>(const double* from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2
+ploadu<double2>(const double* from) {
   return make_double2(from[0], from[1]);
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4 ploaddup<float4>(const float*   from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE float4
+ploaddup<float4>(const float* from) {
   return make_float4(from[0], from[0], from[1], from[1]);
 }
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2 ploaddup<double2>(const double*  from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE double2
+ploaddup<double2>(const double* from) {
   return make_double2(from[0], from[0]);
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pstore<float>(float*   to, const float4& from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pstore<float>(float* to,
+                                                         const float4& from) {
   *reinterpret_cast<float4*>(to) = from;
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pstore<double>(double* to, const double2& from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pstore<double>(double* to,
+                                                          const double2& from) {
   *reinterpret_cast<double2*>(to) = from;
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pstoreu<float>(float*  to, const float4& from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pstoreu<float>(float* to,
+                                                          const float4& from) {
   to[0] = from.x;
   to[1] = from.y;
   to[2] = from.z;
   to[3] = from.w;
 }
 
-template<> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pstoreu<double>(double* to, const double2& from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pstoreu<double>(
+    double* to, const double2& from) {
   to[0] = from.x;
   to[1] = from.y;
 }
 
-template<>
-EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE float4 ploadt_ro<float4, Aligned>(const float* from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE float4
+ploadt_ro<float4, Aligned>(const float* from) {
 #if defined(EIGEN_GPU_HAS_LDG)
   return __ldg((const float4*)from);
 #else
   return make_float4(from[0], from[1], from[2], from[3]);
 #endif
 }
-template<>
-EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE double2 ploadt_ro<double2, Aligned>(const double* from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE double2
+ploadt_ro<double2, Aligned>(const double* from) {
 #if defined(EIGEN_GPU_HAS_LDG)
   return __ldg((const double2*)from);
 #else
@@ -372,93 +462,120 @@ EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE double2 ploadt_ro<double2, Aligned>(const 
 #endif
 }
 
-template<>
-EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE float4 ploadt_ro<float4, Unaligned>(const float* from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE float4
+ploadt_ro<float4, Unaligned>(const float* from) {
 #if defined(EIGEN_GPU_HAS_LDG)
-  return make_float4(__ldg(from+0), __ldg(from+1), __ldg(from+2), __ldg(from+3));
+  return make_float4(__ldg(from + 0), __ldg(from + 1), __ldg(from + 2),
+                     __ldg(from + 3));
 #else
   return make_float4(from[0], from[1], from[2], from[3]);
 #endif
 }
-template<>
-EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE double2 ploadt_ro<double2, Unaligned>(const double* from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE double2
+ploadt_ro<double2, Unaligned>(const double* from) {
 #if defined(EIGEN_GPU_HAS_LDG)
-  return make_double2(__ldg(from+0), __ldg(from+1));
+  return make_double2(__ldg(from + 0), __ldg(from + 1));
 #else
   return make_double2(from[0], from[1]);
 #endif
 }
 
-template<> EIGEN_DEVICE_FUNC inline float4 pgather<float, float4>(const float* from, Index stride) {
-  return make_float4(from[0*stride], from[1*stride], from[2*stride], from[3*stride]);
+template <>
+EIGEN_DEVICE_FUNC inline float4 pgather<float, float4>(const float* from,
+                                                       Index stride) {
+  return make_float4(from[0 * stride], from[1 * stride], from[2 * stride],
+                     from[3 * stride]);
 }
 
-template<> EIGEN_DEVICE_FUNC inline double2 pgather<double, double2>(const double* from, Index stride) {
-  return make_double2(from[0*stride], from[1*stride]);
+template <>
+EIGEN_DEVICE_FUNC inline double2 pgather<double, double2>(const double* from,
+                                                          Index stride) {
+  return make_double2(from[0 * stride], from[1 * stride]);
 }
 
-template<> EIGEN_DEVICE_FUNC inline void pscatter<float, float4>(float* to, const float4& from, Index stride) {
-  to[stride*0] = from.x;
-  to[stride*1] = from.y;
-  to[stride*2] = from.z;
-  to[stride*3] = from.w;
+template <>
+EIGEN_DEVICE_FUNC inline void pscatter<float, float4>(float* to,
+                                                      const float4& from,
+                                                      Index stride) {
+  to[stride * 0] = from.x;
+  to[stride * 1] = from.y;
+  to[stride * 2] = from.z;
+  to[stride * 3] = from.w;
 }
-template<> EIGEN_DEVICE_FUNC inline void pscatter<double, double2>(double* to, const double2& from, Index stride) {
-  to[stride*0] = from.x;
-  to[stride*1] = from.y;
+template <>
+EIGEN_DEVICE_FUNC inline void pscatter<double, double2>(double* to,
+                                                        const double2& from,
+                                                        Index stride) {
+  to[stride * 0] = from.x;
+  to[stride * 1] = from.y;
 }
 
-template<> EIGEN_DEVICE_FUNC inline float  pfirst<float4>(const float4& a) {
+template <>
+EIGEN_DEVICE_FUNC inline float pfirst<float4>(const float4& a) {
   return a.x;
 }
-template<> EIGEN_DEVICE_FUNC inline double pfirst<double2>(const double2& a) {
+template <>
+EIGEN_DEVICE_FUNC inline double pfirst<double2>(const double2& a) {
   return a.x;
 }
 
-template<> EIGEN_DEVICE_FUNC inline float  predux<float4>(const float4& a) {
+template <>
+EIGEN_DEVICE_FUNC inline float predux<float4>(const float4& a) {
   return a.x + a.y + a.z + a.w;
 }
-template<> EIGEN_DEVICE_FUNC inline double predux<double2>(const double2& a) {
+template <>
+EIGEN_DEVICE_FUNC inline double predux<double2>(const double2& a) {
   return a.x + a.y;
 }
 
-template<> EIGEN_DEVICE_FUNC inline float  predux_max<float4>(const float4& a) {
+template <>
+EIGEN_DEVICE_FUNC inline float predux_max<float4>(const float4& a) {
   return fmaxf(fmaxf(a.x, a.y), fmaxf(a.z, a.w));
 }
-template<> EIGEN_DEVICE_FUNC inline double predux_max<double2>(const double2& a) {
+template <>
+EIGEN_DEVICE_FUNC inline double predux_max<double2>(const double2& a) {
   return fmax(a.x, a.y);
 }
 
-template<> EIGEN_DEVICE_FUNC inline float  predux_min<float4>(const float4& a) {
+template <>
+EIGEN_DEVICE_FUNC inline float predux_min<float4>(const float4& a) {
   return fminf(fminf(a.x, a.y), fminf(a.z, a.w));
 }
-template<> EIGEN_DEVICE_FUNC inline double predux_min<double2>(const double2& a) {
+template <>
+EIGEN_DEVICE_FUNC inline double predux_min<double2>(const double2& a) {
   return fmin(a.x, a.y);
 }
 
-template<> EIGEN_DEVICE_FUNC inline float  predux_mul<float4>(const float4& a) {
+template <>
+EIGEN_DEVICE_FUNC inline float predux_mul<float4>(const float4& a) {
   return a.x * a.y * a.z * a.w;
 }
-template<> EIGEN_DEVICE_FUNC inline double predux_mul<double2>(const double2& a) {
+template <>
+EIGEN_DEVICE_FUNC inline double predux_mul<double2>(const double2& a) {
   return a.x * a.y;
 }
 
-template<> EIGEN_DEVICE_FUNC inline float4  pabs<float4>(const float4& a) {
+template <>
+EIGEN_DEVICE_FUNC inline float4 pabs<float4>(const float4& a) {
   return make_float4(fabsf(a.x), fabsf(a.y), fabsf(a.z), fabsf(a.w));
 }
-template<> EIGEN_DEVICE_FUNC inline double2 pabs<double2>(const double2& a) {
+template <>
+EIGEN_DEVICE_FUNC inline double2 pabs<double2>(const double2& a) {
   return make_double2(fabs(a.x), fabs(a.y));
 }
 
-template<> EIGEN_DEVICE_FUNC inline float4  pfloor<float4>(const float4& a) {
+template <>
+EIGEN_DEVICE_FUNC inline float4 pfloor<float4>(const float4& a) {
   return make_float4(floorf(a.x), floorf(a.y), floorf(a.z), floorf(a.w));
 }
-template<> EIGEN_DEVICE_FUNC inline double2 pfloor<double2>(const double2& a) {
+template <>
+EIGEN_DEVICE_FUNC inline double2 pfloor<double2>(const double2& a) {
   return make_double2(floor(a.x), floor(a.y));
 }
 
-EIGEN_DEVICE_FUNC inline void
-ptranspose(PacketBlock<float4,4>& kernel) {
+EIGEN_DEVICE_FUNC inline void ptranspose(PacketBlock<float4, 4>& kernel) {
   float tmp = kernel.packet[0].y;
   kernel.packet[0].y = kernel.packet[1].x;
   kernel.packet[1].x = tmp;
@@ -484,51 +601,80 @@ ptranspose(PacketBlock<float4,4>& kernel) {
   kernel.packet[3].z = tmp;
 }
 
-EIGEN_DEVICE_FUNC inline void
-ptranspose(PacketBlock<double2,2>& kernel) {
+EIGEN_DEVICE_FUNC inline void ptranspose(PacketBlock<double2, 2>& kernel) {
   double tmp = kernel.packet[0].y;
   kernel.packet[0].y = kernel.packet[1].x;
   kernel.packet[1].x = tmp;
 }
 
-#endif // defined(EIGEN_GPUCC) && defined(EIGEN_USE_GPU)
+#endif  // defined(EIGEN_GPUCC) && defined(EIGEN_USE_GPU)
 
 // Packet4h2 must be defined in the macro without EIGEN_CUDA_ARCH, meaning
 // its corresponding packet_traits<Eigen::half> must be visible on host.
 #if defined(EIGEN_HAS_CUDA_FP16) || defined(EIGEN_HAS_HIP_FP16)
 
 typedef ulonglong2 Packet4h2;
-template<> struct unpacket_traits<Packet4h2> { typedef Eigen::half type; enum {size=8, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef Packet4h2 half; };
-template<> struct is_arithmetic<Packet4h2> { enum { value = true }; };
+template <>
+struct unpacket_traits<Packet4h2> {
+  typedef Eigen::half type;
+  enum {
+    size = 8,
+    alignment = Aligned16,
+    vectorizable = true,
+    masked_load_available = false,
+    masked_store_available = false
+  };
+  typedef Packet4h2 half;
+};
+template <>
+struct is_arithmetic<Packet4h2> {
+  enum { value = true };
+};
 
-template<> struct unpacket_traits<half2> { typedef Eigen::half type; enum {size=2, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef half2 half; };
-template<> struct is_arithmetic<half2> { enum { value = true }; };
+template <>
+struct unpacket_traits<half2> {
+  typedef Eigen::half type;
+  enum {
+    size = 2,
+    alignment = Aligned16,
+    vectorizable = true,
+    masked_load_available = false,
+    masked_store_available = false
+  };
+  typedef half2 half;
+};
+template <>
+struct is_arithmetic<half2> {
+  enum { value = true };
+};
 
-template<> struct packet_traits<Eigen::half> : default_packet_traits
-{
+template <>
+struct packet_traits<Eigen::half> : default_packet_traits {
   typedef Packet4h2 type;
   typedef Packet4h2 half;
   enum {
     Vectorizable = 1,
     AlignedOnScalar = 1,
-    size=8,
+    size = 8,
     HasHalfPacket = 0,
-    HasAdd    = 1,
-    HasSub    = 1,
-    HasMul    = 1,
-    HasDiv    = 1,
-    HasSqrt   = 1,
-    HasRsqrt  = 1,
-    HasExp    = 1,
-    HasExpm1  = 1,
-    HasLog    = 1,
-    HasLog1p  = 1
+    HasAdd = 1,
+    HasSub = 1,
+    HasMul = 1,
+    HasDiv = 1,
+    HasSqrt = 1,
+    HasRsqrt = 1,
+    HasExp = 1,
+    HasExpm1 = 1,
+    HasLog = 1,
+    HasLog1p = 1
   };
 };
 
 namespace {
-// This is equivalent to make_half2, which is undocumented and doesn't seem to always exist.
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 combine_half(const __half& a, const __half& b) {
+// This is equivalent to make_half2, which is undocumented and doesn't seem to
+// always exist.
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 combine_half(const __half& a,
+                                                         const __half& b) {
 #if defined(EIGEN_GPU_COMPILE_PHASE)
   return __halves2half2(a, b);
 #else
@@ -552,10 +698,11 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE __half get_half2_high(const half2& a) {
   return __float2half(__high2float(a));
 #endif
 }
-} // namespace
+}  // namespace
 
-template<>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pset1<half2>(const Eigen::half& from) {
+template <>
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2
+pset1<half2>(const Eigen::half& from) {
 #if defined(EIGEN_GPU_COMPILE_PHASE)
   return __half2half2(from);
 #else
@@ -577,7 +724,8 @@ pset1<Packet4h2>(const Eigen::half& from) {
 }
 
 // We now need this visible on both host and device.
-// #if defined(EIGEN_CUDA_ARCH) || defined(EIGEN_HIPCC) || (defined(EIGEN_CUDACC) && EIGEN_COMP_CLANG && !EIGEN_COMP_NVCC)
+// #if defined(EIGEN_CUDA_ARCH) || defined(EIGEN_HIPCC) ||
+// (defined(EIGEN_CUDACC) && EIGEN_COMP_CLANG && !EIGEN_COMP_NVCC)
 namespace {
 
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pload(const Eigen::half* from) {
@@ -588,7 +736,7 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 ploadu(const Eigen::half* from) {
   return combine_half(from[0], from[1]);
 }
 
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 ploaddup(const Eigen::half*  from) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 ploaddup(const Eigen::half* from) {
   return combine_half(from[0], from[0]);
 }
 
@@ -603,35 +751,35 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pstoreu(Eigen::half* to,
   to[1] = get_half2_high(from);
 }
 
-
-EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE half2 ploadt_ro_aligned(
-    const Eigen::half* from) {
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE half2
+ploadt_ro_aligned(const Eigen::half* from) {
 #if defined(EIGEN_GPU_HAS_LDG)
   // Input is guaranteed to be properly aligned.
   return __ldg(reinterpret_cast<const half2*>(from));
 #else
-  return combine_half(*(from+0), *(from+1));
+  return combine_half(*(from + 0), *(from + 1));
 #endif
 }
 
-EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE half2 ploadt_ro_unaligned(
-    const Eigen::half* from) {
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE half2
+ploadt_ro_unaligned(const Eigen::half* from) {
 #if defined(EIGEN_GPU_HAS_LDG)
-  return __halves2half2(__ldg(from+0), __ldg(from+1));
+  return __halves2half2(__ldg(from + 0), __ldg(from + 1));
 #else
-  return combine_half(*(from+0), *(from+1));
+  return combine_half(*(from + 0), *(from + 1));
 #endif
 }
 
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pgather(const Eigen::half* from,
                                                     Index stride) {
-  return combine_half(from[0*stride], from[1*stride]);
+  return combine_half(from[0 * stride], from[1 * stride]);
 }
 
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pscatter(
-    Eigen::half* to, const half2& from, Index stride) {
-  to[stride*0] = get_half2_low(from);
-  to[stride*1] = get_half2_high(from);
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pscatter(Eigen::half* to,
+                                                    const half2& from,
+                                                    Index stride) {
+  to[stride * 0] = get_half2_low(from);
+  to[stride * 1] = get_half2_high(from);
 }
 
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Eigen::half pfirst(const half2& a) {
@@ -656,8 +804,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pzero(const half2& /*a*/) {
   return pset1<half2>(false_half);
 }
 
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
-ptranspose(PacketBlock<half2,2>& kernel) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void ptranspose(
+    PacketBlock<half2, 2>& kernel) {
   __half a1 = get_half2_low(kernel.packet[0]);
   __half a2 = get_half2_high(kernel.packet[0]);
   __half b1 = get_half2_low(kernel.packet[1]);
@@ -681,7 +829,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pselect(const half2& mask,
   half mask_low = get_half2_low(mask);
   half mask_high = get_half2_high(mask);
   half result_low = mask_low == half(0) ? get_half2_low(b) : get_half2_low(a);
-  half result_high = mask_high == half(0) ? get_half2_high(b) : get_half2_high(a);
+  half result_high =
+      mask_high == half(0) ? get_half2_high(b) : get_half2_high(a);
   return combine_half(result_low, result_high);
 }
 
@@ -816,7 +965,7 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pmadd(const half2& a,
                                                   const half2& b,
                                                   const half2& c) {
 #if defined(EIGEN_GPU_HAS_FP16_ARITHMETIC)
-   return __hfma2(a, b, c);
+  return __hfma2(a, b, c);
 #else
   float a1 = __low2float(a);
   float a2 = __high2float(a);
@@ -927,26 +1076,23 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pexpm1(const half2& a) {
   return __floats2half2_rn(r1, r2);
 }
 
-#if (EIGEN_CUDA_SDK_VER >= 80000 && defined(EIGEN_CUDA_HAS_FP16_ARITHMETIC)) || \
-  defined(EIGEN_HIP_DEVICE_COMPILE)
+#if (EIGEN_CUDA_SDK_VER >= 80000 &&              \
+     defined(EIGEN_CUDA_HAS_FP16_ARITHMETIC)) || \
+    defined(EIGEN_HIP_DEVICE_COMPILE)
 
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
-half2 plog(const half2& a) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 plog(const half2& a) {
   return h2log(a);
 }
 
- EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
-half2 pexp(const half2& a) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pexp(const half2& a) {
   return h2exp(a);
 }
 
- EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
-half2 psqrt(const half2& a) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 psqrt(const half2& a) {
   return h2sqrt(a);
 }
 
- EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
-half2 prsqrt(const half2& a) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 prsqrt(const half2& a) {
   return h2rsqrt(a);
 }
 
@@ -984,7 +1130,7 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 prsqrt(const half2& a) {
   return __floats2half2_rn(r1, r2);
 }
 #endif
-} // namespace
+}  // namespace
 
 template <>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
@@ -1027,10 +1173,10 @@ template <>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void pstoreu<Eigen::half>(
     Eigen::half* to, const Packet4h2& from) {
   const half2* from_alias = reinterpret_cast<const half2*>(&from);
-  pstoreu(to + 0,from_alias[0]);
-  pstoreu(to + 2,from_alias[1]);
-  pstoreu(to + 4,from_alias[2]);
-  pstoreu(to + 6,from_alias[3]);
+  pstoreu(to + 0, from_alias[0]);
+  pstoreu(to + 2, from_alias[1]);
+  pstoreu(to + 4, from_alias[2]);
+  pstoreu(to + 6, from_alias[3]);
 }
 
 template <>
@@ -1092,8 +1238,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Eigen::half pfirst<Packet4h2>(
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pabs<Packet4h2>(
-    const Packet4h2& a) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+pabs<Packet4h2>(const Packet4h2& a) {
   Packet4h2 r;
   half2* p_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1105,14 +1251,15 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pabs<Packet4h2>(
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 ptrue<Packet4h2>(
-    const Packet4h2& /*a*/) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+ptrue<Packet4h2>(const Packet4h2& /*a*/) {
   half true_half = half_impl::raw_uint16_to_half(0xffffu);
   return pset1<Packet4h2>(true_half);
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pzero<Packet4h2>(const Packet4h2& /*a*/) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+pzero<Packet4h2>(const Packet4h2& /*a*/) {
   half false_half = half_impl::raw_uint16_to_half(0x0000u);
   return pset1<Packet4h2>(false_half);
 }
@@ -1138,8 +1285,10 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void ptranspose_double(
   d_row7[0] = d_tmp;
 }
 
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void ptranspose_half2(
-    half2* f_row0, half2* f_row1, half2* f_row2, half2* f_row3) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void ptranspose_half2(half2* f_row0,
+                                                            half2* f_row1,
+                                                            half2* f_row2,
+                                                            half2* f_row3) {
   half2 f_tmp;
   f_tmp = f_row0[1];
   f_row0[1] = f_row2[0];
@@ -1150,8 +1299,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void ptranspose_half2(
   f_row3[0] = f_tmp;
 }
 
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
-ptranspose_half(half2& f0, half2& f1) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void ptranspose_half(half2& f0,
+                                                           half2& f1) {
   __half a1 = get_half2_low(f0);
   __half a2 = get_half2_high(f0);
   __half b1 = get_half2_low(f1);
@@ -1160,8 +1309,8 @@ ptranspose_half(half2& f0, half2& f1) {
   f1 = combine_half(a2, b2);
 }
 
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void
-ptranspose(PacketBlock<Packet4h2,8>& kernel) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void ptranspose(
+    PacketBlock<Packet4h2, 8>& kernel) {
   double* d_row0 = reinterpret_cast<double*>(&kernel.packet[0]);
   double* d_row1 = reinterpret_cast<double*>(&kernel.packet[1]);
   double* d_row2 = reinterpret_cast<double*>(&kernel.packet[2]);
@@ -1170,9 +1319,8 @@ ptranspose(PacketBlock<Packet4h2,8>& kernel) {
   double* d_row5 = reinterpret_cast<double*>(&kernel.packet[5]);
   double* d_row6 = reinterpret_cast<double*>(&kernel.packet[6]);
   double* d_row7 = reinterpret_cast<double*>(&kernel.packet[7]);
-  ptranspose_double(d_row0, d_row1, d_row2, d_row3,
-                    d_row4, d_row5, d_row6, d_row7);
-
+  ptranspose_double(d_row0, d_row1, d_row2, d_row3, d_row4, d_row5, d_row6,
+                    d_row7);
 
   half2* f_row0 = reinterpret_cast<half2*>(d_row0);
   half2* f_row1 = reinterpret_cast<half2*>(d_row1);
@@ -1213,7 +1361,6 @@ ptranspose(PacketBlock<Packet4h2,8>& kernel) {
   ptranspose_half(f_row0[1], f_row1[1]);
   ptranspose_half(f_row2[0], f_row3[0]);
   ptranspose_half(f_row2[1], f_row3[1]);
-
 }
 
 template <>
@@ -1237,8 +1384,8 @@ plset<Packet4h2>(const Eigen::half& a) {
 
   half2 b = pset1<half2>(a);
   half2 c;
-  half2 half_offset0 = __halves2half2(__float2half(0.0f),__float2half(2.0f));
-  half2 half_offset1 = __halves2half2(__float2half(4.0f),__float2half(6.0f));
+  half2 half_offset0 = __halves2half2(__float2half(0.0f), __float2half(2.0f));
+  half2 half_offset1 = __halves2half2(__float2half(4.0f), __float2half(6.0f));
 
   c = __hadd2(b, half_offset0);
   r_alias[0] = plset(__low2half(c));
@@ -1263,9 +1410,8 @@ plset<Packet4h2>(const Eigen::half& a) {
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
-pselect<Packet4h2>(const Packet4h2& mask, const Packet4h2& a,
-                   const Packet4h2& b) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pselect<Packet4h2>(
+    const Packet4h2& mask, const Packet4h2& a, const Packet4h2& b) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* mask_alias = reinterpret_cast<const half2*>(&mask);
@@ -1293,8 +1439,8 @@ pcmp_eq<Packet4h2>(const Packet4h2& a, const Packet4h2& b) {
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pand<Packet4h2>(
-    const Packet4h2& a, const Packet4h2& b) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+pand<Packet4h2>(const Packet4h2& a, const Packet4h2& b) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1307,8 +1453,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pand<Packet4h2>(
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 por<Packet4h2>(
-    const Packet4h2& a, const Packet4h2& b) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+por<Packet4h2>(const Packet4h2& a, const Packet4h2& b) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1321,8 +1467,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 por<Packet4h2>(
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pxor<Packet4h2>(
-    const Packet4h2& a, const Packet4h2& b) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+pxor<Packet4h2>(const Packet4h2& a, const Packet4h2& b) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1349,8 +1495,8 @@ pandnot<Packet4h2>(const Packet4h2& a, const Packet4h2& b) {
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 padd<Packet4h2>(
-    const Packet4h2& a, const Packet4h2& b) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+padd<Packet4h2>(const Packet4h2& a, const Packet4h2& b) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1363,8 +1509,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 padd<Packet4h2>(
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 psub<Packet4h2>(
-    const Packet4h2& a, const Packet4h2& b) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+psub<Packet4h2>(const Packet4h2& a, const Packet4h2& b) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1394,8 +1540,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pconj(const Packet4h2& a) {
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pmul<Packet4h2>(
-    const Packet4h2& a, const Packet4h2& b) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+pmul<Packet4h2>(const Packet4h2& a, const Packet4h2& b) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1408,8 +1554,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pmul<Packet4h2>(
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pmadd<Packet4h2>(
-    const Packet4h2& a, const Packet4h2& b, const Packet4h2& c) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+pmadd<Packet4h2>(const Packet4h2& a, const Packet4h2& b, const Packet4h2& c) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1423,8 +1569,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pmadd<Packet4h2>(
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pdiv<Packet4h2>(
-    const Packet4h2& a, const Packet4h2& b) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+pdiv<Packet4h2>(const Packet4h2& a, const Packet4h2& b) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1437,8 +1583,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pdiv<Packet4h2>(
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pmin<Packet4h2>(
-    const Packet4h2& a, const Packet4h2& b) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+pmin<Packet4h2>(const Packet4h2& a, const Packet4h2& b) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1451,8 +1597,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pmin<Packet4h2>(
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pmax<Packet4h2>(
-    const Packet4h2& a, const Packet4h2& b) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+pmax<Packet4h2>(const Packet4h2& a, const Packet4h2& b) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1469,26 +1615,24 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Eigen::half predux<Packet4h2>(
     const Packet4h2& a) {
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
 
-  return predux(a_alias[0]) + predux(a_alias[1]) +
-         predux(a_alias[2]) + predux(a_alias[3]);
+  return predux(a_alias[0]) + predux(a_alias[1]) + predux(a_alias[2]) +
+         predux(a_alias[3]);
 }
 
 template <>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Eigen::half predux_max<Packet4h2>(
     const Packet4h2& a) {
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
-  half2 m0 = combine_half(predux_max(a_alias[0]),
-                            predux_max(a_alias[1]));
-  half2 m1 = combine_half(predux_max(a_alias[2]),
-                            predux_max(a_alias[3]));
-  __half first  = predux_max(m0);
+  half2 m0 = combine_half(predux_max(a_alias[0]), predux_max(a_alias[1]));
+  half2 m1 = combine_half(predux_max(a_alias[2]), predux_max(a_alias[3]));
+  __half first = predux_max(m0);
   __half second = predux_max(m1);
 #if defined(EIGEN_CUDA_HAS_FP16_ARITHMETIC)
   return (__hgt(first, second) ? first : second);
 #else
-  float ffirst  = __half2float(first);
+  float ffirst = __half2float(first);
   float fsecond = __half2float(second);
-  return (ffirst > fsecond)? first: second;
+  return (ffirst > fsecond) ? first : second;
 #endif
 }
 
@@ -1496,18 +1640,16 @@ template <>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Eigen::half predux_min<Packet4h2>(
     const Packet4h2& a) {
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
-  half2 m0 = combine_half(predux_min(a_alias[0]),
-                            predux_min(a_alias[1]));
-  half2 m1 = combine_half(predux_min(a_alias[2]),
-                            predux_min(a_alias[3]));
-  __half first  = predux_min(m0);
+  half2 m0 = combine_half(predux_min(a_alias[0]), predux_min(a_alias[1]));
+  half2 m1 = combine_half(predux_min(a_alias[2]), predux_min(a_alias[3]));
+  __half first = predux_min(m0);
   __half second = predux_min(m1);
 #if defined(EIGEN_CUDA_HAS_FP16_ARITHMETIC)
   return (__hlt(first, second) ? first : second);
 #else
-  float ffirst  = __half2float(first);
+  float ffirst = __half2float(first);
   float fsecond = __half2float(second);
-  return (ffirst < fsecond)? first: second;
+  return (ffirst < fsecond) ? first : second;
 #endif
 }
 
@@ -1516,8 +1658,8 @@ template <>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Eigen::half predux_mul<Packet4h2>(
     const Packet4h2& a) {
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
-  return predux_mul(pmul(pmul(a_alias[0], a_alias[1]),
-                                       pmul(a_alias[2], a_alias[3])));
+  return predux_mul(
+      pmul(pmul(a_alias[0], a_alias[1]), pmul(a_alias[2], a_alias[3])));
 }
 
 template <>
@@ -1547,7 +1689,8 @@ pexpm1<Packet4h2>(const Packet4h2& a) {
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 plog<Packet4h2>(const Packet4h2& a) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+plog<Packet4h2>(const Packet4h2& a) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1559,7 +1702,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 plog<Packet4h2>(const Packet4h2&
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pexp<Packet4h2>(const Packet4h2& a) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+pexp<Packet4h2>(const Packet4h2& a) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1571,7 +1715,8 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 pexp<Packet4h2>(const Packet4h2&
 }
 
 template <>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2 psqrt<Packet4h2>(const Packet4h2& a) {
+EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet4h2
+psqrt<Packet4h2>(const Packet4h2& a) {
   Packet4h2 r;
   half2* r_alias = reinterpret_cast<half2*>(&r);
   const half2* a_alias = reinterpret_cast<const half2*>(&a);
@@ -1597,7 +1742,7 @@ prsqrt<Packet4h2>(const Packet4h2& a) {
 
 // The following specialized padd, pmul, pdiv, pmin, pmax, pset1 are needed for
 // the implementation of GPU half reduction.
-template<>
+template <>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 padd<half2>(const half2& a,
                                                         const half2& b) {
 #if defined(EIGEN_GPU_HAS_FP16_ARITHMETIC)
@@ -1613,7 +1758,7 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 padd<half2>(const half2& a,
 #endif
 }
 
-template<>
+template <>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pmul<half2>(const half2& a,
                                                         const half2& b) {
 #if defined(EIGEN_GPU_HAS_FP16_ARITHMETIC)
@@ -1629,7 +1774,7 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pmul<half2>(const half2& a,
 #endif
 }
 
-template<>
+template <>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pdiv<half2>(const half2& a,
                                                         const half2& b) {
 #if defined(EIGEN_GPU_HAS_FP16_ARITHMETIC)
@@ -1645,7 +1790,7 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pdiv<half2>(const half2& a,
 #endif
 }
 
-template<>
+template <>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pmin<half2>(const half2& a,
                                                         const half2& b) {
   float a1 = __low2float(a);
@@ -1657,7 +1802,7 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pmin<half2>(const half2& a,
   return combine_half(r1, r2);
 }
 
-template<>
+template <>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pmax<half2>(const half2& a,
                                                         const half2& b) {
   float a1 = __low2float(a);
@@ -1669,17 +1814,17 @@ EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE half2 pmax<half2>(const half2& a,
   return combine_half(r1, r2);
 }
 
-// #endif // defined(EIGEN_CUDA_ARCH) || defined(EIGEN_HIPCC) || (defined(EIGEN_CUDACC) && EIGEN_COMP_CLANG && !EIGEN_COMP_NVCC)
+// #endif // defined(EIGEN_CUDA_ARCH) || defined(EIGEN_HIPCC) ||
+// (defined(EIGEN_CUDACC) && EIGEN_COMP_CLANG && !EIGEN_COMP_NVCC)
 
-#endif // defined(EIGEN_HAS_CUDA_FP16) || defined(EIGEN_HAS_HIP_FP16)
+#endif  // defined(EIGEN_HAS_CUDA_FP16) || defined(EIGEN_HAS_HIP_FP16)
 
 #undef EIGEN_GPU_HAS_LDG
 #undef EIGEN_CUDA_HAS_FP16_ARITHMETIC
 #undef EIGEN_GPU_HAS_FP16_ARITHMETIC
 
-} // end namespace internal
+}  // end namespace internal
 
-} // end namespace Eigen
+}  // end namespace Eigen
 
-
-#endif // EIGEN_PACKET_MATH_GPU_H
+#endif  // EIGEN_PACKET_MATH_GPU_H

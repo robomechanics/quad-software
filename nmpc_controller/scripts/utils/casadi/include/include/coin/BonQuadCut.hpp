@@ -10,97 +10,90 @@
 #ifndef BonQuadCut_H
 #define BonQuadCut_H
 
-#include "CoinPackedMatrix.hpp"
-#include "OsiRowCut.hpp"
-#include "OsiCuts.hpp"
-#include "BonTypes.hpp"
 #include <list>
 
+#include "BonTypes.hpp"
+#include "CoinPackedMatrix.hpp"
+#include "OsiCuts.hpp"
+#include "OsiRowCut.hpp"
 
 namespace Bonmin {
 
-  enum MatrixStorageType {
-   Upper /** Stores only the upper triangle of a symetric Q.*/,
-   Lower /** Stores the lower triangle of a symetric Q.*/,
-   Full /** Stores the whole matrix of a non-symetric Q.*/};
+enum MatrixStorageType {
+  Upper /** Stores only the upper triangle of a symetric Q.*/,
+  Lower /** Stores the lower triangle of a symetric Q.*/,
+  Full /** Stores the whole matrix of a non-symetric Q.*/
+};
 
 class QuadCut : public OsiRowCut {
  public:
-
   /// Default constructor
   QuadCut();
 
   /// Copy constructor
-  QuadCut(const QuadCut & other);
+  QuadCut(const QuadCut& other);
 
   /// Assignment operator
-  QuadCut& operator=(const QuadCut & rhs);
+  QuadCut& operator=(const QuadCut& rhs);
 
   /// Virtual copy
-  virtual OsiRowCut * clone() const;
+  virtual OsiRowCut* clone() const;
 
   /// Destructor
-  ~QuadCut(); 
+  ~QuadCut();
 
   /// Print
-  void print() const; 
+  void print() const;
 
-  ///Return the matrix stored
-  CoinPackedMatrix& Q(){
-   return Q_;
-  }
+  /// Return the matrix stored
+  CoinPackedMatrix& Q() { return Q_; }
 
-  ///Return the matrix stored
-  const CoinPackedMatrix& Q() const{
-   return Q_;
-  }
+  /// Return the matrix stored
+  const CoinPackedMatrix& Q() const { return Q_; }
 
   /// Acces storage type
   /// Acces storage type
-  MatrixStorageType& type(){
-    return type_;}
+  MatrixStorageType& type() { return type_; }
 
-  const MatrixStorageType& type() const{
-    return type_;}
+  const MatrixStorageType& type() const { return type_; }
 
   /// Acces the constant
-  double & c(){return c_;}
+  double& c() { return c_; }
 
   /// Acces the constant
-  const double & c() const {return c_;}
+  const double& c() const { return c_; }
 
   /// Compute cut violation
-  double violated(const double * solution) const;
+  double violated(const double* solution) const;
 
  private:
-   /// Stores the constant part of the cut
-   double c_;
-   ///Stores quadratic part of cut
-   CoinPackedMatrix Q_;
-   ///Storage type
-   MatrixStorageType type_;
+  /// Stores the constant part of the cut
+  double c_;
+  /// Stores quadratic part of cut
+  CoinPackedMatrix Q_;
+  /// Storage type
+  MatrixStorageType type_;
 
-   /** \name Arithmetic operators not implemented.*/
+  /** \name Arithmetic operators not implemented.*/
   //@{
-    /// add <code>value</code> to every vector entry
-    void operator+=(double value);
+  /// add <code>value</code> to every vector entry
+  void operator+=(double value);
 
-    /// subtract <code>value</code> from every vector entry
-    void operator-=(double value);
+  /// subtract <code>value</code> from every vector entry
+  void operator-=(double value);
 
-    /// multiply every vector entry by <code>value</code>
-    void operator*=(double value);
+  /// multiply every vector entry by <code>value</code>
+  void operator*=(double value);
 
-    /// divide every vector entry by <code>value</code>
-    void operator/=(double value);
+  /// divide every vector entry by <code>value</code>
+  void operator/=(double value);
   //@}
-
 };
 
 /** Generalizes OsiCuts to handle quadratic cuts.*/
 class Cuts : public OsiCuts {
  public:
-  typedef vector<QuadCut *> QuadCutPtrStorage;
+  typedef vector<QuadCut*> QuadCutPtrStorage;
   /** Default constructor.*/
   Cuts();
 
@@ -108,110 +101,84 @@ class Cuts : public OsiCuts {
   Cuts(const Cuts& other);
 
   /** Assignment operator.*/
-  Cuts& operator=(const Cuts & rhs);
+  Cuts& operator=(const Cuts& rhs);
 
- /** Destructor */
- ~Cuts();
+  /** Destructor */
+  ~Cuts();
 
- /** insert a quadratic cut into the collection. */
- inline void insert(const QuadCut& c);
+  /** insert a quadratic cut into the collection. */
+  inline void insert(const QuadCut& c);
 
- /** insert a quadratic cut into the collection (take control of the pointer and
-     put a NULL on return).
-     \warning c has to have been created with new (no malloc).
-   */
-  inline void insert(QuadCut* &c);
+  /** insert a quadratic cut into the collection (take control of the pointer
+     and put a NULL on return). \warning c has to have been created with new (no
+     malloc).
+    */
+  inline void insert(QuadCut*& c);
 
- /** insert a set of Cuts.*/
-  inline void insert(const Cuts &cs);
+  /** insert a set of Cuts.*/
+  inline void insert(const Cuts& cs);
 
- /** Number of quadratic cuts in the collection.*/
+  /** Number of quadratic cuts in the collection.*/
   inline int sizeQuadCuts() const;
 
- /** Total number of cuts in the collection. */
- inline int sizeCuts() const;
+  /** Total number of cuts in the collection. */
+  inline int sizeCuts() const;
 
- /** Print all cuts in the collection.*/
- void printCuts() const;
+  /** Print all cuts in the collection.*/
+  void printCuts() const;
 
+  /** Access to a quadratic cut by pointer.*/
+  inline QuadCut* quadCutPtr(int i);
 
- /** Access to a quadratic cut by pointer.*/
- inline QuadCut * quadCutPtr(int i);
+  /** Access to a quadratic cut by const pointer.*/
+  inline const QuadCut* quadCutPtr(int i) const;
 
- /** Access to a quadratic cut by const pointer.*/
- inline const QuadCut * quadCutPtr(int i) const;
+  /** Access to a quadratic cut by reference.*/
+  inline QuadCut& quadCut(int i);
 
- /** Access to a quadratic cut by reference.*/
- inline QuadCut& quadCut(int i);
+  /** Access to a quadratic cut by reference.*/
+  inline const QuadCut& quadCut(int i) const;
 
-
- /** Access to a quadratic cut by reference.*/
- inline const QuadCut& quadCut(int i) const;
-
- /** Erase quadratic cut from the collection.*/
- inline void eraseQuadCut(int i);
+  /** Erase quadratic cut from the collection.*/
+  inline void eraseQuadCut(int i);
 
  private:
-   QuadCutPtrStorage quadCuts_;
+  QuadCutPtrStorage quadCuts_;
 };
 
-void
-Cuts::insert(const QuadCut &c){
-  quadCuts_.push_back(new QuadCut(c));
-}
+void Cuts::insert(const QuadCut& c) { quadCuts_.push_back(new QuadCut(c)); }
 
-void
-Cuts::insert(QuadCut * &c){
+void Cuts::insert(QuadCut*& c) {
   quadCuts_.push_back(c);
   c = NULL;
 }
 
-void 
-Cuts::insert(const Cuts & cs){
+void Cuts::insert(const Cuts& cs) {
   OsiCuts::insert(cs);
-  for(unsigned int i = 0 ; i < cs.quadCuts_.size() ; i++){
+  for (unsigned int i = 0; i < cs.quadCuts_.size(); i++) {
     quadCuts_.push_back(new QuadCut(*cs.quadCuts_[i]));
   }
 }
 
-int 
-Cuts::sizeQuadCuts() const {
-  return static_cast<int>(quadCuts_.size());
-}
+int Cuts::sizeQuadCuts() const { return static_cast<int>(quadCuts_.size()); }
 
-int
-Cuts::sizeCuts() const {
+int Cuts::sizeCuts() const {
   return static_cast<int>(quadCuts_.size()) + OsiCuts::sizeCuts();
 }
 
-QuadCut *
-Cuts::quadCutPtr(int i) {
-  return quadCuts_[i];
-}
+QuadCut* Cuts::quadCutPtr(int i) { return quadCuts_[i]; }
 
-const QuadCut *
-Cuts::quadCutPtr(int i) const {
-  return quadCuts_[i];
-}
+const QuadCut* Cuts::quadCutPtr(int i) const { return quadCuts_[i]; }
 
-QuadCut &
-Cuts::quadCut(int i) {
-  return *quadCuts_[i];
-}
+QuadCut& Cuts::quadCut(int i) { return *quadCuts_[i]; }
 
-const QuadCut &
-Cuts::quadCut(int i) const {
-  return *quadCuts_[i];
-}
+const QuadCut& Cuts::quadCut(int i) const { return *quadCuts_[i]; }
 
-void
-Cuts::eraseQuadCut(int i){
+void Cuts::eraseQuadCut(int i) {
   delete quadCuts_[i];
   quadCuts_.erase(quadCuts_.begin() + i);
 }
-typedef std::list<QuadCut*> list_QuadCut; 
+typedef std::list<QuadCut*> list_QuadCut;
 
-}// Ends Bonmin namespace
+}  // namespace Bonmin
 #endif
-
-

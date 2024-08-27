@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+
 #include "CbcBranchBase.hpp"
 #include "OsiBranchingObject.hpp"
 
@@ -49,8 +50,7 @@ enum CbcBranchObjType {
 */
 
 class CbcBranchingObject : public OsiBranchingObject {
-
-public:
+ public:
   /// Default Constructor
   CbcBranchingObject();
 
@@ -73,18 +73,11 @@ public:
         strong branching.  If so they have to fill in CbcStrongInfo.
         The object mention in incoming CbcStrongInfo must match.
         Returns nonzero if skip is wanted */
-  virtual int fillStrongInfo(CbcStrongInfo &)
-  {
-    return 0;
-  }
+  virtual int fillStrongInfo(CbcStrongInfo &) { return 0; }
   /// Reset number of branches left to original
-  inline void resetNumberBranchesLeft()
-  {
-    branchIndex_ = 0;
-  }
+  inline void resetNumberBranchesLeft() { branchIndex_ = 0; }
   /// Set number of branches to do
-  inline void setNumberBranches(int value)
-  {
+  inline void setNumberBranches(int value) {
     branchIndex_ = 0;
     numberBranches_ = value;
   }
@@ -102,25 +95,19 @@ public:
            strong branching is also passed.
            Returns change in guessed objective on next branch
     */
-  virtual double branch(OsiSolverInterface *)
-  {
-    return branch();
-  }
+  virtual double branch(OsiSolverInterface *) { return branch(); }
   /** Update bounds in solver as in 'branch' and update given bounds.
         branchState is -1 for 'down' +1 for 'up' */
-  virtual void fix(OsiSolverInterface *,
-    double *, double *,
-    int) const {}
+  virtual void fix(OsiSolverInterface *, double *, double *, int) const {}
 
   /** Change (tighten) bounds in object to reflect bounds in solver.
-	Return true if now fixed */
+        Return true if now fixed */
   virtual bool tighten(OsiSolverInterface *) { return false; }
 
   /** Reset every information so that the branching object appears to point to
         the previous child. This method does not need to modify anything in any
         solver. */
-  virtual void previousBranch()
-  {
+  virtual void previousBranch() {
     assert(branchIndex_ > 0);
     branchIndex_--;
     way_ = -way_;
@@ -128,7 +115,7 @@ public:
 
   using OsiBranchingObject::print;
   /** \brief Print something about branch - only if log level high
-    */
+   */
   virtual void print() const {}
 
   /** \brief Index identifying the associated CbcObject within its class.
@@ -142,10 +129,7 @@ public:
       integer variable in the set of integer variables (<i>not</i> the index of
       the variable in the set of all variables).
     */
-  inline int variable() const
-  {
-    return variable_;
-  }
+  inline int variable() const { return variable_; }
 
   /** Get the state of the branching object
 
@@ -154,39 +138,23 @@ public:
 
       \sa #way_
     */
-  inline int way() const
-  {
-    return way_;
-  }
+  inline int way() const { return way_; }
 
   /** Set the state of the branching object.
 
       See #way()
     */
-  inline void way(int way)
-  {
-    way_ = way;
-  }
+  inline void way(int way) { way_ = way; }
 
   /// update model
-  inline void setModel(CbcModel *model)
-  {
-    model_ = model;
-  }
+  inline void setModel(CbcModel *model) { model_ = model; }
   /// Return model
-  inline CbcModel *model() const
-  {
-    return model_;
-  }
+  inline CbcModel *model() const { return model_; }
 
   /// Return pointer back to object which created
-  inline CbcObject *object() const
-  {
-    return originalCbcObject_;
-  }
+  inline CbcObject *object() const { return originalCbcObject_; }
   /// Set pointer back to object which created
-  inline void setOriginalObject(CbcObject *object)
-  {
+  inline void setOriginalObject(CbcObject *object) {
     originalCbcObject_ = object;
   }
 
@@ -205,9 +173,9 @@ public:
         Return negative/0/positive depending on whether \c this is
         smaller/same/larger than the argument.
     */
-  virtual int compareOriginalObject(const CbcBranchingObject *brObj) const
-  {
-    const CbcBranchingObject *br = dynamic_cast< const CbcBranchingObject * >(brObj);
+  virtual int compareOriginalObject(const CbcBranchingObject *brObj) const {
+    const CbcBranchingObject *br =
+        dynamic_cast<const CbcBranchingObject *>(brObj);
     return variable() - br->variable();
   }
 
@@ -219,9 +187,10 @@ public:
         replaceIfOverlap is true) replace the current branching object with one
         whose feasible region is the overlap.
      */
-  virtual CbcRangeCompare compareBranchingObject(const CbcBranchingObject *brObj, const bool replaceIfOverlap = false) = 0;
+  virtual CbcRangeCompare compareBranchingObject(
+      const CbcBranchingObject *brObj, const bool replaceIfOverlap = false) = 0;
 
-protected:
+ protected:
   /// The model that owns this branching object
   CbcModel *model_;
   /// Pointer back to object which created
@@ -229,17 +198,18 @@ protected:
 
   /// Branching variable (0 is first integer)
   int variable_;
-  // was - Way to branch - -1 down (first), 1 up, -2 down (second), 2 up (second)
+  // was - Way to branch - -1 down (first), 1 up, -2 down (second), 2 up
+  // (second)
   /** The state of the branching object.
 
       Specifies the active arm of the branching object. Coded as -1 to take
       the `down' arm, +1 for the `up' arm. `Down' and `up' are defined based on
-      the natural meaning (floor and ceiling, respectively) for a simple integer.
-      The precise meaning is defined in the derived class.
+      the natural meaning (floor and ceiling, respectively) for a simple
+     integer. The precise meaning is defined in the derived class.
     */
   int way_;
 };
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

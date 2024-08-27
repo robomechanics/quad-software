@@ -12,12 +12,10 @@
 
 /** Odd Hole Cut Generator Class */
 class CglOddHole : public CglCutGenerator {
-   friend void CglOddHoleUnitTest(const OsiSolverInterface * siP,
-				  const std::string mpdDir );
- 
-public:
-    
-  
+  friend void CglOddHoleUnitTest(const OsiSolverInterface* siP,
+                                 const std::string mpdDir);
+
+ public:
   /**@name Generate Cuts */
   //@{
   /** Generate odd hole cuts for the model of the solver interface, si.
@@ -25,7 +23,7 @@ public:
       and sees if there is an odd cycle cut.  See Grotschel, Lovasz
       and Schrijver (1988) for method.
       This is then lifted by using the corresponding Chvatal cut i.e.
-      Take all rows in cycle and add them together. RHS will be odd so  
+      Take all rows in cycle and add them together. RHS will be odd so
       weaken all odd coefficients so 1.0 goes to 0.0 etc - then
       constraint is  sum even(j)*x(j) <= odd which can be replaced by
       sum (even(j)/2)*x(j) <= (odd-1.0)/2.
@@ -34,12 +32,12 @@ public:
       Insert the generated cuts into OsiCut, cs.
 
       This is only done for rows with unsatisfied 0-1 variables.  If there
-      are many of these it will be slow.  Improvements would do a 
+      are many of these it will be slow.  Improvements would do a
       randomized subset and also speed up shortest path algorithm used.
 
   */
-  virtual void generateCuts( const OsiSolverInterface & si, OsiCuts & cs,
-			     const CglTreeInfo info = CglTreeInfo());
+  virtual void generateCuts(const OsiSolverInterface& si, OsiCuts& cs,
+                            const CglTreeInfo info = CglTreeInfo());
   //@}
 
   /**@name Create Row List */
@@ -47,18 +45,17 @@ public:
   /// Create a list of rows which might yield cuts
   /// this is to speed up process
   /// The possible parameter is a list to cut down search
-  void createRowList( const OsiSolverInterface & si,
-		      const int * possible=NULL);
+  void createRowList(const OsiSolverInterface& si, const int* possible = NULL);
   /// This version passes in a list - 1 marks possible
-  void createRowList(int numberRows, const int * whichRow);
+  void createRowList(int numberRows, const int* whichRow);
   //@}
 
   /**@name Create Clique List */
   //@{
   /// Create a list of extra row cliques which may not be in matrix
   /// At present these are classical cliques
-  void createCliqueList(int numberCliques, const int * cliqueStart,
-		     const int * cliqueMember);
+  void createCliqueList(int numberCliques, const int* cliqueStart,
+                        const int* cliqueMember);
   //@}
 
   /**@name Number Possibilities */
@@ -81,44 +78,37 @@ public:
 
   /**@name Constructors and destructors */
   //@{
-  /// Default constructor 
-  CglOddHole ();
- 
-  /// Copy constructor 
-  CglOddHole (
-    const CglOddHole &);
+  /// Default constructor
+  CglOddHole();
+
+  /// Copy constructor
+  CglOddHole(const CglOddHole&);
 
   /// Clone
-  virtual CglCutGenerator * clone() const;
+  virtual CglCutGenerator* clone() const;
 
-  /// Assignment operator 
-  CglOddHole &
-    operator=(
-    const CglOddHole& rhs);
-  
-  /// Destructor 
-  virtual
-    ~CglOddHole ();
+  /// Assignment operator
+  CglOddHole& operator=(const CglOddHole& rhs);
+
+  /// Destructor
+  virtual ~CglOddHole();
 
   /// This can be used to refresh any inforamtion
-  virtual void refreshSolver(OsiSolverInterface * solver);
+  virtual void refreshSolver(OsiSolverInterface* solver);
   //@}
-      
-private:
-  
- // Private member methods
 
+ private:
+  // Private member methods
 
   /**@name Private methods */
   //@{
   /// Generate cuts from matrix copy and solution
   /// If packed true then <=1 rows, otherwise >=1 rows.
-  void generateCuts(const OsiRowCutDebugger * debugger, 
-		    const CoinPackedMatrix & rowCopy,
-		    const double * solution, const double * dj,
-		    OsiCuts & cs, const int * suitableRow,
-		    const int * fixedColumn,const CglTreeInfo info,
-		    bool packed);
+  void generateCuts(const OsiRowCutDebugger* debugger,
+                    const CoinPackedMatrix& rowCopy, const double* solution,
+                    const double* dj, OsiCuts& cs, const int* suitableRow,
+                    const int* fixedColumn, const CglTreeInfo info,
+                    bool packed);
   //@}
 
   // Private member data
@@ -126,13 +116,13 @@ private:
   /**@name Private member data */
   //@{
   /// list of suitableRows
-  int * suitableRows_;
+  int* suitableRows_;
   /// start of each clique
-  int * startClique_;
+  int* startClique_;
   /// clique members
-  int * member_;
+  int* member_;
   /// epsilon
-  double epsilon_;  
+  double epsilon_;
   /// 1-epsilon
   double onetol_;
   /// Minimum violation
@@ -148,13 +138,13 @@ private:
   //@}
 };
 
-//#############################################################################
+// #############################################################################
 /** A function that tests the methods in the CglOddHole class. The
     only reason for it not to be a member method is that this way it doesn't
     have to be compiled into the library. And that's a gain, because the
     library should be compiled with optimization on, but this method should be
     compiled with debugging. */
-void CglOddHoleUnitTest(const OsiSolverInterface * siP,
-			const std::string mpdDir );
-  
+void CglOddHoleUnitTest(const OsiSolverInterface* siP,
+                        const std::string mpdDir);
+
 #endif

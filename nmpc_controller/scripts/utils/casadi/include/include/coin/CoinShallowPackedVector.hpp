@@ -15,8 +15,8 @@
 #include "CoinPackedVectorBase.hpp"
 
 /** Shallow Sparse Vector
- 
-This class is for sparse vectors where the indices and 
+
+This class is for sparse vectors where the indices and
 elements are stored elsewhere.  This class only maintains
 pointers to the indices and elements.  Since this class
 does not own the index and element data it provides
@@ -28,53 +28,53 @@ It does not actually contain the vectors.
 
 Here is a sample usage:
 @verbatim
-   const int ne = 4; 
-   int inx[ne] =   {  1,   4,  0,   2 }; 
-   double el[ne] = { 10., 40., 1., 50. }; 
- 
-   // Create vector and set its value 
-   CoinShallowPackedVector r(ne,inx,el); 
- 
-   // access each index and element 
-   assert( r.indices ()[0]== 1  ); 
-   assert( r.elements()[0]==10. ); 
-   assert( r.indices ()[1]== 4  ); 
-   assert( r.elements()[1]==40. ); 
-   assert( r.indices ()[2]== 0  ); 
-   assert( r.elements()[2]== 1. ); 
-   assert( r.indices ()[3]== 2  ); 
-   assert( r.elements()[3]==50. ); 
- 
-   // access as a full storage vector 
-   assert( r[ 0]==1. ); 
-   assert( r[ 1]==10.); 
-   assert( r[ 2]==50.); 
-   assert( r[ 3]==0. ); 
-   assert( r[ 4]==40.); 
- 
+   const int ne = 4;
+   int inx[ne] =   {  1,   4,  0,   2 };
+   double el[ne] = { 10., 40., 1., 50. };
+
+   // Create vector and set its value
+   CoinShallowPackedVector r(ne,inx,el);
+
+   // access each index and element
+   assert( r.indices ()[0]== 1  );
+   assert( r.elements()[0]==10. );
+   assert( r.indices ()[1]== 4  );
+   assert( r.elements()[1]==40. );
+   assert( r.indices ()[2]== 0  );
+   assert( r.elements()[2]== 1. );
+   assert( r.indices ()[3]== 2  );
+   assert( r.elements()[3]==50. );
+
+   // access as a full storage vector
+   assert( r[ 0]==1. );
+   assert( r[ 1]==10.);
+   assert( r[ 2]==50.);
+   assert( r[ 3]==0. );
+   assert( r[ 4]==40.);
+
    // Tests for equality and equivalence
-   CoinShallowPackedVector r1; 
-   r1=r; 
-   assert( r==r1 ); 
-   r.sort(CoinIncrElementOrdered()); 
-   assert( r!=r1 ); 
- 
-   // Add packed vectors. 
-   // Similarly for subtraction, multiplication, 
-   // and division. 
-   CoinPackedVector add = r + r1; 
-   assert( add[0] ==  1.+ 1. ); 
-   assert( add[1] == 10.+10. ); 
-   assert( add[2] == 50.+50. ); 
-   assert( add[3] ==  0.+ 0. ); 
-   assert( add[4] == 40.+40. ); 
-   assert( r.sum() == 10.+40.+1.+50. ); 
+   CoinShallowPackedVector r1;
+   r1=r;
+   assert( r==r1 );
+   r.sort(CoinIncrElementOrdered());
+   assert( r!=r1 );
+
+   // Add packed vectors.
+   // Similarly for subtraction, multiplication,
+   // and division.
+   CoinPackedVector add = r + r1;
+   assert( add[0] ==  1.+ 1. );
+   assert( add[1] == 10.+10. );
+   assert( add[2] == 50.+50. );
+   assert( add[3] ==  0.+ 0. );
+   assert( add[4] == 40.+40. );
+   assert( r.sum() == 10.+40.+1.+50. );
 @endverbatim
 */
 class CoinShallowPackedVector : public CoinPackedVectorBase {
   friend void CoinShallowPackedVectorUnitTest();
 
-public:
+ public:
   /**@name Get methods */
   //@{
   /// Get length of indices and elements vectors
@@ -95,7 +95,7 @@ public:
   CoinShallowPackedVector &operator=(const CoinPackedVectorBase &x);
   /** just like the explicit constructor */
   void setVector(int size, const int *indices, const double *elements,
-    bool testForDuplicateIndex = true);
+                 bool testForDuplicateIndex = true);
   //@}
 
   /**@name Methods to create, set and destroy */
@@ -110,9 +110,8 @@ public:
        The last argument specifies whether the creator of the object knows in
        advance that there are no duplicate indices.
    */
-  CoinShallowPackedVector(int size,
-    const int *indices, const double *elements,
-    bool testForDuplicateIndex = true);
+  CoinShallowPackedVector(int size, const int *indices, const double *elements,
+                          bool testForDuplicateIndex = true);
   /** Copy constructor from the base class. */
   CoinShallowPackedVector(const CoinPackedVectorBase &);
   /** Copy constructor. */
@@ -123,19 +122,19 @@ public:
   void print();
   //@}
 
-private:
+ private:
   /**@name Private member data */
   //@{
   /// Vector indices
   const int *indices_;
-  ///Vector elements
+  /// Vector elements
   const double *elements_;
   /// Size of indices and elements vectors
   int nElements_;
   //@}
 };
 
-//#############################################################################
+// #############################################################################
 /** A function that tests the methods in the CoinShallowPackedVector class. The
     only reason for it not to be a member method is that this way it doesn't
     have to be compiled into the library. And that's a gain, because the
@@ -146,4 +145,4 @@ void CoinShallowPackedVectorUnitTest();
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

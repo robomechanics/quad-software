@@ -12,7 +12,7 @@
  */
 
 class CbcHeuristicDivePseudoCost : public CbcHeuristicDive {
-public:
+ public:
   // Default Constructor
   CbcHeuristicDivePseudoCost();
 
@@ -41,20 +41,19 @@ public:
         returned will not be trivially roundable.
     */
   virtual bool selectVariableToBranch(OsiSolverInterface *solver,
-    const double *newSolution,
-    int &bestColumn,
-    int &bestRound);
+                                      const double *newSolution,
+                                      int &bestColumn, int &bestRound);
   /** Initializes any data which is going to be used repeatedly
         in selectVariableToBranch */
   virtual void initializeData();
   /// Fix other variables at bounds
   virtual int fixOtherVariables(OsiSolverInterface *solver,
-    const double *solution,
-    PseudoReducedCost *candidate,
-    const double *random);
+                                const double *solution,
+                                PseudoReducedCost *candidate,
+                                const double *random);
 };
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

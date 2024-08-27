@@ -9,9 +9,9 @@
 #define CbcBranchAllDifferent_H
 
 #include "CbcBranchBase.hpp"
-#include "OsiRowCut.hpp"
-#include "CoinPackedMatrix.hpp"
 #include "CbcBranchCut.hpp"
+#include "CoinPackedMatrix.hpp"
+#include "OsiRowCut.hpp"
 
 /** Define a branch class that branches so that it is only satsified if all
     members have different values
@@ -19,13 +19,13 @@
 */
 
 class CbcBranchAllDifferent : public CbcBranchCut {
-
-public:
+ public:
   // Default Constructor
   CbcBranchAllDifferent();
 
-  /** Useful constructor - passed set of integer variables which must all be different
-    */
+  /** Useful constructor - passed set of integer variables which must all be
+   * different
+   */
   CbcBranchAllDifferent(CbcModel *model, int number, const int *which);
 
   // Copy constructor
@@ -42,12 +42,13 @@ public:
 
   /// Infeasibility - large is 0.5
   virtual double infeasibility(const OsiBranchingInformation *info,
-    int &preferredWay) const;
+                               int &preferredWay) const;
 
   /// Creates a branching object
-  virtual CbcBranchingObject *createCbcBranch(OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
+  virtual CbcBranchingObject *createCbcBranch(
+      OsiSolverInterface *solver, const OsiBranchingInformation *info, int way);
 
-protected:
+ protected:
   /// data
 
   /// Number of entries
@@ -58,4 +59,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

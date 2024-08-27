@@ -9,33 +9,31 @@
 #include <string>
 
 #include "CglCutGenerator.hpp"
-  /** Only useful type of disaggregation is most normal
-      For now just done for 0-1 variables
-      Can be used for building cliques
-   */
-  typedef struct {
-    //unsigned int zeroOne:1; // nonzero if affected variable is 0-1
-    //unsigned int whenAtUB:1; // nonzero if fixing happens when this variable at 1
-    //unsigned int affectedToUB:1; // nonzero if affected variable fixed to UB
-    //unsigned int affected:29; // If 0-1 then 0-1 sequence, otherwise true
-    unsigned int affected;
-  } disaggregationAction;
+/** Only useful type of disaggregation is most normal
+    For now just done for 0-1 variables
+    Can be used for building cliques
+ */
+typedef struct {
+  // unsigned int zeroOne:1; // nonzero if affected variable is 0-1
+  // unsigned int whenAtUB:1; // nonzero if fixing happens when this variable at
+  // 1 unsigned int affectedToUB:1; // nonzero if affected variable fixed to UB
+  // unsigned int affected:29; // If 0-1 then 0-1 sequence, otherwise true
+  unsigned int affected;
+} disaggregationAction;
 
 /** Probing Cut Generator Class */
 class CglProbing : public CglCutGenerator {
-   friend void CglProbingUnitTest(const OsiSolverInterface * siP,
-				  const std::string mpdDir );
- 
-public:
-    
-  
+  friend void CglProbingUnitTest(const OsiSolverInterface *siP,
+                                 const std::string mpdDir);
+
+ public:
   /**@name Generate Cuts */
   //@{
-  /** Generate probing/disaggregation cuts for the model of the 
+  /** Generate probing/disaggregation cuts for the model of the
       solver interface, si.
 
       This is a simplification of probing ideas put into OSL about
-      ten years ago.  The only known documentation is a copy of a 
+      ten years ago.  The only known documentation is a copy of a
       talk handout - we think Robin Lougee-Heimer has a copy!
 
       For selected integer variables (e.g. unsatisfied ones) the effect of
@@ -45,21 +43,21 @@ public:
 
       1) It is shown that problem is infeasible (this may also be
          because objective function or reduced costs show worse than
-	 best solution).  If the other way is feasible we can generate
-	 a column cut (and continue probing), if not feasible we can
-	 say problem infeasible.
+         best solution).  If the other way is feasible we can generate
+         a column cut (and continue probing), if not feasible we can
+         say problem infeasible.
 
       2) If both ways are feasible, it can happen that x to 0 implies y to 1
          ** and x to 1 implies y to 1 (again a column cut).  More common
-	 is that x to 0 implies y to 1 and x to 1 implies y to 0 so we could
-	 substitute for y which might lead later to more powerful cuts.
-	 ** This is not done in this code as there is no mechanism for
-	 returning information.
+         is that x to 0 implies y to 1 and x to 1 implies y to 0 so we could
+         substitute for y which might lead later to more powerful cuts.
+         ** This is not done in this code as there is no mechanism for
+         returning information.
 
       3) When x to 1 a constraint went slack by c.  We can tighten the
          constraint ax + .... <= b (where a may be zero) to
-	 (a+c)x + .... <= b.  If this cut is violated then it is
-	 generated.
+         (a+c)x + .... <= b.  If this cut is violated then it is
+         generated.
 
       4) Similarly we can generate implied disaggregation cuts
 
@@ -83,23 +81,23 @@ public:
       The mode options are:
       0) Only unsatisfied integer variables will be looked at.
          If no information exists for that variable then
-	 probing will be done so as a by-product you "may" get a fixing
-	 or infeasibility.  This will be fast and is only available
-         if a snapshot exists (otherwise as 1).  
-	 The bounds in the snapshot are the ones used.
+         probing will be done so as a by-product you "may" get a fixing
+         or infeasibility.  This will be fast and is only available
+         if a snapshot exists (otherwise as 1).
+         The bounds in the snapshot are the ones used.
       1) Look at unsatisfied integer variables, using current bounds.
          Probing will be done on all looked at.
       2) Look at all integer variables, using current bounds.
          Probing will be done on all
 
-	 ** If generateCutsAndModify is used then new relaxed
-	 row bounds and tightened column bounds are generated
-	 Returns number of infeasibilities 
+         ** If generateCutsAndModify is used then new relaxed
+         row bounds and tightened column bounds are generated
+         Returns number of infeasibilities
   */
-  virtual void generateCuts( const OsiSolverInterface & si, OsiCuts & cs,
-			     const CglTreeInfo info = CglTreeInfo());
-  int generateCutsAndModify( const OsiSolverInterface & si, OsiCuts & cs, 
-			     CglTreeInfo * info);
+  virtual void generateCuts(const OsiSolverInterface &si, OsiCuts &cs,
+                            const CglTreeInfo info = CglTreeInfo());
+  int generateCutsAndModify(const OsiSolverInterface &si, OsiCuts &cs,
+                            CglTreeInfo *info);
   //@}
 
   /**@name snapshot etc */
@@ -112,44 +110,41 @@ public:
       Objective may be added as constraint
       Returns 1 if infeasible otherwise 0
   */
-  int snapshot ( const OsiSolverInterface & si,
-		  char * possible=NULL,
-                  bool withObjective=true);
+  int snapshot(const OsiSolverInterface &si, char *possible = NULL,
+               bool withObjective = true);
   /// Deletes snapshot
-  void deleteSnapshot ( );
+  void deleteSnapshot();
   /** Creates cliques for use by probing.
       Only cliques >= minimumSize and < maximumSize created
       Can also try and extend cliques as a result of probing (root node).
       Returns number of cliques found.
   */
-  int createCliques( OsiSolverInterface & si, 
-		    int minimumSize=2, int maximumSize=100);
+  int createCliques(OsiSolverInterface &si, int minimumSize = 2,
+                    int maximumSize = 100);
   /// Delete all clique information
   void deleteCliques();
   /** Create a fake model by adding cliques
       if type&4 then delete rest of model first,
       if 1 then add proper cliques, 2 add fake cliques */
-  OsiSolverInterface * cliqueModel(const OsiSolverInterface * model,
-				   int type);
+  OsiSolverInterface *cliqueModel(const OsiSolverInterface *model, int type);
   //@}
 
   /**@name Get tighter column bounds */
   //@{
   /// Lower
-  const double * tightLower() const;
+  const double *tightLower() const;
   /// Upper
-  const double * tightUpper() const;
+  const double *tightUpper() const;
   /// Array which says tighten continuous
-  const char * tightenBounds() const
-  { return tightenBounds_;}
+  const char *tightenBounds() const { return tightenBounds_; }
   //@}
 
   /**@name Get possible freed up row bounds - only valid after mode==3 */
   //@{
   /// Lower
-  const double * relaxedRowLower() const;
+  const double *relaxedRowLower() const;
   /// Upper
-  const double * relaxedRowUpper() const;
+  const double *relaxedRowUpper() const;
   //@}
 
   /**@name Change mode */
@@ -211,11 +206,9 @@ public:
   /**@name Get information back from probing */
   //@{
   /// Number looked at this time
-  inline int numberThisTime() const
-  { return numberThisTime_;}
+  inline int numberThisTime() const { return numberThisTime_; }
   /// Which ones looked at this time
-  inline const int * lookedAt() const
-  { return lookedAt_;}
+  inline const int *lookedAt() const { return lookedAt_; }
   //@}
 
   /**@name Stop or restart row cuts (otherwise just fixing from probing) */
@@ -228,23 +221,19 @@ public:
   //@}
   /// Clique type
   typedef struct {
-    unsigned int equality:1; //  nonzero if clique is ==
+    unsigned int equality : 1;  //  nonzero if clique is ==
   } CliqueType;
 
   /**@name Information on cliques */
   //@{
   /// Number of cliques
-  inline int numberCliques() const
-  { return numberCliques_;}
+  inline int numberCliques() const { return numberCliques_; }
   /// Clique type
-  inline CliqueType * cliqueType() const
-  { return cliqueType_;}
+  inline CliqueType *cliqueType() const { return cliqueType_; }
   /// Start of each clique
-  inline CoinBigIndex * cliqueStart() const
-  { return cliqueStart_;}
+  inline CoinBigIndex *cliqueStart() const { return cliqueStart_; }
   /// Entries for clique
-  inline CliqueEntry * cliqueEntry() const
-  { return cliqueEntry_;}
+  inline CliqueEntry *cliqueEntry() const { return cliqueEntry_; }
   //@}
 
   /**@name Whether use objective as constraint */
@@ -262,115 +251,99 @@ public:
   /**@name Mark which continuous variables are to be tightened */
   //@{
   /// Mark variables to be tightened
-  void tightenThese(const OsiSolverInterface & solver, int number, const int * which);
+  void tightenThese(const OsiSolverInterface &solver, int number,
+                    const int *which);
   //@}
 
   /**@name Constructors and destructors */
   //@{
-  /// Default constructor 
-  CglProbing ();
- 
-  /// Copy constructor 
-  CglProbing (
-    const CglProbing &);
+  /// Default constructor
+  CglProbing();
+
+  /// Copy constructor
+  CglProbing(const CglProbing &);
 
   /// Clone
-  virtual CglCutGenerator * clone() const;
+  virtual CglCutGenerator *clone() const;
 
-  /// Assignment operator 
-  CglProbing &
-    operator=(
-    const CglProbing& rhs);
-  
-  /// Destructor 
-  virtual
-    ~CglProbing ();
+  /// Assignment operator
+  CglProbing &operator=(const CglProbing &rhs);
+
+  /// Destructor
+  virtual ~CglProbing();
 
   /// This can be used to refresh any inforamtion
-  virtual void refreshSolver(OsiSolverInterface * solver);
+  virtual void refreshSolver(OsiSolverInterface *solver);
   /// Create C++ lines to get to current state
-  virtual std::string generateCpp( FILE * fp);
+  virtual std::string generateCpp(FILE *fp);
   //@}
-      
-private:
-  
- // Private member methods
+
+ private:
+  // Private member methods
   /**@name probe */
   //@{
   /// Does probing and adding cuts (without cliques and mode_!=0)
-  int probe( const OsiSolverInterface & si, 
-	     const OsiRowCutDebugger * debugger, 
-	     OsiCuts & cs, 
-	     double * colLower, double * colUpper, CoinPackedMatrix *rowCopy,
-	     CoinPackedMatrix *columnCopy,const CoinBigIndex * rowStartPos,
-	     const int * realRow, const double * rowLower, const double * rowUpper,
-	     const char * intVar, double * minR, double * maxR, int * markR, 
-	     CglTreeInfo * info);
+  int probe(const OsiSolverInterface &si, const OsiRowCutDebugger *debugger,
+            OsiCuts &cs, double *colLower, double *colUpper,
+            CoinPackedMatrix *rowCopy, CoinPackedMatrix *columnCopy,
+            const CoinBigIndex *rowStartPos, const int *realRow,
+            const double *rowLower, const double *rowUpper, const char *intVar,
+            double *minR, double *maxR, int *markR, CglTreeInfo *info);
   /// Does probing and adding cuts (with cliques)
-  int probeCliques( const OsiSolverInterface & si, 
-	     const OsiRowCutDebugger * debugger, 
-	     OsiCuts & cs, 
-	     double * colLower, double * colUpper, CoinPackedMatrix *rowCopy,
-		    CoinPackedMatrix *columnCopy, const int * realRow,
-	     double * rowLower, double * rowUpper,
-	     char * intVar, double * minR, double * maxR, int * markR, 
-             CglTreeInfo * info);
+  int probeCliques(const OsiSolverInterface &si,
+                   const OsiRowCutDebugger *debugger, OsiCuts &cs,
+                   double *colLower, double *colUpper,
+                   CoinPackedMatrix *rowCopy, CoinPackedMatrix *columnCopy,
+                   const int *realRow, double *rowLower, double *rowUpper,
+                   char *intVar, double *minR, double *maxR, int *markR,
+                   CglTreeInfo *info);
   /// Does probing and adding cuts for clique slacks
-  int probeSlacks( const OsiSolverInterface & si, 
-                    const OsiRowCutDebugger * debugger, 
-                    OsiCuts & cs, 
-                    double * colLower, double * colUpper, CoinPackedMatrix *rowCopy,
-		   CoinPackedMatrix *columnCopy,
-                    double * rowLower, double * rowUpper,
-                    char * intVar, double * minR, double * maxR,int * markR,
-                     CglTreeInfo * info);
-  /** Does most of work of generateCuts 
+  int probeSlacks(const OsiSolverInterface &si,
+                  const OsiRowCutDebugger *debugger, OsiCuts &cs,
+                  double *colLower, double *colUpper, CoinPackedMatrix *rowCopy,
+                  CoinPackedMatrix *columnCopy, double *rowLower,
+                  double *rowUpper, char *intVar, double *minR, double *maxR,
+                  int *markR, CglTreeInfo *info);
+  /** Does most of work of generateCuts
       Returns number of infeasibilities */
-  int gutsOfGenerateCuts( const OsiSolverInterface & si, 
-			  OsiCuts & cs,
-			  double * rowLower, double * rowUpper,
-			  double * colLower, double * colUpper,
-                           CglTreeInfo * info);
+  int gutsOfGenerateCuts(const OsiSolverInterface &si, OsiCuts &cs,
+                         double *rowLower, double *rowUpper, double *colLower,
+                         double *colUpper, CglTreeInfo *info);
   /// Sets up clique information for each row
-  void setupRowCliqueInformation(const OsiSolverInterface & si);
+  void setupRowCliqueInformation(const OsiSolverInterface &si);
   /** This tightens column bounds (and can declare infeasibility)
       It may also declare rows to be redundant */
-  int tighten(double *colLower, double * colUpper,
-              const int *column, const double *rowElements, 
-              const CoinBigIndex *rowStart,const CoinBigIndex * rowStartPos,
-	      const int * rowLength,
-              double *rowLower, double *rowUpper, 
-              int nRows,int nCols,char * intVar,int maxpass,
-              double tolerance);
+  int tighten(double *colLower, double *colUpper, const int *column,
+              const double *rowElements, const CoinBigIndex *rowStart,
+              const CoinBigIndex *rowStartPos, const int *rowLength,
+              double *rowLower, double *rowUpper, int nRows, int nCols,
+              char *intVar, int maxpass, double tolerance);
   /// This just sets minima and maxima on rows
-  void tighten2(double *colLower, double * colUpper,
-                const int *column, const double *rowElements, 
-                const CoinBigIndex *rowStart,
-		const int * rowLength,
-                double *rowLower, double *rowUpper, 
-                double * minR, double * maxR, int * markR,
-                int nRows);
+  void tighten2(double *colLower, double *colUpper, const int *column,
+                const double *rowElements, const CoinBigIndex *rowStart,
+                const int *rowLength, double *rowLower, double *rowUpper,
+                double *minR, double *maxR, int *markR, int nRows);
   //@}
 
   // Private member data
 
-  struct disaggregation_struct_tag ;
-  friend struct CglProbing::disaggregation_struct_tag ;
+  struct disaggregation_struct_tag;
+  friend struct CglProbing::disaggregation_struct_tag;
 
   /**@name Private member data */
   //@{
   /// Row copy (only if snapshot)
-  CoinPackedMatrix * rowCopy_;
+  CoinPackedMatrix *rowCopy_;
   /// Column copy (only if snapshot)
-  CoinPackedMatrix * columnCopy_;
+  CoinPackedMatrix *columnCopy_;
   /// Lower bounds on rows
-  double * rowLower_;
+  double *rowLower_;
   /// Upper bounds on rows
-  double * rowUpper_;
+  double *rowUpper_;
   /// Lower bounds on columns
-  double * colLower_;
+  double *colLower_;
   /// Upper bounds on columns
-  double * colUpper_;
+  double *colUpper_;
   /// Number of rows in snapshot (or when cliqueRow stuff computed)
   int numberRows_;
   /// Number of columns in problem ( must == current)
@@ -382,8 +355,8 @@ private:
   */
   int mode_;
   /** Row cuts flag
-      0 no cuts, 1 just disaggregation type, 2 coefficient ( 3 both), 4 just column cuts
-      -n as +n but just fixes variables unless at root
+      0 no cuts, 1 just disaggregation type, 2 coefficient ( 3 both), 4 just
+     column cuts -n as +n but just fixes variables unless at root
   */
   int rowCuts_;
   /// Maximum number of passes to do in probing
@@ -415,129 +388,136 @@ private:
   /// Total number of times called
   int totalTimesCalled_;
   /// Which ones looked at this time
-  int * lookedAt_;
+  int *lookedAt_;
   /// Disaggregation cuts and for building cliques
   typedef struct disaggregation_struct_tag {
-    int sequence; // integer variable
+    int sequence;  // integer variable
     // index will be NULL if no probing done yet
-    int length; // length of newValue
-    disaggregationAction * index; // columns whose bounds will be changed
+    int length;                   // length of newValue
+    disaggregationAction *index;  // columns whose bounds will be changed
   } disaggregation;
-  disaggregation * cutVector_;
+  disaggregation *cutVector_;
   /// Cliques
   /// Number of cliques
   int numberCliques_;
   /// Clique type
-  CliqueType * cliqueType_;
+  CliqueType *cliqueType_;
   /// Start of each clique
-  CoinBigIndex * cliqueStart_;
+  CoinBigIndex *cliqueStart_;
   /// Entries for clique
-  CliqueEntry * cliqueEntry_;
+  CliqueEntry *cliqueEntry_;
   /** Start of oneFixes cliques for a column in matrix or -1 if not
       in any clique */
-  int * oneFixStart_;
+  int *oneFixStart_;
   /** Start of zeroFixes cliques for a column in matrix or -1 if not
       in any clique */
-  int * zeroFixStart_;
+  int *zeroFixStart_;
   /// End of fixes for a column
-  int * endFixStart_;
+  int *endFixStart_;
   /// Clique numbers for one or zero fixes
-  int * whichClique_;
+  int *whichClique_;
   /** For each column with nonzero in row copy this gives a clique "number".
       So first clique mentioned in row is always 0.  If no entries for row
       then no cliques.  If sequence > numberColumns then not in clique.
   */
-  CliqueEntry * cliqueRow_;
+  CliqueEntry *cliqueRow_;
   /// cliqueRow_ starts for each row
-  int * cliqueRowStart_;
+  int *cliqueRowStart_;
   /// If not null and [i] !=0 then also tighten even if continuous
-  char * tightenBounds_;
+  char *tightenBounds_;
   //@}
 };
-inline int affectedInDisaggregation(const disaggregationAction & dis)
-{ return dis.affected&0x1fffffff;}
-inline void setAffectedInDisaggregation(disaggregationAction & dis,
-					   int affected)
-{ dis.affected = affected|(dis.affected&0xe0000000);}
+inline int affectedInDisaggregation(const disaggregationAction &dis) {
+  return dis.affected & 0x1fffffff;
+}
+inline void setAffectedInDisaggregation(disaggregationAction &dis,
+                                        int affected) {
+  dis.affected = affected | (dis.affected & 0xe0000000);
+}
 #ifdef NDEBUG
-inline bool zeroOneInDisaggregation(const disaggregationAction & )
-{ return true;}
+inline bool zeroOneInDisaggregation(const disaggregationAction &) {
+  return true;
+}
 #else
-inline bool zeroOneInDisaggregation(const disaggregationAction & dis)
+inline bool zeroOneInDisaggregation(const disaggregationAction &dis)
 //{ return (dis.affected&0x80000000)!=0;}
-{ assert ((dis.affected&0x80000000)!=0); return true;}
+{
+  assert((dis.affected & 0x80000000) != 0);
+  return true;
+}
 #endif
-inline void setZeroOneInDisaggregation(disaggregationAction & dis,bool zeroOne)
-{ dis.affected = (zeroOne ? 0x80000000 : 0)|(dis.affected&0x7fffffff);}
-inline bool whenAtUBInDisaggregation(const disaggregationAction & dis)
-{ return (dis.affected&0x40000000)!=0;}
-inline void setWhenAtUBInDisaggregation(disaggregationAction & dis,bool whenAtUB)
-{ dis.affected = (whenAtUB ? 0x40000000 : 0)|(dis.affected&0xbfffffff);}
-inline bool affectedToUBInDisaggregation(const disaggregationAction & dis)
-{ return (dis.affected&0x20000000)!=0;}
-inline void setAffectedToUBInDisaggregation(disaggregationAction & dis,bool affectedToUB)
-{ dis.affected = (affectedToUB ? 0x20000000 : 0)|(dis.affected&0xdfffffff);}
+inline void setZeroOneInDisaggregation(disaggregationAction &dis,
+                                       bool zeroOne) {
+  dis.affected = (zeroOne ? 0x80000000 : 0) | (dis.affected & 0x7fffffff);
+}
+inline bool whenAtUBInDisaggregation(const disaggregationAction &dis) {
+  return (dis.affected & 0x40000000) != 0;
+}
+inline void setWhenAtUBInDisaggregation(disaggregationAction &dis,
+                                        bool whenAtUB) {
+  dis.affected = (whenAtUB ? 0x40000000 : 0) | (dis.affected & 0xbfffffff);
+}
+inline bool affectedToUBInDisaggregation(const disaggregationAction &dis) {
+  return (dis.affected & 0x20000000) != 0;
+}
+inline void setAffectedToUBInDisaggregation(disaggregationAction &dis,
+                                            bool affectedToUB) {
+  dis.affected = (affectedToUB ? 0x20000000 : 0) | (dis.affected & 0xdfffffff);
+}
 
-//#############################################################################
+// #############################################################################
 /** A function that tests the methods in the CglProbing class. The
     only reason for it not to be a member method is that this way it doesn't
     have to be compiled into the library. And that's a gain, because the
     library should be compiled with optimization on, but this method should be
     compiled with debugging. */
-void CglProbingUnitTest(const OsiSolverInterface * siP,
-			const std::string mpdDir );
-/// This just uses implication info   
+void CglProbingUnitTest(const OsiSolverInterface *siP,
+                        const std::string mpdDir);
+/// This just uses implication info
 class CglImplication : public CglCutGenerator {
- 
-public:
-
+ public:
   /**@name Generate Cuts */
   //@{
   /** Generate cuts from implication table
   Insert generated cuts into the cut set cs.
   */
-  virtual void generateCuts( const OsiSolverInterface & si, OsiCuts & cs,
-			     const CglTreeInfo info = CglTreeInfo());
+  virtual void generateCuts(const OsiSolverInterface &si, OsiCuts &cs,
+                            const CglTreeInfo info = CglTreeInfo());
   //@}
 
   /**@name Constructors and destructors */
   //@{
-  /// Default constructor 
-  CglImplication ();
- 
+  /// Default constructor
+  CglImplication();
+
   /// Constructor with info
-  CglImplication (CglTreeProbingInfo * info);
- 
-  /// Copy constructor 
-  CglImplication (
-    const CglImplication &);
+  CglImplication(CglTreeProbingInfo *info);
+
+  /// Copy constructor
+  CglImplication(const CglImplication &);
 
   /// Clone
-  virtual CglCutGenerator * clone() const;
+  virtual CglCutGenerator *clone() const;
 
-  /// Assignment operator 
-  CglImplication &
-    operator=(
-    const CglImplication& rhs);
-  
-  /// Destructor 
-  virtual
-    ~CglImplication ();
+  /// Assignment operator
+  CglImplication &operator=(const CglImplication &rhs);
+
+  /// Destructor
+  virtual ~CglImplication();
   /// Create C++ lines to get to current state
-  virtual std::string generateCpp( FILE * fp);
+  virtual std::string generateCpp(FILE *fp);
   //@}
   /**@name Set implication */
   //@{
   /// Set implication
-  inline void setProbingInfo(CglTreeProbingInfo * info)
-  { probingInfo_=info;}
+  inline void setProbingInfo(CglTreeProbingInfo *info) { probingInfo_ = info; }
   //@}
 
-private:
+ private:
   /**@name Private member data */
   //@{
   /// Pointer to tree probing info
-  CglTreeProbingInfo * probingInfo_;
+  CglTreeProbingInfo *probingInfo_;
   //@}
 };
 #endif

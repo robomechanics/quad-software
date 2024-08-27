@@ -18,10 +18,10 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_OPTIONS_HPP
 #define CASADI_OPTIONS_HPP
@@ -32,88 +32,88 @@ namespace casadi {
 /// \cond INTERNAL
 #ifndef SWIG
 
-  /** \brief Options metadata for a class
+/** \brief Options metadata for a class
 
-      \author Joel Andersson, Joris Gillis
-      \date 2010-2016
+    \author Joel Andersson, Joris Gillis
+    \date 2010-2016
 
-      \identifier{x9} */
-  struct CASADI_EXPORT Options {
-    // Base classes, whose options are also valid for the derived class
-    std::vector<const Options*> bases;
+    \identifier{x9} */
+struct CASADI_EXPORT Options {
+  // Base classes, whose options are also valid for the derived class
+  std::vector<const Options*> bases;
 
-    // Information for a particular options entry
-    struct Entry {
-      TypeID type;
-      std::string description;
+  // Information for a particular options entry
+  struct Entry {
+    TypeID type;
+    std::string description;
 
-      // Print entry
-      void disp(const std::string& name, std::ostream &stream) const;
-    };
-
-    // Lookup for options
-    std::map<std::string, Entry> entries;
-
-    // Locate an entry
-    const Options::Entry* find(const std::string& name) const;
-
-    // Get all entries
-    std::vector<std::string> all() const;
-
-    // Get type of an entry
-    std::string type(const std::string& name) const;
-
-    // Get description for an entry
-    std::string info(const std::string& name) const;
-
-    // Print all entries
-    void disp(std::ostream& stream) const;
-
-    /** \brief A distance metric between two words
-
-        \identifier{xa} */
-    static double word_distance(const std::string &a, const std::string &b);
-
-    /** \brief Get the best suggestions for a misspelled word
-
-        \identifier{xb} */
-    std::vector<std::string> suggestions(const std::string& word, casadi_int amount=5) const;
-
-    /** \brief Find best matches
-
-        \identifier{xc} */
-    void best_matches(const std::string& word,
-                      std::vector<std::pair<double, std::string> >& best) const;
-
-    /// Does the dictionary contain a dot
-    static bool has_dot(const Dict& opts);
-
-    /// Does the dictionary has null objects
-    static bool has_null(const Dict& opts);
-
-    /// Is the dictionary sane
-    static bool is_sane(const Dict& opts);
-
-    /// Sanitize a options dictionary
-    static Dict sanitize(const Dict& opts);
-
-    /// Check if options exist
-    void check(const Dict& opts) const;
-
-    /** \brief Print list of options
-
-        \identifier{xd} */
-    void print_all(std::ostream &stream) const;
-
-    /** \brief Print all information there is to know about a certain option
-
-        \identifier{xe} */
-    void print_one(const std::string &name, std::ostream &stream) const;
+    // Print entry
+    void disp(const std::string& name, std::ostream& stream) const;
   };
 
-#endif // SWIG
-  /// \endcond
-} // namespace casadi
+  // Lookup for options
+  std::map<std::string, Entry> entries;
 
+  // Locate an entry
+  const Options::Entry* find(const std::string& name) const;
 
-#endif // CASADI_OPTIONS_HPP
+  // Get all entries
+  std::vector<std::string> all() const;
+
+  // Get type of an entry
+  std::string type(const std::string& name) const;
+
+  // Get description for an entry
+  std::string info(const std::string& name) const;
+
+  // Print all entries
+  void disp(std::ostream& stream) const;
+
+  /** \brief A distance metric between two words
+
+      \identifier{xa} */
+  static double word_distance(const std::string& a, const std::string& b);
+
+  /** \brief Get the best suggestions for a misspelled word
+
+      \identifier{xb} */
+  std::vector<std::string> suggestions(const std::string& word,
+                                       casadi_int amount = 5) const;
+
+  /** \brief Find best matches
+
+      \identifier{xc} */
+  void best_matches(const std::string& word,
+                    std::vector<std::pair<double, std::string> >& best) const;
+
+  /// Does the dictionary contain a dot
+  static bool has_dot(const Dict& opts);
+
+  /// Does the dictionary has null objects
+  static bool has_null(const Dict& opts);
+
+  /// Is the dictionary sane
+  static bool is_sane(const Dict& opts);
+
+  /// Sanitize a options dictionary
+  static Dict sanitize(const Dict& opts);
+
+  /// Check if options exist
+  void check(const Dict& opts) const;
+
+  /** \brief Print list of options
+
+      \identifier{xd} */
+  void print_all(std::ostream& stream) const;
+
+  /** \brief Print all information there is to know about a certain option
+
+      \identifier{xe} */
+  void print_one(const std::string& name, std::ostream& stream) const;
+};
+
+#endif  // SWIG
+/// \endcond
+}  // namespace casadi
+
+#endif  // CASADI_OPTIONS_HPP

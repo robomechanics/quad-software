@@ -15,9 +15,9 @@
 
 #include "CglCutGenerator.hpp"
 #include "CglRedSplit2Param.hpp"
-#include "CoinWarmStartBasis.hpp"
 #include "CoinHelperFunctions.hpp"
 #include "CoinTime.hpp"
+#include "CoinWarmStartBasis.hpp"
 
 /** Reduce-and-Split Cut Generator Class; See method generateCuts().
     Based on the papers "Practical strategies for generating rank-1
@@ -29,13 +29,13 @@
     CglRedSplit by F. Margot. */
 
 class CglRedSplit2 : public CglCutGenerator {
+  friend void CglRedSplit2UnitTest(const OsiSolverInterface *siP,
+                                   const std::string mpdDir);
 
-  friend void CglRedSplit2UnitTest(const OsiSolverInterface * siP,
-				  const std::string mpdDir);
-public:
+ public:
   /**@name generateCuts */
   //@{
-  /** Generate Reduce-and-Split Mixed Integer Gomory cuts 
+  /** Generate Reduce-and-Split Mixed Integer Gomory cuts
       for the model of the solver interface si.
 
       Insert the generated cuts into OsiCuts cs.
@@ -78,8 +78,8 @@ public:
 
   */
 
-  virtual void generateCuts(const OsiSolverInterface & si, OsiCuts & cs,
-			    const CglTreeInfo info = CglTreeInfo());
+  virtual void generateCuts(const OsiSolverInterface &si, OsiCuts &cs,
+                            const CglTreeInfo info = CglTreeInfo());
 
   /// Return true if needs optimal basis to do cuts (will return true)
   virtual bool needsOptimalBasis() const;
@@ -89,15 +89,15 @@ public:
   // lambda should be of size nrow*maxNumMultipliers. We generate at most
   // maxNumMultipliers m-vectors of row multipliers, and return the number
   // of m-vectors that were generated.
-  // If the caller wants to know which variables are basic in each row 
+  // If the caller wants to know which variables are basic in each row
   // (same order as lambda), basicVariables should be non-NULL (size nrow).
   // This method can also generate the cuts corresponding to the multipliers
   // returned; it suffices to pass non-NULL OsiCuts.
   // This method is not needed by the typical user; however, it is useful
   // in the context of generating Lift & Project cuts.
-  int generateMultipliers(const OsiSolverInterface& si, int* lambda,
-			  int maxNumMultipliers, int* basicVariables = NULL,
-			  OsiCuts* cs = NULL);
+  int generateMultipliers(const OsiSolverInterface &si, int *lambda,
+                          int maxNumMultipliers, int *basicVariables = NULL,
+                          OsiCuts *cs = NULL);
 
   // Try to improve a Lift & Project cut, by employing the
   // Reduce-and-Split procedure. We start from a row of a L&P tableau,
@@ -116,68 +116,66 @@ public:
   // is provided in the vector lambda (of size ncols, i.e. a
   // disjunction on the structural variables), the disjunction is
   // modified according to the cut which is produced.
-  int tiltLandPcut(const OsiSolverInterface* si, double* row, 
-		   double rowRhs, int rownumber, const double* xbar, 
-		   const int* newnonbasics, OsiRowCut* cs, int* lambda = NULL);
+  int tiltLandPcut(const OsiSolverInterface *si, double *row, double rowRhs,
+                   int rownumber, const double *xbar, const int *newnonbasics,
+                   OsiRowCut *cs, int *lambda = NULL);
 
   //@}
-  
-  
+
   /**@name Public Methods */
   //@{
 
   // Set the parameters to the values of the given CglRedSplit2Param object.
-  void setParam(const CglRedSplit2Param &source); 
-  // Return the CglRedSplit2Param object of the generator. 
-  inline CglRedSplit2Param& getParam() {return param;}
+  void setParam(const CglRedSplit2Param &source);
+  // Return the CglRedSplit2Param object of the generator.
+  inline CglRedSplit2Param &getParam() { return param; }
 
   /// Print some of the data members; used for debugging
   void print() const;
 
-  /// Print the current simplex tableau  
+  /// Print the current simplex tableau
   void printOptTab(OsiSolverInterface *solver) const;
-  
+
   //@}
 
   /**@name Constructors and destructors */
   //@{
-  /// Default constructor 
+  /// Default constructor
   CglRedSplit2();
 
-  /// Constructor with specified parameters 
+  /// Constructor with specified parameters
   CglRedSplit2(const CglRedSplit2Param &RS_param);
- 
-  /// Copy constructor 
+
+  /// Copy constructor
   CglRedSplit2(const CglRedSplit2 &);
 
   /// Clone
-  virtual CglCutGenerator * clone() const;
+  virtual CglCutGenerator *clone() const;
 
-  /// Assignment operator 
-  CglRedSplit2 & operator=(const CglRedSplit2& rhs);
-  
-  /// Destructor 
-  virtual ~CglRedSplit2 ();
+  /// Assignment operator
+  CglRedSplit2 &operator=(const CglRedSplit2 &rhs);
+
+  /// Destructor
+  virtual ~CglRedSplit2();
 
   //@}
 
-private:
-  
+ private:
   // Private member methods
 
-/**@name Private member methods */
+  /**@name Private member methods */
 
   //@{
 
-  // Method generating the cuts after all CglRedSplit2 members are 
+  // Method generating the cuts after all CglRedSplit2 members are
   // properly set. This does the actual work. Returns the number of
   // generated cuts (or multipliers).
   // Will generate cuts if cs != NULL, and will generate multipliers
-  // if lambda != NULL. 
-  int generateCuts(OsiCuts* cs, int maxNumCuts, int* lambda = NULL);
+  // if lambda != NULL.
+  int generateCuts(OsiCuts *cs, int maxNumCuts, int *lambda = NULL);
 
   /// Compute the fractional part of value, allowing for small error.
-  inline double rs_above_integer(const double value) const; 
+  inline double rs_above_integer(const double value) const;
 
   /// Fill workNonBasicTab, depending on the column selection strategy.
   /// Accepts a list of variables indices that should be ignored; by
@@ -185,41 +183,38 @@ private:
   /// The list ignore_list contains -1 as the last element.
   /// Note that the implementation of the ignore_list is not very efficient
   /// if the list is long, so it should be used only if its short.
-  void fill_workNonBasicTab(CglRedSplit2Param::ColumnSelectionStrategy 
-			    strategy, const int* ignore_list = NULL);
+  void fill_workNonBasicTab(CglRedSplit2Param::ColumnSelectionStrategy strategy,
+                            const int *ignore_list = NULL);
 
   /// Fill workNonBasicTab, alternate version for Lift & Project: also
   /// reduces columns which are now nonbasic but are basic in xbar.
   /// This function should be called only when CglRedSplit2 is used in
   /// conjunction with CglLandP to generate L&P+RS cuts.
-  void fill_workNonBasicTab(const int* newnonbasics, const double* xbar,
-			    CglRedSplit2Param::ColumnScalingStrategy scaling);
+  void fill_workNonBasicTab(const int *newnonbasics, const double *xbar,
+                            CglRedSplit2Param::ColumnScalingStrategy scaling);
 
   /// Reduce rows of workNonBasicTab, i.e. compute integral linear
   /// combinations of the rows in order to reduce row coefficients on
   /// workNonBasicTab
-  void reduce_workNonBasicTab(int numRows, 
-			      CglRedSplit2Param::RowSelectionStrategy 
-			      rowSelectionStrategy,
-			      int maxIterations);
+  void reduce_workNonBasicTab(
+      int numRows, CglRedSplit2Param::RowSelectionStrategy rowSelectionStrategy,
+      int maxIterations);
 
   /// Generate a linear combination of the rows of the current LP
   /// tableau, using the row multipliers stored in the matrix pi_mat
   /// on the row of index index_row
   void generate_row(int index_row, double *row);
 
-  /// Generate a mixed integer Gomory cut, when all non basic 
+  /// Generate a mixed integer Gomory cut, when all non basic
   /// variables are non negative and at their lower bound.
   int generate_cgcut(double *row, double *rhs);
 
   /// Use multiples of the initial inequalities to cancel out the coefficients
   /// of the slack variables.
-  void eliminate_slacks(double *row, 
-			const double *elements, 
-			const CoinBigIndex *start,
-			const int *indices,
-			const int *rowLength,
-			const double *rhs, double *rowrhs);
+  void eliminate_slacks(double *row, const double *elements,
+                        const CoinBigIndex *start, const int *indices,
+                        const int *rowLength, const double *rhs,
+                        double *rowrhs);
 
   /// Change the sign of the coefficients of the continuous non basic
   /// variables at their upper bound.
@@ -239,17 +234,15 @@ private:
   int check_dynamism(double *row);
 
   /// Generate the packed cut from the row representation.
-  int generate_packed_row(const double *xlp, double *row,
-			  int *rowind, double *rowelem, 
-			  int *card_row, double & rhs);
+  int generate_packed_row(const double *xlp, double *row, int *rowind,
+                          double *rowelem, int *card_row, double &rhs);
 
   // Compute entries of is_integer.
   void compute_is_integer();
 
   // Check that two vectors are different.
-  bool rs_are_different_vectors(const int *vect1, 
-				const int *vect2,
-				const int dim);
+  bool rs_are_different_vectors(const int *vect1, const int *vect2,
+                                const int dim);
 
   // allocate matrix of integers
   void rs_allocmatINT(int ***v, int m, int n);
@@ -264,14 +257,16 @@ private:
   // print a vector of doubles
   void rs_printvecDBL(const char *vecstr, const double *x, int n) const;
   // print a matrix of integers
-  void rs_printmatINT(const char *vecstr, const int * const *x, int m, int n) const;
+  void rs_printmatINT(const char *vecstr, const int *const *x, int m,
+                      int n) const;
   // print a matrix of doubles
-  void rs_printmatDBL(const char *vecstr, const double * const *x, int m, int n) const;
+  void rs_printmatDBL(const char *vecstr, const double *const *x, int m,
+                      int n) const;
   // dot product
   double rs_dotProd(const double *u, const double *v, int dim) const;
   double rs_dotProd(const int *u, const double *v, int dim) const;
   // From Numerical Recipes in C: LU decomposition
-  int ludcmp(double **a, int n, int *indx, double *d, double* vv) const;
+  int ludcmp(double **a, int n, int *indx, double *d, double *vv) const;
   // from Numerical Recipes in C: backward substitution
   void lubksb(double **a, int n, int *indx, double *b) const;
 
@@ -279,27 +274,26 @@ private:
   // improves the norm of row #rowindex; note: multipliers are rounded!
   // Returns the difference with respect to the old norm (if negative there is
   // an improvement, if positive norm increases)
-  double compute_norm_change(double oldnorm, const int* listOfRows,
-			     int numElemList, const double* multipliers) const;
+  double compute_norm_change(double oldnorm, const int *listOfRows,
+                             int numElemList, const double *multipliers) const;
 
   // Compute the list of rows that should be used to reduce row #rowIndex
-  int get_list_rows_reduction(int rowIndex, int numRowsReduction, 
-			      int* list, const double* norm, 
-			      CglRedSplit2Param::RowSelectionStrategy 
-			      rowSelectionStrategy) const;
+  int get_list_rows_reduction(
+      int rowIndex, int numRowsReduction, int *list, const double *norm,
+      CglRedSplit2Param::RowSelectionStrategy rowSelectionStrategy) const;
 
   // Sorts the rows by increasing number of nonzeroes with respect to a given
   // row (rowIndex), on the nonbasic variables (whichTab == 0 means only
   // integer, whichTab == 1 means only workTab, whichTab == 2 means both).
   // The array for sorting must be allocated (and deleted) by caller.
   // Corresponds to BRS1 in the paper.
-  int sort_rows_by_nonzeroes(struct sortElement* array, int rowIndex, 
-			     int maxRows, int whichTab) const;
+  int sort_rows_by_nonzeroes(struct sortElement *array, int rowIndex,
+                             int maxRows, int whichTab) const;
 
   // Greedy variant of the previous function; slower but typically
   // more effective. Corresponds to BRS2 in the paper.
-  int sort_rows_by_nonzeroes_greedy(struct sortElement* array, int rowIndex, 
-				    int maxRows, int whichTab) const;
+  int sort_rows_by_nonzeroes_greedy(struct sortElement *array, int rowIndex,
+                                    int maxRows, int whichTab) const;
 
   // Sorts the rows by decreasing absolute value of the cosine of the
   // angle with respect to a given row (rowIndex), on the nonbasic
@@ -307,12 +301,12 @@ private:
   // only workTab, whichTab == 2 means both).  The array for sorting
   // must be allocated (and deleted) by caller. Very effective
   // strategy in practice. Corresponds to BRS3 in the paper.
-  int sort_rows_by_cosine(struct sortElement* array, int rowIndex, 
-			  int maxRows, int whichTab) const;
+  int sort_rows_by_cosine(struct sortElement *array, int rowIndex, int maxRows,
+                          int whichTab) const;
 
   // Did we hit the time limit?
-  inline bool checkTime() const{
-    if ((CoinCpuTime() - startTime) < param.getTimeLimit()){
+  inline bool checkTime() const {
+    if ((CoinCpuTime() - startTime) < param.getTimeLimit()) {
       return true;
     }
     return false;
@@ -320,18 +314,17 @@ private:
 
   //@}
 
-  
   // Private member data
 
   /**@name Private member data */
-  
+
   //@{
 
-  /// Object with CglRedSplit2Param members. 
+  /// Object with CglRedSplit2Param members.
   CglRedSplit2Param param;
 
   /// Number of rows ( = number of slack variables) in the current LP.
-  int nrow; 
+  int nrow;
 
   /// Number of structural variables in the current LP.
   int ncol;
@@ -344,7 +337,7 @@ private:
 
   /// Upper bounds for structural variables
   const double *colUpper;
-  
+
   /// Lower bounds for constraints
   const double *rowLower;
 
@@ -361,21 +354,21 @@ private:
   const double *rowPrice;
 
   /// Objective coefficients
-  const double* objective;
+  const double *objective;
 
-  /// Number of integer basic structural variables 
+  /// Number of integer basic structural variables
   int card_intBasicVar;
 
   /// Number of integer basic structural variables that are fractional in the
-  /// current lp solution (at least param.away_ from being integer).  
+  /// current lp solution (at least param.away_ from being integer).
   int card_intBasicVar_frac;
 
   /// Number of integer non basic structural variables in the
-  /// current lp solution.  
-  int card_intNonBasicVar; 
+  /// current lp solution.
+  int card_intNonBasicVar;
 
   /// Number of continuous non basic variables (structural or slack) in the
-  /// current lp solution.  
+  /// current lp solution.
   int card_contNonBasicVar;
 
   /// Number of continuous non basic variables (structural or slack) in the
@@ -384,24 +377,24 @@ private:
 
   /// Number of non basic variables (structural or slack) at their
   /// upper bound in the current lp solution.
-  int card_nonBasicAtUpper; 
+  int card_nonBasicAtUpper;
 
   /// Number of non basic variables (structural or slack) at their
   /// lower bound in the current lp solution.
   int card_nonBasicAtLower;
 
   /// Characteristic vector for integer basic structural variables
-  int *cv_intBasicVar;  
+  int *cv_intBasicVar;
 
   /// Characteristic vector for integer basic structural variables
   /// with non integer value in the current lp solution.
-  int *cv_intBasicVar_frac;  
+  int *cv_intBasicVar_frac;
 
   /// Characteristic vector for rows of the tableau selected for reduction
   /// with non integer value in the current lp solution
-  int *cv_fracRowsTab;  
+  int *cv_fracRowsTab;
 
-  /// List of integer structural basic variables 
+  /// List of integer structural basic variables
   /// (in order of pivot in selected rows for cut generation).
   int *intBasicVar;
 
@@ -410,14 +403,14 @@ private:
   int *intBasicVar_frac;
 
   /// List of integer structural non basic variables.
-  int *intNonBasicVar; 
+  int *intNonBasicVar;
 
-  /// List of continuous non basic variables (structural or slack). 
+  /// List of continuous non basic variables (structural or slack).
   // slacks are considered continuous (no harm if this is not the case).
   int *contNonBasicVar;
 
-  /// List of non basic variables (structural or slack) at their 
-  /// upper bound. 
+  /// List of non basic variables (structural or slack) at their
+  /// upper bound.
   int *nonBasicAtUpper;
 
   /// List of non basic variables (structural or slack) at their lower
@@ -457,7 +450,7 @@ private:
   double *norm;
 
   /// Characteristic vectors of structural integer variables or continuous
-  /// variables currently fixed to integer values. 
+  /// variables currently fixed to integer values.
   int *is_integer;
 
   /// Pointer on solver. Reset by each call to generateCuts().
@@ -469,7 +462,7 @@ private:
   /// Pointer on row activity. Reset by each call to generateCuts().
   const double *rowActivity;
 
-  /// Pointer on matrix of coefficient ordered by rows. 
+  /// Pointer on matrix of coefficient ordered by rows.
   /// Reset by each call to generateCuts().
   const CoinPackedMatrix *byRow;
 
@@ -480,15 +473,14 @@ private:
   //@}
 };
 
-//#############################################################################
+// #############################################################################
 /** A function that tests some of the methods in the CglRedSplit2
     class. The only reason for it not to be a member method is that
     this way it doesn't have to be compiled into the library. And
     that's a gain, because the library should be compiled with
     optimization on, but this method should be compiled with
     debugging. */
-void CglRedSplit2UnitTest(const OsiSolverInterface * siP,
-			 const std::string mpdDir );
-
+void CglRedSplit2UnitTest(const OsiSolverInterface *siP,
+                          const std::string mpdDir);
 
 #endif

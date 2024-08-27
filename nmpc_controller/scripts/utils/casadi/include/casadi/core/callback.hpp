@@ -18,7 +18,8 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
 
@@ -28,199 +29,209 @@
 #include "function.hpp"
 
 namespace casadi {
-  /** Forward declaration of internal class */
-  class CallbackInternal;
+/** Forward declaration of internal class */
+class CallbackInternal;
 
-  /** \brief Callback function functionality
+/** \brief Callback function functionality
 
-   This class provides a public API to the FunctionInternal class that
-   can be subclassed by the user, who is then able to implement the different
-   virtual method.
-   Note that the Function class also provides a public API to FunctionInternal,
-   but only allows calling, not being called.
+ This class provides a public API to the FunctionInternal class that
+ can be subclassed by the user, who is then able to implement the different
+ virtual method.
+ Note that the Function class also provides a public API to FunctionInternal,
+ but only allows calling, not being called.
 
-   The user is responsible for not deleting this class for the lifetime
-   of the internal function object.
+ The user is responsible for not deleting this class for the lifetime
+ of the internal function object.
 
-   \author Joris Gillis, Joel Andersson
-   \date 2015
+ \author Joris Gillis, Joel Andersson
+ \date 2015
 
-      \identifier{o0} */
-  class CASADI_EXPORT Callback : public Function {
-  public:
-    /** \brief Get type name
+    \identifier{o0} */
+class CASADI_EXPORT Callback : public Function {
+ public:
+  /** \brief Get type name
 
-        \identifier{o1} */
-    static std::string type_name() {return "Callback";}
+      \identifier{o1} */
+  static std::string type_name() { return "Callback"; }
 
-    /** \brief Default constructor
+  /** \brief Default constructor
 
-        \identifier{o2} */
-    Callback();
+      \identifier{o2} */
+  Callback();
 
-    /** \brief Copy constructor (throws an error)
+  /** \brief Copy constructor (throws an error)
 
-        \identifier{o3} */
-    Callback(const Callback& obj);
+      \identifier{o3} */
+  Callback(const Callback& obj);
 
-    /** \brief  Destructor
+  /** \brief  Destructor
 
-        \identifier{o4} */
-    virtual ~Callback();
+      \identifier{o4} */
+  virtual ~Callback();
 
-    /** \brief Construct internal object
+  /** \brief Construct internal object
 
-     * This is the step that actually construct the internal object, as the
-     * class constructor only creates a null pointer.
-     * It should be called from the user constructor.
+   * This is the step that actually construct the internal object, as the
+   * class constructor only creates a null pointer.
+   * It should be called from the user constructor.
 
-        \identifier{o5} */
-    void construct(const std::string& name, const Dict& opts=Dict());
+      \identifier{o5} */
+  void construct(const std::string& name, const Dict& opts = Dict());
 
-    /** \brief Initialize the object
+  /** \brief Initialize the object
 
-     * This function is called after the object construction (for the whole class
-     * hierarchy) is complete, but before the finalization step.
-     * It is called recursively for the whole class hierarchy, starting with the
-     * lowest level.
+   * This function is called after the object construction (for the whole class
+   * hierarchy) is complete, but before the finalization step.
+   * It is called recursively for the whole class hierarchy, starting with the
+   * lowest level.
 
-        \identifier{o6} */
-    virtual void init() {}
+      \identifier{o6} */
+  virtual void init() {}
 
-    /** \brief Finalize the object
+  /** \brief Finalize the object
 
-     * This function is called after the construction and init steps are completed,
-     * but before user functions are called.
-     * It is called recursively for the whole class hierarchy, starting with the
-     * highest level.
+   * This function is called after the construction and init steps are
+   completed,
+   * but before user functions are called.
+   * It is called recursively for the whole class hierarchy, starting with the
+   * highest level.
 
-        \identifier{o7} */
-    virtual void finalize() {}
+      \identifier{o7} */
+  virtual void finalize() {}
 
-    /** \brief Evaluate numerically, using temporary matrices and work vectors
-     *
-     * This signature is not thread-safe.
-     * For guaranteed thread-safety, use `eval_buffer`
+  /** \brief Evaluate numerically, using temporary matrices and work vectors
+   *
+   * This signature is not thread-safe.
+   * For guaranteed thread-safety, use `eval_buffer`
 
-        \identifier{o8} */
-    virtual std::vector<DM> eval(const std::vector<DM>& arg) const;
+      \identifier{o8} */
+  virtual std::vector<DM> eval(const std::vector<DM>& arg) const;
 
-    /** \brief A copy-free low level interface
-     *
-     * In Python, you will be passed two tuples of memoryview objects
-     * Note that only the structural nonzeros are present in the memoryview objects/buffers.
-     *
-     * Make sure to override has_eval_buffer() to indicate support for this method.
+  /** \brief A copy-free low level interface
+   *
+   * In Python, you will be passed two tuples of memoryview objects
+   * Note that only the structural nonzeros are present in the memoryview
+   objects/buffers.
+   *
+   * Make sure to override has_eval_buffer() to indicate support for this
+   method.
 
-        \identifier{o9} */
-    virtual int eval_buffer(const double **arg, const std::vector<casadi_int>& sizes_arg,
-                              double **res, const std::vector<casadi_int>& sizes_res) const;
-    /** \brief Does the Callback class support a copy-free low level interface ?
-     *
+      \identifier{o9} */
+  virtual int eval_buffer(const double** arg,
+                          const std::vector<casadi_int>& sizes_arg,
+                          double** res,
+                          const std::vector<casadi_int>& sizes_res) const;
+  /** \brief Does the Callback class support a copy-free low level interface ?
+   *
 
-        \identifier{265} */
-    virtual bool has_eval_buffer() const;
+      \identifier{265} */
+  virtual bool has_eval_buffer() const;
 
-    /** \brief Get the number of inputs
+  /** \brief Get the number of inputs
 
-     * This function is called during construction.
+   * This function is called during construction.
 
-        \identifier{oa} */
-    virtual casadi_int get_n_in();
+      \identifier{oa} */
+  virtual casadi_int get_n_in();
 
-    /** \brief Get the number of outputs
+  /** \brief Get the number of outputs
 
-     * This function is called during construction.
+   * This function is called during construction.
 
-        \identifier{ob} */
-    virtual casadi_int get_n_out();
+      \identifier{ob} */
+  virtual casadi_int get_n_out();
 
-    /** \brief Get the sparsity of an input
+  /** \brief Get the sparsity of an input
 
-     * This function is called during construction.
+   * This function is called during construction.
 
-        \identifier{oc} */
-    virtual Sparsity get_sparsity_in(casadi_int i);
+      \identifier{oc} */
+  virtual Sparsity get_sparsity_in(casadi_int i);
 
-    /** \brief Get the sparsity of an output
+  /** \brief Get the sparsity of an output
 
-     * This function is called during construction.
+   * This function is called during construction.
 
-        \identifier{od} */
-    virtual Sparsity get_sparsity_out(casadi_int i);
+      \identifier{od} */
+  virtual Sparsity get_sparsity_out(casadi_int i);
 
-    /** \brief Get the name of an input
+  /** \brief Get the name of an input
 
-     * This function is called during construction.
+   * This function is called during construction.
 
-        \identifier{oe} */
-    virtual std::string get_name_in(casadi_int i);
+      \identifier{oe} */
+  virtual std::string get_name_in(casadi_int i);
 
-    /** \brief Get the name of an output
+  /** \brief Get the name of an output
 
-     * This function is called during construction.
+   * This function is called during construction.
 
-        \identifier{of} */
-    virtual std::string get_name_out(casadi_int i);
+      \identifier{of} */
+  virtual std::string get_name_out(casadi_int i);
 
-    /** \brief Do the derivative functions need nondifferentiated outputs?
+  /** \brief Do the derivative functions need nondifferentiated outputs?
 
-        \identifier{og} */
-    virtual bool uses_output() const;
+      \identifier{og} */
+  virtual bool uses_output() const;
 
-    ///@{
-    /** \brief Return Jacobian of all input elements with respect to all output elements
+  ///@{
+  /** \brief Return Jacobian of all input elements with respect to all output
+     elements
 
-        \identifier{oh} */
-    virtual bool has_jacobian() const;
-    virtual Function get_jacobian(const std::string& name,
-                                  const std::vector<std::string>& inames,
-                                  const std::vector<std::string>& onames,
-                                  const Dict& opts) const;
-    ///@}
+      \identifier{oh} */
+  virtual bool has_jacobian() const;
+  virtual Function get_jacobian(const std::string& name,
+                                const std::vector<std::string>& inames,
+                                const std::vector<std::string>& onames,
+                                const Dict& opts) const;
+  ///@}
 
-    ///@{
-    /** \brief Return function that calculates forward derivatives
+  ///@{
+  /** \brief Return function that calculates forward derivatives
 
-     *    forward(nfwd) returns a cached instance if available,
-     *    and calls <tt>Function get_forward(casadi_int nfwd)</tt>
-     *    if no cached version is available.
+   *    forward(nfwd) returns a cached instance if available,
+   *    and calls <tt>Function get_forward(casadi_int nfwd)</tt>
+   *    if no cached version is available.
 
-        \identifier{oi} */
-    virtual bool has_forward(casadi_int nfwd) const;
-    virtual Function get_forward(casadi_int nfwd, const std::string& name,
-                                 const std::vector<std::string>& inames,
-                                 const std::vector<std::string>& onames,
-                                 const Dict& opts) const;
-    ///@}
+      \identifier{oi} */
+  virtual bool has_forward(casadi_int nfwd) const;
+  virtual Function get_forward(casadi_int nfwd, const std::string& name,
+                               const std::vector<std::string>& inames,
+                               const std::vector<std::string>& onames,
+                               const Dict& opts) const;
+  ///@}
 
-    ///@{
-    /** \brief Return function that calculates adjoint derivatives
+  ///@{
+  /** \brief Return function that calculates adjoint derivatives
 
-     *    reverse(nadj) returns a cached instance if available,
-     *    and calls <tt>Function get_reverse(casadi_int nadj)</tt>
-     *    if no cached version is available.
+   *    reverse(nadj) returns a cached instance if available,
+   *    and calls <tt>Function get_reverse(casadi_int nadj)</tt>
+   *    if no cached version is available.
 
-        \identifier{oj} */
-    virtual bool has_reverse(casadi_int nadj) const;
-    virtual Function get_reverse(casadi_int nadj, const std::string& name,
-                                 const std::vector<std::string>& inames,
-                                 const std::vector<std::string>& onames,
-                                 const Dict& opts) const;
-    ///@}
+      \identifier{oj} */
+  virtual bool has_reverse(casadi_int nadj) const;
+  virtual Function get_reverse(casadi_int nadj, const std::string& name,
+                               const std::vector<std::string>& inames,
+                               const std::vector<std::string>& onames,
+                               const Dict& opts) const;
+  ///@}
 
-    ///@{
-    /** \brief Return sparsity of Jacobian of all input elements
+  ///@{
+  /** \brief Return sparsity of Jacobian of all input elements
 
-     * with respect to all output elements
+   * with respect to all output elements
 
-        \identifier{ok} */
-    virtual bool has_jac_sparsity(casadi_int oind, casadi_int iind) const { return false; }
-    virtual Sparsity get_jac_sparsity(casadi_int oind, casadi_int iind, bool symmetric) const {
-      return Sparsity(); }
-    ///@}
-  };
+      \identifier{ok} */
+  virtual bool has_jac_sparsity(casadi_int oind, casadi_int iind) const {
+    return false;
+  }
+  virtual Sparsity get_jac_sparsity(casadi_int oind, casadi_int iind,
+                                    bool symmetric) const {
+    return Sparsity();
+  }
+  ///@}
+};
 
-} // namespace casadi
+}  // namespace casadi
 
-#endif // CASADI_CALLBACK_HPP
+#endif  // CASADI_CALLBACK_HPP

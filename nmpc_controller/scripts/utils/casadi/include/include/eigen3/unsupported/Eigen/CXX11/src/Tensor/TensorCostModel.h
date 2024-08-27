@@ -13,12 +13,12 @@
 namespace Eigen {
 
 /** \class TensorEvaluator
-  * \ingroup CXX11_Tensor_Module
-  *
-  * \brief A cost model used to limit the number of threads used for evaluating
-  * tensor expression.
-  *
-  */
+ * \ingroup CXX11_Tensor_Module
+ *
+ * \brief A cost model used to limit the number of threads used for evaluating
+ * tensor expression.
+ *
+ */
 
 // Class storing the cost of evaluating a tensor expression in terms of the
 // estimated number of operand bytes loads, bytes stored, and compute cycles.
@@ -94,8 +94,8 @@ class TensorOpCost {
   }
 
   // TODO(rmlarsen): Define min in terms of total cost, not elementwise.
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TensorOpCost cwiseMin(
-      const TensorOpCost& rhs) const {
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TensorOpCost
+  cwiseMin(const TensorOpCost& rhs) const {
     double bytes_loaded = numext::mini(bytes_loaded_, rhs.bytes_loaded());
     double bytes_stored = numext::mini(bytes_stored_, rhs.bytes_stored());
     double compute_cycles = numext::mini(compute_cycles_, rhs.compute_cycles());
@@ -103,8 +103,8 @@ class TensorOpCost {
   }
 
   // TODO(rmlarsen): Define max in terms of total cost, not elementwise.
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TensorOpCost cwiseMax(
-      const TensorOpCost& rhs) const {
+  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TensorOpCost
+  cwiseMax(const TensorOpCost& rhs) const {
     double bytes_loaded = numext::maxi(bytes_loaded_, rhs.bytes_loaded());
     double bytes_stored = numext::maxi(bytes_stored_, rhs.bytes_stored());
     double compute_cycles = numext::maxi(compute_cycles_, rhs.compute_cycles());
@@ -163,7 +163,7 @@ class TensorCostModel {
   // Scaling from Eigen compute cost to device cycles.
   static const int kDeviceCyclesPerComputeCycle = 1;
 
- // Costs in device cycles.
+  // Costs in device cycles.
   static const int kStartupCycles = 100000;
   static const int kPerThreadCycles = 100000;
   static const int kTaskSize = 40000;
@@ -204,8 +204,8 @@ class TensorCostModel {
     const double kStoreCycles = 1.0 / 64 * 11;
     // Scaling from Eigen compute cost to device cycles.
     return output_size *
-        cost_per_coeff.total_cost(kLoadCycles, kStoreCycles,
-                                  kDeviceCyclesPerComputeCycle);
+           cost_per_coeff.total_cost(kLoadCycles, kStoreCycles,
+                                     kDeviceCyclesPerComputeCycle);
   }
 };
 

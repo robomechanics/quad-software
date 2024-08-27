@@ -8,9 +8,9 @@
 #ifndef PROXSUITE_HELPERS_INSTRUCTION_SET_HPP
 #define PROXSUITE_HELPERS_INSTRUCTION_SET_HPP
 
-#include <vector>
-#include <bitset>
 #include <array>
+#include <bitset>
+#include <vector>
 
 #ifndef _WIN32
 #include <cpuid.h>
@@ -22,9 +22,7 @@ namespace proxsuite {
 namespace helpers {
 
 namespace internal {
-inline void
-cpuid(std::array<int, 4>& cpui, int level)
-{
+inline void cpuid(std::array<int, 4>& cpui, int level) {
 #ifndef _WIN32
   __cpuid(level, cpui[0], cpui[1], cpui[2], cpui[3]);
 #else
@@ -32,9 +30,7 @@ cpuid(std::array<int, 4>& cpui, int level)
 #endif
 }
 
-inline void
-cpuidex(std::array<int, 4>& cpui, int level, int count)
-{
+inline void cpuidex(std::array<int, 4>& cpui, int level, int count) {
 #ifndef _WIN32
   __cpuid_count(level, count, cpui[0], cpui[1], cpui[2], cpui[3]);
 #else
@@ -42,26 +38,23 @@ cpuidex(std::array<int, 4>& cpui, int level, int count)
 #endif
 }
 
-template<typename T = void>
-struct InstructionSetBase
-{
-protected:
-  struct Data
-  {
+template <typename T = void>
+struct InstructionSetBase {
+ protected:
+  struct Data {
     Data()
-      : nIds_{ 0 }
-      , nExIds_{ 0 }
-      , isIntel_{ false }
-      , isAMD_{ false }
-      , f_1_ECX_{ 0 }
-      , f_1_EDX_{ 0 }
-      , f_7_EBX_{ 0 }
-      , f_7_ECX_{ 0 }
-      , f_81_ECX_{ 0 }
-      , f_81_EDX_{ 0 }
-      , data_{}
-      , extdata_{}
-    {
+        : nIds_{0},
+          nExIds_{0},
+          isIntel_{false},
+          isAMD_{false},
+          f_1_ECX_{0},
+          f_1_EDX_{0},
+          f_7_EBX_{0},
+          f_7_ECX_{0},
+          f_81_ECX_{0},
+          f_81_EDX_{0},
+          data_{},
+          extdata_{} {
       std::array<int, 4> cpui;
       typedef unsigned long long bistset_equivalent_type;
 
@@ -147,15 +140,14 @@ protected:
   static const Data data;
 };
 
-template<>
+template <>
 const typename InstructionSetBase<>::Data InstructionSetBase<>::data =
-  typename InstructionSetBase<>::Data();
-} // namespace internal
+    typename InstructionSetBase<>::Data();
+}  // namespace internal
 
 // Adapted from
 // https://docs.microsoft.com/fr-fr/cpp/intrinsics/cpuid-cpuidex?view=msvc-170
-struct InstructionSet : public internal::InstructionSetBase<>
-{
+struct InstructionSet : public internal::InstructionSetBase<> {
   typedef internal::InstructionSetBase<> Base;
 
   static std::string vendor(void) { return Base::data.vendor_; }
@@ -191,16 +183,14 @@ struct InstructionSet : public internal::InstructionSetBase<>
   static bool has_FSGSBASE(void) { return Base::data.f_7_EBX_[0]; }
   static bool has_AVX512VBMI(void) { return Base::data.f_7_EBX_[1]; }
   static bool has_BMI1(void) { return Base::data.f_7_EBX_[3]; }
-  static bool has_HLE(void)
-  {
+  static bool has_HLE(void) {
     return Base::data.isIntel_ && Base::data.f_7_EBX_[4];
   }
   static bool has_AVX2(void) { return Base::data.f_7_EBX_[5]; }
   static bool has_BMI2(void) { return Base::data.f_7_EBX_[8]; }
   static bool has_ERMS(void) { return Base::data.f_7_EBX_[9]; }
   static bool has_INVPCID(void) { return Base::data.f_7_EBX_[10]; }
-  static bool has_RTM(void)
-  {
+  static bool has_RTM(void) {
     return Base::data.isIntel_ && Base::data.f_7_EBX_[11];
   }
   static bool has_AVX512F(void) { return Base::data.f_7_EBX_[16]; }
@@ -218,58 +208,46 @@ struct InstructionSet : public internal::InstructionSetBase<>
   static bool has_PREFETCHWT1(void) { return Base::data.f_7_ECX_[0]; }
 
   static bool has_LAHF(void) { return Base::data.f_81_ECX_[0]; }
-  static bool has_LZCNT(void)
-  {
+  static bool has_LZCNT(void) {
     return Base::data.isIntel_ && Base::data.f_81_ECX_[5];
   }
-  static bool has_ABM(void)
-  {
+  static bool has_ABM(void) {
     return Base::data.isAMD_ && Base::data.f_81_ECX_[5];
   }
-  static bool has_SSE4a(void)
-  {
+  static bool has_SSE4a(void) {
     return Base::data.isAMD_ && Base::data.f_81_ECX_[6];
   }
-  static bool has_XOP(void)
-  {
+  static bool has_XOP(void) {
     return Base::data.isAMD_ && Base::data.f_81_ECX_[11];
   }
-  static bool has_FMA4(void)
-  {
+  static bool has_FMA4(void) {
     return Base::data.isAMD_ && Base::data.f_81_ECX_[16];
   }
-  static bool has_TBM(void)
-  {
+  static bool has_TBM(void) {
     return Base::data.isAMD_ && Base::data.f_81_ECX_[21];
   }
 
-  static bool has_SYSCALL(void)
-  {
+  static bool has_SYSCALL(void) {
     return Base::data.isIntel_ && Base::data.f_81_EDX_[11];
   }
-  static bool has_MMXEXT(void)
-  {
+  static bool has_MMXEXT(void) {
     return Base::data.isAMD_ && Base::data.f_81_EDX_[22];
   }
-  static bool has_RDTSCP(void)
-  {
+  static bool has_RDTSCP(void) {
     return Base::data.isIntel_ && Base::data.f_81_EDX_[27];
   }
-  static bool has_x64(void)
-  {
+  static bool has_x64(void) {
     return Base::data.isIntel_ && Base::data.f_81_EDX_[29];
   }
-  static bool has_3DNOWEXT(void)
-  {
+  static bool has_3DNOWEXT(void) {
     return Base::data.isAMD_ && Base::data.f_81_EDX_[30];
   }
-  static bool has_3DNOW(void)
-  {
+  static bool has_3DNOW(void) {
     return Base::data.isAMD_ && Base::data.f_81_EDX_[31];
   }
 };
 
-} // helpers
-} // proxsuite
+}  // namespace helpers
+}  // namespace proxsuite
 
-#endif // ifndef PROXSUITE_HELPERS_INSTRUCTION_SET_HPP
+#endif  // ifndef PROXSUITE_HELPERS_INSTRUCTION_SET_HPP

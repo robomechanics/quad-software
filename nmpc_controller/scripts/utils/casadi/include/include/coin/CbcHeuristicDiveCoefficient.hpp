@@ -12,7 +12,7 @@
  */
 
 class CbcHeuristicDiveCoefficient : public CbcHeuristicDive {
-public:
+ public:
   // Default Constructor
   CbcHeuristicDiveCoefficient();
 
@@ -29,7 +29,8 @@ public:
   virtual CbcHeuristicDiveCoefficient *clone() const;
 
   /// Assignment operator
-  CbcHeuristicDiveCoefficient &operator=(const CbcHeuristicDiveCoefficient &rhs);
+  CbcHeuristicDiveCoefficient &operator=(
+      const CbcHeuristicDiveCoefficient &rhs);
 
   /// Create C++ lines to get to current state
   virtual void generateCpp(FILE *fp);
@@ -41,12 +42,11 @@ public:
         returned will not be trivially roundable.
     */
   virtual bool selectVariableToBranch(OsiSolverInterface *solver,
-    const double *newSolution,
-    int &bestColumn,
-    int &bestRound);
+                                      const double *newSolution,
+                                      int &bestColumn, int &bestRound);
 };
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

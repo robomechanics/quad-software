@@ -1,17 +1,19 @@
 // NOLINT(legal/copyright)
 // SYMBOL "bfgs"
 // BFGS update
-template<typename T1>
-void casadi_bfgs(const casadi_int* sp_h, T1* h, const T1* dx,
-                 const T1* glag, const T1* glag_old, T1* w) {
+template <typename T1>
+void casadi_bfgs(const casadi_int* sp_h, T1* h, const T1* dx, const T1* glag,
+                 const T1* glag_old, T1* w) {
   // Local variables
   casadi_int nx;
   T1 *yk, *qk, dxBkdx, omega, theta, phi;
   // Dimension
   nx = sp_h[0];
   // Work vectors
-  yk = w; w += nx;
-  qk = w; w += nx;
+  yk = w;
+  w += nx;
+  qk = w;
+  w += nx;
   // yk = glag - glag_old
   casadi_copy(glag, nx, yk);
   casadi_axpy(nx, -1., glag_old, yk);
@@ -35,15 +37,16 @@ void casadi_bfgs(const casadi_int* sp_h, T1* h, const T1* dx,
 
 // SYMBOL "bfgs_reset"
 // Removes off-diagonal entries
-template<typename T1>
+template <typename T1>
 void casadi_bfgs_reset(const casadi_int* sp_h, T1* h) {
   casadi_int ncol, c, k;
   const casadi_int *colind, *row;
   ncol = sp_h[1];
-  colind = sp_h+2; row = sp_h+ncol+3;
-  for (c=0; c<ncol; ++c) {
-    for (k=colind[c]; k<colind[c+1]; ++k) {
-      if (c!=row[k]) h[k] = 0;
+  colind = sp_h + 2;
+  row = sp_h + ncol + 3;
+  for (c = 0; c < ncol; ++c) {
+    for (k = colind[c]; k < colind[c + 1]; ++k) {
+      if (c != row[k]) h[k] = 0;
     }
   }
 }

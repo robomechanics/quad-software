@@ -6,9 +6,8 @@
 #ifndef ClpDummyMatrix_H
 #define ClpDummyMatrix_H
 
-#include "CoinPragma.hpp"
-
 #include "ClpMatrixBase.hpp"
+#include "CoinPragma.hpp"
 
 /** This implements a dummy matrix as derived from ClpMatrixBase.
     This is so you can do ClpPdco but may come in useful elsewhere.
@@ -16,32 +15,19 @@
 */
 
 class ClpDummyMatrix : public ClpMatrixBase {
-
-public:
+ public:
   /**@name Useful methods */
   //@{
   /// Return a complete CoinPackedMatrix
   virtual CoinPackedMatrix *getPackedMatrix() const;
   /** Whether the packed matrix is column major ordered or not. */
-  virtual bool isColOrdered() const
-  {
-    return true;
-  }
+  virtual bool isColOrdered() const { return true; }
   /** Number of entries in the packed matrix. */
-  virtual CoinBigIndex getNumElements() const
-  {
-    return numberElements_;
-  }
+  virtual CoinBigIndex getNumElements() const { return numberElements_; }
   /** Number of columns. */
-  virtual int getNumCols() const
-  {
-    return numberColumns_;
-  }
+  virtual int getNumCols() const { return numberColumns_; }
   /** Number of rows. */
-  virtual int getNumRows() const
-  {
-    return numberRows_;
-  }
+  virtual int getNumRows() const { return numberRows_; }
 
   /** A vector containing the elements in the packed matrix. Note that there
       might be gaps in this list, entries that do not belong to any
@@ -49,8 +35,8 @@ public:
       this vector together with vectorStarts and vectorLengths. */
   virtual const double *getElements() const;
   /** A vector containing the minor indices of the elements in the packed
-          matrix. Note that there might be gaps in this list, entries that do not
-          belong to any major-dimension vector. To get the actual elements one
+          matrix. Note that there might be gaps in this list, entries that do
+     not belong to any major-dimension vector. To get the actual elements one
           should look at this vector together with vectorStarts and
           vectorLengths. */
   virtual const int *getIndices() const;
@@ -66,33 +52,29 @@ public:
   /** Returns a new matrix in reverse order without gaps */
   virtual ClpMatrixBase *reverseOrderedCopy() const;
   /// Returns number of elements in column part of basis
-  virtual int countBasis(const int *whichColumn,
-    int &numberColumnBasic);
+  virtual int countBasis(const int *whichColumn, int &numberColumnBasic);
   /// Fills in column part of basis
-  virtual void fillBasis(ClpSimplex *model,
-    const int *whichColumn,
-    int &numberColumnBasic,
-    int *row, int *start,
-    int *rowCount, int *columnCount,
-    CoinFactorizationDouble *element);
+  virtual void fillBasis(ClpSimplex *model, const int *whichColumn,
+                         int &numberColumnBasic, int *row, int *start,
+                         int *rowCount, int *columnCount,
+                         CoinFactorizationDouble *element);
   /** Unpacks a column into an CoinIndexedvector
-      */
+   */
   virtual void unpack(const ClpSimplex *model, CoinIndexedVector *rowArray,
-    int column) const;
+                      int column) const;
   /** Unpacks a column into an CoinIndexedvector
       ** in packed foramt
          Note that model is NOT const.  Bounds and objective could
          be modified if doing column generation (just for this variable) */
-  virtual void unpackPacked(ClpSimplex *model,
-    CoinIndexedVector *rowArray,
-    int column) const;
+  virtual void unpackPacked(ClpSimplex *model, CoinIndexedVector *rowArray,
+                            int column) const;
   /** Adds multiple of a column into an CoinIndexedvector
          You can use quickAdd to add to vector */
   virtual void add(const ClpSimplex *model, CoinIndexedVector *rowArray,
-    int column, double multiplier) const;
+                   int column, double multiplier) const;
   /** Adds multiple of a column into an array */
-  virtual void add(const ClpSimplex *model, double *array,
-    int column, double multiplier) const;
+  virtual void add(const ClpSimplex *model, double *array, int column,
+                   double multiplier) const;
   /// Allow any parts of a created CoinMatrix to be deleted
   /// Allow any parts of a created CoinPackedMatrix to be deleted
   virtual void releasePackedMatrix() const {}
@@ -103,40 +85,34 @@ public:
   /** Return <code>y + A * scalar *x</code> in <code>y</code>.
          @pre <code>x</code> must be of size <code>numColumns()</code>
          @pre <code>y</code> must be of size <code>numRows()</code> */
-  virtual void times(double scalar,
-    const double *x, double *y) const;
+  virtual void times(double scalar, const double *x, double *y) const;
   /// And for scaling
-  virtual void times(double scalar,
-    const double *x, double *y,
-    const double *rowScale,
-    const double *columnScale) const;
+  virtual void times(double scalar, const double *x, double *y,
+                     const double *rowScale, const double *columnScale) const;
   /** Return <code>y + x * scalar * A</code> in <code>y</code>.
          @pre <code>x</code> must be of size <code>numRows()</code>
          @pre <code>y</code> must be of size <code>numColumns()</code> */
-  virtual void transposeTimes(double scalar,
-    const double *x, double *y) const;
+  virtual void transposeTimes(double scalar, const double *x, double *y) const;
   /// And for scaling
-  virtual void transposeTimes(double scalar,
-    const double *x, double *y,
-    const double *rowScale,
-    const double *columnScale) const;
+  virtual void transposeTimes(double scalar, const double *x, double *y,
+                              const double *rowScale,
+                              const double *columnScale) const;
 
   using ClpMatrixBase::transposeTimes;
   /** Return <code>x * scalar * A + y</code> in <code>z</code>.
      Can use y as temporary array (will be empty at end)
      Note - If x packed mode - then z packed mode */
   virtual void transposeTimes(const ClpSimplex *model, double scalar,
-    const CoinIndexedVector *x,
-    CoinIndexedVector *y,
-    CoinIndexedVector *z) const;
+                              const CoinIndexedVector *x, CoinIndexedVector *y,
+                              CoinIndexedVector *z) const;
   /** Return <code>x *A</code> in <code>z</code> but
      just for indices in y.
      Note - If x packed mode - then z packed mode
      Squashes small elements and knows about ClpSimplex */
   virtual void subsetTransposeTimes(const ClpSimplex *model,
-    const CoinIndexedVector *x,
-    const CoinIndexedVector *y,
-    CoinIndexedVector *z) const;
+                                    const CoinIndexedVector *x,
+                                    const CoinIndexedVector *y,
+                                    CoinIndexedVector *z) const;
   //@}
 
   /**@name Other */
@@ -148,8 +124,7 @@ public:
   /** Default constructor. */
   ClpDummyMatrix();
   /// Constructor with data
-  ClpDummyMatrix(int numberColumns, int numberRows,
-    int numberElements);
+  ClpDummyMatrix(int numberColumns, int numberRows, int numberElements);
   /** Destructor */
   virtual ~ClpDummyMatrix();
   //@}
@@ -166,7 +141,7 @@ public:
   virtual ClpMatrixBase *clone() const;
   //@}
 
-protected:
+ protected:
   /**@name Data members
         The data members are protected to allow access for derived classes. */
   //@{
@@ -183,4 +158,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

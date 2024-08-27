@@ -8,7 +8,7 @@
 
 #include "ClpDualRowPivot.hpp"
 
-//#############################################################################
+// #############################################################################
 
 /** Dual Row Pivot Dantzig Algorithm Class
 
@@ -17,8 +17,7 @@ This is simplest choice - choose largest infeasibility
 */
 
 class ClpDualRowDantzig : public ClpDualRowPivot {
-
-public:
+ public:
   ///@name Algorithmic methods
   //@{
 
@@ -28,16 +27,15 @@ public:
   /** Updates weights and returns pivot alpha.
          Also does FT update */
   virtual double updateWeights(CoinIndexedVector *input,
-    CoinIndexedVector *spare,
-    CoinIndexedVector *spare2,
-    CoinIndexedVector *updatedColumn);
+                               CoinIndexedVector *spare,
+                               CoinIndexedVector *spare2,
+                               CoinIndexedVector *updatedColumn);
   /** Updates primal solution (and maybe list of candidates)
          Uses input vector which it deletes
          Computes change in objective function
      */
-  virtual void updatePrimalSolution(CoinIndexedVector *input,
-    double theta,
-    double &changeInObjective);
+  virtual void updatePrimalSolution(CoinIndexedVector *input, double theta,
+                                    double &changeInObjective);
   //@}
 
   ///@name Constructors and destructors
@@ -61,7 +59,7 @@ public:
 
   //---------------------------------------------------------------------------
 
-private:
+ private:
   ///@name Private member data
   //@}
 };
@@ -69,4 +67,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -8,7 +8,7 @@
 
 #include "CoinPragma.hpp"
 #include "CoinTypes.hpp"
-//#define CLP_LONG_CHOLESKY 0
+// #define CLP_LONG_CHOLESKY 0
 #ifndef CLP_LONG_CHOLESKY
 #define CLP_LONG_CHOLESKY 0
 #endif
@@ -31,7 +31,7 @@
 "Bad combination of CLP_LONG_CHOLESKY and COIN_LONG_WORK"
 #endif
 #if CLP_LONG_CHOLESKY > 1
-  typedef long double longDouble;
+    typedef long double longDouble;
 #define CHOL_SMALL_VALUE 1.0e-15
 #elif CLP_LONG_CHOLESKY == 1
 typedef double longDouble;
@@ -51,8 +51,7 @@ class ClpMatrixBase;
 */
 
 class ClpCholeskyBase {
-
-public:
+ public:
   /**@name Virtual methods that the derived classes may provide  */
   //@{
   /** Orders rows and saves pointer to matrix.and model.
@@ -64,8 +63,8 @@ public:
   virtual int order(ClpInterior *model);
   /** Does Symbolic factorization given permutation.
          This is called immediately after order.  If user provides this then
-         user must provide factorize and solve.  Otherwise the default factorization is used
-         returns non-zero if not enough memory */
+         user must provide factorize and solve.  Otherwise the default
+     factorization is used returns non-zero if not enough memory */
   virtual int symbolic();
   /** Factorize - filling in rowsDropped and returning number dropped.
          If return code negative then out of memory */
@@ -74,115 +73,66 @@ public:
   virtual void solve(CoinWorkDouble *region);
   /** Uses factorization to solve. - given as if KKT.
       region1 is rows+columns, region2 is rows */
-  virtual void solveKKT(CoinWorkDouble *region1, CoinWorkDouble *region2, const CoinWorkDouble *diagonal,
-    CoinWorkDouble diagonalScaleFactor);
+  virtual void solveKKT(CoinWorkDouble *region1, CoinWorkDouble *region2,
+                        const CoinWorkDouble *diagonal,
+                        CoinWorkDouble diagonalScaleFactor);
 
-private:
+ private:
   /// AMD ordering
   int orderAMD();
 
-public:
+ public:
   //@}
 
   /**@name Gets */
   //@{
   /// status.  Returns status
-  inline int status() const
-  {
-    return status_;
-  }
+  inline int status() const { return status_; }
   /// numberRowsDropped.  Number of rows gone
-  inline int numberRowsDropped() const
-  {
-    return numberRowsDropped_;
-  }
+  inline int numberRowsDropped() const { return numberRowsDropped_; }
   /// reset numberRowsDropped and rowsDropped.
   void resetRowsDropped();
   /// rowsDropped - which rows are gone
-  inline char *rowsDropped() const
-  {
-    return rowsDropped_;
-  }
+  inline char *rowsDropped() const { return rowsDropped_; }
   /// choleskyCondition.
-  inline double choleskyCondition() const
-  {
-    return choleskyCondition_;
-  }
+  inline double choleskyCondition() const { return choleskyCondition_; }
   /// goDense i.e. use dense factoriaztion if > this (default 0.7).
-  inline double goDense() const
-  {
-    return goDense_;
-  }
+  inline double goDense() const { return goDense_; }
   /// goDense i.e. use dense factoriaztion if > this (default 0.7).
-  inline void setGoDense(double value)
-  {
-    goDense_ = value;
-  }
+  inline void setGoDense(double value) { goDense_ = value; }
   /// rank.  Returns rank
-  inline int rank() const
-  {
-    return numberRows_ - numberRowsDropped_;
-  }
+  inline int rank() const { return numberRows_ - numberRowsDropped_; }
   /// Return number of rows
-  inline int numberRows() const
-  {
-    return numberRows_;
-  }
+  inline int numberRows() const { return numberRows_; }
   /// Return size
-  inline int size() const
-  {
-    return sizeFactor_;
-  }
+  inline int size() const { return sizeFactor_; }
   /// Return sparseFactor
-  inline longDouble *sparseFactor() const
-  {
-    return sparseFactor_;
-  }
+  inline longDouble *sparseFactor() const { return sparseFactor_; }
   /// Return diagonal
-  inline longDouble *diagonal() const
-  {
-    return diagonal_;
-  }
+  inline longDouble *diagonal() const { return diagonal_; }
   /// Return workDouble
-  inline longDouble *workDouble() const
-  {
-    return workDouble_;
-  }
+  inline longDouble *workDouble() const { return workDouble_; }
   /// If KKT on
-  inline bool kkt() const
-  {
-    return doKKT_;
-  }
+  inline bool kkt() const { return doKKT_; }
   /// Set KKT
-  inline void setKKT(bool yesNo)
-  {
-    doKKT_ = yesNo;
-  }
+  inline void setKKT(bool yesNo) { doKKT_ = yesNo; }
   /// Set integer parameter
-  inline void setIntegerParameter(int i, int value)
-  {
+  inline void setIntegerParameter(int i, int value) {
     integerParameters_[i] = value;
   }
   /// get integer parameter
-  inline int getIntegerParameter(int i)
-  {
-    return integerParameters_[i];
-  }
+  inline int getIntegerParameter(int i) { return integerParameters_[i]; }
   /// Set double parameter
-  inline void setDoubleParameter(int i, double value)
-  {
+  inline void setDoubleParameter(int i, double value) {
     doubleParameters_[i] = value;
   }
   /// get double parameter
-  inline double getDoubleParameter(int i)
-  {
-    return doubleParameters_[i];
-  }
+  inline double getDoubleParameter(int i) { return doubleParameters_[i]; }
   //@}
 
-public:
+ public:
   /**@name Constructors, destructor
-      */
+   */
   //@{
   /** Constructor which has dense columns activated.
          Default is off. */
@@ -200,25 +150,18 @@ public:
   virtual ClpCholeskyBase *clone() const;
 
   /// Returns type
-  inline int type() const
-  {
+  inline int type() const {
     if (doKKT_)
       return 100;
     else
       return type_;
   }
 
-protected:
+ protected:
   /// Sets type
-  inline void setType(int type)
-  {
-    type_ = type;
-  }
+  inline void setType(int type) { type_ = type; }
   /// model.
-  inline void setModel(ClpInterior *model)
-  {
-    model_ = model;
-  }
+  inline void setModel(ClpInterior *model) { model_ = model; }
   //@}
 
   /**@name Symbolic, factor and solve */
@@ -246,7 +189,7 @@ protected:
   void updateDense(longDouble *d, /*longDouble * work,*/ int *first);
   //@}
 
-protected:
+ protected:
   /**@name Data members
         The data members are protected to allow access for derived classes. */
   //@{
@@ -318,4 +261,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

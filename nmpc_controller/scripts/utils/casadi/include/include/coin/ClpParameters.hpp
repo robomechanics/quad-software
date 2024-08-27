@@ -11,7 +11,7 @@
 */
 enum ClpIntParam {
   /** The maximum number of iterations Clp can execute in the simplex methods
-      */
+   */
   ClpMaxNumIteration = 0,
   /** The maximum number of iterations Clp can execute in hotstart before
          terminating */
@@ -60,7 +60,8 @@ enum ClpDblParam {
   ClpObjOffset,
   /// Maximum time in seconds - after, this action is as max iterations
   ClpMaxSeconds,
-  /// Maximum wallclock running time in seconds - after, this action is as max iterations
+  /// Maximum wallclock running time in seconds - after, this action is as max
+  /// iterations
   ClpMaxWallSeconds,
   /// Tolerance to use in presolve
   ClpPresolveTolerance,
@@ -79,26 +80,20 @@ enum ClpStrParam {
 };
 
 /// Copy (I don't like complexity of Coin version)
-template < class T >
-inline void
-ClpDisjointCopyN(const T *array, const CoinBigIndex size, T *newArray)
-{
-  memcpy(reinterpret_cast< void * >(newArray), array, size * sizeof(T));
+template <class T>
+inline void ClpDisjointCopyN(const T *array, const CoinBigIndex size,
+                             T *newArray) {
+  memcpy(reinterpret_cast<void *>(newArray), array, size * sizeof(T));
 }
 /// And set
-template < class T >
-inline void
-ClpFillN(T *array, const CoinBigIndex size, T value)
-{
+template <class T>
+inline void ClpFillN(T *array, const CoinBigIndex size, T value) {
   CoinBigIndex i;
-  for (i = 0; i < size; i++)
-    array[i] = value;
+  for (i = 0; i < size; i++) array[i] = value;
 }
 /// This returns a non const array filled with input from scalar or actual array
-template < class T >
-inline T *
-ClpCopyOfArray(const T *array, const CoinBigIndex size, T value)
-{
+template <class T>
+inline T *ClpCopyOfArray(const T *array, const CoinBigIndex size, T value) {
   T *arrayNew = new T[size];
   if (array)
     ClpDisjointCopyN(array, size, arrayNew);
@@ -108,10 +103,8 @@ ClpCopyOfArray(const T *array, const CoinBigIndex size, T value)
 }
 
 /// This returns a non const array filled with actual array (or NULL)
-template < class T >
-inline T *
-ClpCopyOfArray(const T *array, const CoinBigIndex size)
-{
+template <class T>
+inline T *ClpCopyOfArray(const T *array, const CoinBigIndex size) {
   if (array) {
     T *arrayNew = new T[size];
     ClpDisjointCopyN(array, size, arrayNew);
@@ -122,11 +115,11 @@ ClpCopyOfArray(const T *array, const CoinBigIndex size)
 }
 /// For a structure to be used by trusted code
 typedef struct {
-  int typeStruct; // allocated as 1,2 etc
+  int typeStruct;  // allocated as 1,2 etc
   int typeCall;
   void *data;
 } ClpTrustedData;
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

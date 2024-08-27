@@ -20,14 +20,13 @@ class ClpConstraint;
 /** This solves non-linear LPs using the primal simplex method
 
     It inherits from ClpSimplexPrimal.  It has no data of its own and
-    is never created - only cast from a ClpSimplexPrimal object at algorithm time.
-    If needed create new class and pass around
+    is never created - only cast from a ClpSimplexPrimal object at algorithm
+   time. If needed create new class and pass around
 
 */
 
 class ClpSimplexNonlinear : public ClpSimplexPrimal {
-
-public:
+ public:
   /**@name Description of algorithm */
   //@{
   /** Primal algorithms for reduced gradient
@@ -40,8 +39,7 @@ public:
          Using a semi-trust region approach as for pooling problem
          This is in because I have it lying around
      */
-  int primalSLP(int numberPasses, double deltaTolerance,
-    int otherOptions = 0);
+  int primalSLP(int numberPasses, double deltaTolerance, int otherOptions = 0);
   /// May use a cut approach for solving any LP
   int primalDualCuts(char *rowsIn, int startUp, int algorithm);
   /** Primal algorithm for nonlinear constraints
@@ -50,18 +48,16 @@ public:
 
      */
   int primalSLP(int numberConstraints, ClpConstraint **constraints,
-    int numberPasses, double deltaTolerance);
+                int numberPasses, double deltaTolerance);
 
   /** Creates direction vector.  note longArray is long enough
          for rows and columns.  If numberNonBasic 0 then is updated
          otherwise mode is ignored and those are used.
          Norms are only for those > 1.0e3*dualTolerance
          If mode is nonzero then just largest dj */
-  void directionVector(CoinIndexedVector *longArray,
-    CoinIndexedVector *spare1, CoinIndexedVector *spare2,
-    int mode,
-    double &normFlagged, double &normUnflagged,
-    int &numberNonBasic);
+  void directionVector(CoinIndexedVector *longArray, CoinIndexedVector *spare1,
+                       CoinIndexedVector *spare2, int mode, double &normFlagged,
+                       double &normUnflagged, int &numberNonBasic);
   /// Main part.
   int whileIterating(int &pivotMode);
   /**
@@ -76,13 +72,9 @@ public:
          3 - if time to re-factorize
          If sequenceIn_ >=0 then that will be incoming variable
      */
-  int pivotColumn(CoinIndexedVector *longArray,
-    CoinIndexedVector *rowArray,
-    CoinIndexedVector *columnArray,
-    CoinIndexedVector *spare,
-    int &pivotMode,
-    double &solutionError,
-    double *array1);
+  int pivotColumn(CoinIndexedVector *longArray, CoinIndexedVector *rowArray,
+                  CoinIndexedVector *columnArray, CoinIndexedVector *spare,
+                  int &pivotMode, double &solutionError, double *array1);
   /**  Refactorizes if necessary
           Checks if finished.  Updates status.
           lastCleaned refers to iteration at which some objective/feasibility
@@ -93,9 +85,9 @@ public:
            - 2 restoring from saved
      */
   void statusOfProblemInPrimal(int &lastCleaned, int type,
-    ClpSimplexProgress *progress,
-    bool doFactorization,
-    double &bestObjectiveWhenFlagged);
+                               ClpSimplexProgress *progress,
+                               bool doFactorization,
+                               double &bestObjectiveWhenFlagged);
   /** Do last half of an iteration.
          Return codes
          Reasons to come out normal mode
@@ -114,4 +106,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -12,41 +12,39 @@
 #define BonArraysHelpers_H
 
 namespace Bonmin {
-template <class X> void
-resizeAndCopyArray(X *& array, unsigned int oldSize, unsigned int newSize){
- if(newSize == 0){
-   if(oldSize > 0){
-     delete [] array;
-     array = NULL;
-   }
-   return;
- }
- X * buffy = new X[newSize];
- if(oldSize > 0){
-   if(oldSize < newSize)
-     CoinCopyN(array, oldSize, buffy);
-   else
-     CoinCopyN(array, newSize, buffy);
-   delete [] array;
- }
- array = buffy;
+template <class X>
+void resizeAndCopyArray(X*& array, unsigned int oldSize, unsigned int newSize) {
+  if (newSize == 0) {
+    if (oldSize > 0) {
+      delete[] array;
+      array = NULL;
+    }
+    return;
+  }
+  X* buffy = new X[newSize];
+  if (oldSize > 0) {
+    if (oldSize < newSize)
+      CoinCopyN(array, oldSize, buffy);
+    else
+      CoinCopyN(array, newSize, buffy);
+    delete[] array;
+  }
+  array = buffy;
 }
 
-template <class X> void
-resizeAndCopyArray(X *& array, unsigned int oldSize, unsigned int newSize,
-                   unsigned int& capacity){
- if(newSize > capacity){
-   X * buffy = new X[newSize];
-   if(oldSize > 0){
-     CoinCopyN(array, oldSize, buffy);
-     delete [] array;
+template <class X>
+void resizeAndCopyArray(X*& array, unsigned int oldSize, unsigned int newSize,
+                        unsigned int& capacity) {
+  if (newSize > capacity) {
+    X* buffy = new X[newSize];
+    if (oldSize > 0) {
+      CoinCopyN(array, oldSize, buffy);
+      delete[] array;
     }
-   array = buffy;
-  }
-  else {
+    array = buffy;
+  } else {
     newSize = oldSize;
   }
 }
-}// Ends Bonmin namespace
+}  // namespace Bonmin
 #endif
-

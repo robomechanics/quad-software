@@ -82,10 +82,9 @@ struct TensorBlockResourceRequirements {
   // which is implicitly invoked in the "merge" / "any" routines. else HIPCC
   // errors out complaining about the lack of a matching constructor
   EIGEN_DEVICE_FUNC
-  TensorBlockResourceRequirements(TensorBlockShapeType shape_type_, size_t size_,
-				  TensorOpCost cost_)
-    : shape_type(shape_type_), size(size_), cost_per_coeff(cost_)
-  {}
+  TensorBlockResourceRequirements(TensorBlockShapeType shape_type_,
+                                  size_t size_, TensorOpCost cost_)
+      : shape_type(shape_type_), size(size_), cost_per_coeff(cost_) {}
 #endif
 
   template <typename Scalar>

@@ -23,14 +23,14 @@
   drop_empty_cols_action. Correction of the objective function is done there.
 */
 class remove_fixed_action : public CoinPresolveAction {
-public:
+ public:
   /*! \brief Structure to hold information necessary to reintroduce a
-	     column into the problem representation.
+             column into the problem representation.
   */
   struct action {
-    int col; ///< column index of variable
-    int start; ///< start of coefficients in #colels_ and #colrows_
-    double sol; ///< value of variable
+    int col;     ///< column index of variable
+    int start;   ///< start of coefficients in #colels_ and #colrows_
+    double sol;  ///< value of variable
   };
   /// Array of row indices for coefficients of excised columns
   int *colrows_;
@@ -41,15 +41,12 @@ public:
   /// Vector specifying variable(s) affected by this object
   action *actions_;
 
-private:
+ private:
   /*! \brief Constructor */
-  remove_fixed_action(int nactions,
-    action *actions,
-    double *colels,
-    int *colrows,
-    const CoinPresolveAction *next);
+  remove_fixed_action(int nactions, action *actions, double *colels,
+                      int *colrows, const CoinPresolveAction *next);
 
-public:
+ public:
   /// Returns string "remove_fixed_action".
   const char *name() const;
 
@@ -61,9 +58,8 @@ public:
     by \p next).
   */
   static const remove_fixed_action *presolve(CoinPresolveMatrix *prob,
-    int *fcols,
-    int nfcols,
-    const CoinPresolveAction *next);
+                                             int *fcols, int nfcols,
+                                             const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -79,7 +75,7 @@ public:
 */
 
 const CoinPresolveAction *remove_fixed(CoinPresolveMatrix *prob,
-  const CoinPresolveAction *next);
+                                       const CoinPresolveAction *next);
 
 /*! \class make_fixed_action
     \brief Fix a variable at a specified bound.
@@ -91,11 +87,10 @@ const CoinPresolveAction *remove_fixed(CoinPresolveMatrix *prob,
   correct, consider remove_fixed_action.
 */
 class make_fixed_action : public CoinPresolveAction {
-
   /// Structure to preserve the bound overwritten when fixing a variable
   struct action {
-    double bound; ///< Value of bound overwritten to fix variable.
-    int col; ///< column index of variable
+    double bound;  ///< Value of bound overwritten to fix variable.
+    int col;       ///< column index of variable
   };
 
   /// Number of preserved bounds
@@ -110,23 +105,21 @@ class make_fixed_action : public CoinPresolveAction {
   const bool fix_to_lower_;
 
   /*! \brief The postsolve object with the information required to repopulate
-  	     the fixed columns.
+             the fixed columns.
   */
   const remove_fixed_action *faction_;
 
   /*! \brief Constructor */
   make_fixed_action(int nactions, const action *actions, bool fix_to_lower,
-    const remove_fixed_action *faction,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-    , fix_to_lower_(fix_to_lower)
-    , faction_(faction)
-  {
-  }
+                    const remove_fixed_action *faction,
+                    const CoinPresolveAction *next)
+      : CoinPresolveAction(next),
+        nactions_(nactions),
+        actions_(actions),
+        fix_to_lower_(fix_to_lower),
+        faction_(faction) {}
 
-public:
+ public:
   /// Returns string "make_fixed_action".
   const char *name() const;
 
@@ -138,10 +131,9 @@ public:
     the list of postsolve objects (\p next), and return the object.
   */
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    int *fcols,
-    int nfcols,
-    bool fix_to_lower,
-    const CoinPresolveAction *next);
+                                            int *fcols, int nfcols,
+                                            bool fix_to_lower,
+                                            const CoinPresolveAction *next);
 
   /*! \brief Postsolve (unfix variables)
 
@@ -150,8 +142,7 @@ public:
   void postsolve(CoinPostsolveMatrix *prob) const;
 
   /// Destructor
-  virtual ~make_fixed_action()
-  {
+  virtual ~make_fixed_action() {
     deleteAction(actions_, action *);
     delete faction_;
   }
@@ -165,7 +156,7 @@ public:
 */
 
 const CoinPresolveAction *make_fixed(CoinPresolveMatrix *prob,
-  const CoinPresolveAction *next);
+                                     const CoinPresolveAction *next);
 
 /*! \brief Transfer costs from singleton variables
     \relates make_fixed_action
@@ -182,4 +173,4 @@ void transferCosts(CoinPresolveMatrix *prob);
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

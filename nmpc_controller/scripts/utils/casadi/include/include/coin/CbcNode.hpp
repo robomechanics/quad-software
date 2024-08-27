@@ -9,12 +9,12 @@
 #include <string>
 #include <vector>
 
-#include "CoinWarmStartBasis.hpp"
-#include "CoinSearchTree.hpp"
 #include "CbcBranchBase.hpp"
-#include "CbcNodeInfo.hpp"
 #include "CbcFullNodeInfo.hpp"
+#include "CbcNodeInfo.hpp"
 #include "CbcPartialNodeInfo.hpp"
+#include "CoinSearchTree.hpp"
+#include "CoinWarmStartBasis.hpp"
 
 class OsiSolverInterface;
 class OsiSolverBranch;
@@ -47,8 +47,7 @@ class CbcGeneralBranchingObject;
 */
 
 class CbcNode : public CoinTreeNode {
-
-public:
+ public:
   /// Default Constructor
   CbcNode();
 
@@ -73,18 +72,16 @@ public:
       If lastNode == NULL, a CbcFullNodeInfo object will be created. All
       parameters except \p model are unused.
 
-      If lastNode != NULL, a CbcPartialNodeInfo object will be created. Basis and
-      bounds information will be stored in the form of differences between the
-      parent subproblem and this subproblem.
-      (More precisely, \p lastws, \p lastUpper, \p lastLower,
-      \p numberOldActiveCuts, and \p numberNewCuts are used.)
+      If lastNode != NULL, a CbcPartialNodeInfo object will be created. Basis
+     and bounds information will be stored in the form of differences between
+     the parent subproblem and this subproblem. (More precisely, \p lastws, \p
+     lastUpper, \p lastLower, \p numberOldActiveCuts, and \p numberNewCuts are
+     used.)
     */
-  void
-  createInfo(CbcModel *model,
-    CbcNode *lastNode,
-    const CoinWarmStartBasis *lastws,
-    const double *lastLower, const double *lastUpper,
-    int numberOldActiveCuts, int numberNewCuts);
+  void createInfo(CbcModel *model, CbcNode *lastNode,
+                  const CoinWarmStartBasis *lastws, const double *lastLower,
+                  const double *lastUpper, int numberOldActiveCuts,
+                  int numberNewCuts);
 
   /** Create a branching object for the node
 
@@ -106,9 +103,7 @@ public:
         <li> -2: An infeasible object was discovered
       </ul>
     */
-  int chooseBranch(CbcModel *model,
-    CbcNode *lastNode,
-    int numberPassesLeft);
+  int chooseBranch(CbcModel *model, CbcNode *lastNode, int numberPassesLeft);
   /** Create a branching object for the node - when dynamic pseudo costs
 
       The routine scans the object list of the model and selects a set of
@@ -131,13 +126,12 @@ public:
         <li>  0: A branching object has been installed
         <li> -1: A monotone object was discovered
         <li> -2: An infeasible object was discovered
-        <li> >0: Number of quich branching objects (and branches will be non NULL)
+        <li> >0: Number of quich branching objects (and branches will be non
+     NULL)
       </ul>
     */
-  int chooseDynamicBranch(CbcModel *model,
-    CbcNode *lastNode,
-    OsiSolverBranch *&branches,
-    int numberPassesLeft);
+  int chooseDynamicBranch(CbcModel *model, CbcNode *lastNode,
+                          OsiSolverBranch *&branches, int numberPassesLeft);
   /** Create a branching object for the node
 
       The routine scans the object list of the model and selects a set of
@@ -164,10 +158,8 @@ public:
         <li> -2: An infeasible object was discovered
       </ul>
     */
-  int chooseOsiBranch(CbcModel *model,
-    CbcNode *lastNode,
-    OsiBranchingInformation *usefulInfo,
-    int branchState);
+  int chooseOsiBranch(CbcModel *model, CbcNode *lastNode,
+                      OsiBranchingInformation *usefulInfo, int branchState);
   /** Create a branching object for the node
 
       The routine scans the object list of the model and selects a set of
@@ -183,8 +175,7 @@ public:
         <li> -2: An infeasible object was discovered
       </ul>
     */
-  int chooseClpBranch(CbcModel *model,
-    CbcNode *lastNode);
+  int chooseClpBranch(CbcModel *model, CbcNode *lastNode);
   int analyze(CbcModel *model, double *results);
   /// Decrement active cut counts
   void decrementCuts(int change = 1);
@@ -212,23 +203,13 @@ public:
         Can change objective etc */
   double checkIsCutoff(double cutoff);
   // Information to make basis and bounds
-  inline CbcNodeInfo *nodeInfo() const
-  {
-    return nodeInfo_;
-  }
+  inline CbcNodeInfo *nodeInfo() const { return nodeInfo_; }
 
   // Objective value
-  inline double objectiveValue() const
-  {
-    return objectiveValue_;
-  }
-  inline void setObjectiveValue(double value)
-  {
-    objectiveValue_ = value;
-  }
+  inline double objectiveValue() const { return objectiveValue_; }
+  inline void setObjectiveValue(double value) { objectiveValue_ = value; }
   /// Number of arms defined for the attached OsiBranchingObject.
-  inline int numberBranches() const
-  {
+  inline int numberBranches() const {
     if (branch_)
       return (branch_->numberBranches());
     else
@@ -243,113 +224,67 @@ public:
     */
   int way() const;
   /// Depth in branch-and-cut search tree
-  inline int depth() const
-  {
-    return depth_;
-  }
+  inline int depth() const { return depth_; }
   /// Set depth in branch-and-cut search tree
-  inline void setDepth(int value)
-  {
-    depth_ = value;
-  }
+  inline void setDepth(int value) { depth_ = value; }
   /// Get the number of objects unsatisfied at this node.
-  inline int numberUnsatisfied() const
-  {
-    return numberUnsatisfied_;
-  }
+  inline int numberUnsatisfied() const { return numberUnsatisfied_; }
   /// Set the number of objects unsatisfied at this node.
-  inline void setNumberUnsatisfied(int value)
-  {
-    numberUnsatisfied_ = value;
-  }
+  inline void setNumberUnsatisfied(int value) { numberUnsatisfied_ = value; }
   /// Get sum of "infeasibilities" reported by each object
-  inline double sumInfeasibilities() const
-  {
-    return sumInfeasibilities_;
-  }
+  inline double sumInfeasibilities() const { return sumInfeasibilities_; }
   /// Set sum of "infeasibilities" reported by each object
-  inline void setSumInfeasibilities(double value)
-  {
+  inline void setSumInfeasibilities(double value) {
     sumInfeasibilities_ = value;
   }
   // Guessed objective value (for solution)
-  inline double guessedObjectiveValue() const
-  {
-    return guessedObjectiveValue_;
-  }
-  inline void setGuessedObjectiveValue(double value)
-  {
+  inline double guessedObjectiveValue() const { return guessedObjectiveValue_; }
+  inline void setGuessedObjectiveValue(double value) {
     guessedObjectiveValue_ = value;
   }
   /// Branching object for this node
-  inline const OsiBranchingObject *branchingObject() const
-  {
-    return branch_;
-  }
+  inline const OsiBranchingObject *branchingObject() const { return branch_; }
   /// Modifiable branching object for this node
-  inline OsiBranchingObject *modifiableBranchingObject() const
-  {
+  inline OsiBranchingObject *modifiableBranchingObject() const {
     return branch_;
   }
   /// Set branching object for this node (takes ownership)
-  inline void setBranchingObject(OsiBranchingObject *branchingObject)
-  {
+  inline void setBranchingObject(OsiBranchingObject *branchingObject) {
     branch_ = branchingObject;
   }
   /// The node number
-  inline int nodeNumber() const
-  {
-    return nodeNumber_;
-  }
-  inline void setNodeNumber(int node)
-  {
-    nodeNumber_ = node;
-  }
+  inline int nodeNumber() const { return nodeNumber_; }
+  inline void setNodeNumber(int node) { nodeNumber_ = node; }
   /// Returns true if on tree
-  inline bool onTree() const
-  {
-    return (state_ & 1) != 0;
-  }
+  inline bool onTree() const { return (state_ & 1) != 0; }
   /// Sets true if on tree
-  inline void setOnTree(bool yesNo)
-  {
+  inline void setOnTree(bool yesNo) {
     if (yesNo)
       state_ |= 1;
     else
       state_ &= ~1;
   }
   /// Returns true if active
-  inline bool active() const
-  {
-    return (state_ & 2) != 0;
-  }
+  inline bool active() const { return (state_ & 2) != 0; }
   /// Sets true if active
-  inline void setActive(bool yesNo)
-  {
+  inline void setActive(bool yesNo) {
     if (yesNo)
       state_ |= 2;
     else
       state_ &= ~2;
   }
   /// Get state (really for debug)
-  inline int getState() const
-  {
-    return state_;
-  }
+  inline int getState() const { return state_; }
   /// Set state (really for debug)
-  inline void setState(int value)
-  {
-    state_ = value;
-  }
+  inline void setState(int value) { state_ = value; }
   /// Print
   void print() const;
   /// Debug
-  inline void checkInfo() const
-  {
+  inline void checkInfo() const {
     assert(nodeInfo_->numberBranchesLeft() == branch_->numberBranchesLeft());
   }
 
-private:
+ private:
   // Data
   /// Information to make basis and bounds
   CbcNodeInfo *nodeInfo_;
@@ -377,4 +312,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -9,15 +9,14 @@
 #include "ClpObjective.hpp"
 #include "CoinPackedMatrix.hpp"
 
-//#############################################################################
+// #############################################################################
 
 /** Ampl Objective Class
 
 */
 
 class ClpAmplObjective : public ClpObjective {
-
-public:
+ public:
   ///@name Stuff
   //@{
 
@@ -27,29 +26,26 @@ public:
         Uses model for scaling
         includeLinear 0 - no, 1 as is, 2 as feasible
     */
-  virtual double *gradient(const ClpSimplex *model,
-    const double *solution, double &offset, bool refresh,
-    int includeLinear = 2);
+  virtual double *gradient(const ClpSimplex *model, const double *solution,
+                           double &offset, bool refresh, int includeLinear = 2);
   /// Resize objective
   /** Returns reduced gradient.Returns an offset (to be added to current one).
-    */
+   */
   virtual double reducedGradient(ClpSimplex *model, double *region,
-    bool useFeasibleCosts);
+                                 bool useFeasibleCosts);
   /** Returns step length which gives minimum of objective for
         solution + theta * change vector up to maximum theta.
 
         arrays are numberColumns+numberRows
         Also sets current objective, predicted and at maximumTheta
     */
-  virtual double stepLength(ClpSimplex *model,
-    const double *solution,
-    const double *change,
-    double maximumTheta,
-    double &currentObj,
-    double &predictedObj,
-    double &thetaObj);
+  virtual double stepLength(ClpSimplex *model, const double *solution,
+                            const double *change, double maximumTheta,
+                            double &currentObj, double &predictedObj,
+                            double &thetaObj);
   /// Return objective value (without any ClpModel offset) (model may be NULL)
-  virtual double objectiveValue(const ClpSimplex *model, const double *solution) const;
+  virtual double objectiveValue(const ClpSimplex *model,
+                                const double *solution) const;
   virtual void resize(int newNumberColumns);
   /// Delete columns in  objective
   virtual void deleteSome(int numberToDelete, const int *which);
@@ -73,7 +69,7 @@ public:
   ClpAmplObjective(void *amplInfo);
 
   /** Copy constructor .
-    */
+   */
   ClpAmplObjective(const ClpAmplObjective &rhs);
 
   /// Assignment operator
@@ -94,7 +90,7 @@ public:
 
   //---------------------------------------------------------------------------
 
-private:
+ private:
   ///@name Private member data
   /// Saved offset
   double offset_;
@@ -110,4 +106,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

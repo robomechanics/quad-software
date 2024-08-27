@@ -1316,5 +1316,19 @@ SOFTWARE.
     <plugin filename="libground_truth_estimator.so" name="ground_truth_estimator">
       <updateRateHZ>500.0</updateRateHZ>
     </plugin>
+    <!-- <plugin name="apply_wrench_plugin" filename="libgazebo_ros_apply_wrench.so">
+    <body_name>body</body_name>
+    <robot_namespace>/robot_1</robot_namespace>
+  </plugin> -->
+    <plugin name="apply_force_plugin" filename="libgazebo_ros_force.so">
+      <ros>
+        <namespace>/robot_1</namespace>
+        <remapping>apply_force:=/robot_1/apply_force</remapping>
+      </ros>
+      <bodyName>body</bodyName>
+      <force_frame>body</force_frame>
+      <topicName>apply_force</topicName>
+      <!-- <frame_name>map</frame_name> -->
+    </plugin>
   </model>
 </sdf>

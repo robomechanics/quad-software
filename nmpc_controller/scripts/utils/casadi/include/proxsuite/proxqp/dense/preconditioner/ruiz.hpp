@@ -7,17 +7,16 @@
 #ifndef PROXSUITE_PROXQP_DENSE_PRECOND_RUIZ_HPP
 #define PROXSUITE_PROXQP_DENSE_PRECOND_RUIZ_HPP
 
-#include "proxsuite/proxqp/dense/views.hpp"
-#include "proxsuite/proxqp/dense/fwd.hpp"
-#include <proxsuite/linalg/dense/core.hpp>
-#include <ostream>
-
 #include <Eigen/Core>
+#include <ostream>
+#include <proxsuite/linalg/dense/core.hpp>
+
+#include "proxsuite/proxqp/dense/fwd.hpp"
+#include "proxsuite/proxqp/dense/views.hpp"
 
 namespace proxsuite {
 namespace proxqp {
-enum struct Symmetry
-{
+enum struct Symmetry {
   general,
   lower,
   upper,
@@ -25,18 +24,11 @@ enum struct Symmetry
 namespace dense {
 namespace detail {
 
-template<typename T>
-auto
-ruiz_scale_qp_in_place( //
-  VectorViewMut<T> delta_,
-  std::ostream* logger_ptr,
-  QpViewBoxMut<T> qp,
-  T epsilon,
-  isize max_iter,
-  Symmetry sym,
-  proxsuite::linalg::veg::dynstack::DynStackMut stack) -> T
-{
-
+template <typename T>
+auto ruiz_scale_qp_in_place(  //
+    VectorViewMut<T> delta_, std::ostream* logger_ptr, QpViewBoxMut<T> qp,
+    T epsilon, isize max_iter, Symmetry sym,
+    proxsuite::linalg::veg::dynstack::DynStackMut stack) -> T {
   T c(1);
   auto S = delta_.to_eigen();
 
@@ -68,12 +60,12 @@ ruiz_scale_qp_in_place( //
 
   while (infty_norm((1 - delta.array()).matrix()) > epsilon) {
     if (logger_ptr != nullptr) {
-      *logger_ptr                                   //
-        << "j : "                                   //
-        << iter                                     //
-        << " ; error : "                            //
-        << infty_norm((1 - delta.array()).matrix()) //
-        << "\n\n";
+      *logger_ptr                                      //
+          << "j : "                                    //
+          << iter                                      //
+          << " ; error : "                             //
+          << infty_norm((1 - delta.array()).matrix())  //
+          << "\n\n";
     }
     if (iter == max_iter) {
       break;
@@ -85,12 +77,12 @@ ruiz_scale_qp_in_place( //
     {
       for (isize k = 0; k < n; ++k) {
         switch (sym) {
-          case Symmetry::upper: { // upper triangular part
+          case Symmetry::upper: {  // upper triangular part
             T aux = sqrt(std::max({
-              infty_norm(H.col(k).head(k)),
-              infty_norm(H.row(k).tail(n - k)),
-              n_eq > 0 ? infty_norm(A.col(k)) : T(0),
-              n_in > 0 ? infty_norm(C.col(k)) : T(0),
+                infty_norm(H.col(k).head(k)),
+                infty_norm(H.row(k).tail(n - k)),
+                n_eq > 0 ? infty_norm(A.col(k)) : T(0),
+                n_in > 0 ? infty_norm(C.col(k)) : T(0),
             }));
             if (aux == T(0)) {
               delta(k) = T(1);
@@ -99,13 +91,13 @@ ruiz_scale_qp_in_place( //
             }
             break;
           }
-          case Symmetry::lower: { // lower triangular part
+          case Symmetry::lower: {  // lower triangular part
 
             T aux = sqrt(std::max({
-              infty_norm(H.col(k).head(k)),
-              infty_norm(H.col(k).tail(n - k)),
-              n_eq > 0 ? infty_norm(A.col(k)) : T(0),
-              n_in > 0 ? infty_norm(C.col(k)) : T(0),
+                infty_norm(H.col(k).head(k)),
+                infty_norm(H.col(k).tail(n - k)),
+                n_eq > 0 ? infty_norm(A.col(k)) : T(0),
+                n_in > 0 ? infty_norm(C.col(k)) : T(0),
             }));
             if (aux == T(0)) {
               delta(k) = T(1);
@@ -115,11 +107,10 @@ ruiz_scale_qp_in_place( //
             break;
           }
           case Symmetry::general: {
-
             T aux = sqrt(std::max({
-              infty_norm(H.col(k)),
-              n_eq > 0 ? infty_norm(A.col(k)) : T(0),
-              n_in > 0 ? infty_norm(C.col(k)) : T(0),
+                infty_norm(H.col(k)),
+                n_eq > 0 ? infty_norm(A.col(k)) : T(0),
+                n_in > 0 ? infty_norm(C.col(k)) : T(0),
             }));
             if (aux == T(0)) {
               delta(k) = T(1);
@@ -149,7 +140,6 @@ ruiz_scale_qp_in_place( //
       }
     }
     {
-
       // normalize A and C
       A = delta.segment(n, n_eq).asDiagonal() * A * delta.head(n).asDiagonal();
       C = delta.tail(n_in).asDiagonal() * C * delta.head(n).asDiagonal();
@@ -215,9 +205,9 @@ ruiz_scale_qp_in_place( //
         case Symmetry::general: {
           // all matrix
           gamma =
-            1 /
-            std::max(T(1),
-                     (H.colwise().template lpNorm<Eigen::Infinity>()).mean());
+              1 /
+              std::max(T(1),
+                       (H.colwise().template lpNorm<Eigen::Infinity>()).mean());
           break;
         }
         default:
@@ -227,19 +217,18 @@ ruiz_scale_qp_in_place( //
       g *= gamma;
       H *= gamma;
 
-      S.array() *= delta.array(); // coefficientwise product
+      S.array() *= delta.array();  // coefficientwise product
       c *= gamma;
     }
   }
   return c;
 }
-} // namespace detail
+}  // namespace detail
 
 namespace preconditioner {
 
-template<typename T>
-struct RuizEquilibration
-{
+template <typename T>
+struct RuizEquilibration {
   Vec<T> delta;
   T c;
   isize dim;
@@ -258,26 +247,21 @@ struct RuizEquilibration
    * @param sym_ symetry option format of quadratic cost matrix.
    * @param logger parameter for printing or not intermediary results.
    */
-  explicit RuizEquilibration(isize dim_,
-                             isize n_eq_in,
-                             T epsilon_ = T(1e-3),
+  explicit RuizEquilibration(isize dim_, isize n_eq_in, T epsilon_ = T(1e-3),
                              i64 max_iter_ = 10,
                              Symmetry sym_ = Symmetry::general,
                              std::ostream* logger = nullptr)
-    : delta(Vec<T>::Ones(dim_ + n_eq_in))
-    , c(1)
-    , dim(dim_)
-    , epsilon(epsilon_)
-    , max_iter(max_iter_)
-    , sym(sym_)
-    , logger_ptr(logger)
-  {
-  }
+      : delta(Vec<T>::Ones(dim_ + n_eq_in)),
+        c(1),
+        dim(dim_),
+        epsilon(epsilon_),
+        max_iter(max_iter_),
+        sym(sym_),
+        logger_ptr(logger) {}
   /*!
    * Prints ruiz equilibrator scaling variables.
    */
-  void print() const
-  {
+  void print() const {
     // CHANGE: endl to newline
     *logger_ptr << " delta : " << delta << "\n\n";
     *logger_ptr << " c : " << c << "\n\n";
@@ -289,12 +273,9 @@ struct RuizEquilibration
    * @param n_eq number of equality constraints.
    * @param n_in number of inequality constraints.
    */
-  static auto scale_qp_in_place_req(proxsuite::linalg::veg::Tag<T> tag,
-                                    isize n,
-                                    isize n_eq,
-                                    isize n_in)
-    -> proxsuite::linalg::veg::dynstack::StackReq
-  {
+  static auto scale_qp_in_place_req(proxsuite::linalg::veg::Tag<T> tag, isize n,
+                                    isize n_eq, isize n_in)
+      -> proxsuite::linalg::veg::dynstack::StackReq {
     return proxsuite::linalg::dense::temp_vec_req(tag, n + n_eq + n_in);
   }
 
@@ -312,23 +293,15 @@ struct RuizEquilibration
    * @param settings solver's settings.
    * @param stack stack variable used by the equilibrator.
    */
-  void scale_qp_in_place(QpViewBoxMut<T> qp,
-                         bool execute_preconditioner,
-                         const isize max_iter,
-                         const T epsilon,
-                         proxsuite::linalg::veg::dynstack::DynStackMut stack)
-  {
+  void scale_qp_in_place(QpViewBoxMut<T> qp, bool execute_preconditioner,
+                         const isize max_iter, const T epsilon,
+                         proxsuite::linalg::veg::dynstack::DynStackMut stack) {
     if (execute_preconditioner) {
       delta.setOnes();
-      c = detail::ruiz_scale_qp_in_place({ proxqp::from_eigen, delta },
-                                         logger_ptr,
-                                         qp,
-                                         epsilon,
-                                         max_iter,
-                                         sym,
+      c = detail::ruiz_scale_qp_in_place({proxqp::from_eigen, delta},
+                                         logger_ptr, qp, epsilon, max_iter, sym,
                                          stack);
     } else {
-
       auto H = qp.H.to_eigen();
       auto g = qp.g.to_eigen();
       auto A = qp.A.to_eigen();
@@ -395,11 +368,8 @@ struct RuizEquilibration
    * @param tmp_delta_preallocated temporary variable used for performing the
    * equilibration.
    */
-  void scale_qp(const QpViewBox<T> qp,
-                QpViewBoxMut<T> scaled_qp,
-                VectorViewMut<T> tmp_delta_preallocated) const
-  {
-
+  void scale_qp(const QpViewBox<T> qp, QpViewBoxMut<T> scaled_qp,
+                VectorViewMut<T> tmp_delta_preallocated) const {
     /*
      * scaled_qp is scaled, whereas first qp is not
      * the procedure computes as well equilibration parameters using default
@@ -420,8 +390,7 @@ struct RuizEquilibration
    * Scales a primal variable in place.
    * @param primal primal variable.
    */
-  void scale_primal_in_place(VectorViewMut<T> primal) const
-  {
+  void scale_primal_in_place(VectorViewMut<T> primal) const {
     primal.to_eigen().array() /= delta.array().head(dim);
   }
   /*!
@@ -429,8 +398,7 @@ struct RuizEquilibration
    * @param dual dual variable (includes all equalities and inequalities
    * constraints).
    */
-  void scale_dual_in_place(VectorViewMut<T> dual) const
-  {
+  void scale_dual_in_place(VectorViewMut<T> dual) const {
     dual.to_eigen().array() = dual.as_const().to_eigen().array() /
                               delta.tail(delta.size() - dim).array() * c;
   }
@@ -438,18 +406,16 @@ struct RuizEquilibration
    * Scales a dual equality constrained variable in place.
    * @param dual dual variable (includes equalities constraints only).
    */
-  void scale_dual_in_place_eq(VectorViewMut<T> dual) const
-  {
+  void scale_dual_in_place_eq(VectorViewMut<T> dual) const {
     dual.to_eigen().array() =
-      dual.as_const().to_eigen().array() /
-      delta.middleRows(dim, dual.to_eigen().size()).array() * c;
+        dual.as_const().to_eigen().array() /
+        delta.middleRows(dim, dual.to_eigen().size()).array() * c;
   }
   /*!
    * Scales a dual inequality constrained variable in place.
    * @param dual dual variable (includes inequalities constraints only).
    */
-  void scale_dual_in_place_in(VectorViewMut<T> dual) const
-  {
+  void scale_dual_in_place_in(VectorViewMut<T> dual) const {
     dual.to_eigen().array() = dual.as_const().to_eigen().array() /
                               delta.tail(dual.to_eigen().size()).array() * c;
   }
@@ -457,16 +423,14 @@ struct RuizEquilibration
    * Unscales a primal variable in place.
    * @param primal primal variable.
    */
-  void unscale_primal_in_place(VectorViewMut<T> primal) const
-  {
+  void unscale_primal_in_place(VectorViewMut<T> primal) const {
     primal.to_eigen().array() *= delta.array().head(dim);
   }
   /*!
    * Unscales a dual variable in place.
    * @param dual dual variable (includes equalities constraints only).
    */
-  void unscale_dual_in_place(VectorViewMut<T> dual) const
-  {
+  void unscale_dual_in_place(VectorViewMut<T> dual) const {
     dual.to_eigen().array() = dual.as_const().to_eigen().array() *
                               delta.tail(delta.size() - dim).array() / c;
   }
@@ -474,18 +438,16 @@ struct RuizEquilibration
    * Unscales a dual equality constrained variable in place.
    * @param dual dual variable (includes equalities constraints only).
    */
-  void unscale_dual_in_place_eq(VectorViewMut<T> dual) const
-  {
+  void unscale_dual_in_place_eq(VectorViewMut<T> dual) const {
     dual.to_eigen().array() =
-      dual.as_const().to_eigen().array() *
-      delta.middleRows(dim, dual.to_eigen().size()).array() / c;
+        dual.as_const().to_eigen().array() *
+        delta.middleRows(dim, dual.to_eigen().size()).array() / c;
   }
   /*!
    * Unscales a dual inequality constrained variable in place.
    * @param dual dual variable (includes inequalities constraints only).
    */
-  void unscale_dual_in_place_in(VectorViewMut<T> dual) const
-  {
+  void unscale_dual_in_place_in(VectorViewMut<T> dual) const {
     dual.to_eigen().array() = dual.as_const().to_eigen().array() *
                               delta.tail(dual.to_eigen().size()).array() / c;
   }
@@ -495,8 +457,7 @@ struct RuizEquilibration
    * @param primal primal residual (includes equality and inequality
    * constraints)
    */
-  void scale_primal_residual_in_place(VectorViewMut<T> primal) const
-  {
+  void scale_primal_residual_in_place(VectorViewMut<T> primal) const {
     primal.to_eigen().array() *= delta.tail(delta.size() - dim).array();
   }
 
@@ -504,26 +465,23 @@ struct RuizEquilibration
    * Scales a primal equality constraint residual in place.
    * @param primal primal equality constraint residual.
    */
-  void scale_primal_residual_in_place_eq(VectorViewMut<T> primal_eq) const
-  {
+  void scale_primal_residual_in_place_eq(VectorViewMut<T> primal_eq) const {
     primal_eq.to_eigen().array() *=
-      delta.middleRows(dim, primal_eq.to_eigen().size()).array();
+        delta.middleRows(dim, primal_eq.to_eigen().size()).array();
   }
   /*!
    * Scales a primal inequality constraint residual in place.
    * @param primal primal inequality constraint residual.
    */
-  void scale_primal_residual_in_place_in(VectorViewMut<T> primal_in) const
-  {
+  void scale_primal_residual_in_place_in(VectorViewMut<T> primal_in) const {
     primal_in.to_eigen().array() *=
-      delta.tail(primal_in.to_eigen().size()).array();
+        delta.tail(primal_in.to_eigen().size()).array();
   }
   /*!
    * Scales a dual residual in place.
    * @param dual dual residual.
    */
-  void scale_dual_residual_in_place(VectorViewMut<T> dual) const
-  {
+  void scale_dual_residual_in_place(VectorViewMut<T> dual) const {
     dual.to_eigen().array() *= delta.head(dim).array() * c;
   }
   /*!
@@ -531,41 +489,37 @@ struct RuizEquilibration
    * @param primal primal residual (includes equality and inequality
    * constraints).
    */
-  void unscale_primal_residual_in_place(VectorViewMut<T> primal) const
-  {
+  void unscale_primal_residual_in_place(VectorViewMut<T> primal) const {
     primal.to_eigen().array() /= delta.tail(delta.size() - dim).array();
   }
   /*!
    * Unscales a primal equality constraint residual in place.
    * @param primal primal equality constraint residual.
    */
-  void unscale_primal_residual_in_place_eq(VectorViewMut<T> primal_eq) const
-  {
+  void unscale_primal_residual_in_place_eq(VectorViewMut<T> primal_eq) const {
     primal_eq.to_eigen().array() /=
-      delta.middleRows(dim, primal_eq.to_eigen().size()).array();
+        delta.middleRows(dim, primal_eq.to_eigen().size()).array();
   }
   /*!
    * Unscales a primal inequality constraint residual in place.
    * @param primal primal inequality constraint residual.
    */
-  void unscale_primal_residual_in_place_in(VectorViewMut<T> primal_in) const
-  {
+  void unscale_primal_residual_in_place_in(VectorViewMut<T> primal_in) const {
     primal_in.to_eigen().array() /=
-      delta.tail(primal_in.to_eigen().size()).array();
+        delta.tail(primal_in.to_eigen().size()).array();
   }
   /*!
    * Unscales a dual residual in place.
    * @param dual dual residual.
    */
-  void unscale_dual_residual_in_place(VectorViewMut<T> dual) const
-  {
+  void unscale_dual_residual_in_place(VectorViewMut<T> dual) const {
     dual.to_eigen().array() /= delta.head(dim).array() * c;
   }
 };
 
-} // namespace preconditioner
-} // namespace dense
-} // namespace proxqp
-} // namespace proxsuite
+}  // namespace preconditioner
+}  // namespace dense
+}  // namespace proxqp
+}  // namespace proxsuite
 
 #endif /* end of include guard PROXSUITE_PROXQP_DENSE_PRECOND_RUIZ_HPP */

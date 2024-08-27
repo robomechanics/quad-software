@@ -5,12 +5,13 @@
 #ifndef PROXSUITE_PROXQP_DENSE_LINESEARCH_HPP
 #define PROXSUITE_PROXQP_DENSE_LINESEARCH_HPP
 
-#include "proxsuite/proxqp/dense/views.hpp"
-#include "proxsuite/proxqp/dense/model.hpp"
-#include "proxsuite/proxqp/results.hpp"
-#include "proxsuite/proxqp/dense/workspace.hpp"
-#include "proxsuite/proxqp/settings.hpp"
 #include <cmath>
+
+#include "proxsuite/proxqp/dense/model.hpp"
+#include "proxsuite/proxqp/dense/views.hpp"
+#include "proxsuite/proxqp/dense/workspace.hpp"
+#include "proxsuite/proxqp/results.hpp"
+#include "proxsuite/proxqp/settings.hpp"
 
 namespace proxsuite {
 namespace proxqp {
@@ -28,9 +29,8 @@ namespace linesearch {
  * linesearch.
  * @param grad derivative of the merit function used in the linesearch.
  */
-template<typename T>
-struct PrimalDualDerivativeResult
-{
+template <typename T>
+struct PrimalDualDerivativeResult {
   T a;
   T b;
   T grad;
@@ -47,14 +47,10 @@ struct PrimalDualDerivativeResult
  * linesearch.
  * @param grad derivative of the merit function used in the linesearch.
  */
-template<typename T>
-auto
-primal_dual_derivative_results(const Model<T>& qpmodel,
-                               Results<T>& qpresults,
-                               Workspace<T>& qpwork,
-                               T alpha) -> PrimalDualDerivativeResult<T>
-{
-
+template <typename T>
+auto primal_dual_derivative_results(const Model<T>& qpmodel,
+                                    Results<T>& qpresults, Workspace<T>& qpwork,
+                                    T alpha) -> PrimalDualDerivativeResult<T> {
   /*
    * the function computes the first derivative of phi(alpha) at outer step k
    * and inner step l
@@ -77,80 +73,81 @@ primal_dual_derivative_results(const Model<T>& qpmodel,
    */
 
   qpwork.primal_residual_in_scaled_up_plus_alphaCdx =
-    qpwork.primal_residual_in_scaled_up + qpwork.Cdx * alpha;
+      qpwork.primal_residual_in_scaled_up + qpwork.Cdx * alpha;
   qpwork.primal_residual_in_scaled_low_plus_alphaCdx =
-    qpwork.primal_residual_in_scaled_low + qpwork.Cdx * alpha;
+      qpwork.primal_residual_in_scaled_low + qpwork.Cdx * alpha;
 
   T a(qpwork.dw_aug.head(qpmodel.dim).dot(qpwork.Hdx) +
       qpresults.info.mu_eq_inv * (qpwork.Adx).squaredNorm() +
       qpresults.info.rho *
-        qpwork.dw_aug.head(qpmodel.dim)
-          .squaredNorm()); // contains now: a = dx.dot(H.dot(dx)) + rho *
-                           // norm(dx)**2 + (mu_eq_inv) * norm(Adx)**2
+          qpwork.dw_aug.head(qpmodel.dim)
+              .squaredNorm());  // contains now: a = dx.dot(H.dot(dx)) + rho *
+                                // norm(dx)**2 + (mu_eq_inv) * norm(Adx)**2
 
   qpwork.err.segment(qpmodel.dim, qpmodel.n_eq) =
-    qpwork.Adx -
-    qpwork.dw_aug.segment(qpmodel.dim, qpmodel.n_eq) * qpresults.info.mu_eq;
+      qpwork.Adx -
+      qpwork.dw_aug.segment(qpmodel.dim, qpmodel.n_eq) * qpresults.info.mu_eq;
   a += qpwork.err.segment(qpmodel.dim, qpmodel.n_eq).squaredNorm() *
        qpresults.info.mu_eq_inv *
        qpresults.info
-         .nu; // contains now: a = dx.dot(H.dot(dx)) + rho * norm(dx)**2 +
+           .nu;  // contains now: a = dx.dot(H.dot(dx)) + rho * norm(dx)**2 +
   // (mu_eq_inv) * norm(Adx)**2 + nu*mu_eq_inv * norm(Adx-dy*mu_eq)**2
   qpwork.err.head(qpmodel.dim) =
-    qpresults.info.rho * (qpresults.x - qpwork.x_prev) + qpwork.g_scaled;
+      qpresults.info.rho * (qpresults.x - qpwork.x_prev) + qpwork.g_scaled;
   T b(qpresults.x.dot(qpwork.Hdx) +
       (qpwork.err.head(qpmodel.dim)).dot(qpwork.dw_aug.head(qpmodel.dim)) +
       qpresults.info.mu_eq_inv *
-        (qpwork.Adx)
-          .dot(qpwork.primal_residual_eq_scaled +
-               qpresults.y * qpresults.info.mu_eq)); // contains now: b =
-                                                     // dx.dot(H.dot(x) +
-                                                     // rho*(x-xe) +  g)  +
+          (qpwork.Adx)
+              .dot(qpwork.primal_residual_eq_scaled +
+                   qpresults.y * qpresults.info.mu_eq));  // contains now: b =
+                                                          // dx.dot(H.dot(x) +
+                                                          // rho*(x-xe) +  g)  +
   // mu_eq_inv * Adx.dot(res_eq)
 
   qpwork.rhs.segment(qpmodel.dim, qpmodel.n_eq) =
-    qpwork.primal_residual_eq_scaled;
-  b += qpresults.info.nu * qpresults.info.mu_eq_inv *
-       qpwork.err.segment(qpmodel.dim, qpmodel.n_eq)
-         .dot(qpwork.rhs.segment(
-           qpmodel.dim,
-           qpmodel.n_eq)); // contains now: b = dx.dot(H.dot(x) + rho*(x-xe)
+      qpwork.primal_residual_eq_scaled;
+  b +=
+      qpresults.info.nu * qpresults.info.mu_eq_inv *
+      qpwork.err.segment(qpmodel.dim, qpmodel.n_eq)
+          .dot(qpwork.rhs.segment(
+              qpmodel.dim,
+              qpmodel.n_eq));  // contains now: b = dx.dot(H.dot(x) + rho*(x-xe)
   // +  g)  + mu_eq_inv * Adx.dot(res_eq) + nu*mu_eq_inv *
   // (Adx-dy*mu_eq).dot(res_eq-y*mu_eq)
 
   // derive Cdx_act
   qpwork.err.tail(qpmodel.n_in) =
-    ((qpwork.primal_residual_in_scaled_up_plus_alphaCdx.array() > T(0.)) ||
-     (qpwork.primal_residual_in_scaled_low_plus_alphaCdx.array() < T(0.)))
-      .select(qpwork.Cdx,
-              Eigen::Matrix<T, Eigen::Dynamic, 1>::Zero(qpmodel.n_in));
+      ((qpwork.primal_residual_in_scaled_up_plus_alphaCdx.array() > T(0.)) ||
+       (qpwork.primal_residual_in_scaled_low_plus_alphaCdx.array() < T(0.)))
+          .select(qpwork.Cdx,
+                  Eigen::Matrix<T, Eigen::Dynamic, 1>::Zero(qpmodel.n_in));
 
   a += qpresults.info.mu_in_inv *
        qpwork.err.tail(qpmodel.n_in)
-         .squaredNorm(); // contains now: a = dx.dot(H.dot(dx)) + rho *
+           .squaredNorm();  // contains now: a = dx.dot(H.dot(dx)) + rho *
   // norm(dx)**2 + (mu_eq_inv) * norm(Adx)**2 + nu*mu_eq_inv *
   // norm(Adx-dy*mu_eq)**2 + mu_in *
   // norm(Cdx_act)**2
 
   // derive vector [Cx-u+ze/mu]_+ + [Cx-l+ze/mu]--
   qpwork.active_part_z =
-    (qpwork.primal_residual_in_scaled_up_plus_alphaCdx.array() > T(0.))
-      .select(qpwork.primal_residual_in_scaled_up,
-              Eigen::Matrix<T, Eigen::Dynamic, 1>::Zero(qpmodel.n_in)) +
-    (qpwork.primal_residual_in_scaled_low_plus_alphaCdx.array() < T(0.))
-      .select(qpwork.primal_residual_in_scaled_low,
-              Eigen::Matrix<T, Eigen::Dynamic, 1>::Zero(qpmodel.n_in));
+      (qpwork.primal_residual_in_scaled_up_plus_alphaCdx.array() > T(0.))
+          .select(qpwork.primal_residual_in_scaled_up,
+                  Eigen::Matrix<T, Eigen::Dynamic, 1>::Zero(qpmodel.n_in)) +
+      (qpwork.primal_residual_in_scaled_low_plus_alphaCdx.array() < T(0.))
+          .select(qpwork.primal_residual_in_scaled_low,
+                  Eigen::Matrix<T, Eigen::Dynamic, 1>::Zero(qpmodel.n_in));
 
   b += qpresults.info.mu_in_inv *
        qpwork.active_part_z.dot(qpwork.err.tail(
-         qpmodel.n_in)); // contains now: b = dx.dot(H.dot(x) + rho*(x-xe) +
+           qpmodel.n_in));  // contains now: b = dx.dot(H.dot(x) + rho*(x-xe) +
   // g)  + mu_eq_inv * Adx.dot(res_eq) + nu*mu_eq_inv *
   // (Adx-dy*mu_eq).dot(res_eq-y*mu_eq) + mu_in
   // * Cdx_act.dot([Cx-u+ze/mu]_+ + [Cx-l+ze*mu_in]--)
 
   // derive Cdx_act - dz*mu_in
   qpwork.err.tail(qpmodel.n_in) -=
-    qpwork.dw_aug.tail(qpmodel.n_in) * qpresults.info.mu_in;
+      qpwork.dw_aug.tail(qpmodel.n_in) * qpresults.info.mu_in;
   // derive [Cx-u+ze*mu_in]_+ + [Cx-l+ze*mu_in]-- -z*mu_in
   qpwork.active_part_z -= qpresults.z * qpresults.info.mu_in;
 
@@ -168,9 +165,9 @@ primal_dual_derivative_results(const Model<T>& qpmodel,
        qpwork.err.tail(qpmodel.n_in).dot(qpwork.active_part_z);
 
   return {
-    a,
-    b,
-    a * alpha + b,
+      a,
+      b,
+      a * alpha + b,
   };
 }
 
@@ -182,13 +179,9 @@ primal_dual_derivative_results(const Model<T>& qpmodel,
  * performed).
  * @param qpresults solver results.
  */
-template<typename T>
-void
-primal_dual_ls(const Model<T>& qpmodel,
-               Results<T>& qpresults,
-               Workspace<T>& qpwork)
-{
-
+template <typename T>
+void primal_dual_ls(const Model<T>& qpmodel, Results<T>& qpresults,
+                    Workspace<T>& qpwork) {
   /*
    * The algorithm performs the following step
    *
@@ -239,10 +232,9 @@ primal_dual_ls(const Model<T>& qpmodel,
   // dx)-u +ze/mu_in = 0
 
   for (isize i = 0; i < qpmodel.n_in; i++) {
-
     if (qpwork.Cdx(i) != 0.) {
-      alpha_ =
-        -qpwork.primal_residual_in_scaled_up(i) / (qpwork.Cdx(i) + machine_eps);
+      alpha_ = -qpwork.primal_residual_in_scaled_up(i) /
+               (qpwork.Cdx(i) + machine_eps);
       if (alpha_ > machine_eps) {
         qpwork.alphas.push(alpha_);
       }
@@ -259,10 +251,10 @@ primal_dual_ls(const Model<T>& qpmodel,
   // 1.2 sort the alphas
 
   std::sort(qpwork.alphas.ptr_mut(), qpwork.alphas.ptr_mut() + n_alpha);
-  isize new_len = std::unique( //
-                    qpwork.alphas.ptr_mut(),
-                    qpwork.alphas.ptr_mut() + n_alpha) -
-                  qpwork.alphas.ptr_mut();
+  isize new_len =
+      std::unique(  //
+          qpwork.alphas.ptr_mut(), qpwork.alphas.ptr_mut() + n_alpha) -
+      qpwork.alphas.ptr_mut();
   qpwork.alphas.resize(new_len);
 
   n_alpha = qpwork.alphas.len();
@@ -299,7 +291,7 @@ primal_dual_ls(const Model<T>& qpmodel,
      * break the loop
      */
     T gr =
-      primal_dual_derivative_results(qpmodel, qpresults, qpwork, alpha_).grad;
+        primal_dual_derivative_results(qpmodel, qpresults, qpwork, alpha_).grad;
 
     if (gr < T(0)) {
       alpha_last_neg = alpha_;
@@ -319,9 +311,9 @@ primal_dual_ls(const Model<T>& qpmodel,
    * "gradient_norm"
    */
   if (alpha_last_neg == T(0)) {
-    last_neg_grad =
-      primal_dual_derivative_results(qpmodel, qpresults, qpwork, alpha_last_neg)
-        .grad;
+    last_neg_grad = primal_dual_derivative_results(qpmodel, qpresults, qpwork,
+                                                   alpha_last_neg)
+                        .grad;
   }
   if (alpha_first_pos == infty) {
     /*
@@ -330,7 +322,7 @@ primal_dual_ls(const Model<T>& qpmodel,
      * [last_alpha_neg, +∞)
      */
     PrimalDualDerivativeResult<T> res = primal_dual_derivative_results(
-      qpmodel, qpresults, qpwork, 2 * alpha_last_neg + 1);
+        qpmodel, qpresults, qpwork, 2 * alpha_last_neg + 1);
     auto& a = res.a;
     auto& b = res.b;
     // grad = a * alpha + b
@@ -345,8 +337,8 @@ primal_dual_ls(const Model<T>& qpmodel,
      */
 
     qpwork.alpha = alpha_last_neg - last_neg_grad *
-                                      (alpha_first_pos - alpha_last_neg) /
-                                      (first_pos_grad - last_neg_grad);
+                                        (alpha_first_pos - alpha_last_neg) /
+                                        (first_pos_grad - last_neg_grad);
   }
 }
 
@@ -359,13 +351,9 @@ primal_dual_ls(const Model<T>& qpmodel,
  * performed).
  * @param qpresults solver results.
  */
-template<typename T>
-void
-active_set_change(const Model<T>& qpmodel,
-                  Results<T>& qpresults,
-                  Workspace<T>& qpwork)
-{
-
+template <typename T>
+void active_set_change(const Model<T>& qpmodel, Results<T>& qpresults,
+                       Workspace<T>& qpwork) {
   /*
    * arguments
    * 1/ new_active_set : a vector which contains new active set of the
@@ -421,12 +409,11 @@ active_set_change(const Model<T>& qpmodel,
   // suppression pour le nouvel active set, ajout dans le nouvel unactive set
 
   proxsuite::linalg::veg::dynstack::DynStackMut stack{
-    proxsuite::linalg::veg::from_slice_mut, qpwork.ldl_stack.as_mut()
-  };
+      proxsuite::linalg::veg::from_slice_mut, qpwork.ldl_stack.as_mut()};
 
   {
     auto _planned_to_delete = stack.make_new_for_overwrite(
-      proxsuite::linalg::veg::Tag<isize>{}, isize(qpmodel.n_in));
+        proxsuite::linalg::veg::Tag<isize>{}, isize(qpmodel.n_in));
     isize* planned_to_delete = _planned_to_delete.ptr_mut();
     isize planned_to_delete_count = 0;
 
@@ -436,7 +423,7 @@ active_set_change(const Model<T>& qpmodel,
           // delete current_bijection_map(i)
 
           planned_to_delete[planned_to_delete_count] =
-            qpwork.current_bijection_map(i) + qpmodel.dim + qpmodel.n_eq;
+              qpwork.current_bijection_map(i) + qpmodel.dim + qpmodel.n_eq;
           ++planned_to_delete_count;
 
           for (isize j = 0; j < qpmodel.n_in; j++) {
@@ -460,7 +447,7 @@ active_set_change(const Model<T>& qpmodel,
 
   {
     auto _planned_to_add = stack.make_new_for_overwrite(
-      proxsuite::linalg::veg::Tag<isize>{}, qpmodel.n_in);
+        proxsuite::linalg::veg::Tag<isize>{}, qpmodel.n_in);
     auto planned_to_add = _planned_to_add.ptr_mut();
 
     isize planned_to_add_count = 0;
@@ -487,8 +474,8 @@ active_set_change(const Model<T>& qpmodel,
     {
       isize n = qpmodel.dim;
       isize n_eq = qpmodel.n_eq;
-      LDLT_TEMP_MAT_UNINIT(
-        T, new_cols, n + n_eq + n_c_f, planned_to_add_count, stack);
+      LDLT_TEMP_MAT_UNINIT(T, new_cols, n + n_eq + n_c_f, planned_to_add_count,
+                           stack);
 
       for (isize k = 0; k < planned_to_add_count; ++k) {
         isize index = planned_to_add[k];
@@ -509,9 +496,9 @@ active_set_change(const Model<T>& qpmodel,
   qpwork.dw_aug.setZero();
 }
 
-} // namespace linesearch
-} // namespace dense
-} // namespace proxqp
-} // namespace proxsuite
+}  // namespace linesearch
+}  // namespace dense
+}  // namespace proxqp
+}  // namespace proxsuite
 
 #endif /* end of include guard PROXSUITE_PROXQP_DENSE_LINESEARCH_HPP */

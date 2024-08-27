@@ -18,10 +18,10 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_LOGGER_HPP
 #define CASADI_LOGGER_HPP
@@ -33,102 +33,108 @@
 #include <iostream>
 
 namespace casadi {
-  /** \brief Keeps track of logging output to screen and/or files.
+/** \brief Keeps track of logging output to screen and/or files.
 
-   * All printout from CasADi routines should go through this files.
-   *
-   *  \author Joel Andersson
-   *  \date 2015
+ * All printout from CasADi routines should go through this files.
+ *
+ *  \author Joel Andersson
+ *  \date 2015
 
-      \identifier{23u} */
-  class CASADI_EXPORT Logger {
-  private:
-    /// No implementation - no instances are allowed of this class
-    Logger();
+    \identifier{23u} */
+class CASADI_EXPORT Logger {
+ private:
+  /// No implementation - no instances are allowed of this class
+  Logger();
 
-  public:
-    /// Print warnings, can be redefined
-    static void (*writeFun)(const char* s, std::streamsize num, bool error);
+ public:
+  /// Print warnings, can be redefined
+  static void (*writeFun)(const char* s, std::streamsize num, bool error);
 
-    /// Flush buffers
-    static void (*flush)(bool error);
+  /// Flush buffers
+  static void (*flush)(bool error);
 
-    static void WriteFunThreadSafe(const char* s, std::streamsize num, bool error);
-    static void FlushThreadSafe(bool error);
+  static void WriteFunThreadSafe(const char* s, std::streamsize num,
+                                 bool error);
+  static void FlushThreadSafe(bool error);
 
-    /// By default, print to std::cout or std::cerr
-    static void writeDefault(const char* s, std::streamsize num, bool error) {
-      if (error) {
-        std::cerr.write(s, num);
-      } else {
-        std::cout.write(s, num);
-      }
+  /// By default, print to std::cout or std::cerr
+  static void writeDefault(const char* s, std::streamsize num, bool error) {
+    if (error) {
+      std::cerr.write(s, num);
+    } else {
+      std::cout.write(s, num);
     }
+  }
 
-    /// By default, flush std::cout or std::cerr
-    static void flushDefault(bool error) {
-      if (error) {
-        std::cerr << std::flush;
-      } else {
-        std::cout << std::flush;
-      }
+  /// By default, flush std::cout or std::cerr
+  static void flushDefault(bool error) {
+    if (error) {
+      std::cerr << std::flush;
+    } else {
+      std::cout << std::flush;
     }
+  }
 
-    /// Ignore output
-    static void writeIgnore(const char* s, std::streamsize num, bool error) {
-    }
+  /// Ignore output
+  static void writeIgnore(const char* s, std::streamsize num, bool error) {}
 
-    /// Print output message
-    template<bool Err> static void write(const char* s, std::streamsize num) {
-      // All information
-      WriteFunThreadSafe(s, num, Err);
-    }
+  /// Print output message
+  template <bool Err>
+  static void write(const char* s, std::streamsize num) {
+    // All information
+    WriteFunThreadSafe(s, num, Err);
+  }
 
-    /// Print log message, single character
-    template<bool Err> static void writeCh(char ch) {
-      write<Err>(&ch, 1);
-    }
+  /// Print log message, single character
+  template <bool Err>
+  static void writeCh(char ch) {
+    write<Err>(&ch, 1);
+  }
 
-    // Stream buffer for std::cout like printing
-    template<bool Err> class Streambuf : public std::streambuf {
-    public:
-      Streambuf() {}
-    protected:
-      int_type overflow(int_type ch) override {
-        if (ch != traits_type::eof()) {
-          writeCh<Err>(static_cast<char>(ch));
-        }
-        return ch;
+  // Stream buffer for std::cout like printing
+  template <bool Err>
+  class Streambuf : public std::streambuf {
+   public:
+    Streambuf() {}
+
+   protected:
+    int_type overflow(int_type ch) override {
+      if (ch != traits_type::eof()) {
+        writeCh<Err>(static_cast<char>(ch));
       }
-      std::streamsize xsputn(const char* s, std::streamsize num) override {
-        write<Err>(s, num);
-        return num;
-      }
-      int sync() override {
-        FlushThreadSafe(Err);
-        return 0;
-      }
-    };
-
-    // Output stream for std::cout like printing
-    template<bool Err> class Stream : public std::ostream {
-    protected:
-      Streambuf<Err> buf;
-    public:
-      Stream() : std::ostream(&buf) {}
-    };
+      return ch;
+    }
+    std::streamsize xsputn(const char* s, std::streamsize num) override {
+      write<Err>(s, num);
+      return num;
+    }
+    int sync() override {
+      FlushThreadSafe(Err);
+      return 0;
+    }
   };
 
-  // Get an output stream
-  CASADI_EXPORT std::ostream& uout();
+  // Output stream for std::cout like printing
+  template <bool Err>
+  class Stream : public std::ostream {
+   protected:
+    Streambuf<Err> buf;
 
-  // Get an output stream
-  CASADI_EXPORT std::ostream& uerr();
+   public:
+    Stream() : std::ostream(&buf) {}
+  };
+};
 
-} // namespace casadi
+// Get an output stream
+CASADI_EXPORT std::ostream& uout();
+
+// Get an output stream
+CASADI_EXPORT std::ostream& uerr();
+
+}  // namespace casadi
 
 extern "C" {
-  CASADI_EXPORT int casadi_printf(const char  *fmt, ...);
+CASADI_EXPORT int casadi_printf(const char* fmt, ...);
 }
 
-#endif // CASADI_LOGGER_HPP
+#endif  // CASADI_LOGGER_HPP

@@ -44,26 +44,26 @@
 #if !defined(SIMDE_X86_AVX512_XORSIGN_H)
 #define SIMDE_X86_AVX512_XORSIGN_H
 
-#include "types.h"
-#include "mov.h"
 #include "and.h"
-#include "xor.h"
+#include "mov.h"
 #include "set1.h"
+#include "types.h"
+#include "xor.h"
 
 HEDLEY_DIAGNOSTIC_PUSH
 SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512
-simde_x_mm512_xorsign_ps(simde__m512 dest, simde__m512 src) {
-  return simde_mm512_xor_ps(simde_mm512_and_ps(simde_mm512_set1_ps(-0.0f), src), dest);
+simde__m512 simde_x_mm512_xorsign_ps(simde__m512 dest, simde__m512 src) {
+  return simde_mm512_xor_ps(simde_mm512_and_ps(simde_mm512_set1_ps(-0.0f), src),
+                            dest);
 }
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512d
-simde_x_mm512_xorsign_pd(simde__m512d dest, simde__m512d src) {
-  return simde_mm512_xor_pd(simde_mm512_and_pd(simde_mm512_set1_pd(-0.0), src), dest);
+simde__m512d simde_x_mm512_xorsign_pd(simde__m512d dest, simde__m512d src) {
+  return simde_mm512_xor_pd(simde_mm512_and_pd(simde_mm512_set1_pd(-0.0), src),
+                            dest);
 }
 
 SIMDE_END_DECLS_

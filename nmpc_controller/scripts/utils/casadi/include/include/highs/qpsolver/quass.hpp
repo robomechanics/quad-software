@@ -14,7 +14,6 @@ struct Quass {
 
  private:
   Runtime& runtime;
-
 };
 
 #endif

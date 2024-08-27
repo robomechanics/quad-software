@@ -8,27 +8,26 @@
 
 #include "CbcHeuristic.hpp"
 
-/** 
-    This is unlike the other heuristics in that it is very very compute intensive.
-    It tries to find a DW structure and use that
+/**
+    This is unlike the other heuristics in that it is very very compute
+   intensive. It tries to find a DW structure and use that
  */
 
 class CbcHeuristicDW : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicDW();
 
   /* Constructor with model - assumed before cuts
-    */
+   */
   CbcHeuristicDW(CbcModel &model, int keepContinuous = 0);
 
   /* Constructor with model - assumed before cuts
-    */
+   */
   CbcHeuristicDW(CbcModel &model,
-    int callBack(CbcHeuristicDW *currentHeuristic,
-      CbcModel *thisModel,
-      int whereFrom),
-    int keepContinuous = 0);
+                 int callBack(CbcHeuristicDW *currentHeuristic,
+                              CbcModel *thisModel, int whereFrom),
+                 int keepContinuous = 0);
 
   // Copy constructor
   CbcHeuristicDW(const CbcHeuristicDW &);
@@ -55,14 +54,10 @@ public:
         Sets solution values if good, sets objective value (only if good)
         This does Relaxation Induced Neighborhood Search
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /** Return number of blocks
       <=0 - no usable structure */
-  inline int numberBlocks() const
-  {
-    return numberBlocks_;
-  }
+  inline int numberBlocks() const { return numberBlocks_; }
   /// Pass in a solution
   void passInSolution(const double *solution);
   /// Pass in continuous solution
@@ -78,166 +73,75 @@ public:
   /// Number of columns in DW
   int numberColumnsDW(int whichDW) const;
   /// Solver
-  inline OsiSolverInterface *solver() const
-  {
-    return solver_;
-  }
+  inline OsiSolverInterface *solver() const { return solver_; }
   /// DW model (user must delete)
   OsiSolverInterface *DWModel(int whichDW) const;
   /// Best objective value
-  inline double bestObjective() const
-  {
-    return bestObjective_;
-  }
+  inline double bestObjective() const { return bestObjective_; }
   /// Best solution found so far
-  inline const double *bestSolution() const
-  {
-    return bestSolution_;
-  }
+  inline const double *bestSolution() const { return bestSolution_; }
   /// Continuous solution
-  inline const double *continuousSolution() const
-  {
+  inline const double *continuousSolution() const {
     return continuousSolution_;
   }
   /// Reduced costs of fixed solution
-  inline const double *fixedDj() const
-  {
-    return fixedDj_;
-  }
+  inline const double *fixedDj() const { return fixedDj_; }
   /// Objective at which DW updated
-  inline const double *objectiveDW() const
-  {
-    return objectiveDW_;
-  }
+  inline const double *objectiveDW() const { return objectiveDW_; }
   /// Number of times we have added to DW model
-  inline int numberDWTimes() const
-  {
-    return numberDWTimes_;
-  }
+  inline int numberDWTimes() const { return numberDWTimes_; }
   /// Number of columns in DW
-  inline const int *numberColumnsDW() const
-  {
-    return numberColumnsDW_;
-  }
+  inline const int *numberColumnsDW() const { return numberColumnsDW_; }
   /// Set number of passes
-  inline void setNumberPasses(int value)
-  {
-    numberPasses_ = value;
-  }
+  inline void setNumberPasses(int value) { numberPasses_ = value; }
   /// Set number of passes without better solution
-  inline void setNumberBadPasses(int value)
-  {
-    numberBadPasses_ = value;
-  }
+  inline void setNumberBadPasses(int value) { numberBadPasses_ = value; }
   /// Set number free integers needed (Base value)
-  inline void setNumberNeeded(int value)
-  {
-    nNeededBase_ = value;
-  }
+  inline void setNumberNeeded(int value) { nNeededBase_ = value; }
   /// Get number free integers needed (Base value)
-  inline int getNumberNeeded() const
-  {
-    return nNeededBase_;
-  }
+  inline int getNumberNeeded() const { return nNeededBase_; }
   /// Set number free integers needed (Current value)
-  inline void setCurrentNumberNeeded(int value)
-  {
-    nNeeded_ = value;
-  }
+  inline void setCurrentNumberNeeded(int value) { nNeeded_ = value; }
   /// Get number free integers needed (Current value)
-  inline int getCurrentNumberNeeded() const
-  {
-    return nNeeded_;
-  }
+  inline int getCurrentNumberNeeded() const { return nNeeded_; }
   /// Set number nodes (could be done in callback) (Base value)
-  inline void setNumberNodes(int value)
-  {
-    nNodesBase_ = value;
-  }
+  inline void setNumberNodes(int value) { nNodesBase_ = value; }
   /// Get number nodes (could be done in callback) (Base value)
-  inline int getNumberNodes() const
-  {
-    return nNodesBase_;
-  }
+  inline int getNumberNodes() const { return nNodesBase_; }
   /// Set number nodes (could be done in callback) (Current value)
-  inline void setCurrentNumberNodes(int value)
-  {
-    nNodes_ = value;
-  }
+  inline void setCurrentNumberNodes(int value) { nNodes_ = value; }
   /// Get number nodes (could be done in callback) (Current value)
-  inline int getCurrentNumberNodes() const
-  {
-    return nNodes_;
-  }
+  inline int getCurrentNumberNodes() const { return nNodes_; }
   /// Set target objective
-  inline void setTargetObjective(double value)
-  {
-    targetObjective_ = value;
-  }
+  inline void setTargetObjective(double value) { targetObjective_ = value; }
   /// Sets how often to do it
-  inline void setHowOften(int value)
-  {
-    howOften_ = value;
-  }
+  inline void setHowOften(int value) { howOften_ = value; }
   /// Block for every row
-  inline const int *whichRowBlock() const
-  {
-    return whichRowBlock_;
-  }
+  inline const int *whichRowBlock() const { return whichRowBlock_; }
   /// Block for every column
-  inline const int *whichColumnBlock() const
-  {
-    return whichColumnBlock_;
-  }
+  inline const int *whichColumnBlock() const { return whichColumnBlock_; }
   /// Initial Lower bounds
-  inline double *initialLower() const
-  {
-    return saveLower_;
-  }
+  inline double *initialLower() const { return saveLower_; }
   /// Initial Upper bounds
-  inline double *initialUpper() const
-  {
-    return saveUpper_;
-  }
+  inline double *initialUpper() const { return saveUpper_; }
   /// Local integer arrays (each numberBlocks_ long)
-  inline int *intArrays() const
-  {
-    return intArray_;
-  }
+  inline int *intArrays() const { return intArray_; }
   /// Local double arrays (each numberBlocks_ long)
-  inline double *doubleArrays() const
-  {
-    return doubleArray_;
-  }
+  inline double *doubleArrays() const { return doubleArray_; }
   /// Phase of solution
-  inline int phase() const
-  {
-    return phase_;
-  }
+  inline int phase() const { return phase_; }
   /// Pass number
-  inline int pass() const
-  {
-    return pass_;
-  }
+  inline int pass() const { return pass_; }
   /// Which columns are in block
-  inline const int *columnsInBlock() const
-  {
-    return columnsInBlock_;
-  }
+  inline const int *columnsInBlock() const { return columnsInBlock_; }
   /// Starts for columnsInBlock
-  inline const int *startColumnBlock() const
-  {
-    return startColumnBlock_;
-  }
+  inline const int *startColumnBlock() const { return startColumnBlock_; }
   /// Number of integer variables in each block
-  inline const int *intsInBlock() const
-  {
-    return intsInBlock_;
-  }
+  inline const int *intsInBlock() const { return intsInBlock_; }
   /// Objective value (could also check validity)
   double objectiveValue(const double *solution);
 
-private:
+ private:
   /// Guts of copy
   void gutsOfCopy(const CbcHeuristicDW &rhs);
   /// Guts of delete
@@ -250,9 +154,9 @@ private:
   void setupDWStructures();
   /// Add DW proposals
   int addDW(const double *solution, int numberBlocksUsed,
-    const int *whichBlocks);
+            const int *whichBlocks);
 
-protected:
+ protected:
   typedef int (*heuristicCallBack)(CbcHeuristicDW *, CbcModel *, int);
   // Data
   /// Target objective
@@ -262,18 +166,18 @@ protected:
   /// Objective value last time
   double lastObjective_;
   /** Call back
-	whereFrom -
-	0 - after blocks found but before data setup
-	1 - after blocks sorted but before used
-	2 - just before normal branch and bound
-	3 - after DW has been updated
-	4 - if better solution found
-	5 - every time a block might be used
-	next few for adjustment of nNeeded etc
-	6 - complete search done - no solution
-	7 - stopped on nodes - no improvement
-	8 - improving (same as 4 but after nNeeded changed
-	Pointers to local data given by following pointers
+        whereFrom -
+        0 - after blocks found but before data setup
+        1 - after blocks sorted but before used
+        2 - just before normal branch and bound
+        3 - after DW has been updated
+        4 - if better solution found
+        5 - every time a block might be used
+        next few for adjustment of nNeeded etc
+        6 - complete search done - no solution
+        7 - stopped on nodes - no improvement
+        8 - improving (same as 4 but after nNeeded changed
+        Pointers to local data given by following pointers
     */
   heuristicCallBack functionPointer_;
   /// Local integer arrays (each numberBlocks_ long)
@@ -371,4 +275,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

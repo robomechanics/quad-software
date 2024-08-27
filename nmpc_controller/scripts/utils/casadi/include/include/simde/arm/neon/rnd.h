@@ -34,107 +34,95 @@ SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_float32x2_t
-simde_vrnd_f32(simde_float32x2_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V8_NATIVE)
-    return vrnd_f32(a);
-  #else
-    simde_float32x2_private
-      r_,
-      a_ = simde_float32x2_to_private(a);
+simde_float32x2_t simde_vrnd_f32(simde_float32x2_t a) {
+#if defined(SIMDE_ARM_NEON_A32V8_NATIVE)
+  return vrnd_f32(a);
+#else
+  simde_float32x2_private r_, a_ = simde_float32x2_to_private(a);
 
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-      r_.values[i] = simde_math_truncf(a_.values[i]);
-    }
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = simde_math_truncf(a_.values[i]);
+  }
 
-    return simde_float32x2_from_private(r_);
-  #endif
+  return simde_float32x2_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrnd_f32
-  #define vrnd_f32(a) simde_vrnd_f32(a)
+#undef vrnd_f32
+#define vrnd_f32(a) simde_vrnd_f32(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_float64x1_t
-simde_vrnd_f64(simde_float64x1_t a) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vrnd_f64(a);
-  #else
-    simde_float64x1_private
-      r_,
-      a_ = simde_float64x1_to_private(a);
+simde_float64x1_t simde_vrnd_f64(simde_float64x1_t a) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vrnd_f64(a);
+#else
+  simde_float64x1_private r_, a_ = simde_float64x1_to_private(a);
 
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-      r_.values[i] = simde_math_trunc(a_.values[i]);
-    }
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = simde_math_trunc(a_.values[i]);
+  }
 
-    return simde_float64x1_from_private(r_);
-  #endif
+  return simde_float64x1_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A64V8_ENABLE_NATIVE_ALIASES)
-  #undef vrnd_f64
-  #define vrnd_f64(a) simde_vrnd_f64(a)
+#undef vrnd_f64
+#define vrnd_f64(a) simde_vrnd_f64(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_float32x4_t
-simde_vrndq_f32(simde_float32x4_t a) {
-  #if defined(SIMDE_ARM_NEON_A32V8_NATIVE)
-    return vrndq_f32(a);
-  #elif defined(SIMDE_X86_SSE4_1_NATIVE)
-    return _mm_round_ps(a, _MM_FROUND_TO_ZERO);
-  #elif defined(SIMDE_X86_SVML_NATIVE) && defined(SIMDE_X86_SSE_NATIVE)
-    return _mm_trunc_ps(a);
-  #elif defined(SIMDE_POWER_ALTIVEC_P6_NATIVE)
-    return vec_trunc(a);
-  #else
-    simde_float32x4_private
-      r_,
-      a_ = simde_float32x4_to_private(a);
+simde_float32x4_t simde_vrndq_f32(simde_float32x4_t a) {
+#if defined(SIMDE_ARM_NEON_A32V8_NATIVE)
+  return vrndq_f32(a);
+#elif defined(SIMDE_X86_SSE4_1_NATIVE)
+  return _mm_round_ps(a, _MM_FROUND_TO_ZERO);
+#elif defined(SIMDE_X86_SVML_NATIVE) && defined(SIMDE_X86_SSE_NATIVE)
+  return _mm_trunc_ps(a);
+#elif defined(SIMDE_POWER_ALTIVEC_P6_NATIVE)
+  return vec_trunc(a);
+#else
+  simde_float32x4_private r_, a_ = simde_float32x4_to_private(a);
 
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-      r_.values[i] = simde_math_truncf(a_.values[i]);
-    }
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = simde_math_truncf(a_.values[i]);
+  }
 
-    return simde_float32x4_from_private(r_);
-  #endif
+  return simde_float32x4_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A32V7_ENABLE_NATIVE_ALIASES)
-  #undef vrndq_f32
-  #define vrndq_f32(a) simde_vrndq_f32(a)
+#undef vrndq_f32
+#define vrndq_f32(a) simde_vrndq_f32(a)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde_float64x2_t
-simde_vrndq_f64(simde_float64x2_t a) {
-  #if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
-    return vrndq_f64(a);
-  #elif defined(SIMDE_X86_SSE4_1_NATIVE)
-    return _mm_round_pd(a, _MM_FROUND_TO_ZERO);
-  #elif defined(SIMDE_X86_SVML_NATIVE) && defined(SIMDE_X86_SSE_NATIVE)
-    return _mm_trunc_pd(a);
-  #elif defined(SIMDE_POWER_ALTIVEC_P8_NATIVE)
-    return vec_trunc(a);
-  #else
-    simde_float64x2_private
-      r_,
-      a_ = simde_float64x2_to_private(a);
+simde_float64x2_t simde_vrndq_f64(simde_float64x2_t a) {
+#if defined(SIMDE_ARM_NEON_A64V8_NATIVE)
+  return vrndq_f64(a);
+#elif defined(SIMDE_X86_SSE4_1_NATIVE)
+  return _mm_round_pd(a, _MM_FROUND_TO_ZERO);
+#elif defined(SIMDE_X86_SVML_NATIVE) && defined(SIMDE_X86_SSE_NATIVE)
+  return _mm_trunc_pd(a);
+#elif defined(SIMDE_POWER_ALTIVEC_P8_NATIVE)
+  return vec_trunc(a);
+#else
+  simde_float64x2_private r_, a_ = simde_float64x2_to_private(a);
 
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.values) / sizeof(r_.values[0])) ; i++) {
-      r_.values[i] = simde_math_trunc(a_.values[i]);
-    }
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.values) / sizeof(r_.values[0])); i++) {
+    r_.values[i] = simde_math_trunc(a_.values[i]);
+  }
 
-    return simde_float64x2_from_private(r_);
-  #endif
+  return simde_float64x2_from_private(r_);
+#endif
 }
 #if defined(SIMDE_ARM_NEON_A64V8_ENABLE_NATIVE_ALIASES)
-  #undef vrndq_f64
-  #define vrndq_f64(a) simde_vrndq_f64(a)
+#undef vrndq_f64
+#define vrndq_f64(a) simde_vrndq_f64(a)
 #endif
 
 SIMDE_END_DECLS_

@@ -28,129 +28,134 @@
 #if !defined(SIMDE_X86_AVX512_MADDUBS_H)
 #define SIMDE_X86_AVX512_MADDUBS_H
 
-#include "types.h"
-#include "mov.h"
 #include "../avx2.h"
+#include "mov.h"
+#include "types.h"
 
 HEDLEY_DIAGNOSTIC_PUSH
 SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
-
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m128i
-simde_mm_mask_maddubs_epi16 (simde__m128i src, simde__mmask8 k, simde__m128i a, simde__m128i b) {
-  #if defined(SIMDE_X86_AVX512BW_NATIVE) && defined(SIMDE_X86_AVX512VL_NATIVE)
-    return _mm_mask_maddubs_epi16(src, k, a, b);
-  #else
-    return simde_mm_mask_mov_epi16(src, k, simde_mm_maddubs_epi16(a, b));
-  #endif
+simde__m128i simde_mm_mask_maddubs_epi16(simde__m128i src, simde__mmask8 k,
+                                         simde__m128i a, simde__m128i b) {
+#if defined(SIMDE_X86_AVX512BW_NATIVE) && defined(SIMDE_X86_AVX512VL_NATIVE)
+  return _mm_mask_maddubs_epi16(src, k, a, b);
+#else
+  return simde_mm_mask_mov_epi16(src, k, simde_mm_maddubs_epi16(a, b));
+#endif
 }
-#if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES) && defined(SIMDE_X86_AVX512VL_ENABLE_NATIVE_ALIASES)
-  #undef _mm_mask_maddubs_epi16
-  #define _mm_mask_maddubs_epi16(a, b) simde_mm_mask_maddubs_epi16(a, b)
+#if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES) && \
+    defined(SIMDE_X86_AVX512VL_ENABLE_NATIVE_ALIASES)
+#undef _mm_mask_maddubs_epi16
+#define _mm_mask_maddubs_epi16(a, b) simde_mm_mask_maddubs_epi16(a, b)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m128i
-simde_mm_maskz_maddubs_epi16 (simde__mmask8 k, simde__m128i a, simde__m128i b) {
-  #if defined(SIMDE_X86_AVX512BW_NATIVE ) && defined(SIMDE_X86_AVX512VL_NATIVE)
-    return _mm_maskz_maddubs_epi16(k, a, b);
-  #else
-    return simde_mm_maskz_mov_epi16(k, simde_mm_maddubs_epi16(a, b));
-  #endif
+simde__m128i simde_mm_maskz_maddubs_epi16(simde__mmask8 k, simde__m128i a,
+                                          simde__m128i b) {
+#if defined(SIMDE_X86_AVX512BW_NATIVE) && defined(SIMDE_X86_AVX512VL_NATIVE)
+  return _mm_maskz_maddubs_epi16(k, a, b);
+#else
+  return simde_mm_maskz_mov_epi16(k, simde_mm_maddubs_epi16(a, b));
+#endif
 }
-#if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES) && defined(SIMDE_X86_AVX512VL_ENABLE_NATIVE_ALIASES)
-  #undef _mm_maskz_maddubs_epi16
-  #define _mm_maskz_maddubs_epi16(a, b) simde_mm_maskz_maddubs_epi16(a, b)
+#if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES) && \
+    defined(SIMDE_X86_AVX512VL_ENABLE_NATIVE_ALIASES)
+#undef _mm_maskz_maddubs_epi16
+#define _mm_maskz_maddubs_epi16(a, b) simde_mm_maskz_maddubs_epi16(a, b)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m256i
-simde_mm256_mask_maddubs_epi16 (simde__m256i src, simde__mmask16 k, simde__m256i a, simde__m256i b) {
-  #if defined(SIMDE_X86_AVX512BW_NATIVE) && defined(SIMDE_X86_AVX512VL_NATIVE)
-    return _mm256_mask_maddubs_epi16(src, k, a, b);
-  #else
-    return simde_mm256_mask_mov_epi16(src, k, simde_mm256_maddubs_epi16(a, b));
-  #endif
+simde__m256i simde_mm256_mask_maddubs_epi16(simde__m256i src, simde__mmask16 k,
+                                            simde__m256i a, simde__m256i b) {
+#if defined(SIMDE_X86_AVX512BW_NATIVE) && defined(SIMDE_X86_AVX512VL_NATIVE)
+  return _mm256_mask_maddubs_epi16(src, k, a, b);
+#else
+  return simde_mm256_mask_mov_epi16(src, k, simde_mm256_maddubs_epi16(a, b));
+#endif
 }
-#if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES) && defined(SIMDE_X86_AVX512VL_ENABLE_NATIVE_ALIASES)
-  #undef _mm256_mask_maddubs_epi16
-  #define _mm256_mask_maddubs_epi16(a, b) simde_mm256_mask_maddubs_epi16(a, b)
+#if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES) && \
+    defined(SIMDE_X86_AVX512VL_ENABLE_NATIVE_ALIASES)
+#undef _mm256_mask_maddubs_epi16
+#define _mm256_mask_maddubs_epi16(a, b) simde_mm256_mask_maddubs_epi16(a, b)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m256i
-simde_mm256_maskz_maddubs_epi16 (simde__mmask16 k, simde__m256i a, simde__m256i b) {
-  #if defined(SIMDE_X86_AVX512BW_NATIVE) && defined(SIMDE_X86_AVX512VL_NATIVE)
-    return _mm256_maskz_maddubs_epi16(k, a, b);
-  #else
-    return simde_mm256_maskz_mov_epi16(k, simde_mm256_maddubs_epi16(a, b));
-  #endif
+simde__m256i simde_mm256_maskz_maddubs_epi16(simde__mmask16 k, simde__m256i a,
+                                             simde__m256i b) {
+#if defined(SIMDE_X86_AVX512BW_NATIVE) && defined(SIMDE_X86_AVX512VL_NATIVE)
+  return _mm256_maskz_maddubs_epi16(k, a, b);
+#else
+  return simde_mm256_maskz_mov_epi16(k, simde_mm256_maddubs_epi16(a, b));
+#endif
 }
-#if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES) && defined(SIMDE_X86_AVX512VL_ENABLE_NATIVE_ALIASES)
-  #undef _mm256_maskz_maddubs_epi16
-  #define _mm256_maskz_maddubs_epi16(a, b) simde_mm256_maskz_maddubs_epi16(a, b)
+#if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES) && \
+    defined(SIMDE_X86_AVX512VL_ENABLE_NATIVE_ALIASES)
+#undef _mm256_maskz_maddubs_epi16
+#define _mm256_maskz_maddubs_epi16(a, b) simde_mm256_maskz_maddubs_epi16(a, b)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512i
-simde_mm512_maddubs_epi16 (simde__m512i a, simde__m512i b) {
-  #if defined(SIMDE_X86_AVX512BW_NATIVE)
-    return _mm512_maddubs_epi16(a, b);
-  #else
-    simde__m512i_private r_,
-      a_ = simde__m512i_to_private(a),
-      b_ = simde__m512i_to_private(b);
+simde__m512i simde_mm512_maddubs_epi16(simde__m512i a, simde__m512i b) {
+#if defined(SIMDE_X86_AVX512BW_NATIVE)
+  return _mm512_maddubs_epi16(a, b);
+#else
+  simde__m512i_private r_, a_ = simde__m512i_to_private(a),
+                           b_ = simde__m512i_to_private(b);
 
-    #if SIMDE_NATURAL_VECTOR_SIZE_LE(256)
-      for (size_t i = 0 ; i < (sizeof(r_.m256i) / sizeof(r_.m256i[0])) ; i++) {
-        r_.m256i[i] = simde_mm256_maddubs_epi16(a_.m256i[i], b_.m256i[i]);
-      }
-    #else
-      for (size_t i = 0 ; i < (sizeof(r_.i16) / sizeof(r_.i16[0])) ; i++) {
-        const int idx = HEDLEY_STATIC_CAST(int, i) << 1;
-        int32_t ts =
-          (HEDLEY_STATIC_CAST(int16_t, a_.u8[  idx  ]) * HEDLEY_STATIC_CAST(int16_t, b_.i8[  idx  ])) +
-          (HEDLEY_STATIC_CAST(int16_t, a_.u8[idx + 1]) * HEDLEY_STATIC_CAST(int16_t, b_.i8[idx + 1]));
-        r_.i16[i] = (ts > INT16_MIN) ? ((ts < INT16_MAX) ? HEDLEY_STATIC_CAST(int16_t, ts) : INT16_MAX) : INT16_MIN;
-      }
-    #endif
+#if SIMDE_NATURAL_VECTOR_SIZE_LE(256)
+  for (size_t i = 0; i < (sizeof(r_.m256i) / sizeof(r_.m256i[0])); i++) {
+    r_.m256i[i] = simde_mm256_maddubs_epi16(a_.m256i[i], b_.m256i[i]);
+  }
+#else
+  for (size_t i = 0; i < (sizeof(r_.i16) / sizeof(r_.i16[0])); i++) {
+    const int idx = HEDLEY_STATIC_CAST(int, i) << 1;
+    int32_t ts = (HEDLEY_STATIC_CAST(int16_t, a_.u8[idx]) *
+                  HEDLEY_STATIC_CAST(int16_t, b_.i8[idx])) +
+                 (HEDLEY_STATIC_CAST(int16_t, a_.u8[idx + 1]) *
+                  HEDLEY_STATIC_CAST(int16_t, b_.i8[idx + 1]));
+    r_.i16[i] =
+        (ts > INT16_MIN)
+            ? ((ts < INT16_MAX) ? HEDLEY_STATIC_CAST(int16_t, ts) : INT16_MAX)
+            : INT16_MIN;
+  }
+#endif
 
-    return simde__m512i_from_private(r_);
-  #endif
+  return simde__m512i_from_private(r_);
+#endif
 }
 #if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_maddubs_epi16
-  #define _mm512_maddubs_epi16(a, b) simde_mm512_maddubs_epi16(a, b)
+#undef _mm512_maddubs_epi16
+#define _mm512_maddubs_epi16(a, b) simde_mm512_maddubs_epi16(a, b)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512i
-simde_mm512_mask_maddubs_epi16 (simde__m512i src, simde__mmask32 k, simde__m512i a, simde__m512i b) {
-  #if defined(SIMDE_X86_AVX512BW_NATIVE)
-    return _mm512_mask_maddubs_epi16(src, k, a, b);
-  #else
-    return simde_mm512_mask_mov_epi16(src, k, simde_mm512_maddubs_epi16(a, b));
-  #endif
+simde__m512i simde_mm512_mask_maddubs_epi16(simde__m512i src, simde__mmask32 k,
+                                            simde__m512i a, simde__m512i b) {
+#if defined(SIMDE_X86_AVX512BW_NATIVE)
+  return _mm512_mask_maddubs_epi16(src, k, a, b);
+#else
+  return simde_mm512_mask_mov_epi16(src, k, simde_mm512_maddubs_epi16(a, b));
+#endif
 }
 #if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_mask_maddubs_epi16
-  #define _mm512_mask_maddubs_epi16(a, b) simde_mm512_mask_maddubs_epi16(a, b)
+#undef _mm512_mask_maddubs_epi16
+#define _mm512_mask_maddubs_epi16(a, b) simde_mm512_mask_maddubs_epi16(a, b)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512i
-simde_mm512_maskz_maddubs_epi16 (simde__mmask32 k, simde__m512i a, simde__m512i b) {
-  #if defined(SIMDE_X86_AVX512BW_NATIVE)
-    return _mm512_maskz_maddubs_epi16(k, a, b);
-  #else
-    return simde_mm512_maskz_mov_epi16(k, simde_mm512_maddubs_epi16(a, b));
-  #endif
+simde__m512i simde_mm512_maskz_maddubs_epi16(simde__mmask32 k, simde__m512i a,
+                                             simde__m512i b) {
+#if defined(SIMDE_X86_AVX512BW_NATIVE)
+  return _mm512_maskz_maddubs_epi16(k, a, b);
+#else
+  return simde_mm512_maskz_mov_epi16(k, simde_mm512_maddubs_epi16(a, b));
+#endif
 }
 #if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_maskz_maddubs_epi16
-  #define _mm512_maskz_maddubs_epi16(a, b) simde_mm512_maskz_maddubs_epi16(a, b)
+#undef _mm512_maskz_maddubs_epi16
+#define _mm512_maskz_maddubs_epi16(a, b) simde_mm512_maskz_maddubs_epi16(a, b)
 #endif
 
 SIMDE_END_DECLS_

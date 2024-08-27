@@ -9,7 +9,7 @@
 class ClpSimplex;
 class CoinIndexedVector;
 
-//#############################################################################
+// #############################################################################
 
 /** Primal Column Pivot Abstract Base Class
 
@@ -23,8 +23,7 @@ as that is simplest version.
 */
 
 class ClpPrimalColumnPivot {
-
-public:
+ public:
   ///@name Algorithmic methods
   //@{
 
@@ -47,11 +46,10 @@ public:
          We can use other arrays to help updates
      */
   virtual int pivotColumn(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow1,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2)
-    = 0;
+                          CoinIndexedVector *spareRow1,
+                          CoinIndexedVector *spareRow2,
+                          CoinIndexedVector *spareColumn1,
+                          CoinIndexedVector *spareColumn2) = 0;
 
   /// Updates weights - part 1 (may be empty)
   virtual void updateWeights(CoinIndexedVector *input);
@@ -73,23 +71,16 @@ public:
          -1 to numberRows-1 - use this (will be checked)
          way should be -1 to go to lower bound, +1 to upper bound
      */
-  virtual int pivotRow(double &way)
-  {
+  virtual int pivotRow(double &way) {
     way = 0;
     return -2;
   }
   /// Gets rid of all arrays (may be empty)
   virtual void clearArrays();
   /// Returns true if would not find any column
-  virtual bool looksOptimal() const
-  {
-    return looksOptimal_;
-  }
+  virtual bool looksOptimal() const { return looksOptimal_; }
   /// Sets optimality flag (for advanced use)
-  virtual void setLooksOptimal(bool flag)
-  {
-    looksOptimal_ = flag;
-  }
+  virtual void setLooksOptimal(bool flag) { looksOptimal_ = flag; }
   //@}
 
   ///@name Constructors and destructors
@@ -114,21 +105,12 @@ public:
   ///@name Other
   //@{
   /// Returns model
-  inline ClpSimplex *model()
-  {
-    return model_;
-  }
+  inline ClpSimplex *model() { return model_; }
   /// Sets model
-  inline void setModel(ClpSimplex *newmodel)
-  {
-    model_ = newmodel;
-  }
+  inline void setModel(ClpSimplex *newmodel) { model_ = newmodel; }
 
   /// Returns type (above 63 is extra information)
-  inline int type()
-  {
-    return type_;
-  }
+  inline int type() { return type_; }
 
   /** Returns number of extra columns for sprint algorithm - 0 means off.
          Also number of iterations before recompute
@@ -143,7 +125,7 @@ public:
 
   //---------------------------------------------------------------------------
 
-protected:
+ protected:
   ///@name Protected member data
   //@{
   /// Pointer to model
@@ -160,4 +142,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

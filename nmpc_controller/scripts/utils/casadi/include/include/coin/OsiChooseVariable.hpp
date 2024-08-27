@@ -16,23 +16,23 @@ class OsiHotInfo;
 
 /** This class chooses a variable to branch on
 
-    The base class just chooses the variable and direction without strong branching but it 
-    has information which would normally be used by strong branching e.g. to re-enter
-    having fixed a variable but using same candidates for strong branching.
+    The base class just chooses the variable and direction without strong
+   branching but it has information which would normally be used by strong
+   branching e.g. to re-enter having fixed a variable but using same candidates
+   for strong branching.
 
     The flow is :
     a) initialize the process.  This decides on strong branching list
-       and stores indices of all infeasible objects  
+       and stores indices of all infeasible objects
     b) do strong branching on list.  If list is empty then just
-       choose one candidate and return without strong branching.  If not empty then
-       go through list and return best.  However we may find that the node is infeasible
-       or that we can fix a variable.  If so we return and it is up to user to call
-       again (after fixing a variable).
+       choose one candidate and return without strong branching.  If not empty
+   then go through list and return best.  However we may find that the node is
+   infeasible or that we can fix a variable.  If so we return and it is up to
+   user to call again (after fixing a variable).
 */
 
 class OsiChooseVariable {
-
-public:
+ public:
   /// Default Constructor
   OsiChooseVariable();
 
@@ -52,185 +52,118 @@ public:
   virtual ~OsiChooseVariable();
 
   /** Sets up strong list and clears all if initialize is true.
-      Returns number of infeasibilities. 
+      Returns number of infeasibilities.
       If returns -1 then has worked out node is infeasible!
   */
   virtual int setupList(OsiBranchingInformation *info, bool initialize);
   /** Choose a variable
-      Returns - 
+      Returns -
      -1 Node is infeasible
      0  Normal termination - we have a candidate
      1  All looks satisfied - no candidate
-     2  We can change the bound on a variable - but we also have a strong branching candidate
-     3  We can change the bound on a variable - but we have a non-strong branching candidate
-     4  We can change the bound on a variable - no other candidates
-     We can pick up branch from bestObjectIndex() and bestWhichWay()
-     We can pick up a forced branch (can change bound) from firstForcedObjectIndex() and firstForcedWhichWay()
-     If we have a solution then we can pick up from goodObjectiveValue() and goodSolution()
-     If fixVariables is true then 2,3,4 are all really same as problem changed
+     2  We can change the bound on a variable - but we also have a strong
+     branching candidate 3  We can change the bound on a variable - but we have
+     a non-strong branching candidate 4  We can change the bound on a variable -
+     no other candidates We can pick up branch from bestObjectIndex() and
+     bestWhichWay() We can pick up a forced branch (can change bound) from
+     firstForcedObjectIndex() and firstForcedWhichWay() If we have a solution
+     then we can pick up from goodObjectiveValue() and goodSolution() If
+     fixVariables is true then 2,3,4 are all really same as problem changed
   */
-  virtual int chooseVariable(OsiSolverInterface *solver, OsiBranchingInformation *info, bool fixVariables);
+  virtual int chooseVariable(OsiSolverInterface *solver,
+                             OsiBranchingInformation *info, bool fixVariables);
   /// Returns true if solution looks feasible against given objects
   virtual bool feasibleSolution(const OsiBranchingInformation *info,
-    const double *solution,
-    int numberObjects,
-    const OsiObject **objects);
+                                const double *solution, int numberObjects,
+                                const OsiObject **objects);
   /// Saves a good solution
   void saveSolution(const OsiSolverInterface *solver);
   /// Clears out good solution after use
   void clearGoodSolution();
   /// Given a candidate fill in useful information e.g. estimates
   virtual void updateInformation(const OsiBranchingInformation *info,
-    int branch, OsiHotInfo *hotInfo);
+                                 int branch, OsiHotInfo *hotInfo);
 #if 1
   /// Given a branch fill in useful information e.g. estimates
   virtual void updateInformation(int whichObject, int branch,
-    double changeInObjective, double changeInValue,
-    int status);
+                                 double changeInObjective, double changeInValue,
+                                 int status);
 #endif
   /// Objective value for feasible solution
-  inline double goodObjectiveValue() const
-  {
-    return goodObjectiveValue_;
-  }
+  inline double goodObjectiveValue() const { return goodObjectiveValue_; }
   /// Estimate of up change or change on chosen if n-way
-  inline double upChange() const
-  {
-    return upChange_;
-  }
+  inline double upChange() const { return upChange_; }
   /// Estimate of down change or max change on other possibilities if n-way
-  inline double downChange() const
-  {
-    return downChange_;
-  }
+  inline double downChange() const { return downChange_; }
   /// Good solution - deleted by finalize
-  inline const double *goodSolution() const
-  {
-    return goodSolution_;
-  }
+  inline const double *goodSolution() const { return goodSolution_; }
   /// Index of chosen object
-  inline int bestObjectIndex() const
-  {
-    return bestObjectIndex_;
-  }
+  inline int bestObjectIndex() const { return bestObjectIndex_; }
   /// Set index of chosen object
-  inline void setBestObjectIndex(int value)
-  {
-    bestObjectIndex_ = value;
-  }
+  inline void setBestObjectIndex(int value) { bestObjectIndex_ = value; }
   /// Preferred way of chosen object
-  inline int bestWhichWay() const
-  {
-    return bestWhichWay_;
-  }
+  inline int bestWhichWay() const { return bestWhichWay_; }
   /// Set preferred way of chosen object
-  inline void setBestWhichWay(int value)
-  {
-    bestWhichWay_ = value;
-  }
+  inline void setBestWhichWay(int value) { bestWhichWay_ = value; }
   /// Index of forced object
-  inline int firstForcedObjectIndex() const
-  {
-    return firstForcedObjectIndex_;
-  }
+  inline int firstForcedObjectIndex() const { return firstForcedObjectIndex_; }
   /// Set index of forced object
-  inline void setFirstForcedObjectIndex(int value)
-  {
+  inline void setFirstForcedObjectIndex(int value) {
     firstForcedObjectIndex_ = value;
   }
   /// Preferred way of forced object
-  inline int firstForcedWhichWay() const
-  {
-    return firstForcedWhichWay_;
-  }
+  inline int firstForcedWhichWay() const { return firstForcedWhichWay_; }
   /// Set preferred way of forced object
-  inline void setFirstForcedWhichWay(int value)
-  {
+  inline void setFirstForcedWhichWay(int value) {
     firstForcedWhichWay_ = value;
   }
-  /// Get the number of objects unsatisfied at this node - accurate on first pass
-  inline int numberUnsatisfied() const
-  {
-    return numberUnsatisfied_;
-  }
+  /// Get the number of objects unsatisfied at this node - accurate on first
+  /// pass
+  inline int numberUnsatisfied() const { return numberUnsatisfied_; }
   /// Number of objects to choose for strong branching
-  inline int numberStrong() const
-  {
-    return numberStrong_;
-  }
+  inline int numberStrong() const { return numberStrong_; }
   /// Set number of objects to choose for strong branching
-  inline void setNumberStrong(int value)
-  {
-    numberStrong_ = value;
-  }
+  inline void setNumberStrong(int value) { numberStrong_ = value; }
   /// Number left on strong list
-  inline int numberOnList() const
-  {
-    return numberOnList_;
-  }
+  inline int numberOnList() const { return numberOnList_; }
   /// Number of strong branches actually done
-  inline int numberStrongDone() const
-  {
-    return numberStrongDone_;
-  }
+  inline int numberStrongDone() const { return numberStrongDone_; }
   /// Number of strong iterations actually done
-  inline int numberStrongIterations() const
-  {
-    return numberStrongIterations_;
-  }
+  inline int numberStrongIterations() const { return numberStrongIterations_; }
   /// Number of strong branches which changed bounds
-  inline int numberStrongFixed() const
-  {
-    return numberStrongFixed_;
-  }
+  inline int numberStrongFixed() const { return numberStrongFixed_; }
   /// List of candidates
-  inline const int *candidates() const
-  {
-    return list_;
-  }
+  inline const int *candidates() const { return list_; }
   /// Trust results from strong branching for changing bounds
-  inline bool trustStrongForBound() const
-  {
-    return trustStrongForBound_;
-  }
+  inline bool trustStrongForBound() const { return trustStrongForBound_; }
   /// Set trust results from strong branching for changing bounds
-  inline void setTrustStrongForBound(bool yesNo)
-  {
+  inline void setTrustStrongForBound(bool yesNo) {
     trustStrongForBound_ = yesNo;
   }
   /// Trust results from strong branching for valid solution
-  inline bool trustStrongForSolution() const
-  {
-    return trustStrongForSolution_;
-  }
+  inline bool trustStrongForSolution() const { return trustStrongForSolution_; }
   /// Set trust results from strong branching for valid solution
-  inline void setTrustStrongForSolution(bool yesNo)
-  {
+  inline void setTrustStrongForSolution(bool yesNo) {
     trustStrongForSolution_ = yesNo;
   }
   /// Set solver and redo arrays
   void setSolver(const OsiSolverInterface *solver);
-  /** Return status - 
+  /** Return status -
      -1 Node is infeasible
      0  Normal termination - we have a candidate
      1  All looks satisfied - no candidate
-     2  We can change the bound on a variable - but we also have a strong branching candidate
-     3  We can change the bound on a variable - but we have a non-strong branching candidate
-     4  We can change the bound on a variable - no other candidates
-     We can pick up branch from bestObjectIndex() and bestWhichWay()
-     We can pick up a forced branch (can change bound) from firstForcedObjectIndex() and firstForcedWhichWay()
-     If we have a solution then we can pick up from goodObjectiveValue() and goodSolution()
+     2  We can change the bound on a variable - but we also have a strong
+     branching candidate 3  We can change the bound on a variable - but we have
+     a non-strong branching candidate 4  We can change the bound on a variable -
+     no other candidates We can pick up branch from bestObjectIndex() and
+     bestWhichWay() We can pick up a forced branch (can change bound) from
+     firstForcedObjectIndex() and firstForcedWhichWay() If we have a solution
+     then we can pick up from goodObjectiveValue() and goodSolution()
   */
-  inline int status() const
-  {
-    return status_;
-  }
-  inline void setStatus(int value)
-  {
-    status_ = value;
-  }
+  inline int status() const { return status_; }
+  inline void setStatus(int value) { status_ = value; }
 
-protected:
+ protected:
   // Data
   /// Objective value for feasible solution
   double goodObjectiveValue_;
@@ -250,9 +183,10 @@ protected:
      -1 Node is infeasible
      0  Normal termination - we have a candidate
      1  All looks satisfied - no candidate
-     2  We can change the bound on a variable - but we also have a strong branching candidate
-     3  We can change the bound on a variable - but we have a non-strong branching candidate
-     4  We can change the bound on a variable - no other candidates
+     2  We can change the bound on a variable - but we also have a strong
+     branching candidate 3  We can change the bound on a variable - but we have
+     a non-strong branching candidate 4  We can change the bound on a variable -
+     no other candidates
   */
   int status_;
   /// Index of chosen object
@@ -288,7 +222,7 @@ protected:
 */
 
 class OsiPseudoCosts {
-protected:
+ protected:
   // Data
   /// Total of all changes up
   double *upTotalChange_;
@@ -303,33 +237,26 @@ protected:
   /// Number before we trust
   int numberBeforeTrusted_;
 
-private:
+ private:
   void gutsOfDelete();
   void gutsOfCopy(const OsiPseudoCosts &rhs);
 
-public:
+ public:
   OsiPseudoCosts();
   virtual ~OsiPseudoCosts();
   OsiPseudoCosts(const OsiPseudoCosts &rhs);
   OsiPseudoCosts &operator=(const OsiPseudoCosts &rhs);
 
   /// Number of times before trusted
-  inline int numberBeforeTrusted() const
-  {
-    return numberBeforeTrusted_;
-  }
+  inline int numberBeforeTrusted() const { return numberBeforeTrusted_; }
   /// Set number of times before trusted
-  inline void setNumberBeforeTrusted(int value)
-  {
+  inline void setNumberBeforeTrusted(int value) {
     numberBeforeTrusted_ = value;
   }
   /// Initialize the pseudocosts with n entries
   void initialize(int n);
   /// Give the number of objects for which pseudo costs are stored
-  inline int numberObjects() const
-  {
-    return numberObjects_;
-  }
+  inline int numberObjects() const { return numberObjects_; }
 
   /** @name Accessor methods to pseudo costs data */
   //@{
@@ -348,12 +275,12 @@ public:
 
   /// Given a candidate fill in useful information e.g. estimates
   virtual void updateInformation(const OsiBranchingInformation *info,
-    int branch, OsiHotInfo *hotInfo);
+                                 int branch, OsiHotInfo *hotInfo);
 #if 1
   /// Given a branch fill in useful information e.g. estimates
   virtual void updateInformation(int whichObject, int branch,
-    double changeInObjective, double changeInValue,
-    int status);
+                                 double changeInObjective, double changeInValue,
+                                 int status);
 #endif
 };
 
@@ -363,17 +290,16 @@ public:
 
     The flow is :
     a) initialize the process.  This decides on strong branching list
-       and stores indices of all infeasible objects  
+       and stores indices of all infeasible objects
     b) do strong branching on list.  If list is empty then just
-       choose one candidate and return without strong branching.  If not empty then
-       go through list and return best.  However we may find that the node is infeasible
-       or that we can fix a variable.  If so we return and it is up to user to call
-       again (after fixing a variable).
+       choose one candidate and return without strong branching.  If not empty
+   then go through list and return best.  However we may find that the node is
+   infeasible or that we can fix a variable.  If so we return and it is up to
+   user to call again (after fixing a variable).
 */
 
 class OsiChooseStrong : public OsiChooseVariable {
-
-public:
+ public:
   /// Default Constructor
   OsiChooseStrong();
 
@@ -393,24 +319,26 @@ public:
   virtual ~OsiChooseStrong();
 
   /** Sets up strong list and clears all if initialize is true.
-      Returns number of infeasibilities. 
+      Returns number of infeasibilities.
       If returns -1 then has worked out node is infeasible!
   */
   virtual int setupList(OsiBranchingInformation *info, bool initialize);
   /** Choose a variable
-      Returns - 
+      Returns -
      -1 Node is infeasible
      0  Normal termination - we have a candidate
      1  All looks satisfied - no candidate
-     2  We can change the bound on a variable - but we also have a strong branching candidate
-     3  We can change the bound on a variable - but we have a non-strong branching candidate
-     4  We can change the bound on a variable - no other candidates
-     We can pick up branch from bestObjectIndex() and bestWhichWay()
-     We can pick up a forced branch (can change bound) from firstForcedObjectIndex() and firstForcedWhichWay()
-     If we have a solution then we can pick up from goodObjectiveValue() and goodSolution()
-     If fixVariables is true then 2,3,4 are all really same as problem changed
+     2  We can change the bound on a variable - but we also have a strong
+     branching candidate 3  We can change the bound on a variable - but we have
+     a non-strong branching candidate 4  We can change the bound on a variable -
+     no other candidates We can pick up branch from bestObjectIndex() and
+     bestWhichWay() We can pick up a forced branch (can change bound) from
+     firstForcedObjectIndex() and firstForcedWhichWay() If we have a solution
+     then we can pick up from goodObjectiveValue() and goodSolution() If
+     fixVariables is true then 2,3,4 are all really same as problem changed
   */
-  virtual int chooseVariable(OsiSolverInterface *solver, OsiBranchingInformation *info, bool fixVariables);
+  virtual int chooseVariable(OsiSolverInterface *solver,
+                             OsiBranchingInformation *info, bool fixVariables);
 
   /** Pseudo Shadow Price mode
       0 - off
@@ -418,44 +346,27 @@ public:
       2 - use if strong not trusted
       3 - use even if trusted
   */
-  inline int shadowPriceMode() const
-  {
-    return shadowPriceMode_;
-  }
+  inline int shadowPriceMode() const { return shadowPriceMode_; }
   /// Set Shadow price mode
-  inline void setShadowPriceMode(int value)
-  {
-    shadowPriceMode_ = value;
-  }
+  inline void setShadowPriceMode(int value) { shadowPriceMode_ = value; }
 
   /** Accessor method to pseudo cost object*/
-  const OsiPseudoCosts &pseudoCosts() const
-  {
-    return pseudoCosts_;
-  }
+  const OsiPseudoCosts &pseudoCosts() const { return pseudoCosts_; }
 
   /** Accessor method to pseudo cost object*/
-  OsiPseudoCosts &pseudoCosts()
-  {
-    return pseudoCosts_;
-  }
+  OsiPseudoCosts &pseudoCosts() { return pseudoCosts_; }
 
   /** A feww pass-through methods to access members of pseudoCosts_ as if they
       were members of OsiChooseStrong object */
-  inline int numberBeforeTrusted() const
-  {
+  inline int numberBeforeTrusted() const {
     return pseudoCosts_.numberBeforeTrusted();
   }
-  inline void setNumberBeforeTrusted(int value)
-  {
+  inline void setNumberBeforeTrusted(int value) {
     pseudoCosts_.setNumberBeforeTrusted(value);
   }
-  inline int numberObjects() const
-  {
-    return pseudoCosts_.numberObjects();
-  }
+  inline int numberObjects() const { return pseudoCosts_.numberObjects(); }
 
-protected:
+ protected:
   /**  This is a utility function which does strong branching on
        a list of objects and stores the results in OsiHotInfo.objects.
        On entry the object sequence is stored in the OsiHotInfo object
@@ -464,22 +375,22 @@ protected:
        -1 - one branch was infeasible both ways
        0 - all inspected - nothing can be fixed
        1 - all inspected - some can be fixed (returnCriterion==0)
-       2 - may be returning early - one can be fixed (last one done) (returnCriterion==1) 
-       3 - returning because max time
-       
+       2 - may be returning early - one can be fixed (last one done)
+     (returnCriterion==1) 3 - returning because max time
+
   */
   int doStrongBranching(OsiSolverInterface *solver,
-    OsiBranchingInformation *info,
-    int numberToDo, int returnCriterion);
+                        OsiBranchingInformation *info, int numberToDo,
+                        int returnCriterion);
 
   /** Clear out the results array */
   void resetResults(int num);
 
-protected:
+ protected:
   /** Pseudo Shadow Price mode
       0 - off
       1 - use and multiply by strong info
-      2 - use 
+      2 - use
   */
   int shadowPriceMode_;
 
@@ -498,16 +409,13 @@ protected:
 */
 
 class OsiHotInfo {
-
-public:
+ public:
   /// Default Constructor
   OsiHotInfo();
 
   /// Constructor from useful information
-  OsiHotInfo(OsiSolverInterface *solver,
-    const OsiBranchingInformation *info,
-    const OsiObject *const *objects,
-    int whichObject);
+  OsiHotInfo(OsiSolverInterface *solver, const OsiBranchingInformation *info,
+             const OsiObject *const *objects, int whichObject);
 
   /// Copy constructor
   OsiHotInfo(const OsiHotInfo &);
@@ -524,101 +432,78 @@ public:
   /** Fill in useful information after strong branch.
       Return status
   */
-  int updateInformation(const OsiSolverInterface *solver, const OsiBranchingInformation *info,
-    OsiChooseVariable *choose);
+  int updateInformation(const OsiSolverInterface *solver,
+                        const OsiBranchingInformation *info,
+                        OsiChooseVariable *choose);
   /// Original objective value
-  inline double originalObjectiveValue() const
-  {
+  inline double originalObjectiveValue() const {
     return originalObjectiveValue_;
   }
   /// Up change  - invalid if n-way
-  inline double upChange() const
-  {
+  inline double upChange() const {
     assert(branchingObject_->numberBranches() == 2);
     return changes_[1];
   }
   /// Down change  - invalid if n-way
-  inline double downChange() const
-  {
+  inline double downChange() const {
     assert(branchingObject_->numberBranches() == 2);
     return changes_[0];
   }
   /// Set up change  - invalid if n-way
-  inline void setUpChange(double value)
-  {
+  inline void setUpChange(double value) {
     assert(branchingObject_->numberBranches() == 2);
     changes_[1] = value;
   }
   /// Set down change  - invalid if n-way
-  inline void setDownChange(double value)
-  {
+  inline void setDownChange(double value) {
     assert(branchingObject_->numberBranches() == 2);
     changes_[0] = value;
   }
   /// Change on way k
-  inline double change(int k) const
-  {
-    return changes_[k];
-  }
+  inline double change(int k) const { return changes_[k]; }
 
   /// Up iteration count  - invalid if n-way
-  inline int upIterationCount() const
-  {
+  inline int upIterationCount() const {
     assert(branchingObject_->numberBranches() == 2);
     return iterationCounts_[1];
   }
   /// Down iteration count  - invalid if n-way
-  inline int downIterationCount() const
-  {
+  inline int downIterationCount() const {
     assert(branchingObject_->numberBranches() == 2);
     return iterationCounts_[0];
   }
   /// Iteration count on way k
-  inline int iterationCount(int k) const
-  {
-    return iterationCounts_[k];
-  }
+  inline int iterationCount(int k) const { return iterationCounts_[k]; }
 
   /// Up status  - invalid if n-way
-  inline int upStatus() const
-  {
+  inline int upStatus() const {
     assert(branchingObject_->numberBranches() == 2);
     return statuses_[1];
   }
   /// Down status  - invalid if n-way
-  inline int downStatus() const
-  {
+  inline int downStatus() const {
     assert(branchingObject_->numberBranches() == 2);
     return statuses_[0];
   }
   /// Set up status  - invalid if n-way
-  inline void setUpStatus(int value)
-  {
+  inline void setUpStatus(int value) {
     assert(branchingObject_->numberBranches() == 2);
     statuses_[1] = value;
   }
   /// Set down status  - invalid if n-way
-  inline void setDownStatus(int value)
-  {
+  inline void setDownStatus(int value) {
     assert(branchingObject_->numberBranches() == 2);
     statuses_[0] = value;
   }
   /// Status on way k
-  inline int status(int k) const
-  {
-    return statuses_[k];
-  }
+  inline int status(int k) const { return statuses_[k]; }
   /// Branching object
-  inline OsiBranchingObject *branchingObject() const
-  {
+  inline OsiBranchingObject *branchingObject() const {
     return branchingObject_;
   }
-  inline int whichObject() const
-  {
-    return whichObject_;
-  }
+  inline int whichObject() const { return whichObject_; }
 
-protected:
+ protected:
   // Data
   /// Original objective value
   double originalObjectiveValue_;
@@ -642,4 +527,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

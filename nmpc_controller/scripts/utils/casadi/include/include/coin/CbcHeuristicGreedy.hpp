@@ -11,7 +11,7 @@
  */
 
 class CbcHeuristicGreedyCover : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicGreedyCover();
 
@@ -41,14 +41,14 @@ public:
         Sets solution values if good, sets objective value (only if good)
         We leave all variables which are at one at this node of the
         tree to that value and will
-        initially set all others to zero.  We then sort all variables in order of their cost
-        divided by the number of entries in rows which are not yet covered.  We randomize that
-        value a bit so that ties will be broken in different ways on different runs of the heuristic.
-        We then choose the best one and set it to one and repeat the exercise.
+        initially set all others to zero.  We then sort all variables in order
+     of their cost divided by the number of entries in rows which are not yet
+     covered.  We randomize that value a bit so that ties will be broken in
+     different ways on different runs of the heuristic. We then choose the best
+     one and set it to one and repeat the exercise.
 
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// Validate model i.e. sets when_ to 0 if necessary (may be NULL)
   virtual void validate();
   /// Resets stuff if model changes
@@ -59,25 +59,13 @@ public:
        If 10 added perturb ratios more
        if 100 added round up all >=0.5
     */
-  inline int algorithm() const
-  {
-    return algorithm_;
-  }
-  inline void setAlgorithm(int value)
-  {
-    algorithm_ = value;
-  }
+  inline int algorithm() const { return algorithm_; }
+  inline void setAlgorithm(int value) { algorithm_ = value; }
   // Only do this many times
-  inline int numberTimes() const
-  {
-    return numberTimes_;
-  }
-  inline void setNumberTimes(int value)
-  {
-    numberTimes_ = value;
-  }
+  inline int numberTimes() const { return numberTimes_; }
+  inline void setNumberTimes(int value) { numberTimes_ = value; }
 
-protected:
+ protected:
   /// Guts of constructor from a CbcModel
   void gutsOfConstructor(CbcModel *model);
   // Data
@@ -97,7 +85,7 @@ protected:
 };
 
 class CbcHeuristicGreedyEquality : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicGreedyEquality();
 
@@ -127,14 +115,14 @@ public:
         Sets solution values if good, sets objective value (only if good)
         We leave all variables which are at one at this node of the
         tree to that value and will
-        initially set all others to zero.  We then sort all variables in order of their cost
-        divided by the number of entries in rows which are not yet covered.  We randomize that
-        value a bit so that ties will be broken in different ways on different runs of the heuristic.
-        We then choose the best one and set it to one and repeat the exercise.
+        initially set all others to zero.  We then sort all variables in order
+     of their cost divided by the number of entries in rows which are not yet
+     covered.  We randomize that value a bit so that ties will be broken in
+     different ways on different runs of the heuristic. We then choose the best
+     one and set it to one and repeat the exercise.
 
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// Validate model i.e. sets when_ to 0 if necessary (may be NULL)
   virtual void validate();
   /// Resets stuff if model changes
@@ -145,34 +133,16 @@ public:
        If 10 added perturb ratios more
        if 100 added round up all >=0.5
     */
-  inline int algorithm() const
-  {
-    return algorithm_;
-  }
-  inline void setAlgorithm(int value)
-  {
-    algorithm_ = value;
-  }
+  inline int algorithm() const { return algorithm_; }
+  inline void setAlgorithm(int value) { algorithm_ = value; }
   // Fraction of rhs to cover before branch and cut
-  inline void setFraction(double value)
-  {
-    fraction_ = value;
-  }
-  inline double fraction() const
-  {
-    return fraction_;
-  }
+  inline void setFraction(double value) { fraction_ = value; }
+  inline double fraction() const { return fraction_; }
   // Only do this many times
-  inline int numberTimes() const
-  {
-    return numberTimes_;
-  }
-  inline void setNumberTimes(int value)
-  {
-    numberTimes_ = value;
-  }
+  inline int numberTimes() const { return numberTimes_; }
+  inline void setNumberTimes(int value) { numberTimes_ = value; }
 
-protected:
+ protected:
   /// Guts of constructor from a CbcModel
   void gutsOfConstructor(CbcModel *model);
   // Data
@@ -197,7 +167,7 @@ protected:
  */
 
 class CbcHeuristicGreedySOS : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicGreedySOS();
 
@@ -227,14 +197,14 @@ public:
         Sets solution values if good, sets objective value (only if good)
         We leave all variables which are at one at this node of the
         tree to that value and will
-        initially set all others to zero.  We then sort all variables in order of their cost
-        divided by the number of entries in rows which are not yet covered.  We randomize that
-        value a bit so that ties will be broken in different ways on different runs of the heuristic.
-        We then choose the best one and set it to one and repeat the exercise.
+        initially set all others to zero.  We then sort all variables in order
+     of their cost divided by the number of entries in rows which are not yet
+     covered.  We randomize that value a bit so that ties will be broken in
+     different ways on different runs of the heuristic. We then choose the best
+     one and set it to one and repeat the exercise.
 
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// Validate model i.e. sets when_ to 0 if necessary (may be NULL)
   virtual void validate();
   /// Resets stuff if model changes
@@ -247,25 +217,13 @@ public:
        8 - use duals to modify greedy
        16 - use duals on GUB/SOS in special way
     */
-  inline int algorithm() const
-  {
-    return algorithm_;
-  }
-  inline void setAlgorithm(int value)
-  {
-    algorithm_ = value;
-  }
+  inline int algorithm() const { return algorithm_; }
+  inline void setAlgorithm(int value) { algorithm_ = value; }
   // Only do this many times
-  inline int numberTimes() const
-  {
-    return numberTimes_;
-  }
-  inline void setNumberTimes(int value)
-  {
-    numberTimes_ = value;
-  }
+  inline int numberTimes() const { return numberTimes_; }
+  inline void setNumberTimes(int value) { numberTimes_ = value; }
 
-protected:
+ protected:
   /// Guts of constructor from a CbcModel
   void gutsOfConstructor(CbcModel *model);
   // Data
@@ -277,7 +235,7 @@ protected:
   // original number of rows
   int originalNumberRows_;
   /* Algorithm
-    */
+   */
   int algorithm_;
   /// Do this many times
   int numberTimes_;
@@ -286,4 +244,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

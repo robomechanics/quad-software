@@ -18,76 +18,76 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_XML_FILE_HPP
 #define CASADI_XML_FILE_HPP
 
-#include "xml_file.hpp"
-#include "shared_object.hpp"
-#include "xml_node.hpp"
 #include "printable.hpp"
+#include "shared_object.hpp"
+#include "xml_file.hpp"
+#include "xml_node.hpp"
 
 namespace casadi {
 
-  /** Forward declaration of internal class */
-  class XmlFileInternal;
+/** Forward declaration of internal class */
+class XmlFileInternal;
 
-  /** \brief XML parser
+/** \brief XML parser
 
-      Can be used for parsing XML files into CasADi data structures.
+    Can be used for parsing XML files into CasADi data structures.
 
-      \author Joel Andersson
-      \date 2014
+    \author Joel Andersson
+    \date 2014
 
-      \identifier{7k} */
-  class CASADI_EXPORT XmlFile
+    \identifier{7k} */
+class CASADI_EXPORT XmlFile
     : public SharedObject,
       public SWIG_IF_ELSE(PrintableCommon, Printable<XmlFile>) {
-  public:
-    /** \brief Get type name
+ public:
+  /** \brief Get type name
 
-        \identifier{7l} */
-    static std::string type_name() {return "XmlFile";}
+      \identifier{7l} */
+  static std::string type_name() { return "XmlFile"; }
 
-    // Default constructor
-    XmlFile();
+  // Default constructor
+  XmlFile();
 
-    // Constructor
-    XmlFile(const std::string& name);
+  // Constructor
+  XmlFile(const std::string& name);
 
-    // Destructor
-    ~XmlFile();
+  // Destructor
+  ~XmlFile();
 
-    /// Load a plugin dynamically
-    static void load_plugin(const std::string& name);
+  /// Load a plugin dynamically
+  static void load_plugin(const std::string& name);
 
-    /// Get solver specific documentation
-    static std::string doc(const std::string& name);
+  /// Get solver specific documentation
+  static std::string doc(const std::string& name);
 
 #ifndef SWIG
-    /** \brief  Access functions of the node
+  /** \brief  Access functions of the node
 
-        \identifier{7m} */
-    XmlFileInternal* operator->();
+      \identifier{7m} */
+  XmlFileInternal* operator->();
 
-    /** \brief  Const access functions of the node
+  /** \brief  Const access functions of the node
 
-        \identifier{7n} */
-    const XmlFileInternal* operator->() const;
+      \identifier{7n} */
+  const XmlFileInternal* operator->() const;
 
-    // Parse an XML file
-    XmlNode parse(const std::string& filename);
+  // Parse an XML file
+  XmlNode parse(const std::string& filename);
 
-    // Save an XML file to disk
-    void dump(const std::string& filename, const XmlNode& node);
+  // Save an XML file to disk
+  void dump(const std::string& filename, const XmlNode& node);
 
-#endif // SWIG
-  };
+#endif  // SWIG
+};
 
-} // namespace casadi
+}  // namespace casadi
 
-#endif // CASADI_XML_FILE_HPP
+#endif  // CASADI_XML_FILE_HPP

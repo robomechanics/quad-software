@@ -18,66 +18,64 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_INTERRUPT_HPP
 #define CASADI_INTERRUPT_HPP
 
-#include "exception.hpp"
 #include <casadi/core/casadi_export.h>
 
 #include <fstream>
 #include <iostream>
 
+#include "exception.hpp"
+
 namespace casadi {
 
-  /// \cond INTERNAL
+/// \cond INTERNAL
 
-  /** \brief Takes care of user interrupts (Ctrl+C)
-   *
-   * This is an internal class.
-   *
-   *  \author Joris Gillis
-   *  \date 2015
+/** \brief Takes care of user interrupts (Ctrl+C)
+ *
+ * This is an internal class.
+ *
+ *  \author Joris Gillis
+ *  \date 2015
 
-      \identifier{23l} */
-  class CASADI_EXPORT InterruptHandler {
-  private:
-    /// No implementation - no instances are allowed of this class
-    InterruptHandler();
+    \identifier{23l} */
+class CASADI_EXPORT InterruptHandler {
+ private:
+  /// No implementation - no instances are allowed of this class
+  InterruptHandler();
 
-    /// By default, report everything is okay
-    static bool checkInterruptedDefault() {
-      return false;
+  /// By default, report everything is okay
+  static bool checkInterruptedDefault() { return false; }
+
+  /// By default, do nothing
+  static void clearInterruptedDefault() {}
+
+ public:
+  /// The routine that is used for checking interrupts
+  static bool (*checkInterrupted)();
+  /// The routine that is used for clearing interrupts
+  static void (*clearInterrupted)();
+
+  /// Are we in the main thread?
+  static bool is_main_thread();
+
+  /// Raises an error if an interrupt was captured.
+  static void check() {
+    if (checkInterrupted()) {
+      clearInterrupted();
+      throw KeyboardInterruptException();
     }
+  }
+};
 
-    /// By default, do nothing
-    static void clearInterruptedDefault() {
-    }
+/// \endcond INTERNAL
 
-  public:
-    /// The routine that is used for checking interrupts
-    static bool (*checkInterrupted)();
-    /// The routine that is used for clearing interrupts
-    static void (*clearInterrupted)();
+}  // namespace casadi
 
-    /// Are we in the main thread?
-    static bool is_main_thread();
-
-    /// Raises an error if an interrupt was captured.
-    static void check() {
-      if (checkInterrupted()) {
-        clearInterrupted();
-        throw KeyboardInterruptException();
-      }
-    }
-  };
-
-   /// \endcond INTERNAL
-
-} // namespace casadi
-
-#endif // CASADI_INTERRUPT_HPP
+#endif  // CASADI_INTERRUPT_HPP

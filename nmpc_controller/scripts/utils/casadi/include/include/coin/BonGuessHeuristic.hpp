@@ -8,39 +8,31 @@
 #ifndef BonGuessHeuristic_HPP
 #define BonGuessHeuristic_HPP
 #include "BonOsiTMINLPInterface.hpp"
-
 #include "CbcHeuristic.hpp"
 
-namespace Bonmin
-{
-  class  GuessHeuristic : public CbcHeuristic
-  {
-  public:
-    /// Usefull constructor
-    GuessHeuristic(CbcModel &model);
-    ///Copy constructor
-    GuessHeuristic( const GuessHeuristic &copy):
-        CbcHeuristic(copy)
-    {}
+namespace Bonmin {
+class GuessHeuristic : public CbcHeuristic {
+ public:
+  /// Usefull constructor
+  GuessHeuristic(CbcModel &model);
+  /// Copy constructor
+  GuessHeuristic(const GuessHeuristic &copy) : CbcHeuristic(copy) {}
 
-    /// heuristic method providing guess, based on pseudo costs
-    virtual int solution(double &solutionValue, double *betterSolution);
-    virtual int solution(double &solutionValue, double *betterSolution, OsiCuts & cs)
-    {
-      return solution(solutionValue, betterSolution);
-    }
-    virtual CbcHeuristic * clone()const
-    {
-      return new GuessHeuristic(*this);
-    }
-    virtual void resetModel(CbcModel*)
-    {}
-  private:
-    /// Default constructor
-    GuessHeuristic();
+  /// heuristic method providing guess, based on pseudo costs
+  virtual int solution(double &solutionValue, double *betterSolution);
+  virtual int solution(double &solutionValue, double *betterSolution,
+                       OsiCuts &cs) {
+    return solution(solutionValue, betterSolution);
+  }
+  virtual CbcHeuristic *clone() const { return new GuessHeuristic(*this); }
+  virtual void resetModel(CbcModel *) {}
 
-    /// Assignment operator
-    GuessHeuristic & operator=(const GuessHeuristic& rhs);
-  };
-}
+ private:
+  /// Default constructor
+  GuessHeuristic();
+
+  /// Assignment operator
+  GuessHeuristic &operator=(const GuessHeuristic &rhs);
+};
+}  // namespace Bonmin
 #endif

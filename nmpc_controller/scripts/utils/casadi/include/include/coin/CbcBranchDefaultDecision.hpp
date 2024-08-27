@@ -16,7 +16,7 @@
 */
 
 class CbcBranchDefaultDecision : public CbcBranchDecision {
-public:
+ public:
   // Default Constructor
   CbcBranchDefaultDecision();
 
@@ -51,9 +51,8 @@ public:
       comparison, the parameter \p bestSoFar is redundant, hence unused.
     */
   virtual int betterBranch(CbcBranchingObject *thisOne,
-    CbcBranchingObject *bestSoFar,
-    double changeUp, int numInfUp,
-    double changeDn, int numInfDn);
+                           CbcBranchingObject *bestSoFar, double changeUp,
+                           int numInfUp, double changeDn, int numInfDn);
   /** Sets or gets best criterion so far */
   virtual void setBestCriterion(double value);
   virtual double getBestCriterion() const;
@@ -64,13 +63,12 @@ public:
       This routine is used only after strong branching.
     */
 
-  virtual int
-  bestBranch(CbcBranchingObject **objects, int numberObjects, int numberUnsatisfied,
-    double *changeUp, int *numberInfeasibilitiesUp,
-    double *changeDown, int *numberInfeasibilitiesDown,
-    double objectiveValue);
+  virtual int bestBranch(CbcBranchingObject **objects, int numberObjects,
+                         int numberUnsatisfied, double *changeUp,
+                         int *numberInfeasibilitiesUp, double *changeDown,
+                         int *numberInfeasibilitiesDown, double objectiveValue);
 
-private:
+ private:
   /// Illegal Assignment operator
   CbcBranchDefaultDecision &operator=(const CbcBranchDefaultDecision &rhs);
 
@@ -98,4 +96,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

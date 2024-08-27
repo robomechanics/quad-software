@@ -8,14 +8,14 @@
 
 #include "CbcHeuristic.hpp"
 // for backward compatibility include 3 other headers
-#include "CbcHeuristicRENS.hpp"
 #include "CbcHeuristicDINS.hpp"
+#include "CbcHeuristicRENS.hpp"
 #include "CbcHeuristicVND.hpp"
 /** LocalSearch class
  */
 
 class CbcHeuristicRINS : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicRINS();
 
@@ -50,35 +50,20 @@ public:
         Sets solution values if good, sets objective value (only if good)
         This does Relaxation Induced Neighborhood Search
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// This version fixes stuff and does IP
-  int solutionFix(double &objectiveValue,
-    double *newSolution,
-    const int *keep);
+  int solutionFix(double &objectiveValue, double *newSolution, const int *keep);
 
   /// Sets how often to do it
-  inline void setHowOften(int value)
-  {
-    howOften_ = value;
-  }
+  inline void setHowOften(int value) { howOften_ = value; }
   /// Used array so we can set
-  inline char *used() const
-  {
-    return used_;
-  }
+  inline char *used() const { return used_; }
   /// Resets lastNode
-  inline void setLastNode(int value)
-  {
-    lastNode_ = value;
-  }
+  inline void setLastNode(int value) { lastNode_ = value; }
   /// Resets number of solutions
-  inline void setSolutionCount(int value)
-  {
-    numberSolutions_ = value;
-  }
+  inline void setSolutionCount(int value) { numberSolutions_ = value; }
 
-protected:
+ protected:
   // Data
 
   /// Number of solutions so we can do something at solution
@@ -103,4 +88,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

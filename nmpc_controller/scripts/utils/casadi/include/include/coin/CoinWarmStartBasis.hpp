@@ -7,7 +7,7 @@
 
 /*! \file CoinWarmStart.hpp
     \brief Declaration of the generic simplex (basis-oriented) warm start
-	   class. Also contains a basis diff class.
+           class. Also contains a basis diff class.
 */
 
 #ifndef CoinWarmStartBasis_H
@@ -15,30 +15,30 @@
 
 #include <vector>
 
-#include "CoinSort.hpp"
 #include "CoinHelperFunctions.hpp"
+#include "CoinSort.hpp"
 #include "CoinWarmStart.hpp"
 
-//#############################################################################
+// #############################################################################
 
 /*! \class CoinWarmStartBasis
     \brief The default COIN simplex (basis-oriented) warm start class
-    
+
     CoinWarmStartBasis provides for a warm start object which contains the
     status of each variable (structural and artificial).
 
     \todo Modify this class so that the number of status entries per byte
-	  and bytes per status vector allocation unit are not hardcoded.
-	  At the least, collect this into a couple of macros.
-    
+          and bytes per status vector allocation unit are not hardcoded.
+          At the least, collect this into a couple of macros.
+
     \todo Consider separate fields for allocated capacity and actual basis
-	  size. We could avoid some reallocation, at the price of retaining
-	  more space than we need. Perhaps more important, we could do much
-	  better sanity checks.
+          size. We could avoid some reallocation, at the price of retaining
+          more space than we need. Perhaps more important, we could do much
+          better sanity checks.
 */
 
 class CoinWarmStartBasis : public virtual CoinWarmStart {
-public:
+ public:
   /*! \brief Enum for status of variables
 
     Matches CoinPrePostsolveMatrix::Status, without superBasic. Most code that
@@ -54,24 +54,24 @@ public:
     details of the packing.
   */
   enum Status {
-    isFree = 0x00, ///< Nonbasic free variable
-    basic = 0x01, ///< Basic variable
-    atUpperBound = 0x02, ///< Nonbasic at upper bound
-    atLowerBound = 0x03, ///< Nonbasic at lower bound
-    superBasic = 0x04 ///< Not basic and not at bound
+    isFree = 0x00,        ///< Nonbasic free variable
+    basic = 0x01,         ///< Basic variable
+    atUpperBound = 0x02,  ///< Nonbasic at upper bound
+    atLowerBound = 0x03,  ///< Nonbasic at lower bound
+    superBasic = 0x04     ///< Not basic and not at bound
   };
 
   /** \brief Transfer vector entry for
-	 mergeBasis(const CoinWarmStartBasis*,const XferVec*,const XferVec*)
+         mergeBasis(const CoinWarmStartBasis*,const XferVec*,const XferVec*)
   */
-  typedef CoinTriple< int, int, int > XferEntry;
+  typedef CoinTriple<int, int, int> XferEntry;
 
   /** \brief Transfer vector for
-	 mergeBasis(const CoinWarmStartBasis*,const XferVec*,const XferVec*)
+         mergeBasis(const CoinWarmStartBasis*,const XferVec*,const XferVec*)
   */
-  typedef std::vector< XferEntry > XferVec;
+  typedef std::vector<XferEntry> XferVec;
 
-public:
+ public:
   /*! \name Methods to get and set basis information.
 
   The status of variables is kept in a pair of arrays, one for structural
@@ -89,28 +89,26 @@ public:
   inline int getNumArtificial() const { return numArtificial_; }
 
   /** Return the number of basic structurals
-  
+
     A fast test for an all-slack basis.
   */
   int numberBasicStructurals() const;
 
   /// Return the status of the specified structural variable.
-  inline Status getStructStatus(int i) const
-  {
+  inline Status getStructStatus(int i) const {
     const int st = (structuralStatus_[i >> 2] >> ((i & 3) << 1)) & 3;
-    return static_cast< CoinWarmStartBasis::Status >(st);
+    return static_cast<CoinWarmStartBasis::Status>(st);
   }
 
   /// Set the status of the specified structural variable.
-  inline void setStructStatus(int i, Status st)
-  {
+  inline void setStructStatus(int i, Status st) {
     char &st_byte = structuralStatus_[i >> 2];
-    st_byte = static_cast< char >(st_byte & ~(3 << ((i & 3) << 1)));
-    st_byte = static_cast< char >(st_byte | (st << ((i & 3) << 1)));
+    st_byte = static_cast<char>(st_byte & ~(3 << ((i & 3) << 1)));
+    st_byte = static_cast<char>(st_byte | (st << ((i & 3) << 1)));
   }
 
   /** Return the status array for the structural variables
-  
+
     The status information is stored using the codes defined in the
     Status enum, 2 bits per variable, packed 4 variables per byte.
   */
@@ -118,7 +116,7 @@ public:
 
   /** \c const overload for
     \link CoinWarmStartBasis::getStructuralStatus()
-    	  getStructuralStatus()
+          getStructuralStatus()
     \endlink
   */
   inline const char *getStructuralStatus() const { return structuralStatus_; }
@@ -129,23 +127,21 @@ public:
   inline char *getArtificialStatus() { return artificialStatus_; }
 
   /// Return the status of the specified artificial variable.
-  inline Status getArtifStatus(int i) const
-  {
+  inline Status getArtifStatus(int i) const {
     const int st = (artificialStatus_[i >> 2] >> ((i & 3) << 1)) & 3;
-    return static_cast< CoinWarmStartBasis::Status >(st);
+    return static_cast<CoinWarmStartBasis::Status>(st);
   }
 
   /// Set the status of the specified artificial variable.
-  inline void setArtifStatus(int i, Status st)
-  {
+  inline void setArtifStatus(int i, Status st) {
     char &st_byte = artificialStatus_[i >> 2];
-    st_byte = static_cast< char >(st_byte & ~(3 << ((i & 3) << 1)));
-    st_byte = static_cast< char >(st_byte | (st << ((i & 3) << 1)));
+    st_byte = static_cast<char>(st_byte & ~(3 << ((i & 3) << 1)));
+    st_byte = static_cast<char>(st_byte | (st << ((i & 3) << 1)));
   }
 
   /** \c const overload for
     \link CoinWarmStartBasis::getArtificialStatus()
-    	  getArtificialStatus()
+          getArtificialStatus()
     \endlink
   */
   inline const char *getArtificialStatus() const { return artificialStatus_; }
@@ -155,14 +151,14 @@ public:
   //@{
 
   /*! \brief Generate a `diff' that can convert the warm start basis passed as
-	     a parameter to the warm start basis specified by \c this.
+             a parameter to the warm start basis specified by \c this.
 
     The capabilities are limited: the basis passed as a parameter can be no
     larger than the basis pointed to by \c this.
   */
 
-  virtual CoinWarmStartDiff *
-  generateDiff(const CoinWarmStart *const oldCWS) const;
+  virtual CoinWarmStartDiff *generateDiff(
+      const CoinWarmStart *const oldCWS) const;
 
   /*! \brief Apply \p diff to this basis
 
@@ -170,8 +166,7 @@ public:
     capacity of the basis is sufficiently large.
   */
 
-  virtual void
-  applyDiff(const CoinWarmStartDiff *const cwsdDiff);
+  virtual void applyDiff(const CoinWarmStartDiff *const cwsdDiff);
 
   //@}
 
@@ -251,8 +246,7 @@ public:
     length.
   */
   virtual void mergeBasis(const CoinWarmStartBasis *src,
-    const XferVec *xferRows,
-    const XferVec *xferCols);
+                          const XferVec *xferRows, const XferVec *xferCols);
 
   //@}
 
@@ -282,10 +276,7 @@ public:
   CoinWarmStartBasis(const CoinWarmStartBasis &ws);
 
   /** `Virtual constructor' */
-  virtual CoinWarmStart *clone() const
-  {
-    return new CoinWarmStartBasis(*this);
-  }
+  virtual CoinWarmStart *clone() const { return new CoinWarmStartBasis(*this); }
 
   /** Destructor */
   virtual ~CoinWarmStartBasis();
@@ -295,15 +286,15 @@ public:
   virtual CoinWarmStartBasis &operator=(const CoinWarmStartBasis &rhs);
 
   /** Assign the status vectors to be the warm start information.
-  
+
       In this method the CoinWarmStartBasis object assumes ownership of the
       pointers and upon return the argument pointers will be NULL.
       If copying is desirable, use the
       \link CoinWarmStartBasis(int,int,const char*,const char*)
-	    array constructor \endlink
+            array constructor \endlink
       or the
       \link operator=(const CoinWarmStartBasis&)
-	    assignment operator \endlink.
+            assignment operator \endlink.
 
       \note
       The pointers passed to this method will be
@@ -324,7 +315,7 @@ public:
 
   //@}
 
-protected:
+ protected:
   /** \name Protected data members
 
     \sa CoinWarmStartBasis::Status for a description of the packing used in
@@ -335,7 +326,8 @@ protected:
   int numStructural_;
   /// The number of artificial variables
   int numArtificial_;
-  /// The maximum sise (in ints - actually 4*char) (so resize does not need to do new)
+  /// The maximum sise (in ints - actually 4*char) (so resize does not need to
+  /// do new)
   int maxSize_;
   /** The status of the structural variables. */
   char *structuralStatus_;
@@ -348,21 +340,19 @@ protected:
     \brief Get the status of the specified variable in the given status array.
 */
 
-inline CoinWarmStartBasis::Status getStatus(const char *array, int i)
-{
+inline CoinWarmStartBasis::Status getStatus(const char *array, int i) {
   const int st = (array[i >> 2] >> ((i & 3) << 1)) & 3;
-  return static_cast< CoinWarmStartBasis::Status >(st);
+  return static_cast<CoinWarmStartBasis::Status>(st);
 }
 
 /*! \relates CoinWarmStartBasis
     \brief Set the status of the specified variable in the given status array.
 */
 
-inline void setStatus(char *array, int i, CoinWarmStartBasis::Status st)
-{
+inline void setStatus(char *array, int i, CoinWarmStartBasis::Status st) {
   char &st_byte = array[i >> 2];
-  st_byte = static_cast< char >(st_byte & ~(3 << ((i & 3) << 1)));
-  st_byte = static_cast< char >(st_byte | (st << ((i & 3) << 1)));
+  st_byte = static_cast<char>(st_byte & ~(3 << ((i & 3) << 1)));
+  st_byte = static_cast<char>(st_byte | (st << ((i & 3) << 1)));
 }
 
 /*! \relates CoinWarmStartBasis
@@ -393,21 +383,20 @@ CoinWarmStartBasis::Status charToStatus(char status);
   starts with indices of changed and then has values starting after #sze_
 
   \todo This is a pretty generic structure, and vector diff is a pretty generic
-	activity. We should be able to convert this to a template.
+        activity. We should be able to convert this to a template.
 
   \todo Using unsigned int as the data type for the diff vectors might help
-	to contain the damage when this code is inevitably compiled for 64 bit
-	architectures. But the notion of int as 4 bytes is hardwired into
-	CoinWarmStartBasis, so changes are definitely required.
+        to contain the damage when this code is inevitably compiled for 64 bit
+        architectures. But the notion of int as 4 bytes is hardwired into
+        CoinWarmStartBasis, so changes are definitely required.
 */
 
 class CoinWarmStartBasisDiff : public virtual CoinWarmStartDiff {
-public:
+ public:
   /*! \brief `Virtual constructor' */
-  virtual CoinWarmStartDiff *clone() const
-  {
+  virtual CoinWarmStartDiff *clone() const {
     CoinWarmStartBasisDiff *cwsbd = new CoinWarmStartBasisDiff(*this);
-    return (dynamic_cast< CoinWarmStartDiff * >(cwsbd));
+    return (dynamic_cast<CoinWarmStartDiff *>(cwsbd));
   }
 
   /*! \brief Assignment */
@@ -416,21 +405,17 @@ public:
   /*! \brief Destructor */
   virtual ~CoinWarmStartBasisDiff();
 
-protected:
+ protected:
   /*! \brief Default constructor
-  
+
     This is protected (rather than private) so that derived classes can
     see it when they make <i>their</i> default constructor protected or
     private.
   */
-  CoinWarmStartBasisDiff()
-    : sze_(0)
-    , difference_(0)
-  {
-  }
+  CoinWarmStartBasisDiff() : sze_(0), difference_(0) {}
 
   /*! \brief Copy constructor
-  
+
     For convenience when copying objects containing CoinWarmStartBasisDiff
     objects. But consider whether you should be using #clone() to retain
     polymorphism.
@@ -443,16 +428,16 @@ protected:
 
   /*! \brief Standard constructor */
   CoinWarmStartBasisDiff(int sze, const unsigned int *const diffNdxs,
-    const unsigned int *const diffVals);
+                         const unsigned int *const diffVals);
 
   /*! \brief Constructor when full is smaller than diff!*/
   CoinWarmStartBasisDiff(const CoinWarmStartBasis *rhs);
 
-private:
-  friend CoinWarmStartDiff *
-  CoinWarmStartBasis::generateDiff(const CoinWarmStart *const oldCWS) const;
-  friend void
-  CoinWarmStartBasis::applyDiff(const CoinWarmStartDiff *const diff);
+ private:
+  friend CoinWarmStartDiff *CoinWarmStartBasis::generateDiff(
+      const CoinWarmStart *const oldCWS) const;
+  friend void CoinWarmStartBasis::applyDiff(
+      const CoinWarmStartDiff *const diff);
 
   /*! \brief Number of entries (and allocated capacity), in units of \c int. */
   int sze_;
@@ -465,4 +450,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

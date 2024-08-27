@@ -13,35 +13,34 @@
 
 #include "CglCutGenerator.hpp"
 #include "CglGMIParam.hpp"
-#include "CoinWarmStartBasis.hpp"
 #include "CoinFactorization.hpp"
+#include "CoinWarmStartBasis.hpp"
 
 /* Enable tracking of rejection of cutting planes. If this is disabled,
    the cut generator is slightly faster. If defined, it enables proper use
    of setTrackRejection and related functions. */
-//#define TRACK_REJECT
+// #define TRACK_REJECT
 
 /* Debug output */
-//#define GMI_TRACE
+// #define GMI_TRACE
 
 /* Debug output: print optimal tableau */
-//#define GMI_TRACETAB
+// #define GMI_TRACETAB
 
 /* Print reason for cut rejection, whenever a cut is discarded */
-//#define GMI_TRACE_CLEAN
+// #define GMI_TRACE_CLEAN
 
 /** Gomory cut generator with several cleaning procedures, used to test
- *  the numerical safety of the resulting cuts 
+ *  the numerical safety of the resulting cuts
  */
 
 class CglGMI : public CglCutGenerator {
+  friend void CglGMIUnitTest(const OsiSolverInterface* siP,
+                             const std::string mpdDir);
 
-  friend void CglGMIUnitTest(const OsiSolverInterface * siP,
-			     const std::string mpdDir);
-public:
-
+ public:
   /** Public enum: all possible reasons for cut rejection */
-  enum RejectionType{
+  enum RejectionType {
     failureFractionality,
     failureDynamism,
     failureViolation,
@@ -56,10 +55,10 @@ public:
 
       Insert the generated cuts into OsiCuts cs.
 
-      Warning: This generator currently works only with the Lp solvers Clp or 
-      Cplex9.0 or higher. It requires access to the optimal tableau and 
-      optimal basis inverse and makes assumptions on the way slack variables 
-      are added by the solver. The Osi implementations for Clp and Cplex 
+      Warning: This generator currently works only with the Lp solvers Clp or
+      Cplex9.0 or higher. It requires access to the optimal tableau and
+      optimal basis inverse and makes assumptions on the way slack variables
+      are added by the solver. The Osi implementations for Clp and Cplex
       verify these assumptions.
 
       When calling the generator, the solver interface si must contain
@@ -70,8 +69,8 @@ public:
       obtained using si->isInteger(i).
 
   */
-  virtual void generateCuts(const OsiSolverInterface & si, OsiCuts & cs,
-			    const CglTreeInfo info = CglTreeInfo());
+  virtual void generateCuts(const OsiSolverInterface& si, OsiCuts& cs,
+                            const CglTreeInfo info = CglTreeInfo());
 
   /// Return true if needs optimal basis to do cuts (will return true)
   virtual bool needsOptimalBasis() const { return true; }
@@ -80,11 +79,10 @@ public:
   /**@name Common Methods */
   //@{
   // Function for checking equality with user tolerance
-  inline bool areEqual(double x, double y, 
-		       double epsAbs = 1e-12, 
-		       double epsRel = 1e-12) {
-    return (fabs((x) - (y)) <= 
-	    std::max(epsAbs, epsRel * std::max(fabs(x), fabs(y))));
+  inline bool areEqual(double x, double y, double epsAbs = 1e-12,
+                       double epsRel = 1e-12) {
+    return (fabs((x) - (y)) <=
+            std::max(epsAbs, epsRel * std::max(fabs(x), fabs(y))));
   }
 
   // Function for checking is a number is zero
@@ -92,36 +90,32 @@ public:
     return (fabs(x) <= epsZero);
   }
 
-
   // Function for checking if a number is integer
-  inline bool isIntegerValue(double x, 
-			     double intEpsAbs = 1e-9,
-			     double intEpsRel = 1e-15) {
-    return (fabs((x) - floor((x)+0.5)) <= 
-	    std::max(intEpsAbs, intEpsRel * fabs(x)));
+  inline bool isIntegerValue(double x, double intEpsAbs = 1e-9,
+                             double intEpsRel = 1e-15) {
+    return (fabs((x)-floor((x) + 0.5)) <=
+            std::max(intEpsAbs, intEpsRel * fabs(x)));
   }
 
-  
   //@}
-  
-  
+
   /**@name Public Methods */
   //@{
 
   // Set the parameters to the values of the given CglGMIParam object.
-  void setParam(const CglGMIParam &source); 
-  // Return the CglGMIParam object of the generator. 
-  inline CglGMIParam getParam() const {return param;}
-  inline CglGMIParam & getParam() {return param;}
+  void setParam(const CglGMIParam& source);
+  // Return the CglGMIParam object of the generator.
+  inline CglGMIParam getParam() const { return param; }
+  inline CglGMIParam& getParam() { return param; }
 
   // Compute entries of is_integer.
   void computeIsInteger();
 
-  /// Print the current simplex tableau  
-  void printOptTab(OsiSolverInterface *solver) const;
+  /// Print the current simplex tableau
+  void printOptTab(OsiSolverInterface* solver) const;
 
   /// Set/get tracking of the rejection of cutting planes.
-  /// Note that all rejection related functions will not do anything 
+  /// Note that all rejection related functions will not do anything
   /// unless the generator is compiled with the define GMI_TRACK_REJECTION
   void setTrackRejection(bool value);
   bool getTrackRejection();
@@ -134,46 +128,45 @@ public:
 
   /// Get total number of generated cuts since last resetRejectionCounters()
   int getNumberGeneratedCuts();
-  
+
   //@}
 
   /**@name Constructors and destructors */
   //@{
-  /// Default constructor 
+  /// Default constructor
   CglGMI();
 
-  /// Constructor with specified parameters 
-  CglGMI(const CglGMIParam &param);
- 
-  /// Copy constructor 
-  CglGMI(const CglGMI &);
+  /// Constructor with specified parameters
+  CglGMI(const CglGMIParam& param);
+
+  /// Copy constructor
+  CglGMI(const CglGMI&);
 
   /// Clone
-  virtual CglCutGenerator * clone() const;
+  virtual CglCutGenerator* clone() const;
 
-  /// Assignment operator 
-  CglGMI & operator=(const CglGMI& rhs);
-  
-  /// Destructor 
+  /// Assignment operator
+  CglGMI& operator=(const CglGMI& rhs);
+
+  /// Destructor
   virtual ~CglGMI();
   /// Create C++ lines to get to current state
-  virtual std::string generateCpp( FILE * fp);
+  virtual std::string generateCpp(FILE* fp);
 
   //@}
-    
-private:
-  
+
+ private:
   // Private member methods
 
-/**@name Private member methods */
+  /**@name Private member methods */
 
   //@{
 
   // Method generating the cuts after all CglGMI members are properly set.
-  void generateCuts(OsiCuts & cs);
+  void generateCuts(OsiCuts& cs);
 
   /// Compute the fractional part of value, allowing for small error.
-  inline double aboveInteger(double value) const; 
+  inline double aboveInteger(double value) const;
 
   /// Compute the fractionalities involved in the cut, and the cut rhs.
   /// Returns true if cut is accepted, false if discarded
@@ -183,11 +176,11 @@ private:
   inline double computeCutCoefficient(double rowElem, int index);
 
   /// Use multiples of the initial inequalities to cancel out the coefficient
-  /// on a slack variables. 
+  /// on a slack variables.
   inline void eliminateSlack(double cutElem, int cutIndex, double* cut,
-			      double& cutRhs, const double *elements, 
-			      const CoinBigIndex *rowStart, const int *indices, 
-			      const int *rowLength, const double *rhs);
+                             double& cutRhs, const double* elements,
+                             const CoinBigIndex* rowStart, const int* indices,
+                             const int* rowLength, const double* rhs);
 
   /// Change the sign of the coefficients of the non basic
   /// variables at their upper bound.
@@ -199,37 +192,35 @@ private:
   /// accordingly. Two functions: one for original variables, one for slacks.
   inline void unflipOrig(double& rowElem, int rowIndex, double& rowRhs);
   inline void unflipSlack(double& rowElem, int rowIndex, double& rowRhs,
-			   const double* slack_val);
+                          const double* slack_val);
 
   /// Pack a row of ncol elements
-  inline void packRow(double* row, double* rowElem, int* rowIndex,
-		       int& rowNz);
+  inline void packRow(double* row, double* rowElem, int* rowIndex, int& rowNz);
 
   /// Clean the cutting plane; the cleaning procedure does several things
   /// like removing small coefficients, scaling, and checks several
   /// acceptance criteria. If this returns false, the cut should be discarded.
   /// There are several cleaning procedures available, that can be selected
   /// via the parameter param.setCLEANING_PROCEDURE(int value)
-  bool cleanCut(double* cutElem, int* cutIndex, int& cutNz,
-		 double& cutRhs, const double* xbar);
+  bool cleanCut(double* cutElem, int* cutIndex, int& cutNz, double& cutRhs,
+                const double* xbar);
 
   /// Cut cleaning procedures: return true if successfull, false if
   /// cut should be discarded by the caller of if problems encountered
 
   /// Check the violation
-  bool checkViolation(const double* cutElem, const int* cutIndex,
-		       int cutNz, double cutrhs, const double* xbar);
+  bool checkViolation(const double* cutElem, const int* cutIndex, int cutNz,
+                      double cutrhs, const double* xbar);
 
   /// Check the dynamism
-  bool checkDynamism(const double* cutElem, const int* cutIndex,
-		      int cutNz);
+  bool checkDynamism(const double* cutElem, const int* cutIndex, int cutNz);
 
   /// Check the support
   bool checkSupport(int cutNz);
 
   /// Remove small coefficients and adjust the rhs accordingly
-  bool removeSmallCoefficients(double* cutElem, int* cutIndex, 
-				 int& cutNz, double& cutRhs);
+  bool removeSmallCoefficients(double* cutElem, int* cutIndex, int& cutNz,
+                               double& cutRhs);
 
   /// Adjust the rhs by relaxing by a small amount (relative or absolute)
   void relaxRhs(double& rhs);
@@ -239,102 +230,100 @@ private:
   /// 0 : scale to obtain integral cut
   /// 1 : scale based on norm, to obtain cut norm equal to ncol
   /// 2 : scale to obtain largest coefficient equal to 1
-  bool scaleCut(double* cutElem, int* cutIndex, int cutNz,
-		 double& cutRhs, int scalingType);
+  bool scaleCut(double* cutElem, int* cutIndex, int cutNz, double& cutRhs,
+                int scalingType);
 
   /// Scale the cutting plane in order to generate integral coefficients
   bool scaleCutIntegral(double* cutElem, int* cutIndex, int cutNz,
-			  double& cutRhs);
+                        double& cutRhs);
 
   /// Compute the nearest rational number; used by scale_row_integral
   bool nearestRational(double val, double maxdelta, long maxdnom,
-			long& numerator, long& denominator);
+                       long& numerator, long& denominator);
 
   /// Compute the greatest common divisor
   long computeGcd(long a, long b);
 
   /// print a vector of integers
-  void printvecINT(const char *vecstr, const int *x, int n) const;
+  void printvecINT(const char* vecstr, const int* x, int n) const;
   /// print a vector of doubles: dense form
-  void printvecDBL(const char *vecstr, const double *x, int n) const;
+  void printvecDBL(const char* vecstr, const double* x, int n) const;
   /// print a vector of doubles: sparse form
-  void printvecDBL(const char *vecstr, const double *elem, const int * index, 
-		   int nz) const;
+  void printvecDBL(const char* vecstr, const double* elem, const int* index,
+                   int nz) const;
 
   /// Recompute the simplex tableau for want of a better accuracy.
   /// Requires an empty CoinFactorization object to do the computations,
-  /// and two empty (already allocated) arrays which will contain 
+  /// and two empty (already allocated) arrays which will contain
   /// the basis indices on exit. Returns 0 if successfull.
-  int factorize(CoinFactorization & factorization,
-		int* colBasisIndex, int* rowBasisIndex);
-
+  int factorize(CoinFactorization& factorization, int* colBasisIndex,
+                int* rowBasisIndex);
 
   //@}
 
-  
   // Private member data
 
-/**@name Private member data */
+  /**@name Private member data */
 
   //@{
 
-  /// Object with CglGMIParam members. 
+  /// Object with CglGMIParam members.
   CglGMIParam param;
 
   /// Number of rows ( = number of slack variables) in the current LP.
-  int nrow; 
+  int nrow;
 
   /// Number of structural variables in the current LP.
   int ncol;
 
   /// Lower bounds for structural variables
-  const double *colLower;
+  const double* colLower;
 
   /// Upper bounds for structural variables
-  const double *colUpper;
-  
+  const double* colUpper;
+
   /// Lower bounds for constraints
-  const double *rowLower;
+  const double* rowLower;
 
   /// Upper bounds for constraints
-  const double *rowUpper;
+  const double* rowUpper;
 
   /// Righ hand side for constraints (upper bound for ranged constraints).
-  const double *rowRhs;
+  const double* rowRhs;
 
   /// Characteristic vectors of structural integer variables or continuous
-  /// variables currently fixed to integer values. 
-  bool *isInteger;
+  /// variables currently fixed to integer values.
+  bool* isInteger;
 
   /// Current basis status: columns
-  int *cstat;
+  int* cstat;
 
   /// Current basis status: rows
-  int *rstat;
+  int* rstat;
 
   /// Pointer on solver. Reset by each call to generateCuts().
-  OsiSolverInterface *solver;
+  OsiSolverInterface* solver;
 
   /// Pointer on point to separate. Reset by each call to generateCuts().
-  const double *xlp;
+  const double* xlp;
 
   /// Pointer on row activity. Reset by each call to generateCuts().
-  const double *rowActivity;
+  const double* rowActivity;
 
-  /// Pointer on matrix of coefficient ordered by rows. 
+  /// Pointer on matrix of coefficient ordered by rows.
   /// Reset by each call to generateCuts().
-  const CoinPackedMatrix *byRow;
+  const CoinPackedMatrix* byRow;
 
-  /// Pointer on matrix of coefficient ordered by columns. 
+  /// Pointer on matrix of coefficient ordered by columns.
   /// Reset by each call to generateCuts().
-  const CoinPackedMatrix *byCol;
+  const CoinPackedMatrix* byCol;
 
   /// Fractionality of the cut and related quantities.
   double f0;
   double f0compl;
   double ratiof0compl;
 
-#if defined(TRACK_REJECT) || defined (TRACK_REJECT_SIMPLE)
+#if defined(TRACK_REJECT) || defined(TRACK_REJECT_SIMPLE)
   /// Should we track the reason of each cut rejection?
   bool trackRejection;
   /// Number of failures by type
@@ -351,14 +340,12 @@ private:
   //@}
 };
 
-//#############################################################################
+// #############################################################################
 /** A function that tests the methods in the CglGMI class. The
     only reason for it not to be a member method is that this way it doesn't
     have to be compiled into the library. And that's a gain, because the
     library should be compiled with optimization on, but this method should be
     compiled with debugging. */
-void CglGMIUnitTest(const OsiSolverInterface * siP,
-			 const std::string mpdDir );
-
+void CglGMIUnitTest(const OsiSolverInterface* siP, const std::string mpdDir);
 
 #endif

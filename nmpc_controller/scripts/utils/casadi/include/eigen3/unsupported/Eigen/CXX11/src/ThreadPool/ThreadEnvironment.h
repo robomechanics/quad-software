@@ -24,13 +24,15 @@ struct StlThreadEnvironment {
     EnvThread(std::function<void()> f) : thr_(std::move(f)) {}
     ~EnvThread() { thr_.join(); }
     // This function is called when the threadpool is cancelled.
-    void OnCancel() { }
+    void OnCancel() {}
 
    private:
     std::thread thr_;
   };
 
-  EnvThread* CreateThread(std::function<void()> f) { return new EnvThread(std::move(f)); }
+  EnvThread* CreateThread(std::function<void()> f) {
+    return new EnvThread(std::move(f));
+  }
   Task CreateTask(std::function<void()> f) { return Task{std::move(f)}; }
   void ExecuteTask(const Task& t) { t.f(); }
 };

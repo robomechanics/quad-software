@@ -13,7 +13,7 @@ class CoinPresolveAction;
 
 */
 class ClpPresolve {
-public:
+ public:
   /**@name Main Constructor, destructor */
   //@{
   /// Default constructor
@@ -24,7 +24,8 @@ public:
   //@}
   /**@name presolve - presolves a model, transforming the model
       * and saving information in the ClpPresolve object needed for postsolving.
-      * This underlying (protected) method is virtual; the idea is that in the future,
+      * This underlying (protected) method is virtual; the idea is that in the
+     future,
       * one could override this method to customize how the various
       * presolve techniques are applied.
 
@@ -38,24 +39,20 @@ public:
          to try and stay feasible.
          Names will be dropped in presolved model if asked
      */
-  ClpSimplex *presolvedModel(ClpSimplex &si,
-    double feasibilityTolerance = 0.0,
-    bool keepIntegers = true,
-    int numberPasses = 5,
-    bool dropNames = false,
-    bool doRowObjective = false,
-    const char *prohibitedRows = NULL,
-    const char *prohibitedColumns = NULL);
+  ClpSimplex *presolvedModel(ClpSimplex &si, double feasibilityTolerance = 0.0,
+                             bool keepIntegers = true, int numberPasses = 5,
+                             bool dropNames = false,
+                             bool doRowObjective = false,
+                             const char *prohibitedRows = NULL,
+                             const char *prohibitedColumns = NULL);
 #ifndef CLP_NO_STD
   /** This version saves data in a file.  The passed in model
-         is updated to be presolved model.  
+         is updated to be presolved model.
          Returns non-zero if infeasible*/
   int presolvedModelToFile(ClpSimplex &si, std::string fileName,
-    double feasibilityTolerance = 0.0,
-    bool keepIntegers = true,
-    int numberPasses = 5,
-    bool dropNames = false,
-    bool doRowObjective = false);
+                           double feasibilityTolerance = 0.0,
+                           bool keepIntegers = true, int numberPasses = 5,
+                           bool dropNames = false, bool doRowObjective = false);
 #endif
   /** Return pointer to presolved model,
          Up to user to destroy */
@@ -73,224 +70,148 @@ public:
          may change and so presolve is very limited in what can be done
          to the row and column.  This is for non-linear problems.
      */
-  inline void setNonLinearValue(double value)
-  {
-    nonLinearValue_ = value;
-  }
-  inline double nonLinearValue() const
-  {
-    return nonLinearValue_;
-  }
+  inline void setNonLinearValue(double value) { nonLinearValue_ = value; }
+  inline double nonLinearValue() const { return nonLinearValue_; }
   /// Whether we want to do dual part of presolve
-  inline bool doDual() const
-  {
-    return (presolveActions_ & 1) == 0;
-  }
-  inline void setDoDual(bool doDual)
-  {
+  inline bool doDual() const { return (presolveActions_ & 1) == 0; }
+  inline void setDoDual(bool doDual) {
     if (doDual)
       presolveActions_ &= ~1;
     else
       presolveActions_ |= 1;
   }
   /// Whether we want to do singleton part of presolve
-  inline bool doSingleton() const
-  {
-    return (presolveActions_ & 2) == 0;
-  }
-  inline void setDoSingleton(bool doSingleton)
-  {
+  inline bool doSingleton() const { return (presolveActions_ & 2) == 0; }
+  inline void setDoSingleton(bool doSingleton) {
     if (doSingleton)
       presolveActions_ &= ~2;
     else
       presolveActions_ |= 2;
   }
   /// Whether we want to do doubleton part of presolve
-  inline bool doDoubleton() const
-  {
-    return (presolveActions_ & 4) == 0;
-  }
-  inline void setDoDoubleton(bool doDoubleton)
-  {
+  inline bool doDoubleton() const { return (presolveActions_ & 4) == 0; }
+  inline void setDoDoubleton(bool doDoubleton) {
     if (doDoubleton)
       presolveActions_ &= ~4;
     else
       presolveActions_ |= 4;
   }
   /// Whether we want to do tripleton part of presolve
-  inline bool doTripleton() const
-  {
-    return (presolveActions_ & 8) == 0;
-  }
-  inline void setDoTripleton(bool doTripleton)
-  {
+  inline bool doTripleton() const { return (presolveActions_ & 8) == 0; }
+  inline void setDoTripleton(bool doTripleton) {
     if (doTripleton)
       presolveActions_ &= ~8;
     else
       presolveActions_ |= 8;
   }
   /// Whether we want to do tighten part of presolve
-  inline bool doTighten() const
-  {
-    return (presolveActions_ & 16) == 0;
-  }
-  inline void setDoTighten(bool doTighten)
-  {
+  inline bool doTighten() const { return (presolveActions_ & 16) == 0; }
+  inline void setDoTighten(bool doTighten) {
     if (doTighten)
       presolveActions_ &= ~16;
     else
       presolveActions_ |= 16;
   }
   /// Whether we want to do forcing part of presolve
-  inline bool doForcing() const
-  {
-    return (presolveActions_ & 32) == 0;
-  }
-  inline void setDoForcing(bool doForcing)
-  {
+  inline bool doForcing() const { return (presolveActions_ & 32) == 0; }
+  inline void setDoForcing(bool doForcing) {
     if (doForcing)
       presolveActions_ &= ~32;
     else
       presolveActions_ |= 32;
   }
   /// Whether we want to do impliedfree part of presolve
-  inline bool doImpliedFree() const
-  {
-    return (presolveActions_ & 64) == 0;
-  }
-  inline void setDoImpliedFree(bool doImpliedfree)
-  {
+  inline bool doImpliedFree() const { return (presolveActions_ & 64) == 0; }
+  inline void setDoImpliedFree(bool doImpliedfree) {
     if (doImpliedfree)
       presolveActions_ &= ~64;
     else
       presolveActions_ |= 64;
   }
   /// Whether we want to do dupcol part of presolve
-  inline bool doDupcol() const
-  {
-    return (presolveActions_ & 128) == 0;
-  }
-  inline void setDoDupcol(bool doDupcol)
-  {
+  inline bool doDupcol() const { return (presolveActions_ & 128) == 0; }
+  inline void setDoDupcol(bool doDupcol) {
     if (doDupcol)
       presolveActions_ &= ~128;
     else
       presolveActions_ |= 128;
   }
   /// Whether we want to do duprow part of presolve
-  inline bool doDuprow() const
-  {
-    return (presolveActions_ & 256) == 0;
-  }
-  inline void setDoDuprow(bool doDuprow)
-  {
+  inline bool doDuprow() const { return (presolveActions_ & 256) == 0; }
+  inline void setDoDuprow(bool doDuprow) {
     if (doDuprow)
       presolveActions_ &= ~256;
     else
       presolveActions_ |= 256;
   }
   /// Whether we want to do dependency part of presolve
-  inline bool doDependency() const
-  {
-    return (presolveActions_ & 32768) != 0;
-  }
-  inline void setDoDependency(bool doDependency)
-  {
+  inline bool doDependency() const { return (presolveActions_ & 32768) != 0; }
+  inline void setDoDependency(bool doDependency) {
     if (doDependency)
       presolveActions_ |= 32768;
     else
       presolveActions_ &= ~32768;
   }
   /// Whether we want to do transfer part of presolve
-  inline bool doTransfer() const
-  {
-    return (presolveActions_ & 65536) != 0;
-  }
-  inline void setDoTransfer(bool doTransfer)
-  {
+  inline bool doTransfer() const { return (presolveActions_ & 65536) != 0; }
+  inline void setDoTransfer(bool doTransfer) {
     if (doTransfer)
       presolveActions_ |= 65536;
     else
       presolveActions_ &= ~65536;
   }
   /// Whether we want to do singleton column part of presolve
-  inline bool doSingletonColumn() const
-  {
+  inline bool doSingletonColumn() const {
     return (presolveActions_ & 512) == 0;
   }
-  inline void setDoSingletonColumn(bool doSingleton)
-  {
+  inline void setDoSingletonColumn(bool doSingleton) {
     if (doSingleton)
       presolveActions_ &= ~512;
     else
       presolveActions_ |= 512;
   }
   /// Whether we want to do gubrow part of presolve
-  inline bool doGubrow() const
-  {
-    return (presolveActions_ & 1024) == 0;
-  }
-  inline void setDoGubrow(bool doGubrow)
-  {
+  inline bool doGubrow() const { return (presolveActions_ & 1024) == 0; }
+  inline void setDoGubrow(bool doGubrow) {
     if (doGubrow)
       presolveActions_ &= ~1024;
     else
       presolveActions_ |= 1024;
   }
   /// Whether we want to do twoxtwo part of presolve
-  inline bool doTwoxTwo() const
-  {
-    return (presolveActions_ & 2048) != 0;
-  }
-  inline void setDoTwoxtwo(bool doTwoxTwo)
-  {
+  inline bool doTwoxTwo() const { return (presolveActions_ & 2048) != 0; }
+  inline void setDoTwoxtwo(bool doTwoxTwo) {
     if (!doTwoxTwo)
       presolveActions_ &= ~2048;
     else
       presolveActions_ |= 2048;
   }
   /// Whether we want to allow duplicate intersections
-  inline bool doIntersection() const
-  {
-    return (presolveActions_ & 4096) != 0;
-  }
-  inline void setDoIntersection(bool doIntersection)
-  {
+  inline bool doIntersection() const { return (presolveActions_ & 4096) != 0; }
+  inline void setDoIntersection(bool doIntersection) {
     if (doIntersection)
       presolveActions_ &= ~4096;
     else
       presolveActions_ |= 4096;
   }
   /** How much we want to zero small values from aggregation - ratio
-	 0 - 1.0e-12, 1 1.0e-11, 2 1.0e-10, 3 1.0e-9 */
-  inline int zeroSmall() const
-  {
+         0 - 1.0e-12, 1 1.0e-11, 2 1.0e-10, 3 1.0e-9 */
+  inline int zeroSmall() const {
     return (presolveActions_ & (8192 | 16384)) >> 13;
   }
-  inline void setZeroSmall(int value)
-  {
+  inline void setZeroSmall(int value) {
     presolveActions_ &= ~(8192 | 16384);
     presolveActions_ |= value << 13;
   }
   /// Set whole group
-  inline int presolveActions() const
-  {
-    return presolveActions_ & 0xffffff;
-  }
-  inline void setPresolveActions(int action)
-  {
+  inline int presolveActions() const { return presolveActions_ & 0xffffff; }
+  inline void setPresolveActions(int action) {
     presolveActions_ = (presolveActions_ & 0xff000000) | (action & 0xffffff);
   }
   /// Substitution level
-  inline void setSubstitution(int value)
-  {
-    substitution_ = value;
-  }
+  inline void setSubstitution(int value) { substitution_ = value; }
   /// Asks for statistics
-  inline void statistics()
-  {
-    presolveActions_ |= 0x80000000;
-  }
+  inline void statistics() { presolveActions_ |= 0x80000000; }
   /// Return presolve status (0,1,2)
   int presolveStatus() const;
 
@@ -308,7 +229,7 @@ public:
   void destroyPresolve();
 
   /**@name private or protected data */
-private:
+ private:
   /// Original model - must not be destroyed before postsolve
   ClpSimplex *originalModel_;
 
@@ -351,7 +272,7 @@ private:
      */
   int presolveActions_;
 
-protected:
+ protected:
   /// If you want to apply the individual presolve routines differently,
   /// or perhaps add your own to the mix,
   /// define a derived class and override this method
@@ -364,16 +285,12 @@ protected:
   /// while debugging new presolve techniques.
   virtual void postsolve(CoinPostsolveMatrix &prob);
   /** This is main part of Presolve */
-  virtual ClpSimplex *gutsOfPresolvedModel(ClpSimplex *originalModel,
-    double feasibilityTolerance,
-    bool keepIntegers,
-    int numberPasses,
-    bool dropNames,
-    bool doRowObjective,
-    const char *prohibitedRows = NULL,
-    const char *prohibitedColumns = NULL);
+  virtual ClpSimplex *gutsOfPresolvedModel(
+      ClpSimplex *originalModel, double feasibilityTolerance, bool keepIntegers,
+      int numberPasses, bool dropNames, bool doRowObjective,
+      const char *prohibitedRows = NULL, const char *prohibitedColumns = NULL);
 };
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

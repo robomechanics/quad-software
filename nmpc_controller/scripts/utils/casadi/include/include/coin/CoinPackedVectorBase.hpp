@@ -6,10 +6,11 @@
 #ifndef CoinPackedVectorBase_H
 #define CoinPackedVectorBase_H
 
-#include <set>
 #include <map>
-#include "CoinPragma.hpp"
+#include <set>
+
 #include "CoinError.hpp"
+#include "CoinPragma.hpp"
 
 class CoinPackedVector;
 
@@ -21,8 +22,7 @@ class CoinPackedVector;
     change the object. */
 
 class CoinPackedVectorBase {
-
-public:
+ public:
   /**@name Virtual methods that the derived classes must provide */
   //@{
   /// Get length of indices and elements vectors
@@ -43,15 +43,15 @@ public:
       */
   //@{
   /** \brief Set to the argument value whether to test for duplicate indices
-	      in the vector whenever they can occur.
-       
+              in the vector whenever they can occur.
+
        Calling this method with \p test set to true will trigger an immediate
        check for duplicate indices.
    */
   void setTestForDuplicateIndex(bool test) const;
   /** \brief Set to the argument value whether to test for duplicate indices
-	      in the vector whenever they can occur BUT we know that right
-	      now the vector has no duplicate indices.
+              in the vector whenever they can occur BUT we know that right
+              now the vector has no duplicate indices.
 
        Calling this method with \p test set to true will <em>not</em> trigger
        an immediate check for duplicate indices; instead, it's assumed that
@@ -62,8 +62,7 @@ public:
        they can occur. */
   bool testForDuplicateIndex() const { return testForDuplicateIndex_; }
   /// Just sets test stuff false without a try etc
-  inline void setTestsOff() const
-  {
+  inline void setTestsOff() const {
     testForDuplicateIndex_ = false;
     testedDuplicateIndex_ = false;
   }
@@ -96,7 +95,7 @@ public:
 
   /// Throw an exception if there are duplicate indices
   void duplicateIndex(const char *methodName = NULL,
-    const char *className = NULL) const;
+                      const char *className = NULL) const;
 
   /** Return true if the i'th element of the full storage vector exists in
        the packed storage vector.*/
@@ -135,21 +134,19 @@ public:
   /** equivalent - If shallow packed vector A & B are equivalent, then they
        are still equivalent no matter how they are sorted.
        In this method the FloatEqual function operator can be specified. The
-       default equivalence test is that the entries are relatively equal.<br> 
+       default equivalence test is that the entries are relatively equal.<br>
        <strong>NOTE</strong>: This is a relatively expensive method as it
        sorts the two shallow packed vectors.
    */
-  template < class FloatEqual >
-  bool
-  isEquivalent(const CoinPackedVectorBase &rhs, const FloatEqual &eq) const
-  {
-    if (getNumElements() != rhs.getNumElements())
-      return false;
+  template <class FloatEqual>
+  bool isEquivalent(const CoinPackedVectorBase &rhs,
+                    const FloatEqual &eq) const {
+    if (getNumElements() != rhs.getNumElements()) return false;
 
     duplicateIndex("equivalent", "CoinPackedVector");
     rhs.duplicateIndex("equivalent", "CoinPackedVector");
 
-    std::map< int, double > mv;
+    std::map<int, double> mv;
     const int *inds = getIndices();
     const double *elems = getElements();
     int i;
@@ -157,16 +154,16 @@ public:
       mv.insert(std::make_pair(inds[i], elems[i]));
     }
 
-    std::map< int, double > mvRhs;
+    std::map<int, double> mvRhs;
     inds = rhs.getIndices();
     elems = rhs.getElements();
     for (i = getNumElements() - 1; i >= 0; --i) {
       mvRhs.insert(std::make_pair(inds[i], elems[i]));
     }
 
-    std::map< int, double >::const_iterator mvI = mv.begin();
-    std::map< int, double >::const_iterator mvIlast = mv.end();
-    std::map< int, double >::const_iterator mvIrhs = mvRhs.begin();
+    std::map<int, double>::const_iterator mvI = mv.begin();
+    std::map<int, double>::const_iterator mvIlast = mv.end();
+    std::map<int, double>::const_iterator mvIrhs = mvRhs.begin();
     while (mvI != mvIlast) {
       if (mvI->first != mvIrhs->first || !eq(mvI->second, mvIrhs->second))
         return false;
@@ -200,7 +197,7 @@ public:
   double sum() const;
   //@}
 
-protected:
+ protected:
   /**@name Constructors, destructor
       <strong>NOTE</strong>: All constructors are protected. There's no need
       to expose them, after all, this is an abstract class. */
@@ -208,12 +205,12 @@ protected:
   /** Default constructor. */
   CoinPackedVectorBase();
 
-public:
+ public:
   /** Destructor */
   virtual ~CoinPackedVectorBase();
   //@}
 
-private:
+ private:
   /**@name Disabled methods */
   //@{
   /** The copy constructor. <br>
@@ -228,27 +225,26 @@ private:
   CoinPackedVectorBase &operator=(const CoinPackedVectorBase &);
   //@}
 
-protected:
+ protected:
   /**@name Protected methods */
   //@{
   /// Find Maximum and Minimum Indices
   void findMaxMinIndices() const;
 
   /// Return indexSetPtr_ (create it if necessary).
-  std::set< int > *indexSet(const char *methodName = NULL,
-    const char *className = NULL) const;
+  std::set<int> *indexSet(const char *methodName = NULL,
+                          const char *className = NULL) const;
 
   /// Delete the indexSet
   void clearIndexSet() const;
   void clearBase() const;
-  void copyMaxMinIndex(const CoinPackedVectorBase &x) const
-  {
+  void copyMaxMinIndex(const CoinPackedVectorBase &x) const {
     maxIndex_ = x.maxIndex_;
     minIndex_ = x.minIndex_;
   }
   //@}
 
-private:
+ private:
   /**@name Protected member data */
   //@{
   /// Contains max index value or -infinity
@@ -258,7 +254,7 @@ private:
   /** Store the indices in a set. This set is only created if it is needed.
        Its primary use is testing for duplicate indices.
     */
-  mutable std::set< int > *indexSetPtr_;
+  mutable std::set<int> *indexSetPtr_;
   /** True if the vector should be tested for duplicate indices when they can
        occur. */
   mutable bool testForDuplicateIndex_;
@@ -271,4 +267,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -8,7 +8,7 @@
 
 #include "ClpPrimalColumnPivot.hpp"
 
-//#############################################################################
+// #############################################################################
 
 /** Primal Column Pivot Dantzig Algorithm Class
 
@@ -17,8 +17,7 @@ This is simplest choice - choose largest infeasibility
 */
 
 class ClpPrimalColumnDantzig : public ClpPrimalColumnPivot {
-
-public:
+ public:
   ///@name Algorithmic methods
   //@{
 
@@ -30,16 +29,13 @@ public:
          Can just do full price if you really want to be slow
      */
   virtual int pivotColumn(CoinIndexedVector *updates,
-    CoinIndexedVector *spareRow1,
-    CoinIndexedVector *spareRow2,
-    CoinIndexedVector *spareColumn1,
-    CoinIndexedVector *spareColumn2);
+                          CoinIndexedVector *spareRow1,
+                          CoinIndexedVector *spareRow2,
+                          CoinIndexedVector *spareColumn1,
+                          CoinIndexedVector *spareColumn2);
 
   /// Just sets model
-  virtual void saveWeights(ClpSimplex *model, int)
-  {
-    model_ = model;
-  }
+  virtual void saveWeights(ClpSimplex *model, int) { model_ = model; }
   //@}
 
   ///@name Constructors and destructors
@@ -63,7 +59,7 @@ public:
 
   //---------------------------------------------------------------------------
 
-private:
+ private:
   ///@name Private member data
   //@}
 };
@@ -71,4 +67,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

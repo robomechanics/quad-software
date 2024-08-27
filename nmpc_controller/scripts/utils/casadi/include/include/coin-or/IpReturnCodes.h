@@ -10,8 +10,7 @@
 
 /* include from a common include file */
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include "IpReturnCodes_inc.h"

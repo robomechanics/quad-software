@@ -30,12 +30,11 @@ namespace internal {
 //    Thank you for writing.
 //
 //    If your licensing is similar to BSD, the formal way that has been
-//    handled is simply to add a statement to the effect that you are incorporating
-//    the Cephes software by permission of the author.
+//    handled is simply to add a statement to the effect that you are
+//    incorporating the Cephes software by permission of the author.
 //
 //    Good luck with your project,
 //    Steve
-
 
 /****************************************************************************
  * Implementation of Bessel function, based on Cephes                       *
@@ -110,10 +109,9 @@ struct generic_i0e<T, float> {
     T y = pabs(x);
     T y_le_eight = internal::pchebevl<T, 18>::run(
         pmadd(pset1<T>(0.5f), y, pset1<T>(-2.0f)), A);
-    T y_gt_eight = pmul(
-        internal::pchebevl<T, 7>::run(
-            psub(pdiv(pset1<T>(32.0f), y), pset1<T>(2.0f)), B),
-        prsqrt(y));
+    T y_gt_eight = pmul(internal::pchebevl<T, 7>::run(
+                            psub(pdiv(pset1<T>(32.0f), y), pset1<T>(2.0f)), B),
+                        prsqrt(y));
     // TODO: Perhaps instead check whether all packet elements are in
     // [-8, 8] and evaluate a branch based off of that. It's possible
     // in practice most elements are in this region.
@@ -190,10 +188,9 @@ struct generic_i0e<T, double> {
     T y = pabs(x);
     T y_le_eight = internal::pchebevl<T, 30>::run(
         pmadd(pset1<T>(0.5), y, pset1<T>(-2.0)), A);
-    T y_gt_eight = pmul(
-        internal::pchebevl<T, 25>::run(
-            psub(pdiv(pset1<T>(32.0), y), pset1<T>(2.0)), B),
-        prsqrt(y));
+    T y_gt_eight = pmul(internal::pchebevl<T, 25>::run(
+                            psub(pdiv(pset1<T>(32.0), y), pset1<T>(2.0)), B),
+                        prsqrt(y));
     // TODO: Perhaps instead check whether all packet elements are in
     // [-8, 8] and evaluate a branch based off of that. It's possible
     // in practice most elements are in this region.
@@ -204,9 +201,7 @@ struct generic_i0e<T, double> {
 template <typename T>
 struct bessel_i0e_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_i0e<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_i0e<T>::run(x); }
 };
 
 template <typename Scalar>
@@ -218,18 +213,14 @@ template <typename T, typename ScalarType = typename unpacket_traits<T>::type>
 struct generic_i0 {
   EIGEN_DEVICE_FUNC
   static EIGEN_STRONG_INLINE T run(const T& x) {
-    return pmul(
-        pexp(pabs(x)),
-        generic_i0e<T, ScalarType>::run(x));
+    return pmul(pexp(pabs(x)), generic_i0e<T, ScalarType>::run(x));
   }
 };
 
 template <typename T>
 struct bessel_i0_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_i0<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_i0<T>::run(x); }
 };
 
 template <typename Scalar>
@@ -237,7 +228,7 @@ struct bessel_i1e_retval {
   typedef Scalar type;
 };
 
-template <typename T, typename ScalarType = typename unpacket_traits<T>::type >
+template <typename T, typename ScalarType = typename unpacket_traits<T>::type>
 struct generic_i1e {
   EIGEN_DEVICE_FUNC
   static EIGEN_STRONG_INLINE T run(const T&) {
@@ -298,15 +289,12 @@ struct generic_i1e<T, float> {
                        -1.10588938762623716291E-4f, -9.76109749136146840777E-3f,
                        7.78576235018280120474E-1f};
 
-
     T y = pabs(x);
     T y_le_eight = pmul(y, internal::pchebevl<T, 17>::run(
-        pmadd(pset1<T>(0.5f), y, pset1<T>(-2.0f)), A));
-    T y_gt_eight = pmul(
-        internal::pchebevl<T, 7>::run(
-            psub(pdiv(pset1<T>(32.0f), y),
-                 pset1<T>(2.0f)), B),
-        prsqrt(y));
+                               pmadd(pset1<T>(0.5f), y, pset1<T>(-2.0f)), A));
+    T y_gt_eight = pmul(internal::pchebevl<T, 7>::run(
+                            psub(pdiv(pset1<T>(32.0f), y), pset1<T>(2.0f)), B),
+                        prsqrt(y));
     // TODO: Perhaps instead check whether all packet elements are in
     // [-8, 8] and evaluate a branch based off of that. It's possible
     // in practice most elements are in this region.
@@ -382,12 +370,10 @@ struct generic_i1e<T, double> {
         7.78576235018280120474E-1};
     T y = pabs(x);
     T y_le_eight = pmul(y, internal::pchebevl<T, 29>::run(
-        pmadd(pset1<T>(0.5), y, pset1<T>(-2.0)), A));
-    T y_gt_eight = pmul(
-        internal::pchebevl<T, 25>::run(
-            psub(pdiv(pset1<T>(32.0), y),
-                 pset1<T>(2.0)), B),
-        prsqrt(y));
+                               pmadd(pset1<T>(0.5), y, pset1<T>(-2.0)), A));
+    T y_gt_eight = pmul(internal::pchebevl<T, 25>::run(
+                            psub(pdiv(pset1<T>(32.0), y), pset1<T>(2.0)), B),
+                        prsqrt(y));
     // TODO: Perhaps instead check whether all packet elements are in
     // [-8, 8] and evaluate a branch based off of that. It's possible
     // in practice most elements are in this region.
@@ -399,9 +385,7 @@ struct generic_i1e<T, double> {
 template <typename T>
 struct bessel_i1e_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_i1e<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_i1e<T>::run(x); }
 };
 
 template <typename T>
@@ -413,18 +397,14 @@ template <typename T, typename ScalarType = typename unpacket_traits<T>::type>
 struct generic_i1 {
   EIGEN_DEVICE_FUNC
   static EIGEN_STRONG_INLINE T run(const T& x) {
-    return pmul(
-        pexp(pabs(x)),
-        generic_i1e<T, ScalarType>::run(x));
+    return pmul(pexp(pabs(x)), generic_i1e<T, ScalarType>::run(x));
   }
 };
 
 template <typename T>
 struct bessel_i1_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_i1<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_i1<T>::run(x); }
 };
 
 template <typename T>
@@ -488,20 +468,15 @@ struct generic_k0e<T, float> {
                        -3.14481013119645005427E-2f, 2.44030308206595545468E0f};
     const T MAXNUM = pset1<T>(NumTraits<float>::infinity());
     const T two = pset1<T>(2.0);
-    T x_le_two = internal::pchebevl<T, 7>::run(
-        pmadd(x, x, pset1<T>(-2.0)), A);
-    x_le_two = pmadd(
-        generic_i0<T, float>::run(x), pnegate(
-            plog(pmul(pset1<T>(0.5), x))), x_le_two);
+    T x_le_two = internal::pchebevl<T, 7>::run(pmadd(x, x, pset1<T>(-2.0)), A);
+    x_le_two = pmadd(generic_i0<T, float>::run(x),
+                     pnegate(plog(pmul(pset1<T>(0.5), x))), x_le_two);
     x_le_two = pmul(pexp(x), x_le_two);
     T x_gt_two = pmul(
-            internal::pchebevl<T, 10>::run(
-                psub(pdiv(pset1<T>(8.0), x), two), B),
-            prsqrt(x));
-    return pselect(
-        pcmp_le(x, pset1<T>(0.0)),
-        MAXNUM,
-        pselect(pcmp_le(x, two), x_le_two, x_gt_two));
+        internal::pchebevl<T, 10>::run(psub(pdiv(pset1<T>(8.0), x), two), B),
+        prsqrt(x));
+    return pselect(pcmp_le(x, pset1<T>(0.0)), MAXNUM,
+                   pselect(pcmp_le(x, two), x_le_two, x_gt_two));
   }
 };
 
@@ -539,45 +514,35 @@ struct generic_k0e<T, double> {
      *
      */
 
-    const double A[] = {
-      1.37446543561352307156E-16,
-      4.25981614279661018399E-14,
-      1.03496952576338420167E-11,
-      1.90451637722020886025E-9,
-      2.53479107902614945675E-7,
-      2.28621210311945178607E-5,
-      1.26461541144692592338E-3,
-      3.59799365153615016266E-2,
-      3.44289899924628486886E-1,
-      -5.35327393233902768720E-1};
-    const double B[] = {
-       5.30043377268626276149E-18, -1.64758043015242134646E-17,
-       5.21039150503902756861E-17, -1.67823109680541210385E-16,
-       5.51205597852431940784E-16, -1.84859337734377901440E-15,
-       6.34007647740507060557E-15, -2.22751332699166985548E-14,
-       8.03289077536357521100E-14, -2.98009692317273043925E-13,
-       1.14034058820847496303E-12, -4.51459788337394416547E-12,
-       1.85594911495471785253E-11, -7.95748924447710747776E-11,
-       3.57739728140030116597E-10, -1.69753450938905987466E-9,
-       8.57403401741422608519E-9, -4.66048989768794782956E-8,
-       2.76681363944501510342E-7, -1.83175552271911948767E-6,
-       1.39498137188764993662E-5, -1.28495495816278026384E-4,
-       1.56988388573005337491E-3, -3.14481013119645005427E-2,
-       2.44030308206595545468E0
-    };
+    const double A[] = {1.37446543561352307156E-16, 4.25981614279661018399E-14,
+                        1.03496952576338420167E-11, 1.90451637722020886025E-9,
+                        2.53479107902614945675E-7,  2.28621210311945178607E-5,
+                        1.26461541144692592338E-3,  3.59799365153615016266E-2,
+                        3.44289899924628486886E-1,  -5.35327393233902768720E-1};
+    const double B[] = {5.30043377268626276149E-18, -1.64758043015242134646E-17,
+                        5.21039150503902756861E-17, -1.67823109680541210385E-16,
+                        5.51205597852431940784E-16, -1.84859337734377901440E-15,
+                        6.34007647740507060557E-15, -2.22751332699166985548E-14,
+                        8.03289077536357521100E-14, -2.98009692317273043925E-13,
+                        1.14034058820847496303E-12, -4.51459788337394416547E-12,
+                        1.85594911495471785253E-11, -7.95748924447710747776E-11,
+                        3.57739728140030116597E-10, -1.69753450938905987466E-9,
+                        8.57403401741422608519E-9,  -4.66048989768794782956E-8,
+                        2.76681363944501510342E-7,  -1.83175552271911948767E-6,
+                        1.39498137188764993662E-5,  -1.28495495816278026384E-4,
+                        1.56988388573005337491E-3,  -3.14481013119645005427E-2,
+                        2.44030308206595545468E0};
     const T MAXNUM = pset1<T>(NumTraits<double>::infinity());
     const T two = pset1<T>(2.0);
-    T x_le_two = internal::pchebevl<T, 10>::run(
-        pmadd(x, x, pset1<T>(-2.0)), A);
-    x_le_two = pmadd(
-        generic_i0<T, double>::run(x), pmul(
-            pset1<T>(-1.0), plog(pmul(pset1<T>(0.5), x))), x_le_two);
+    T x_le_two = internal::pchebevl<T, 10>::run(pmadd(x, x, pset1<T>(-2.0)), A);
+    x_le_two =
+        pmadd(generic_i0<T, double>::run(x),
+              pmul(pset1<T>(-1.0), plog(pmul(pset1<T>(0.5), x))), x_le_two);
     x_le_two = pmul(pexp(x), x_le_two);
     x_le_two = pselect(pcmp_le(x, pset1<T>(0.0)), MAXNUM, x_le_two);
     T x_gt_two = pmul(
-            internal::pchebevl<T, 25>::run(
-                psub(pdiv(pset1<T>(8.0), x), two), B),
-            prsqrt(x));
+        internal::pchebevl<T, 25>::run(psub(pdiv(pset1<T>(8.0), x), two), B),
+        prsqrt(x));
     return pselect(pcmp_le(x, two), x_le_two, x_gt_two);
   }
 };
@@ -585,9 +550,7 @@ struct generic_k0e<T, double> {
 template <typename T>
 struct bessel_k0e_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_k0e<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_k0e<T>::run(x); }
 };
 
 template <typename T>
@@ -660,18 +623,14 @@ struct generic_k0<T, float> {
                        -3.14481013119645005427E-2f, 2.44030308206595545468E0f};
     const T MAXNUM = pset1<T>(NumTraits<float>::infinity());
     const T two = pset1<T>(2.0);
-    T x_le_two = internal::pchebevl<T, 7>::run(
-        pmadd(x, x, pset1<T>(-2.0)), A);
-    x_le_two = pmadd(
-        generic_i0<T, float>::run(x), pnegate(
-            plog(pmul(pset1<T>(0.5), x))), x_le_two);
+    T x_le_two = internal::pchebevl<T, 7>::run(pmadd(x, x, pset1<T>(-2.0)), A);
+    x_le_two = pmadd(generic_i0<T, float>::run(x),
+                     pnegate(plog(pmul(pset1<T>(0.5), x))), x_le_two);
     x_le_two = pselect(pcmp_le(x, pset1<T>(0.0)), MAXNUM, x_le_two);
-    T x_gt_two = pmul(
-        pmul(
-            pexp(pnegate(x)),
-            internal::pchebevl<T, 10>::run(
-                psub(pdiv(pset1<T>(8.0), x), two), B)),
-        prsqrt(x));
+    T x_gt_two =
+        pmul(pmul(pexp(pnegate(x)), internal::pchebevl<T, 10>::run(
+                                        psub(pdiv(pset1<T>(8.0), x), two), B)),
+             prsqrt(x));
     return pselect(pcmp_le(x, two), x_le_two, x_gt_two);
   }
 };
@@ -710,46 +669,33 @@ struct generic_k0<T, double> {
      * See k0().
      *
      */
-    const double A[] = {
-      1.37446543561352307156E-16,
-      4.25981614279661018399E-14,
-      1.03496952576338420167E-11,
-      1.90451637722020886025E-9,
-      2.53479107902614945675E-7,
-      2.28621210311945178607E-5,
-      1.26461541144692592338E-3,
-      3.59799365153615016266E-2,
-      3.44289899924628486886E-1,
-      -5.35327393233902768720E-1};
-    const double B[] = {
-       5.30043377268626276149E-18, -1.64758043015242134646E-17,
-       5.21039150503902756861E-17, -1.67823109680541210385E-16,
-       5.51205597852431940784E-16, -1.84859337734377901440E-15,
-       6.34007647740507060557E-15, -2.22751332699166985548E-14,
-       8.03289077536357521100E-14, -2.98009692317273043925E-13,
-       1.14034058820847496303E-12, -4.51459788337394416547E-12,
-       1.85594911495471785253E-11, -7.95748924447710747776E-11,
-       3.57739728140030116597E-10, -1.69753450938905987466E-9,
-       8.57403401741422608519E-9, -4.66048989768794782956E-8,
-       2.76681363944501510342E-7, -1.83175552271911948767E-6,
-       1.39498137188764993662E-5, -1.28495495816278026384E-4,
-       1.56988388573005337491E-3, -3.14481013119645005427E-2,
-       2.44030308206595545468E0
-    };
+    const double A[] = {1.37446543561352307156E-16, 4.25981614279661018399E-14,
+                        1.03496952576338420167E-11, 1.90451637722020886025E-9,
+                        2.53479107902614945675E-7,  2.28621210311945178607E-5,
+                        1.26461541144692592338E-3,  3.59799365153615016266E-2,
+                        3.44289899924628486886E-1,  -5.35327393233902768720E-1};
+    const double B[] = {5.30043377268626276149E-18, -1.64758043015242134646E-17,
+                        5.21039150503902756861E-17, -1.67823109680541210385E-16,
+                        5.51205597852431940784E-16, -1.84859337734377901440E-15,
+                        6.34007647740507060557E-15, -2.22751332699166985548E-14,
+                        8.03289077536357521100E-14, -2.98009692317273043925E-13,
+                        1.14034058820847496303E-12, -4.51459788337394416547E-12,
+                        1.85594911495471785253E-11, -7.95748924447710747776E-11,
+                        3.57739728140030116597E-10, -1.69753450938905987466E-9,
+                        8.57403401741422608519E-9,  -4.66048989768794782956E-8,
+                        2.76681363944501510342E-7,  -1.83175552271911948767E-6,
+                        1.39498137188764993662E-5,  -1.28495495816278026384E-4,
+                        1.56988388573005337491E-3,  -3.14481013119645005427E-2,
+                        2.44030308206595545468E0};
     const T MAXNUM = pset1<T>(NumTraits<double>::infinity());
     const T two = pset1<T>(2.0);
-    T x_le_two = internal::pchebevl<T, 10>::run(
-        pmadd(x, x, pset1<T>(-2.0)), A);
-    x_le_two = pmadd(
-        generic_i0<T, double>::run(x), pnegate(
-            plog(pmul(pset1<T>(0.5), x))), x_le_two);
+    T x_le_two = internal::pchebevl<T, 10>::run(pmadd(x, x, pset1<T>(-2.0)), A);
+    x_le_two = pmadd(generic_i0<T, double>::run(x),
+                     pnegate(plog(pmul(pset1<T>(0.5), x))), x_le_two);
     x_le_two = pselect(pcmp_le(x, pset1<T>(0.0)), MAXNUM, x_le_two);
-    T x_gt_two = pmul(
-        pmul(
-            pexp(-x),
-            internal::pchebevl<T, 25>::run(
-                psub(pdiv(pset1<T>(8.0), x), two), B)),
-        prsqrt(x));
+    T x_gt_two = pmul(pmul(pexp(-x), internal::pchebevl<T, 25>::run(
+                                         psub(pdiv(pset1<T>(8.0), x), two), B)),
+                      prsqrt(x));
     return pselect(pcmp_le(x, two), x_le_two, x_gt_two);
   }
 };
@@ -757,9 +703,7 @@ struct generic_k0<T, double> {
 template <typename T>
 struct bessel_k0_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_k0<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_k0<T>::run(x); }
 };
 
 template <typename T>
@@ -815,9 +759,9 @@ struct generic_k1e<T, float> {
      */
 
     const float A[] = {-2.21338763073472585583E-8f, -2.43340614156596823496E-6f,
-                        -1.73028895751305206302E-4f, -6.97572385963986435018E-3f,
-                        -1.22611180822657148235E-1f, -3.53155960776544875667E-1f,
-                        1.52530022733894777053E0f};
+                       -1.73028895751305206302E-4f, -6.97572385963986435018E-3f,
+                       -1.22611180822657148235E-1f, -3.53155960776544875667E-1f,
+                       1.52530022733894777053E0f};
     const float B[] = {2.01504975519703286596E-9f, -1.03457624656780970260E-8f,
                        5.74108412545004946722E-8f, -3.50196060308781257119E-7f,
                        2.40648494783721712015E-6f, -1.93619797416608296024E-5f,
@@ -825,15 +769,14 @@ struct generic_k1e<T, float> {
                        1.03923736576817238437E-1f, 2.72062619048444266945E0f};
     const T MAXNUM = pset1<T>(NumTraits<float>::infinity());
     const T two = pset1<T>(2.0);
-    T x_le_two = pdiv(internal::pchebevl<T, 7>::run(
-        pmadd(x, x, pset1<T>(-2.0)), A), x);
-    x_le_two = pmadd(
-        generic_i1<T, float>::run(x), plog(pmul(pset1<T>(0.5), x)), x_le_two);
+    T x_le_two =
+        pdiv(internal::pchebevl<T, 7>::run(pmadd(x, x, pset1<T>(-2.0)), A), x);
+    x_le_two = pmadd(generic_i1<T, float>::run(x), plog(pmul(pset1<T>(0.5), x)),
+                     x_le_two);
     x_le_two = pmul(x_le_two, pexp(x));
     x_le_two = pselect(pcmp_le(x, pset1<T>(0.0)), MAXNUM, x_le_two);
     T x_gt_two = pmul(
-        internal::pchebevl<T, 10>::run(
-            psub(pdiv(pset1<T>(8.0), x), two), B),
+        internal::pchebevl<T, 10>::run(psub(pdiv(pset1<T>(8.0), x), two), B),
         prsqrt(x));
     return pselect(pcmp_le(x, two), x_le_two, x_gt_two);
   }
@@ -875,12 +818,13 @@ struct generic_k1e<T, double> {
      * See k1().
      *
      */
-    const double A[] = {-7.02386347938628759343E-18, -2.42744985051936593393E-15,
-                        -6.66690169419932900609E-13, -1.41148839263352776110E-10,
-                        -2.21338763073472585583E-8, -2.43340614156596823496E-6,
-                        -1.73028895751305206302E-4, -6.97572385963986435018E-3,
-                        -1.22611180822657148235E-1, -3.53155960776544875667E-1,
-                        1.52530022733894777053E0};
+    const double A[] = {
+        -7.02386347938628759343E-18, -2.42744985051936593393E-15,
+        -6.66690169419932900609E-13, -1.41148839263352776110E-10,
+        -2.21338763073472585583E-8,  -2.43340614156596823496E-6,
+        -1.73028895751305206302E-4,  -6.97572385963986435018E-3,
+        -1.22611180822657148235E-1,  -3.53155960776544875667E-1,
+        1.52530022733894777053E0};
     const double B[] = {-5.75674448366501715755E-18, 1.79405087314755922667E-17,
                         -5.68946255844285935196E-17, 1.83809354436663880070E-16,
                         -6.05704724837331885336E-16, 2.03870316562433424052E-15,
@@ -889,22 +833,21 @@ struct generic_k1e<T, double> {
                         -1.28917396095102890680E-12, 5.13963967348173025100E-12,
                         -2.12996783842756842877E-11, 9.21831518760500529508E-11,
                         -4.19035475934189648750E-10, 2.01504975519703286596E-9,
-                        -1.03457624656780970260E-8, 5.74108412545004946722E-8,
-                        -3.50196060308781257119E-7, 2.40648494783721712015E-6,
-                        -1.93619797416608296024E-5, 1.95215518471351631108E-4,
-                        -2.85781685962277938680E-3, 1.03923736576817238437E-1,
+                        -1.03457624656780970260E-8,  5.74108412545004946722E-8,
+                        -3.50196060308781257119E-7,  2.40648494783721712015E-6,
+                        -1.93619797416608296024E-5,  1.95215518471351631108E-4,
+                        -2.85781685962277938680E-3,  1.03923736576817238437E-1,
                         2.72062619048444266945E0};
     const T MAXNUM = pset1<T>(NumTraits<double>::infinity());
     const T two = pset1<T>(2.0);
-    T x_le_two = pdiv(internal::pchebevl<T, 11>::run(
-        pmadd(x, x, pset1<T>(-2.0)), A), x);
-    x_le_two = pmadd(
-        generic_i1<T, double>::run(x), plog(pmul(pset1<T>(0.5), x)), x_le_two);
+    T x_le_two =
+        pdiv(internal::pchebevl<T, 11>::run(pmadd(x, x, pset1<T>(-2.0)), A), x);
+    x_le_two = pmadd(generic_i1<T, double>::run(x),
+                     plog(pmul(pset1<T>(0.5), x)), x_le_two);
     x_le_two = pmul(x_le_two, pexp(x));
     x_le_two = pselect(pcmp_le(x, pset1<T>(0.0)), MAXNUM, x_le_two);
     T x_gt_two = pmul(
-        internal::pchebevl<T, 25>::run(
-            psub(pdiv(pset1<T>(8.0), x), two), B),
+        internal::pchebevl<T, 25>::run(psub(pdiv(pset1<T>(8.0), x), two), B),
         prsqrt(x));
     return pselect(pcmp_le(x, two), x_le_two, x_gt_two);
   }
@@ -913,9 +856,7 @@ struct generic_k1e<T, double> {
 template <typename T>
 struct bessel_k1e_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_k1e<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_k1e<T>::run(x); }
 };
 
 template <typename T>
@@ -975,9 +916,9 @@ struct generic_k1<T, float> {
      */
 
     const float A[] = {-2.21338763073472585583E-8f, -2.43340614156596823496E-6f,
-                        -1.73028895751305206302E-4f, -6.97572385963986435018E-3f,
-                        -1.22611180822657148235E-1f, -3.53155960776544875667E-1f,
-                        1.52530022733894777053E0f};
+                       -1.73028895751305206302E-4f, -6.97572385963986435018E-3f,
+                       -1.22611180822657148235E-1f, -3.53155960776544875667E-1f,
+                       1.52530022733894777053E0f};
     const float B[] = {2.01504975519703286596E-9f, -1.03457624656780970260E-8f,
                        5.74108412545004946722E-8f, -3.50196060308781257119E-7f,
                        2.40648494783721712015E-6f, -1.93619797416608296024E-5f,
@@ -985,17 +926,15 @@ struct generic_k1<T, float> {
                        1.03923736576817238437E-1f, 2.72062619048444266945E0f};
     const T MAXNUM = pset1<T>(NumTraits<float>::infinity());
     const T two = pset1<T>(2.0);
-    T x_le_two = pdiv(internal::pchebevl<T, 7>::run(
-        pmadd(x, x, pset1<T>(-2.0)), A), x);
-    x_le_two = pmadd(
-        generic_i1<T, float>::run(x), plog(pmul(pset1<T>(0.5), x)), x_le_two);
+    T x_le_two =
+        pdiv(internal::pchebevl<T, 7>::run(pmadd(x, x, pset1<T>(-2.0)), A), x);
+    x_le_two = pmadd(generic_i1<T, float>::run(x), plog(pmul(pset1<T>(0.5), x)),
+                     x_le_two);
     x_le_two = pselect(pcmp_le(x, pset1<T>(0.0)), MAXNUM, x_le_two);
-    T x_gt_two = pmul(
-        pexp(pnegate(x)),
-        pmul(
-            internal::pchebevl<T, 10>::run(
-                psub(pdiv(pset1<T>(8.0), x), two), B),
-            prsqrt(x)));
+    T x_gt_two =
+        pmul(pexp(pnegate(x)), pmul(internal::pchebevl<T, 10>::run(
+                                        psub(pdiv(pset1<T>(8.0), x), two), B),
+                                    prsqrt(x)));
     return pselect(pcmp_le(x, two), x_le_two, x_gt_two);
   }
 };
@@ -1040,12 +979,13 @@ struct generic_k1<T, double> {
      * k1 domain          x <= 0          MAXNUM
      *
      */
-    const double A[] = {-7.02386347938628759343E-18, -2.42744985051936593393E-15,
-                        -6.66690169419932900609E-13, -1.41148839263352776110E-10,
-                        -2.21338763073472585583E-8, -2.43340614156596823496E-6,
-                        -1.73028895751305206302E-4, -6.97572385963986435018E-3,
-                        -1.22611180822657148235E-1, -3.53155960776544875667E-1,
-                        1.52530022733894777053E0};
+    const double A[] = {
+        -7.02386347938628759343E-18, -2.42744985051936593393E-15,
+        -6.66690169419932900609E-13, -1.41148839263352776110E-10,
+        -2.21338763073472585583E-8,  -2.43340614156596823496E-6,
+        -1.73028895751305206302E-4,  -6.97572385963986435018E-3,
+        -1.22611180822657148235E-1,  -3.53155960776544875667E-1,
+        1.52530022733894777053E0};
     const double B[] = {-5.75674448366501715755E-18, 1.79405087314755922667E-17,
                         -5.68946255844285935196E-17, 1.83809354436663880070E-16,
                         -6.05704724837331885336E-16, 2.03870316562433424052E-15,
@@ -1054,24 +994,21 @@ struct generic_k1<T, double> {
                         -1.28917396095102890680E-12, 5.13963967348173025100E-12,
                         -2.12996783842756842877E-11, 9.21831518760500529508E-11,
                         -4.19035475934189648750E-10, 2.01504975519703286596E-9,
-                        -1.03457624656780970260E-8, 5.74108412545004946722E-8,
-                        -3.50196060308781257119E-7, 2.40648494783721712015E-6,
-                        -1.93619797416608296024E-5, 1.95215518471351631108E-4,
-                        -2.85781685962277938680E-3, 1.03923736576817238437E-1,
+                        -1.03457624656780970260E-8,  5.74108412545004946722E-8,
+                        -3.50196060308781257119E-7,  2.40648494783721712015E-6,
+                        -1.93619797416608296024E-5,  1.95215518471351631108E-4,
+                        -2.85781685962277938680E-3,  1.03923736576817238437E-1,
                         2.72062619048444266945E0};
     const T MAXNUM = pset1<T>(NumTraits<double>::infinity());
     const T two = pset1<T>(2.0);
-    T x_le_two = pdiv(internal::pchebevl<T, 11>::run(
-        pmadd(x, x, pset1<T>(-2.0)), A), x);
-    x_le_two = pmadd(
-        generic_i1<T, double>::run(x), plog(pmul(pset1<T>(0.5), x)), x_le_two);
+    T x_le_two =
+        pdiv(internal::pchebevl<T, 11>::run(pmadd(x, x, pset1<T>(-2.0)), A), x);
+    x_le_two = pmadd(generic_i1<T, double>::run(x),
+                     plog(pmul(pset1<T>(0.5), x)), x_le_two);
     x_le_two = pselect(pcmp_le(x, pset1<T>(0.0)), MAXNUM, x_le_two);
-    T x_gt_two = pmul(
-        pexp(-x),
-        pmul(
-            internal::pchebevl<T, 25>::run(
-                psub(pdiv(pset1<T>(8.0), x), two), B),
-            prsqrt(x)));
+    T x_gt_two = pmul(pexp(-x), pmul(internal::pchebevl<T, 25>::run(
+                                         psub(pdiv(pset1<T>(8.0), x), two), B),
+                                     prsqrt(x)));
     return pselect(pcmp_le(x, two), x_le_two, x_gt_two);
   }
 };
@@ -1079,9 +1016,7 @@ struct generic_k1<T, double> {
 template <typename T>
 struct bessel_k1_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_k1<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_k1<T>::run(x); }
 };
 
 template <typename T>
@@ -1160,14 +1095,14 @@ struct generic_j0<T, float> {
                         1.756221482109099E+001f, -4.974978466280903E+000f,
                         1.001973420681837E+000f, -1.939906941791308E-001f,
                         6.490598792654666E-002f, -1.249992184872738E-001f};
-    const T DR1 =  pset1<T>(5.78318596294678452118f);
+    const T DR1 = pset1<T>(5.78318596294678452118f);
     const T NEG_PIO4F = pset1<T>(-0.7853981633974483096f); /* -pi / 4 */
     T y = pabs(x);
     T z = pmul(y, y);
-    T y_le_two = pselect(
-        pcmp_lt(y, pset1<T>(1.0e-3f)),
-        pmadd(z, pset1<T>(-0.25f), pset1<T>(1.0f)),
-        pmul(psub(z, DR1), internal::ppolevl<T, 4>::run(z, JP)));
+    T y_le_two =
+        pselect(pcmp_lt(y, pset1<T>(1.0e-3f)),
+                pmadd(z, pset1<T>(-0.25f), pset1<T>(1.0f)),
+                pmul(psub(z, DR1), internal::ppolevl<T, 4>::run(z, JP)));
     T q = pdiv(pset1<T>(1.0f), y);
     T w = prsqrt(y);
     T p = pmul(w, internal::ppolevl<T, 7>::run(q, MO));
@@ -1226,48 +1161,45 @@ struct generic_j0<T, double> {
      *
      */
     const double PP[] = {7.96936729297347051624E-4, 8.28352392107440799803E-2,
-                        1.23953371646414299388E0, 5.44725003058768775090E0,
-                        8.74716500199817011941E0, 5.30324038235394892183E0,
-                        9.99999999999999997821E-1};
+                         1.23953371646414299388E0,  5.44725003058768775090E0,
+                         8.74716500199817011941E0,  5.30324038235394892183E0,
+                         9.99999999999999997821E-1};
     const double PQ[] = {9.24408810558863637013E-4, 8.56288474354474431428E-2,
-                         1.25352743901058953537E0, 5.47097740330417105182E0,
-                         8.76190883237069594232E0, 5.30605288235394617618E0,
+                         1.25352743901058953537E0,  5.47097740330417105182E0,
+                         8.76190883237069594232E0,  5.30605288235394617618E0,
                          1.00000000000000000218E0};
     const double QP[] = {-1.13663838898469149931E-2, -1.28252718670509318512E0,
-                         -1.95539544257735972385E1, -9.32060152123768231369E1,
-                         -1.77681167980488050595E2, -1.47077505154951170175E2,
-                         -5.14105326766599330220E1, -6.05014350600728481186E0};
+                         -1.95539544257735972385E1,  -9.32060152123768231369E1,
+                         -1.77681167980488050595E2,  -1.47077505154951170175E2,
+                         -5.14105326766599330220E1,  -6.05014350600728481186E0};
     const double QQ[] = {1.00000000000000000000E0, 6.43178256118178023184E1,
                          8.56430025976980587198E2, 3.88240183605401609683E3,
                          7.24046774195652478189E3, 5.93072701187316984827E3,
                          2.06209331660327847417E3, 2.42005740240291393179E2};
     const double RP[] = {-4.79443220978201773821E9, 1.95617491946556577543E12,
                          -2.49248344360967716204E14, 9.70862251047306323952E15};
-    const double RQ[] = {1.00000000000000000000E0, 4.99563147152651017219E2,
-                         1.73785401676374683123E5, 4.84409658339962045305E7,
+    const double RQ[] = {1.00000000000000000000E0,  4.99563147152651017219E2,
+                         1.73785401676374683123E5,  4.84409658339962045305E7,
                          1.11855537045356834862E10, 2.11277520115489217587E12,
                          3.10518229857422583814E14, 3.18121955943204943306E16,
                          1.71086294081043136091E18};
     const T DR1 = pset1<T>(5.78318596294678452118E0);
     const T DR2 = pset1<T>(3.04712623436620863991E1);
     const T SQ2OPI = pset1<T>(7.9788456080286535587989E-1); /* sqrt(2 / pi) */
-    const T NEG_PIO4 = pset1<T>(-0.7853981633974483096); /* pi / 4 */
+    const T NEG_PIO4 = pset1<T>(-0.7853981633974483096);    /* pi / 4 */
 
     T y = pabs(x);
     T z = pmul(y, y);
-    T y_le_five = pselect(
-        pcmp_lt(y, pset1<T>(1.0e-5)),
-        pmadd(z, pset1<T>(-0.25), pset1<T>(1.0)),
-        pmul(pmul(psub(z, DR1), psub(z, DR2)),
-             pdiv(internal::ppolevl<T, 3>::run(z, RP),
-                  internal::ppolevl<T, 8>::run(z, RQ))));
+    T y_le_five = pselect(pcmp_lt(y, pset1<T>(1.0e-5)),
+                          pmadd(z, pset1<T>(-0.25), pset1<T>(1.0)),
+                          pmul(pmul(psub(z, DR1), psub(z, DR2)),
+                               pdiv(internal::ppolevl<T, 3>::run(z, RP),
+                                    internal::ppolevl<T, 8>::run(z, RQ))));
     T s = pdiv(pset1<T>(25.0), z);
-    T p = pdiv(
-        internal::ppolevl<T, 6>::run(s, PP),
-        internal::ppolevl<T, 6>::run(s, PQ));
-    T q = pdiv(
-        internal::ppolevl<T, 7>::run(s, QP),
-        internal::ppolevl<T, 7>::run(s, QQ));
+    T p = pdiv(internal::ppolevl<T, 6>::run(s, PP),
+               internal::ppolevl<T, 6>::run(s, PQ));
+    T q = pdiv(internal::ppolevl<T, 7>::run(s, QP),
+               internal::ppolevl<T, 7>::run(s, QQ));
     T yn = padd(y, NEG_PIO4);
     T w = pdiv(pset1<T>(-5.0), y);
     p = pmadd(p, pcos(yn), pmul(w, pmul(q, psin(yn))));
@@ -1279,9 +1211,7 @@ struct generic_j0<T, double> {
 template <typename T>
 struct bessel_j0_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_j0<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_j0<T>::run(x); }
 };
 
 template <typename T>
@@ -1363,13 +1293,13 @@ struct generic_y0<T, float> {
                         1.001973420681837E+000f, -1.939906941791308E-001f,
                         6.490598792654666E-002f, -1.249992184872738E-001f};
     const T YZ1 = pset1<T>(0.43221455686510834878f);
-    const T TWOOPI =  pset1<T>(0.636619772367581343075535f); /* 2 / pi */
-    const T NEG_PIO4F = pset1<T>(-0.7853981633974483096f); /* -pi / 4 */
+    const T TWOOPI = pset1<T>(0.636619772367581343075535f); /* 2 / pi */
+    const T NEG_PIO4F = pset1<T>(-0.7853981633974483096f);  /* -pi / 4 */
     const T NEG_MAXNUM = pset1<T>(-NumTraits<float>::infinity());
     T z = pmul(x, x);
     T x_le_two = pmul(TWOOPI, pmul(plog(x), generic_j0<T, float>::run(x)));
-    x_le_two = pmadd(
-        psub(z, YZ1), internal::ppolevl<T, 4>::run(z, YP), x_le_two);
+    x_le_two =
+        pmadd(psub(z, YZ1), internal::ppolevl<T, 4>::run(z, YP), x_le_two);
     x_le_two = pselect(pcmp_le(x, pset1<T>(0.0)), NEG_MAXNUM, x_le_two);
     T q = pdiv(pset1<T>(1.0), x);
     T w = prsqrt(x);
@@ -1425,47 +1355,45 @@ struct generic_y0<T, double> {
      *
      */
     const double PP[] = {7.96936729297347051624E-4, 8.28352392107440799803E-2,
-                        1.23953371646414299388E0, 5.44725003058768775090E0,
-                        8.74716500199817011941E0, 5.30324038235394892183E0,
-                        9.99999999999999997821E-1};
+                         1.23953371646414299388E0,  5.44725003058768775090E0,
+                         8.74716500199817011941E0,  5.30324038235394892183E0,
+                         9.99999999999999997821E-1};
     const double PQ[] = {9.24408810558863637013E-4, 8.56288474354474431428E-2,
-                         1.25352743901058953537E0, 5.47097740330417105182E0,
-                         8.76190883237069594232E0, 5.30605288235394617618E0,
+                         1.25352743901058953537E0,  5.47097740330417105182E0,
+                         8.76190883237069594232E0,  5.30605288235394617618E0,
                          1.00000000000000000218E0};
     const double QP[] = {-1.13663838898469149931E-2, -1.28252718670509318512E0,
-                         -1.95539544257735972385E1, -9.32060152123768231369E1,
-                         -1.77681167980488050595E2, -1.47077505154951170175E2,
-                         -5.14105326766599330220E1, -6.05014350600728481186E0};
+                         -1.95539544257735972385E1,  -9.32060152123768231369E1,
+                         -1.77681167980488050595E2,  -1.47077505154951170175E2,
+                         -5.14105326766599330220E1,  -6.05014350600728481186E0};
     const double QQ[] = {1.00000000000000000000E0, 6.43178256118178023184E1,
                          8.56430025976980587198E2, 3.88240183605401609683E3,
                          7.24046774195652478189E3, 5.93072701187316984827E3,
                          2.06209331660327847417E3, 2.42005740240291393179E2};
-    const double YP[] = {1.55924367855235737965E4, -1.46639295903971606143E7,
-                         5.43526477051876500413E9, -9.82136065717911466409E11,
+    const double YP[] = {1.55924367855235737965E4,  -1.46639295903971606143E7,
+                         5.43526477051876500413E9,  -9.82136065717911466409E11,
                          8.75906394395366999549E13, -3.46628303384729719441E15,
                          4.42733268572569800351E16, -1.84950800436986690637E16};
     const double YQ[] = {1.00000000000000000000E0,  1.04128353664259848412E3,
-                         6.26107330137134956842E5, 2.68919633393814121987E8,
+                         6.26107330137134956842E5,  2.68919633393814121987E8,
                          8.64002487103935000337E10, 2.02979612750105546709E13,
                          3.17157752842975028269E15, 2.50596256172653059228E17};
     const T SQ2OPI = pset1<T>(7.9788456080286535587989E-1); /* sqrt(2 / pi) */
-    const T TWOOPI =  pset1<T>(0.636619772367581343075535); /* 2 / pi */
-    const T NEG_PIO4 = pset1<T>(-0.7853981633974483096); /* -pi / 4 */
+    const T TWOOPI = pset1<T>(0.636619772367581343075535);  /* 2 / pi */
+    const T NEG_PIO4 = pset1<T>(-0.7853981633974483096);    /* -pi / 4 */
     const T NEG_MAXNUM = pset1<T>(-NumTraits<double>::infinity());
 
     T z = pmul(x, x);
     T x_le_five = pdiv(internal::ppolevl<T, 7>::run(z, YP),
                        internal::ppolevl<T, 7>::run(z, YQ));
-    x_le_five = pmadd(
-        pmul(TWOOPI, plog(x)), generic_j0<T, double>::run(x), x_le_five);
+    x_le_five =
+        pmadd(pmul(TWOOPI, plog(x)), generic_j0<T, double>::run(x), x_le_five);
     x_le_five = pselect(pcmp_le(x, pset1<T>(0.0)), NEG_MAXNUM, x_le_five);
     T s = pdiv(pset1<T>(25.0), z);
-    T p = pdiv(
-        internal::ppolevl<T, 6>::run(s, PP),
-        internal::ppolevl<T, 6>::run(s, PQ));
-    T q = pdiv(
-        internal::ppolevl<T, 7>::run(s, QP),
-        internal::ppolevl<T, 7>::run(s, QQ));
+    T p = pdiv(internal::ppolevl<T, 6>::run(s, PP),
+               internal::ppolevl<T, 6>::run(s, PQ));
+    T q = pdiv(internal::ppolevl<T, 7>::run(s, QP),
+               internal::ppolevl<T, 7>::run(s, QQ));
     T xn = padd(x, NEG_PIO4);
     T w = pdiv(pset1<T>(5.0), x);
     p = pmadd(p, psin(xn), pmul(w, pmul(q, pcos(xn))));
@@ -1477,9 +1405,7 @@ struct generic_y0<T, double> {
 template <typename T>
 struct bessel_y0_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_y0<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_y0<T>::run(x); }
 };
 
 template <typename T>
@@ -1548,21 +1474,20 @@ struct generic_j1<T, float> {
                         -4.541343896997497E-005f, 1.937383947804541E-003f,
                         -3.405537384615824E-002f};
     const float MO1[] = {6.913942741265801E-002f, -2.284801500053359E-001f,
-                        3.138238455499697E-001f, -2.102302420403875E-001f,
-                        5.435364690523026E-003f, 1.493389585089498E-001f,
-                        4.976029650847191E-006f, 7.978845453073848E-001f};
+                         3.138238455499697E-001f, -2.102302420403875E-001f,
+                         5.435364690523026E-003f, 1.493389585089498E-001f,
+                         4.976029650847191E-006f, 7.978845453073848E-001f};
     const float PH1[] = {-4.497014141919556E+001f, 5.073465654089319E+001f,
-                        -2.485774108720340E+001f, 7.222973196770240E+000f,
-                        -1.544842782180211E+000f, 3.503787691653334E-001f,
-                        -1.637986776941202E-001f, 3.749989509080821E-001f};
+                         -2.485774108720340E+001f, 7.222973196770240E+000f,
+                         -1.544842782180211E+000f, 3.503787691653334E-001f,
+                         -1.637986776941202E-001f, 3.749989509080821E-001f};
     const T Z1 = pset1<T>(1.46819706421238932572E1f);
-    const T NEG_THPIO4F = pset1<T>(-2.35619449019234492885f);    /* -3*pi/4 */
+    const T NEG_THPIO4F = pset1<T>(-2.35619449019234492885f); /* -3*pi/4 */
 
     T y = pabs(x);
     T z = pmul(y, y);
-    T y_le_two = pmul(
-        psub(z, Z1),
-        pmul(x, internal::ppolevl<T, 4>::run(z, JP)));
+    T y_le_two =
+        pmul(psub(z, Z1), pmul(x, internal::ppolevl<T, 4>::run(z, JP)));
     T q = pdiv(pset1<T>(1.0f), y);
     T w = prsqrt(y);
     T p = pmul(w, internal::ppolevl<T, 7>::run(q, MO1));
@@ -1571,8 +1496,7 @@ struct generic_j1<T, float> {
     T y_gt_two = pmul(p, pcos(padd(yn, y)));
     // j1 is an odd function. This implementation differs from cephes to
     // take this fact in to account. Cephes returns -j1(x) for y > 2 range.
-    y_gt_two = pselect(
-        pcmp_lt(x, pset1<T>(0.0f)), pnegate(y_gt_two), y_gt_two);
+    y_gt_two = pselect(pcmp_lt(x, pset1<T>(0.0f)), pnegate(y_gt_two), y_gt_two);
     return pselect(pcmp_le(y, pset1<T>(2.0f)), y_le_two, y_gt_two);
   }
 };
@@ -1615,31 +1539,31 @@ struct generic_j1<T, double> {
      *
      */
     const double PP[] = {7.62125616208173112003E-4, 7.31397056940917570436E-2,
-                         1.12719608129684925192E0, 5.11207951146807644818E0,
-                         8.42404590141772420927E0, 5.21451598682361504063E0,
+                         1.12719608129684925192E0,  5.11207951146807644818E0,
+                         8.42404590141772420927E0,  5.21451598682361504063E0,
                          1.00000000000000000254E0};
     const double PQ[] = {5.71323128072548699714E-4, 6.88455908754495404082E-2,
-                         1.10514232634061696926E0, 5.07386386128601488557E0,
-                         8.39985554327604159757E0, 5.20982848682361821619E0,
+                         1.10514232634061696926E0,  5.07386386128601488557E0,
+                         8.39985554327604159757E0,  5.20982848682361821619E0,
                          9.99999999999999997461E-1};
     const double QP[] = {5.10862594750176621635E-2, 4.98213872951233449420E0,
-                         7.58238284132545283818E1, 3.66779609360150777800E2,
-                         7.10856304998926107277E2, 5.97489612400613639965E2,
-                         2.11688757100572135698E2, 2.52070205858023719784E1};
+                         7.58238284132545283818E1,  3.66779609360150777800E2,
+                         7.10856304998926107277E2,  5.97489612400613639965E2,
+                         2.11688757100572135698E2,  2.52070205858023719784E1};
     const double QQ[] = {1.00000000000000000000E0, 7.42373277035675149943E1,
                          1.05644886038262816351E3, 4.98641058337653607651E3,
                          9.56231892404756170795E3, 7.99704160447350683650E3,
                          2.82619278517639096600E3, 3.36093607810698293419E2};
     const double RP[] = {-8.99971225705559398224E8, 4.52228297998194034323E11,
                          -7.27494245221818276015E13, 3.68295732863852883286E15};
-    const double RQ[] = {1.00000000000000000000E0, 6.20836478118054335476E2,
-                         2.56987256757748830383E5, 8.35146791431949253037E7,
+    const double RQ[] = {1.00000000000000000000E0,  6.20836478118054335476E2,
+                         2.56987256757748830383E5,  8.35146791431949253037E7,
                          2.21511595479792499675E10, 4.74914122079991414898E12,
                          7.84369607876235854894E14, 8.95222336184627338078E16,
                          5.32278620332680085395E18};
     const T Z1 = pset1<T>(1.46819706421238932572E1);
     const T Z2 = pset1<T>(4.92184563216946036703E1);
-    const T NEG_THPIO4 = pset1<T>(-2.35619449019234492885);    /* -3*pi/4 */
+    const T NEG_THPIO4 = pset1<T>(-2.35619449019234492885); /* -3*pi/4 */
     const T SQ2OPI = pset1<T>(7.9788456080286535587989E-1); /* sqrt(2 / pi) */
     T y = pabs(x);
     T z = pmul(y, y);
@@ -1647,20 +1571,18 @@ struct generic_j1<T, double> {
                        internal::ppolevl<T, 8>::run(z, RQ));
     y_le_five = pmul(pmul(pmul(y_le_five, x), psub(z, Z1)), psub(z, Z2));
     T s = pdiv(pset1<T>(25.0), z);
-    T p = pdiv(
-        internal::ppolevl<T, 6>::run(s, PP),
-        internal::ppolevl<T, 6>::run(s, PQ));
-    T q = pdiv(
-        internal::ppolevl<T, 7>::run(s, QP),
-        internal::ppolevl<T, 7>::run(s, QQ));
+    T p = pdiv(internal::ppolevl<T, 6>::run(s, PP),
+               internal::ppolevl<T, 6>::run(s, PQ));
+    T q = pdiv(internal::ppolevl<T, 7>::run(s, QP),
+               internal::ppolevl<T, 7>::run(s, QQ));
     T yn = padd(y, NEG_THPIO4);
     T w = pdiv(pset1<T>(-5.0), y);
     p = pmadd(p, pcos(yn), pmul(w, pmul(q, psin(yn))));
     T y_gt_five = pmul(p, pmul(SQ2OPI, prsqrt(y)));
     // j1 is an odd function. This implementation differs from cephes to
     // take this fact in to account. Cephes returns -j1(x) for y > 5 range.
-    y_gt_five = pselect(
-        pcmp_lt(x, pset1<T>(0.0)), pnegate(y_gt_five), y_gt_five);
+    y_gt_five =
+        pselect(pcmp_lt(x, pset1<T>(0.0)), pnegate(y_gt_five), y_gt_five);
     return pselect(pcmp_le(y, pset1<T>(5.0)), y_le_five, y_gt_five);
   }
 };
@@ -1668,9 +1590,7 @@ struct generic_j1<T, double> {
 template <typename T>
 struct bessel_j1_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_j1<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_j1<T>::run(x); }
 };
 
 template <typename T>
@@ -1744,25 +1664,23 @@ struct generic_y1<T, float> {
                         6.719543806674249E-005f, -2.641785726447862E-003f,
                         4.202369946500099E-002f};
     const float MO1[] = {6.913942741265801E-002f, -2.284801500053359E-001f,
-                        3.138238455499697E-001f, -2.102302420403875E-001f,
-                        5.435364690523026E-003f, 1.493389585089498E-001f,
-                        4.976029650847191E-006f, 7.978845453073848E-001f};
+                         3.138238455499697E-001f, -2.102302420403875E-001f,
+                         5.435364690523026E-003f, 1.493389585089498E-001f,
+                         4.976029650847191E-006f, 7.978845453073848E-001f};
     const float PH1[] = {-4.497014141919556E+001f, 5.073465654089319E+001f,
-                        -2.485774108720340E+001f, 7.222973196770240E+000f,
-                        -1.544842782180211E+000f, 3.503787691653334E-001f,
-                        -1.637986776941202E-001f, 3.749989509080821E-001f};
+                         -2.485774108720340E+001f, 7.222973196770240E+000f,
+                         -1.544842782180211E+000f, 3.503787691653334E-001f,
+                         -1.637986776941202E-001f, 3.749989509080821E-001f};
     const T YO1 = pset1<T>(4.66539330185668857532f);
-    const T NEG_THPIO4F = pset1<T>(-2.35619449019234492885f);    /* -3*pi/4 */
-    const T TWOOPI = pset1<T>(0.636619772367581343075535f); /* 2/pi */
+    const T NEG_THPIO4F = pset1<T>(-2.35619449019234492885f); /* -3*pi/4 */
+    const T TWOOPI = pset1<T>(0.636619772367581343075535f);   /* 2/pi */
     const T NEG_MAXNUM = pset1<T>(-NumTraits<float>::infinity());
 
     T z = pmul(x, x);
     T x_le_two = pmul(psub(z, YO1), internal::ppolevl<T, 4>::run(z, YP));
-    x_le_two = pmadd(
-       x_le_two, x,
-       pmul(TWOOPI, pmadd(
-           generic_j1<T, float>::run(x), plog(x),
-           pdiv(pset1<T>(-1.0f), x))));
+    x_le_two = pmadd(x_le_two, x,
+                     pmul(TWOOPI, pmadd(generic_j1<T, float>::run(x), plog(x),
+                                        pdiv(pset1<T>(-1.0f), x))));
     x_le_two = pselect(pcmp_lt(x, pset1<T>(0.0f)), NEG_MAXNUM, x_le_two);
 
     T q = pdiv(pset1<T>(1.0), x);
@@ -1816,50 +1734,47 @@ struct generic_y1<T, double> {
      *
      */
     const double PP[] = {7.62125616208173112003E-4, 7.31397056940917570436E-2,
-                         1.12719608129684925192E0, 5.11207951146807644818E0,
-                         8.42404590141772420927E0, 5.21451598682361504063E0,
+                         1.12719608129684925192E0,  5.11207951146807644818E0,
+                         8.42404590141772420927E0,  5.21451598682361504063E0,
                          1.00000000000000000254E0};
     const double PQ[] = {5.71323128072548699714E-4, 6.88455908754495404082E-2,
-                         1.10514232634061696926E0, 5.07386386128601488557E0,
-                         8.39985554327604159757E0, 5.20982848682361821619E0,
+                         1.10514232634061696926E0,  5.07386386128601488557E0,
+                         8.39985554327604159757E0,  5.20982848682361821619E0,
                          9.99999999999999997461E-1};
     const double QP[] = {5.10862594750176621635E-2, 4.98213872951233449420E0,
-                         7.58238284132545283818E1, 3.66779609360150777800E2,
-                         7.10856304998926107277E2, 5.97489612400613639965E2,
-                         2.11688757100572135698E2, 2.52070205858023719784E1};
+                         7.58238284132545283818E1,  3.66779609360150777800E2,
+                         7.10856304998926107277E2,  5.97489612400613639965E2,
+                         2.11688757100572135698E2,  2.52070205858023719784E1};
     const double QQ[] = {1.00000000000000000000E0, 7.42373277035675149943E1,
                          1.05644886038262816351E3, 4.98641058337653607651E3,
                          9.56231892404756170795E3, 7.99704160447350683650E3,
                          2.82619278517639096600E3, 3.36093607810698293419E2};
-    const double YP[] = {1.26320474790178026440E9, -6.47355876379160291031E11,
+    const double YP[] = {1.26320474790178026440E9,  -6.47355876379160291031E11,
                          1.14509511541823727583E14, -8.12770255501325109621E15,
                          2.02439475713594898196E17, -7.78877196265950026825E17};
-    const double YQ[] = {1.00000000000000000000E0, 5.94301592346128195359E2,
-                         2.35564092943068577943E5, 7.34811944459721705660E7,
+    const double YQ[] = {1.00000000000000000000E0,  5.94301592346128195359E2,
+                         2.35564092943068577943E5,  7.34811944459721705660E7,
                          1.87601316108706159478E10, 3.88231277496238566008E12,
                          6.20557727146953693363E14, 6.87141087355300489866E16,
                          3.97270608116560655612E18};
     const T SQ2OPI = pset1<T>(.79788456080286535588);
-    const T NEG_THPIO4 = pset1<T>(-2.35619449019234492885);    /* -3*pi/4 */
-    const T TWOOPI = pset1<T>(0.636619772367581343075535); /* 2/pi */
+    const T NEG_THPIO4 = pset1<T>(-2.35619449019234492885); /* -3*pi/4 */
+    const T TWOOPI = pset1<T>(0.636619772367581343075535);  /* 2/pi */
     const T NEG_MAXNUM = pset1<T>(-NumTraits<double>::infinity());
 
     T z = pmul(x, x);
     T x_le_five = pdiv(internal::ppolevl<T, 5>::run(z, YP),
-                   internal::ppolevl<T, 8>::run(z, YQ));
-    x_le_five = pmadd(
-        x_le_five, x, pmul(
-            TWOOPI, pmadd(generic_j1<T, double>::run(x), plog(x),
-                          pdiv(pset1<T>(-1.0), x))));
+                       internal::ppolevl<T, 8>::run(z, YQ));
+    x_le_five = pmadd(x_le_five, x,
+                      pmul(TWOOPI, pmadd(generic_j1<T, double>::run(x), plog(x),
+                                         pdiv(pset1<T>(-1.0), x))));
 
     x_le_five = pselect(pcmp_le(x, pset1<T>(0.0)), NEG_MAXNUM, x_le_five);
     T s = pdiv(pset1<T>(25.0), z);
-    T p = pdiv(
-        internal::ppolevl<T, 6>::run(s, PP),
-        internal::ppolevl<T, 6>::run(s, PQ));
-    T q = pdiv(
-        internal::ppolevl<T, 7>::run(s, QP),
-        internal::ppolevl<T, 7>::run(s, QQ));
+    T p = pdiv(internal::ppolevl<T, 6>::run(s, PP),
+               internal::ppolevl<T, 6>::run(s, PQ));
+    T q = pdiv(internal::ppolevl<T, 7>::run(s, QP),
+               internal::ppolevl<T, 7>::run(s, QQ));
     T xn = padd(x, NEG_THPIO4);
     T w = pdiv(pset1<T>(5.0), x);
     p = pmadd(p, psin(xn), pmul(w, pmul(q, pcos(xn))));
@@ -1871,9 +1786,7 @@ struct generic_y1<T, double> {
 template <typename T>
 struct bessel_y1_impl {
   EIGEN_DEVICE_FUNC
-  static EIGEN_STRONG_INLINE T run(const T x) {
-    return generic_y1<T>::run(x);
-  }
+  static EIGEN_STRONG_INLINE T run(const T x) { return generic_y1<T>::run(x); }
 };
 
 }  // end namespace internal

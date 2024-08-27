@@ -22,7 +22,7 @@ struct Variable {
   double upperbound = std::numeric_limits<double>::infinity();
   std::string name;
 
-  Variable(std::string n = "") : name(n){};
+  Variable(std::string n = "") : name(n) {};
 };
 
 struct LinTerm {
@@ -48,7 +48,7 @@ struct Constraint {
   double upperbound = std::numeric_limits<double>::infinity();
   std::shared_ptr<Expression> expr;
 
-  Constraint() : expr(std::shared_ptr<Expression>(new Expression)){};
+  Constraint() : expr(std::shared_ptr<Expression>(new Expression)) {};
 };
 
 struct SOS {

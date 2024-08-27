@@ -9,20 +9,14 @@
 
 #include "IpUtils.hpp"
 
-namespace Ipopt
-{
+namespace Ipopt {
 /** Wrapper for BLAS function XDOT.
  *
  * Compute dot product of vector x and vector y.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT Number IpBlasDot(
-   Index         size,
-   const Number* x,
-   Index         incX,
-   const Number* y,
-   Index         incY
-);
+IPOPTLIB_EXPORT Number IpBlasDot(Index size, const Number* x, Index incX,
+                                 const Number* y, Index incY);
 
 /** Wrapper for BLAS function DDOT.
  *
@@ -31,15 +25,9 @@ IPOPTLIB_EXPORT Number IpBlasDot(
  * @deprecated Use IpBlasDot() instead.
  */
 IPOPT_DEPRECATED
-inline Number IpBlasDdot(
-   Index         size,
-   const Number* x,
-   Index         incX,
-   const Number* y,
-   Index         incY
-)
-{
-   return IpBlasDot(size, x, incX, y, incY);
+inline Number IpBlasDdot(Index size, const Number* x, Index incX,
+                         const Number* y, Index incY) {
+  return IpBlasDot(size, x, incX, y, incY);
 }
 
 /** Wrapper for BLAS function XNRM2.
@@ -47,11 +35,7 @@ inline Number IpBlasDdot(
  * Compute 2-norm of vector x.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT Number IpBlasNrm2(
-   Index         size,
-   const Number* x,
-   Index         incX
-);
+IPOPTLIB_EXPORT Number IpBlasNrm2(Index size, const Number* x, Index incX);
 
 /** Wrapper for BLAS function DNRM2.
  *
@@ -60,13 +44,8 @@ IPOPTLIB_EXPORT Number IpBlasNrm2(
  * @deprecated Use IpBlasNrm2() instead.
  */
 IPOPT_DEPRECATED
-inline Number IpBlasDnrm2(
-   Index         size,
-   const Number* x,
-   Index         incX
-)
-{
-   return IpBlasNrm2(size, x, incX);
+inline Number IpBlasDnrm2(Index size, const Number* x, Index incX) {
+  return IpBlasNrm2(size, x, incX);
 }
 
 /** Wrapper for BLAS function XASUM.
@@ -74,11 +53,7 @@ inline Number IpBlasDnrm2(
  * Compute 1-norm of vector x.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT Number IpBlasAsum(
-   Index         size,
-   const Number* x,
-   Index         incX
-);
+IPOPTLIB_EXPORT Number IpBlasAsum(Index size, const Number* x, Index incX);
 
 /** Wrapper for BLAS function DASUM.
  *
@@ -87,13 +62,8 @@ IPOPTLIB_EXPORT Number IpBlasAsum(
  * @deprecated Use IpBlasAsum() instead.
  */
 IPOPT_DEPRECATED
-inline Number IpBlasDasum(
-   Index         size,
-   const Number* x,
-   Index         incX
-)
-{
-   return IpBlasAsum(size, x, incX);
+inline Number IpBlasDasum(Index size, const Number* x, Index incX) {
+  return IpBlasAsum(size, x, incX);
 }
 
 /** Wrapper for BLAS function IXAMAX.
@@ -101,11 +71,7 @@ inline Number IpBlasDasum(
  * Compute index for largest absolute element of vector x.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT Index IpBlasIamax(
-   Index         size,
-   const Number* x,
-   Index         incX
-);
+IPOPTLIB_EXPORT Index IpBlasIamax(Index size, const Number* x, Index incX);
 
 /** Wrapper for BLAS function IDAMAX.
  *
@@ -114,13 +80,8 @@ IPOPTLIB_EXPORT Index IpBlasIamax(
  * @deprecated Use IpBlasIamax() instead.
  */
 IPOPT_DEPRECATED
-inline int IpBlasIdamax(
-   Index         size,
-   const Number* x,
-   Index         incX
-)
-{
-   return (int)IpBlasIamax(size, x, incX);
+inline int IpBlasIdamax(Index size, const Number* x, Index incX) {
+  return (int)IpBlasIamax(size, x, incX);
 }
 
 /** Wrapper for BLAS subroutine XCOPY.
@@ -128,13 +89,8 @@ inline int IpBlasIdamax(
  * Copying vector x into vector y.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpBlasCopy(
-   Index         size,
-   const Number* x,
-   Index         incX,
-   Number*       y,
-   Index         incY
-);
+IPOPTLIB_EXPORT void IpBlasCopy(Index size, const Number* x, Index incX,
+                                Number* y, Index incY);
 
 /** Wrapper for BLAS subroutine DCOPY.
  *
@@ -143,15 +99,9 @@ IPOPTLIB_EXPORT void IpBlasCopy(
  * @deprecated Use IpBlasCopy() instead.
  */
 IPOPT_DEPRECATED
-inline void IpBlasDcopy(
-   Index         size,
-   const Number* x,
-   Index         incX,
-   Number*       y,
-   Index         incY
-)
-{
-   IpBlasCopy(size, x, incX, y, incY);
+inline void IpBlasDcopy(Index size, const Number* x, Index incX, Number* y,
+                        Index incY) {
+  IpBlasCopy(size, x, incX, y, incY);
 }
 
 /** Wrapper for BLAS subroutine XAXPY.
@@ -159,14 +109,8 @@ inline void IpBlasDcopy(
  * Adding the alpha multiple of vector x to vector y.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpBlasAxpy(
-   Index         size,
-   Number        alpha,
-   const Number* x,
-   Index         incX,
-   Number*       y,
-   Index         incY
-);
+IPOPTLIB_EXPORT void IpBlasAxpy(Index size, Number alpha, const Number* x,
+                                Index incX, Number* y, Index incY);
 
 /** Wrapper for BLAS subroutine DAXPY.
  *
@@ -175,16 +119,9 @@ IPOPTLIB_EXPORT void IpBlasAxpy(
  * @deprecated Use IpBlasAxpy() instead.
  */
 IPOPT_DEPRECATED
-inline void IpBlasDaxpy(
-   Index         size,
-   Number        alpha,
-   const Number* x,
-   Index         incX,
-   Number*       y,
-   Index         incY
-)
-{
-   IpBlasAxpy(size, alpha, x, incX, y, incY);
+inline void IpBlasDaxpy(Index size, Number alpha, const Number* x, Index incX,
+                        Number* y, Index incY) {
+  IpBlasAxpy(size, alpha, x, incX, y, incY);
 }
 
 /** Wrapper for BLAS subroutine XSCAL.
@@ -192,12 +129,8 @@ inline void IpBlasDaxpy(
  * Scaling vector x by scalar alpha.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpBlasScal(
-   Index   size,
-   Number  alpha,
-   Number* x,
-   Index   incX
-);
+IPOPTLIB_EXPORT void IpBlasScal(Index size, Number alpha, Number* x,
+                                Index incX);
 
 /** Wrapper for BLAS subroutine DSCAL.
  *
@@ -206,14 +139,8 @@ IPOPTLIB_EXPORT void IpBlasScal(
  * @deprecated Use IpBlasScal() instead.
  */
 IPOPT_DEPRECATED
-inline void IpBlasDscal(
-   Index   size,
-   Number  alpha,
-   Number* x,
-   Index   incX
-)
-{
-   IpBlasScal(size, alpha, x, incX);
+inline void IpBlasDscal(Index size, Number alpha, Number* x, Index incX) {
+  IpBlasScal(size, alpha, x, incX);
 }
 
 /** Wrapper for BLAS subroutine XGEMV.
@@ -221,19 +148,10 @@ inline void IpBlasDscal(
  * Multiplying a matrix with a vector.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpBlasGemv(
-   bool          trans,
-   Index         nRows,
-   Index         nCols,
-   Number        alpha,
-   const Number* A,
-   Index         ldA,
-   const Number* x,
-   Index         incX,
-   Number        beta,
-   Number*       y,
-   Index         incY
-);
+IPOPTLIB_EXPORT void IpBlasGemv(bool trans, Index nRows, Index nCols,
+                                Number alpha, const Number* A, Index ldA,
+                                const Number* x, Index incX, Number beta,
+                                Number* y, Index incY);
 
 /** Wrapper for BLAS subroutine DGEMV.
  *
@@ -242,21 +160,10 @@ IPOPTLIB_EXPORT void IpBlasGemv(
  * @deprecated Use IpBlasGemv() instead.
  */
 IPOPT_DEPRECATED
-inline void IpBlasDgemv(
-   bool          trans,
-   Index         nRows,
-   Index         nCols,
-   Number        alpha,
-   const Number* A,
-   Index         ldA,
-   const Number* x,
-   Index         incX,
-   Number        beta,
-   Number*       y,
-   Index         incY
-)
-{
-   IpBlasGemv(trans, nRows, nCols, alpha, A, ldA, x, incX, beta, y, incY);
+inline void IpBlasDgemv(bool trans, Index nRows, Index nCols, Number alpha,
+                        const Number* A, Index ldA, const Number* x, Index incX,
+                        Number beta, Number* y, Index incY) {
+  IpBlasGemv(trans, nRows, nCols, alpha, A, ldA, x, incX, beta, y, incY);
 }
 
 /** Wrapper for BLAS subroutine XSYMV.
@@ -264,17 +171,9 @@ inline void IpBlasDgemv(
  * Multiplying a symmetric matrix with a vector.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpBlasSymv(
-   Index         n,
-   Number        alpha,
-   const Number* A,
-   Index         ldA,
-   const Number* x,
-   Index         incX,
-   Number        beta,
-   Number*       y,
-   Index         incY
-);
+IPOPTLIB_EXPORT void IpBlasSymv(Index n, Number alpha, const Number* A,
+                                Index ldA, const Number* x, Index incX,
+                                Number beta, Number* y, Index incY);
 
 /** Wrapper for BLAS subroutine DSYMV.
  *
@@ -283,19 +182,10 @@ IPOPTLIB_EXPORT void IpBlasSymv(
  * @deprecated Use IpBlasSymv() instead.
  */
 IPOPT_DEPRECATED
-inline void IpBlasDsymv(
-   Index         n,
-   Number        alpha,
-   const Number* A,
-   Index         ldA,
-   const Number* x,
-   Index         incX,
-   Number        beta,
-   Number*       y,
-   Index         incY
-)
-{
-   IpBlasSymv(n, alpha, A, ldA, x, incX, beta, y, incY);
+inline void IpBlasDsymv(Index n, Number alpha, const Number* A, Index ldA,
+                        const Number* x, Index incX, Number beta, Number* y,
+                        Index incY) {
+  IpBlasSymv(n, alpha, A, ldA, x, incX, beta, y, incY);
 }
 
 /** Wrapper for BLAS subroutine XGEMM.
@@ -303,21 +193,10 @@ inline void IpBlasDsymv(
  * Multiplying two matrices.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpBlasGemm(
-   bool          transa,
-   bool          transb,
-   Index         m,
-   Index         n,
-   Index         k,
-   Number        alpha,
-   const Number* A,
-   Index         ldA,
-   const Number* B,
-   Index         ldB,
-   Number        beta,
-   Number*       C,
-   Index         ldC
-);
+IPOPTLIB_EXPORT void IpBlasGemm(bool transa, bool transb, Index m, Index n,
+                                Index k, Number alpha, const Number* A,
+                                Index ldA, const Number* B, Index ldB,
+                                Number beta, Number* C, Index ldC);
 
 /** Wrapper for BLAS subroutine DGEMM.
  *
@@ -326,23 +205,11 @@ IPOPTLIB_EXPORT void IpBlasGemm(
  * @deprecated Use IpBlasGemm() instead.
  */
 IPOPT_DEPRECATED
-inline void IpBlasDgemm(
-   bool          transa,
-   bool          transb,
-   Index         m,
-   Index         n,
-   Index         k,
-   Number        alpha,
-   const Number* A,
-   Index         ldA,
-   const Number* B,
-   Index         ldB,
-   Number        beta,
-   Number*       C,
-   Index         ldC
-)
-{
-   IpBlasGemm(transa, transb, m, n, k, alpha, A, ldA, B, ldB, beta, C, ldC);
+inline void IpBlasDgemm(bool transa, bool transb, Index m, Index n, Index k,
+                        Number alpha, const Number* A, Index ldA,
+                        const Number* B, Index ldB, Number beta, Number* C,
+                        Index ldC) {
+  IpBlasGemm(transa, transb, m, n, k, alpha, A, ldA, B, ldB, beta, C, ldC);
 }
 
 /** Wrapper for BLAS subroutine XSYRK.
@@ -350,17 +217,9 @@ inline void IpBlasDgemm(
  * Adding a high-rank update to a matrix.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpBlasSyrk(
-   bool          trans,
-   Index         ndim,
-   Index         nrank,
-   Number        alpha,
-   const Number* A,
-   Index         ldA,
-   Number        beta,
-   Number*       C,
-   Index         ldC
-);
+IPOPTLIB_EXPORT void IpBlasSyrk(bool trans, Index ndim, Index nrank,
+                                Number alpha, const Number* A, Index ldA,
+                                Number beta, Number* C, Index ldC);
 
 /** Wrapper for BLAS subroutine DSYRK.
  *
@@ -369,19 +228,10 @@ IPOPTLIB_EXPORT void IpBlasSyrk(
  * @deprecated Use IpBlasSyrk() instead.
  */
 IPOPT_DEPRECATED
-inline void IpBlasDsyrk(
-   bool          trans,
-   Index         ndim,
-   Index         nrank,
-   Number        alpha,
-   const Number* A,
-   Index         ldA,
-   Number        beta,
-   Number*       C,
-   Index         ldC
-)
-{
-   IpBlasSyrk(trans, ndim, nrank, alpha, A, ldA, beta, C, ldC);
+inline void IpBlasDsyrk(bool trans, Index ndim, Index nrank, Number alpha,
+                        const Number* A, Index ldA, Number beta, Number* C,
+                        Index ldC) {
+  IpBlasSyrk(trans, ndim, nrank, alpha, A, ldA, beta, C, ldC);
 }
 
 /** Wrapper for BLAS subroutine XTRSM.
@@ -389,16 +239,9 @@ inline void IpBlasDsyrk(
  * Backsolve for a lower triangular matrix.
  * @since 3.14.0
  */
-IPOPTLIB_EXPORT void IpBlasTrsm(
-   bool          trans,
-   Index         ndim,
-   Index         nrhs,
-   Number        alpha,
-   const Number* A,
-   Index         ldA,
-   Number*       B,
-   Index         ldB
-);
+IPOPTLIB_EXPORT void IpBlasTrsm(bool trans, Index ndim, Index nrhs,
+                                Number alpha, const Number* A, Index ldA,
+                                Number* B, Index ldB);
 
 /** Wrapper for BLAS subroutine DTRSM.
  *
@@ -407,20 +250,11 @@ IPOPTLIB_EXPORT void IpBlasTrsm(
  * @deprecated Use IpBlasTrsm() instead.
  */
 IPOPT_DEPRECATED
-inline void IpBlasDtrsm(
-   bool          trans,
-   Index         ndim,
-   Index         nrhs,
-   Number        alpha,
-   const Number* A,
-   Index         ldA,
-   Number*       B,
-   Index         ldB
-)
-{
-   IpBlasTrsm(trans, ndim, nrhs, alpha, A, ldA, B, ldB);
+inline void IpBlasDtrsm(bool trans, Index ndim, Index nrhs, Number alpha,
+                        const Number* A, Index ldA, Number* B, Index ldB) {
+  IpBlasTrsm(trans, ndim, nrhs, alpha, A, ldA, B, ldB);
 }
 
-} // namespace Ipopt
+}  // namespace Ipopt
 
 #endif

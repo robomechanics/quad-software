@@ -129,11 +129,12 @@ class QueueInterface {
   explicit QueueInterface(
       const DeviceOrSelector &dev_or_sel,
       unsigned num_threads = std::thread::hardware_concurrency())
-      : QueueInterface(dev_or_sel,
-                       [this](cl::sycl::exception_list l) {
-                         this->exception_caught_ = this->sycl_async_handler(l);
-                       },
-                       num_threads) {}
+      : QueueInterface(
+            dev_or_sel,
+            [this](cl::sycl::exception_list l) {
+              this->exception_caught_ = this->sycl_async_handler(l);
+            },
+            num_threads) {}
 
 #ifdef EIGEN_SYCL_USE_PROGRAM_CLASS
   EIGEN_STRONG_INLINE cl::sycl::program &program() const { return m_prog; }
@@ -478,12 +479,12 @@ class QueueInterface {
     async_synchronize(e);
   }
 
-    template <typename OutScalar, typename sycl_kernel, typename InPtr,
-           typename Range, typename Index, typename... T>
+  template <typename OutScalar, typename sycl_kernel, typename InPtr,
+            typename Range, typename Index, typename... T>
   EIGEN_ALWAYS_INLINE void nullary_kernel_launcher(const InPtr &inptr,
-                                                 Range thread_range,
-                                                 Index scratchSize,
-                                                 T... var) const {
+                                                   Range thread_range,
+                                                   Index scratchSize,
+                                                   T... var) const {
     auto kernel_functor = [=](cl::sycl::handler &cgh) {
       // binding the placeholder accessors to a commandgroup handler
       inptr.bind(cgh);
@@ -504,7 +505,6 @@ class QueueInterface {
     async_synchronize(e);
   }
 
-
   EIGEN_STRONG_INLINE void synchronize() const {
 #ifdef EIGEN_EXCEPTIONS
     m_queue.wait_and_throw();
@@ -512,7 +512,6 @@ class QueueInterface {
     m_queue.wait();
 #endif
   }
-
 
   EIGEN_STRONG_INLINE void async_synchronize(cl::sycl::event e) const {
     set_latest_event(e);

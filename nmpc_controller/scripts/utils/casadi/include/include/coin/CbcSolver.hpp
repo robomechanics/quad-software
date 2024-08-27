@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+
 #include "CoinMessageHandler.hpp"
 #include "OsiClpSolverInterface.hpp"
 
@@ -33,7 +34,7 @@ class CbcUser;
 class CbcStopNow;
 class CglCutGenerator;
 
-//#############################################################################
+// #############################################################################
 
 /*! \brief This allows the use of the standalone solver in a flexible manner.
 
@@ -53,22 +54,23 @@ class CglCutGenerator;
 */
 
 class CbcSolver {
-
-public:
+ public:
   ///@name Solve method
   //@{
   /** This takes a list of commands, does "stuff" and returns
         returnMode -
         0 model and solver untouched - babModel updated
         1 model updated - just with solution basis etc
-        2 model updated i.e. as babModel (babModel NULL) (only use without preprocessing)
+        2 model updated i.e. as babModel (babModel NULL) (only use without
+     preprocessing)
     */
   int solve(int argc, const char *argv[], int returnMode);
   /** This takes a list of commands, does "stuff" and returns
         returnMode -
         0 model and solver untouched - babModel updated
         1 model updated - just with solution basis etc
-        2 model updated i.e. as babModel (babModel NULL) (only use without preprocessing)
+        2 model updated i.e. as babModel (babModel NULL) (only use without
+     preprocessing)
     */
   int solve(const char *input, int returnMode);
   //@}
@@ -84,7 +86,7 @@ public:
   CbcSolver(const CbcModel &);
 
   /** Copy constructor .
-     */
+   */
   CbcSolver(const CbcSolver &rhs);
 
   /// Assignment operator
@@ -111,19 +113,21 @@ public:
   ///@name miscellaneous methods to line up with old
   //@{
   // analyze model
-  int *analyze(OsiClpSolverInterface *solverMod, int &numberChanged, double &increment,
-    bool changeInt, CoinMessageHandler *generalMessageHandler);
+  int *analyze(OsiClpSolverInterface *solverMod, int &numberChanged,
+               double &increment, bool changeInt,
+               CoinMessageHandler *generalMessageHandler);
   /** 1 - add heuristics to model
         2 - do heuristics (and set cutoff and best solution)
         3 - for miplib test so skip some
         (out model later)
     */
-  //int doHeuristics(CbcModel * model, int type);
+  // int doHeuristics(CbcModel * model, int type);
   /** Updates model_ from babModel_ according to returnMode
         returnMode -
         0 model and solver untouched - babModel updated
         1 model updated - just with solution basis etc
-        2 model updated i.e. as babModel (babModel NULL) (only use without preprocessing)
+        2 model updated i.e. as babModel (babModel NULL) (only use without
+     preprocessing)
     */
   void updateModel(ClpSimplex *model2, int returnMode);
   //@}
@@ -140,66 +144,35 @@ public:
   /// User function (NULL if no match)
   CbcUser *userFunction(const char *name) const;
   /// Return original Cbc model
-  inline CbcModel *model()
-  {
-    return &model_;
-  }
+  inline CbcModel *model() { return &model_; }
   /// Return updated Cbc model
-  inline CbcModel *babModel()
-  {
-    return babModel_;
-  }
+  inline CbcModel *babModel() { return babModel_; }
   /// Number of userFunctions
-  inline int numberUserFunctions() const
-  {
-    return numberUserFunctions_;
-  }
+  inline int numberUserFunctions() const { return numberUserFunctions_; }
   /// User function array
-  inline CbcUser **userFunctionArray() const
-  {
-    return userFunction_;
-  }
+  inline CbcUser **userFunctionArray() const { return userFunction_; }
   /// Copy of model on initial load (will contain output solutions)
-  inline OsiClpSolverInterface *originalSolver() const
-  {
+  inline OsiClpSolverInterface *originalSolver() const {
     return originalSolver_;
   }
   /// Copy of model on initial load
-  inline CoinModel *originalCoinModel() const
-  {
-    return originalCoinModel_;
-  }
+  inline CoinModel *originalCoinModel() const { return originalCoinModel_; }
   /// Copy of model on initial load (will contain output solutions)
   void setOriginalSolver(OsiClpSolverInterface *originalSolver);
   /// Copy of model on initial load
   void setOriginalCoinModel(CoinModel *originalCoinModel);
   /// Number of cutgenerators
-  inline int numberCutGenerators() const
-  {
-    return numberCutGenerators_;
-  }
+  inline int numberCutGenerators() const { return numberCutGenerators_; }
   /// Cut generator array
-  inline CglCutGenerator **cutGeneratorArray() const
-  {
-    return cutGenerator_;
-  }
+  inline CglCutGenerator **cutGeneratorArray() const { return cutGenerator_; }
   /// Start time
-  inline double startTime() const
-  {
-    return startTime_;
-  }
+  inline double startTime() const { return startTime_; }
   /// Whether to print to std::cout
-  inline void setPrinting(bool onOff)
-  {
-    noPrinting_ = !onOff;
-  }
+  inline void setPrinting(bool onOff) { noPrinting_ = !onOff; }
   /// Where to start reading commands
-  inline void setReadMode(int value)
-  {
-    readMode_ = value;
-  }
+  inline void setReadMode(int value) { readMode_ = value; }
   //@}
-private:
+ private:
   ///@name Private member data
   //@{
 
@@ -233,7 +206,7 @@ private:
   /// Cpu time at instantiation
   double startTime_;
   /// Parameters and values
-  std::vector< CbcOrClpParam > parameters_;
+  std::vector<CbcOrClpParam> parameters_;
   /// Whether to do miplib test
   bool doMiplib_;
   /// Whether to print to std::cout
@@ -242,7 +215,7 @@ private:
   int readMode_;
   //@}
 };
-//#############################################################################
+// #############################################################################
 
 /// Structure to hold useful arrays
 typedef struct {
@@ -260,7 +233,7 @@ typedef struct {
   double *pseudoUp_;
 } CbcSolverUsefulData2;
 
-//#############################################################################
+// #############################################################################
 
 /**
    The CbcSolver class was taken out at a 9/12/09 meeting
@@ -268,15 +241,14 @@ typedef struct {
    At present everything is public
 */
 class CbcSolverUsefulData {
-
-public:
+ public:
   ///@name Constructors and destructors etc
   //@{
   /// Default Constructor
   CbcSolverUsefulData();
 
   /** Copy constructor .
-     */
+   */
   CbcSolverUsefulData(const CbcSolverUsefulData &rhs);
 
   /// Assignment operator
@@ -303,17 +275,18 @@ public:
 /// And this uses it
 // When we want to load up CbcModel with options first
 void CbcMain0(CbcModel &babSolver, CbcSolverUsefulData &solverData);
-int CbcMain1(int argc, const char *argv[], CbcModel &babSolver, int(CbcModel *currentSolver, int whereFrom), CbcSolverUsefulData &solverData);
+int CbcMain1(int argc, const char *argv[], CbcModel &babSolver,
+             int(CbcModel *currentSolver, int whereFrom),
+             CbcSolverUsefulData &solverData);
 
-//#############################################################################
+// #############################################################################
 
 /*! \brief A class to allow the use of unknown user functionality
 
     For example, access to a modelling language (CbcAmpl).
 */
 class CbcUser {
-
-public:
+ public:
   ///@name import/export methods
   //@{
   /*! \brief Import - gets full command arguments
@@ -323,8 +296,8 @@ public:
       -  0 - data read in without error
       -  1 - errors
     */
-  virtual int importData(CbcSolver * /*model*/, int & /*argc*/, char ** /*argv[]*/)
-  {
+  virtual int importData(CbcSolver * /*model*/, int & /*argc*/,
+                         char ** /*argv[]*/) {
     return -1;
   }
 
@@ -335,34 +308,25 @@ public:
       - 2 CbcModel
       - add 10 if infeasible from odd situation
     */
-  virtual void exportSolution(CbcSolver * /*model*/,
-    int /*mode*/, const char * /*message*/ = NULL) {}
+  virtual void exportSolution(CbcSolver * /*model*/, int /*mode*/,
+                              const char * /*message*/ = NULL) {}
 
   /// Export Data (i.e. at very end)
   virtual void exportData(CbcSolver * /*model*/) {}
 
   /// Get useful stuff
   virtual void fillInformation(CbcSolver * /*model*/,
-    CbcSolverUsefulData & /*info*/) {}
+                               CbcSolverUsefulData & /*info*/) {}
   //@}
 
   ///@name usage methods
   //@{
   /// CoinModel if valid
-  inline CoinModel *coinModel() const
-  {
-    return coinModel_;
-  }
+  inline CoinModel *coinModel() const { return coinModel_; }
   /// Other info - needs expanding
-  virtual void *stuff()
-  {
-    return NULL;
-  }
+  virtual void *stuff() { return NULL; }
   /// Name
-  inline std::string name() const
-  {
-    return userName_;
-  }
+  inline std::string name() const { return userName_; }
   /// Solve (whatever that means)
   virtual void solve(CbcSolver *model, const char *options) = 0;
   /// Returns true if function knows about option
@@ -387,7 +351,7 @@ public:
   virtual ~CbcUser();
   //@}
 
-protected:
+ protected:
   ///@name Private member data
   //@{
 
@@ -399,7 +363,7 @@ protected:
 
   //@}
 };
-//#############################################################################
+// #############################################################################
 
 /*! \brief Support the use of a call back class to decide whether to stop
 
@@ -407,8 +371,7 @@ protected:
 */
 
 class CbcStopNow {
-
-public:
+ public:
   ///@name Decision methods
   //@{
   /*! \brief Import
@@ -424,8 +387,7 @@ public:
       \return 0 if good
        nonzero return code to stop
     */
-  virtual int callBack(CbcModel * /*currentSolver*/, int /*whereFrom*/)
-  {
+  virtual int callBack(CbcModel * /*currentSolver*/, int /*whereFrom*/) {
     return 0;
   }
   //@}
@@ -436,7 +398,7 @@ public:
   CbcStopNow();
 
   /** Copy constructor .
-     */
+   */
   CbcStopNow(const CbcStopNow &rhs);
 
   /// Assignment operator
@@ -449,7 +411,7 @@ public:
   virtual ~CbcStopNow();
   //@}
 
-private:
+ private:
   ///@name Private member data
   //@{
   //@}
@@ -457,4 +419,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

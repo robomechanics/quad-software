@@ -9,8 +9,10 @@
 class ClpMatrixBase;
 class ClpCholeskyDense;
 
-// unfortunately, DMUMPS_STRUC_C is an anonymous struct in MUMPS, so we define it to void for everyone outside ClpCholeskyMumps
-// if this file is included by ClpCholeskyMumps.cpp, then after dmumps_c.h has been included, which defines MUMPS_VERSION
+// unfortunately, DMUMPS_STRUC_C is an anonymous struct in MUMPS, so we define
+// it to void for everyone outside ClpCholeskyMumps if this file is included by
+// ClpCholeskyMumps.cpp, then after dmumps_c.h has been included, which defines
+// MUMPS_VERSION
 #ifndef MUMPS_VERSION
 typedef void DMUMPS_STRUC_C;
 #endif
@@ -19,8 +21,7 @@ typedef void DMUMPS_STRUC_C;
 
 */
 class ClpCholeskyMumps : public ClpCholeskyBase {
-
-public:
+ public:
   /**@name Virtual methods that the derived classes provides  */
   //@{
   /** Orders rows and saves pointer to matrix.and model.
@@ -28,8 +29,8 @@ public:
   virtual int order(ClpInterior *model);
   /** Does Symbolic factorization given permutation.
          This is called immediately after order.  If user provides this then
-         user must provide factorize and solve.  Otherwise the default factorization is used
-         returns non-zero if not enough memory */
+         user must provide factorize and solve.  Otherwise the default
+     factorization is used returns non-zero if not enough memory */
   virtual int symbolic();
   /** Factorize - filling in rowsDropped and returning number dropped.
          If return code negative then out of memory */
@@ -49,7 +50,7 @@ public:
   virtual ClpCholeskyBase *clone() const;
   //@}
 
-private:
+ private:
   // Mumps structure
   DMUMPS_STRUC_C *mumps_;
 
@@ -62,4 +63,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

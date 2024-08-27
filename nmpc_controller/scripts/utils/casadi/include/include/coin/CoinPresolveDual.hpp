@@ -13,7 +13,7 @@
   The reduced cost of x_j is d_j = c_j - y*a_j (1). Assume minimization,
   so that at optimality d_j >= 0 for x_j nonbasic at lower bound, and
   d_j <= 0 for x_j nonbasic at upper bound.
- 
+
   For a slack variable s_i, c_(n+i) = 0 and a_(n+i) is a unit vector, hence
   d_(n+i) = -y_i. If s_i has a finite lower bound and no upper bound, we
   must have y_i <= 0 at optimality. Similarly, if s_i has no lower bound and a
@@ -33,8 +33,7 @@
 */
 
 class remove_dual_action : public CoinPresolveAction {
-
-public:
+ public:
   /// Destructor
   ~remove_dual_action();
 
@@ -47,7 +46,7 @@ public:
     no change or until some set of variables can be fixed.
   */
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next);
+                                            const CoinPresolveAction *next);
 
   /*! \brief Postsolve
 
@@ -56,22 +55,18 @@ public:
   */
   void postsolve(CoinPostsolveMatrix *prob) const;
 
-private:
+ private:
   /// Postsolve (bound restore) instruction
   struct action {
-    double rlo_; ///< restored row lower bound
-    double rup_; ///< restored row upper bound
-    int ndx_; ///< row index
+    double rlo_;  ///< restored row lower bound
+    double rup_;  ///< restored row upper bound
+    int ndx_;     ///< row index
   };
 
   /// Constructor with postsolve actions.
   remove_dual_action(int nactions, const action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-  {
-  }
+                     const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nactions_(nactions), actions_(actions) {}
 
   /// Count of bound restore entries
   const int nactions_;
@@ -81,4 +76,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

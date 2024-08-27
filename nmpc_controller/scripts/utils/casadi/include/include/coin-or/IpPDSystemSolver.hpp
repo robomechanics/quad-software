@@ -7,13 +7,12 @@
 #ifndef __IPPDSYSTEMSOLVER_HPP__
 #define __IPPDSYSTEMSOLVER_HPP__
 
-#include "IpUtils.hpp"
-#include "IpSymMatrix.hpp"
 #include "IpAlgStrategy.hpp"
 #include "IpIteratesVector.hpp"
+#include "IpSymMatrix.hpp"
+#include "IpUtils.hpp"
 
-namespace Ipopt
-{
+namespace Ipopt {
 
 /** Pure Primal Dual System Solver Base Class.
  *  This is the base class for all derived Primal-Dual System Solver Types.
@@ -71,67 +70,55 @@ namespace Ipopt
  *  an implementation of PDSystem should check whether the incoming data has
  *  changed, and not redo factorization etc. unless necessary.
  */
-class IPOPTLIB_EXPORT PDSystemSolver: public AlgorithmStrategyObject
-{
-public:
-   /** @name Constructor/Destructor */
-   ///@{
-   /** Default Constructor */
-   PDSystemSolver()
-   { }
+class IPOPTLIB_EXPORT PDSystemSolver : public AlgorithmStrategyObject {
+ public:
+  /** @name Constructor/Destructor */
+  ///@{
+  /** Default Constructor */
+  PDSystemSolver() {}
 
-   /** Destructor */
-   virtual ~PDSystemSolver()
-   { }
-   ///@}
+  /** Destructor */
+  virtual ~PDSystemSolver() {}
+  ///@}
 
-   /** overloaded from AlgorithmStrategyObject */
-   virtual bool InitializeImpl(
-      const OptionsList& options,
-      const std::string& prefix
-   ) = 0;
+  /** overloaded from AlgorithmStrategyObject */
+  virtual bool InitializeImpl(const OptionsList& options,
+                              const std::string& prefix) = 0;
 
-   /** Solve the primal dual system, given one right hand side.
-    *
-    *  If the flag allow_inexact is set to true, it is not necessary to
-    *  solve the system to best accuracy; for example, we don't want
-    *  iterative refinement during the computation of the second
-    *  order correction.  On the other hand, if improve_solution is
-    *  true, the solution given in res should be improved (here beta
-    *  has to be zero, and res is assume to be the solution for the
-    *  system using rhs, without the factor alpha...).
-    *
-    *  @return false, if a solution could not be computed (for
-    *  example, when the Hessian regularization parameter becomes too
-    *  large)
-    */
-   virtual bool Solve(
-      Number                alpha,
-      Number                beta,
-      const IteratesVector& rhs,
-      IteratesVector&       res,
-      bool                  allow_inexact = false,
-      bool                  improve_solution = false
-   ) = 0;
+  /** Solve the primal dual system, given one right hand side.
+   *
+   *  If the flag allow_inexact is set to true, it is not necessary to
+   *  solve the system to best accuracy; for example, we don't want
+   *  iterative refinement during the computation of the second
+   *  order correction.  On the other hand, if improve_solution is
+   *  true, the solution given in res should be improved (here beta
+   *  has to be zero, and res is assume to be the solution for the
+   *  system using rhs, without the factor alpha...).
+   *
+   *  @return false, if a solution could not be computed (for
+   *  example, when the Hessian regularization parameter becomes too
+   *  large)
+   */
+  virtual bool Solve(Number alpha, Number beta, const IteratesVector& rhs,
+                     IteratesVector& res, bool allow_inexact = false,
+                     bool improve_solution = false) = 0;
 
-private:
-   /**@name Default Compiler Generated Methods
-    * (Hidden to avoid implicit creation/calling).
-    *
-    * These methods are not implemented and
-    * we do not want the compiler to implement
-    * them for us, so we declare them private
-    * and do not define them. This ensures that
-    * they will not be implicitly created/called.
-    */
-   ///@{
-   /** Default Assignment Operator */
-   PDSystemSolver& operator=(
-      const PDSystemSolver&
-   );
-   ///@}
+ private:
+  /**@name Default Compiler Generated Methods
+   * (Hidden to avoid implicit creation/calling).
+   *
+   * These methods are not implemented and
+   * we do not want the compiler to implement
+   * them for us, so we declare them private
+   * and do not define them. This ensures that
+   * they will not be implicitly created/called.
+   */
+  ///@{
+  /** Default Assignment Operator */
+  PDSystemSolver& operator=(const PDSystemSolver&);
+  ///@}
 };
 
-} // namespace Ipopt
+}  // namespace Ipopt
 
 #endif

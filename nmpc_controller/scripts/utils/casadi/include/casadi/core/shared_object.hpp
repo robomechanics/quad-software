@@ -18,158 +18,163 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_SHARED_OBJECT_HPP
 #define CASADI_SHARED_OBJECT_HPP
 
-#include "casadi_common.hpp"
-#include "exception.hpp"
 #include <map>
 #include <vector>
 
+#include "casadi_common.hpp"
+#include "exception.hpp"
+
 namespace casadi {
 
-  // Forward declaration of weak reference class
-  class WeakRef;
+// Forward declaration of weak reference class
+class WeakRef;
+
+/// \cond INTERNAL
+// Forward declaration of internal classes
+class SharedObjectInternal;
+class WeakRefInternal;
+/// \endcond
+
+/** \brief SharedObject implements a reference counting framework similar for
+   efficient and
+
+    easily-maintained memory management.
+
+    To use the class, both the SharedObject class (the public class), and the
+   SharedObjectInternal class (the internal class) must be inherited from. It
+   can be done in two different files and together with memory management, this
+   approach provides a clear distinction of which methods of the class are to be
+   considered "public", i.e. methods for public use that can be considered to
+   remain over time with small changes, and the internal memory.
+
+    When interfacing a software, which typically includes including some header
+   file, this is best done only in the file where the internal class is defined,
+   to avoid polluting the global namespace and other side effects.
+
+    The default constructor always means creating a null pointer to an internal
+   class only. To allocate an internal class (this works only when the internal
+   class isn't abstract), use the constructor with arguments.
+
+    The copy constructor and the assignment operator perform shallow copies
+   only, to make a deep copy you must use the clone method explicitly. This will
+   give a shared pointer instance.
+
+    In an inheritance hierarchy, you can cast down automatically,
+    e.g. (SXFunction is a child class of Function):
+    SXFunction derived(...);
+    Function base = derived;
+
+    To cast up, use the shared_cast template function, which works analogously
+   to dynamic_cast, static_cast, const_cast etc, e.g.: SXFunction derived(...);
+    Function base = derived;
+    SXFunction derived_from_base = shared_cast<SXFunction>(base);
+
+    A failed shared_cast will result in a null pointer (cf. dynamic_cast)
+
+    \author Joel Andersson
+    \date 2010
+
+    \identifier{as} */
+class CASADI_EXPORT SharedObject {
+#ifndef SWIG
+  template <class B>
+  friend B shared_cast(SharedObject& A);
+  template <class B>
+  friend const B shared_cast(const SharedObject& A);
+#endif  // SWIG
+
+ public:
+#ifndef SWIG
+  /// Default constructor
+  SharedObject();
+
+  /// Copy constructor (shallow copy)
+  SharedObject(const SharedObject& ref);
+
+  /// Destructor
+  ~SharedObject();
+
+  /// Assignment operator
+  SharedObject& operator=(const SharedObject& ref);
 
   /// \cond INTERNAL
-  // Forward declaration of internal classes
-  class SharedObjectInternal;
-  class WeakRefInternal;
+  /// Assign the node to a node class pointer (or null)
+  void own(SharedObjectInternal* node);
+
+  /** \brief Assign the node to a node class pointer without reference counting
+   *
+   * improper use will cause memory leaks!
+
+      \identifier{at} */
+  void assign(SharedObjectInternal* node);
+
+  /// Get a const pointer to the node
+  SharedObjectInternal* get() const;
+
+  /// Get the reference count
+  casadi_int getCount() const;
+
+  /// Swap content with another instance
+  void swap(SharedObject& other);
+
+  /// Access a member function or object
+  SharedObjectInternal* operator->() const;
+  /// \endcond
+#endif  // SWIG
+
+  /** \brief Get class name
+
+      \identifier{au} */
+  std::string class_name() const;
+
+  /// Print a description of the object
+  void disp(std::ostream& stream, bool more = false) const;
+
+  /// Get string representation
+  std::string get_str(bool more = false) const {
+    std::stringstream ss;
+    disp(ss, more);
+    return ss.str();
+  }
+
+  /// \cond INTERNAL
+  /// Print the pointer to the internal class
+  void print_ptr(std::ostream& stream = casadi::uout()) const;
   /// \endcond
 
-  /** \brief SharedObject implements a reference counting framework similar for efficient and
+  /// Is a null pointer?
+  bool is_null() const;
 
-      easily-maintained memory management.
+  /** \brief Returns a number that is unique for a given Node.
 
-      To use the class, both the SharedObject class (the public class), and the SharedObjectInternal
-      class (the internal class) must be inherited from. It can be done in two different files
-      and together with memory management, this approach provides a clear distinction of which
-      methods of the class are to be considered "public", i.e. methods for public use that can
-      be considered to remain over time with small changes, and the internal memory.
+   * If the Object does not point to any node, "0" is returned.
 
-      When interfacing a software, which typically includes including some header file,
-      this is best done only in the file where the internal class is defined, to avoid polluting
-      the global namespace and other side effects.
-
-      The default constructor always means creating a null pointer to an internal class only.
-      To allocate an internal class (this works only when the internal class isn't abstract),
-      use the constructor with arguments.
-
-      The copy constructor and the assignment operator perform shallow copies only,
-      to make a deep copy you must use the clone method explicitly.
-      This will give a shared pointer instance.
-
-      In an inheritance hierarchy, you can cast down automatically,
-      e.g. (SXFunction is a child class of Function):
-      SXFunction derived(...);
-      Function base = derived;
-
-      To cast up, use the shared_cast template function, which works analogously to
-      dynamic_cast, static_cast, const_cast etc, e.g.:
-      SXFunction derived(...);
-      Function base = derived;
-      SXFunction derived_from_base = shared_cast<SXFunction>(base);
-
-      A failed shared_cast will result in a null pointer (cf. dynamic_cast)
-
-      \author Joel Andersson
-      \date 2010
-
-      \identifier{as} */
-  class CASADI_EXPORT SharedObject {
-#ifndef SWIG
-    template<class B> friend B shared_cast(SharedObject& A);
-    template<class B> friend const B shared_cast(const SharedObject& A);
-#endif // SWIG
-
-  public:
-#ifndef SWIG
-    /// Default constructor
-    SharedObject();
-
-    /// Copy constructor (shallow copy)
-    SharedObject(const SharedObject& ref);
-
-    /// Destructor
-    ~SharedObject();
-
-    /// Assignment operator
-    SharedObject& operator=(const SharedObject& ref);
-
-    /// \cond INTERNAL
-    /// Assign the node to a node class pointer (or null)
-    void own(SharedObjectInternal* node);
-
-    /** \brief Assign the node to a node class pointer without reference counting
-     *
-     * improper use will cause memory leaks!
-
-        \identifier{at} */
-    void assign(SharedObjectInternal* node);
-
-    /// Get a const pointer to the node
-    SharedObjectInternal* get() const;
-
-    /// Get the reference count
-    casadi_int getCount() const;
-
-    /// Swap content with another instance
-    void swap(SharedObject& other);
-
-    /// Access a member function or object
-    SharedObjectInternal* operator->() const;
-    /// \endcond
-#endif // SWIG
-
-    /** \brief Get class name
-
-        \identifier{au} */
-    std::string class_name() const;
-
-    /// Print a description of the object
-    void disp(std::ostream& stream, bool more=false) const;
-
-    /// Get string representation
-    std::string get_str(bool more=false) const {
-      std::stringstream ss;
-      disp(ss, more);
-      return ss.str();
-    }
-
-    /// \cond INTERNAL
-    /// Print the pointer to the internal class
-    void print_ptr(std::ostream &stream=casadi::uout()) const;
-    /// \endcond
-
-    /// Is a null pointer?
-    bool is_null() const;
-
-    /** \brief Returns a number that is unique for a given Node.
-
-     * If the Object does not point to any node, "0" is returned.
-
-        \identifier{av} */
-    casadi_int __hash__() const;
+      \identifier{av} */
+  casadi_int __hash__() const;
 
 /// \cond INTERNAL
 #ifndef SWIG
-    /** \brief Get a weak reference to the object
+  /** \brief Get a weak reference to the object
 
-        \identifier{aw} */
-    WeakRef* weak();
-  protected:
-    void count_up(); // increase counter of the node
-    void count_down(); // decrease counter of the node
-  private:
-    SharedObjectInternal *node;
-#endif // SWIG
-/// \endcond
-  };
+      \identifier{aw} */
+  WeakRef* weak();
+
+ protected:
+  void count_up();    // increase counter of the node
+  void count_down();  // decrease counter of the node
+ private:
+  SharedObjectInternal* node;
+#endif  // SWIG
+        /// \endcond
+};
 
 /** \brief Weak reference type
 
@@ -178,93 +183,92 @@ namespace casadi {
     \date 2013
 
     \identifier{ax} */
-  class CASADI_EXPORT WeakRef : public SharedObject {
-  public:
-    friend class SharedObjectInternal;
+class CASADI_EXPORT WeakRef : public SharedObject {
+ public:
+  friend class SharedObjectInternal;
 
-    /** \brief Default constructor
+  /** \brief Default constructor
 
-        \identifier{ay} */
-    WeakRef(int dummy=0);
+      \identifier{ay} */
+  WeakRef(int dummy = 0);
 
-    /** \brief Construct from a shared object (also implicit type conversion)
+  /** \brief Construct from a shared object (also implicit type conversion)
 
-        \identifier{az} */
-    WeakRef(SharedObject shared);
+      \identifier{az} */
+  WeakRef(SharedObject shared);
 
-    /** \brief Get a shared (owning) reference
+  /** \brief Get a shared (owning) reference
 
-        \identifier{b0} */
-    SharedObject shared();
+      \identifier{b0} */
+  SharedObject shared();
 
-    /** \brief Check if alive
+  /** \brief Check if alive
 
-        \identifier{b1} */
-    bool alive() const;
+      \identifier{b1} */
+  bool alive() const;
 
-    /** \brief  Access functions of the node
+  /** \brief  Access functions of the node
 
-        \identifier{b2} */
-    WeakRefInternal* operator->();
+      \identifier{b2} */
+  WeakRefInternal* operator->();
 
-    /** \brief  Const access functions of the node
+  /** \brief  Const access functions of the node
 
-        \identifier{b3} */
-    const WeakRefInternal* operator->() const;
-
-#ifndef SWIG
-  private:
-    /** \brief Construct from a shared object (internal)
-
-        \identifier{b4} */
-    explicit WeakRef(SharedObjectInternal* raw);
-
-    /** \brief The shared object has been deleted
-
-        \identifier{b5} */
-    void kill();
-#endif // SWIG
-  };
+      \identifier{b3} */
+  const WeakRefInternal* operator->() const;
 
 #ifndef SWIG
+ private:
+  /** \brief Construct from a shared object (internal)
 
-  /** \brief Typecast a shared object to a base class to a shared object to a derived class,
+      \identifier{b4} */
+  explicit WeakRef(SharedObjectInternal* raw);
 
-   * cf. dynamic_cast
+  /** \brief The shared object has been deleted
 
-      \identifier{b6} */
-  template<class B>
-  B shared_cast(SharedObject& A) {
+      \identifier{b5} */
+  void kill();
+#endif  // SWIG
+};
 
-    /// Get a pointer to the node
-    SharedObjectInternal* ptr = A.get();
+#ifndef SWIG
 
-    /// Create a return object
-    B ret;
+/** \brief Typecast a shared object to a base class to a shared object to a
+ derived class,
 
-    /// Quick return if not allowed
-    if (!B::test_cast(ptr)) return ret;
+ * cf. dynamic_cast
 
-    /// Assign node of B and return
-    ret.own(ptr);
-    return ret;
-  }
+    \identifier{b6} */
+template <class B>
+B shared_cast(SharedObject& A) {
+  /// Get a pointer to the node
+  SharedObjectInternal* ptr = A.get();
 
-  /** \brief Typecast a shared object to a base class to a shared object to a derived class,
+  /// Create a return object
+  B ret;
 
-   * cf. dynamic_cast (const)
+  /// Quick return if not allowed
+  if (!B::test_cast(ptr)) return ret;
 
-      \identifier{b7} */
-  template<class B>
-  const B shared_cast(const SharedObject& A) {
-    SharedObject A_copy = A;
-    return shared_cast<B>(A_copy);
-  }
+  /// Assign node of B and return
+  ret.own(ptr);
+  return ret;
+}
 
-#endif // SWIG
+/** \brief Typecast a shared object to a base class to a shared object to a
+ derived class,
 
+ * cf. dynamic_cast (const)
 
-} // namespace casadi
+    \identifier{b7} */
+template <class B>
+const B shared_cast(const SharedObject& A) {
+  SharedObject A_copy = A;
+  return shared_cast<B>(A_copy);
+}
 
+#endif  // SWIG
 
-#endif // CASADI_SHARED_OBJECT_HPP
+}  // namespace casadi
+
+#endif  // CASADI_SHARED_OBJECT_HPP

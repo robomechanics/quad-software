@@ -12,8 +12,7 @@
 class ClpMatrixBase;
 
 class ClpCholeskyDense : public ClpCholeskyBase {
-
-public:
+ public:
   /**@name Virtual methods that the derived classes provides  */
   /**@{*/
   /** Orders rows and saves pointer to matrix.and model.
@@ -21,8 +20,8 @@ public:
   virtual int order(ClpInterior *model);
   /** Does Symbolic factorization given permutation.
          This is called immediately after order.  If user provides this then
-         user must provide factorize and solve.  Otherwise the default factorization is used
-         returns non-zero if not enough memory */
+         user must provide factorize and solve.  Otherwise the default
+     factorization is used returns non-zero if not enough memory */
   virtual int symbolic();
   /** Factorize - filling in rowsDropped and returning number dropped.
          If return code negative then out of memory */
@@ -45,21 +44,17 @@ public:
   void factorizePart3(int *rowsDropped);
   /** Forward part of solve */
   void solveF1(longDouble *a, int n, CoinWorkDouble *region);
-  void solveF2(longDouble *a, int n, CoinWorkDouble *region, CoinWorkDouble *region2);
+  void solveF2(longDouble *a, int n, CoinWorkDouble *region,
+               CoinWorkDouble *region2);
   /** Backward part of solve */
   void solveB1(longDouble *a, int n, CoinWorkDouble *region);
-  void solveB2(longDouble *a, int n, CoinWorkDouble *region, CoinWorkDouble *region2);
+  void solveB2(longDouble *a, int n, CoinWorkDouble *region,
+               CoinWorkDouble *region2);
   int bNumber(const longDouble *array, int &, int &);
   /** A */
-  inline longDouble *aMatrix() const
-  {
-    return sparseFactor_;
-  }
+  inline longDouble *aMatrix() const { return sparseFactor_; }
   /** Diagonal */
-  inline longDouble *diagonal() const
-  {
-    return diagonal_;
-  }
+  inline longDouble *diagonal() const { return diagonal_; }
   /**@}*/
 
   /**@name Constructors, destructor */
@@ -76,7 +71,7 @@ public:
   virtual ClpCholeskyBase *clone() const;
   /**@}*/
 
-private:
+ private:
   /**@name Data members */
   /**@{*/
   /** Just borrowing space */
@@ -91,7 +86,7 @@ typedef struct {
   longDouble *work;
   int *rowsDropped;
   double doubleParameters_[1]; /* corresponds to 10 */
-  int integerParameters_[2]; /* corresponds to 34, nThreads */
+  int integerParameters_[2];   /* corresponds to 34, nThreads */
   int n;
   int numberBlocks;
 } ClpCholeskyDenseC;
@@ -100,58 +95,51 @@ extern "C" {
 void ClpCholeskySpawn(void *);
 }
 /**Non leaf recursive factor */
-void ClpCholeskyCfactor(ClpCholeskyDenseC *thisStruct,
-  longDouble *a, int n, int numberBlocks,
-  longDouble *diagonal, longDouble *work, int *rowsDropped);
+void ClpCholeskyCfactor(ClpCholeskyDenseC *thisStruct, longDouble *a, int n,
+                        int numberBlocks, longDouble *diagonal,
+                        longDouble *work, int *rowsDropped);
 
 /**Non leaf recursive triangle rectangle update */
-void ClpCholeskyCtriRec(ClpCholeskyDenseC *thisStruct,
-  longDouble *aTri, int nThis,
-  longDouble *aUnder, longDouble *diagonal,
-  longDouble *work,
-  int nLeft, int iBlock, int jBlock,
-  int numberBlocks);
+void ClpCholeskyCtriRec(ClpCholeskyDenseC *thisStruct, longDouble *aTri,
+                        int nThis, longDouble *aUnder, longDouble *diagonal,
+                        longDouble *work, int nLeft, int iBlock, int jBlock,
+                        int numberBlocks);
 /**Non leaf recursive rectangle triangle update */
-void ClpCholeskyCrecTri(ClpCholeskyDenseC *thisStruct,
-  longDouble *aUnder, int nTri, int nDo,
-  int iBlock, int jBlock, longDouble *aTri,
-  longDouble *diagonal, longDouble *work,
-  int numberBlocks);
+void ClpCholeskyCrecTri(ClpCholeskyDenseC *thisStruct, longDouble *aUnder,
+                        int nTri, int nDo, int iBlock, int jBlock,
+                        longDouble *aTri, longDouble *diagonal,
+                        longDouble *work, int numberBlocks);
 /** Non leaf recursive rectangle rectangle update,
     nUnder is number of rows in iBlock,
     nUnderK is number of rows in kBlock
 */
-void ClpCholeskyCrecRec(ClpCholeskyDenseC *thisStruct,
-  longDouble *above, int nUnder, int nUnderK,
-  int nDo, longDouble *aUnder, longDouble *aOther,
-  longDouble *work,
-  int iBlock, int jBlock,
-  int numberBlocks);
+void ClpCholeskyCrecRec(ClpCholeskyDenseC *thisStruct, longDouble *above,
+                        int nUnder, int nUnderK, int nDo, longDouble *aUnder,
+                        longDouble *aOther, longDouble *work, int iBlock,
+                        int jBlock, int numberBlocks);
 /**Leaf recursive factor */
-void ClpCholeskyCfactorLeaf(ClpCholeskyDenseC *thisStruct,
-  longDouble *a, int n,
-  longDouble *diagonal, longDouble *work,
-  int *rowsDropped);
+void ClpCholeskyCfactorLeaf(ClpCholeskyDenseC *thisStruct, longDouble *a, int n,
+                            longDouble *diagonal, longDouble *work,
+                            int *rowsDropped);
 /**Leaf recursive triangle rectangle update */
 void ClpCholeskyCtriRecLeaf(/*ClpCholeskyDenseC * thisStruct,*/
-  longDouble *aTri, longDouble *aUnder,
-  longDouble *diagonal, longDouble *work,
-  int nUnder);
+                            longDouble *aTri, longDouble *aUnder,
+                            longDouble *diagonal, longDouble *work, int nUnder);
 /**Leaf recursive rectangle triangle update */
 void ClpCholeskyCrecTriLeaf(/*ClpCholeskyDenseC * thisStruct, */
-  longDouble *aUnder, longDouble *aTri,
-  /*longDouble * diagonal,*/ longDouble *work, int nUnder);
+                            longDouble *aUnder, longDouble *aTri,
+                            /*longDouble * diagonal,*/ longDouble *work,
+                            int nUnder);
 /** Leaf recursive rectangle rectangle update,
     nUnder is number of rows in iBlock,
     nUnderK is number of rows in kBlock
 */
 void ClpCholeskyCrecRecLeaf(/*ClpCholeskyDenseC * thisStruct, */
-  const longDouble *COIN_RESTRICT above,
-  const longDouble *COIN_RESTRICT aUnder,
-  longDouble *COIN_RESTRICT aOther,
-  const longDouble *COIN_RESTRICT work,
-  int nUnder);
+                            const longDouble *COIN_RESTRICT above,
+                            const longDouble *COIN_RESTRICT aUnder,
+                            longDouble *COIN_RESTRICT aOther,
+                            const longDouble *COIN_RESTRICT work, int nUnder);
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

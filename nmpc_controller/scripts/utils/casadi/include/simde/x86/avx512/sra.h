@@ -28,51 +28,47 @@
 #if !defined(SIMDE_X86_AVX512_SRA_H)
 #define SIMDE_X86_AVX512_SRA_H
 
-#include "types.h"
 #include "../avx2.h"
 #include "mov.h"
+#include "types.h"
 
 HEDLEY_DIAGNOSTIC_PUSH
 SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512i
-simde_mm512_sra_epi16 (simde__m512i a, simde__m128i count) {
-  #if defined(SIMDE_X86_AVX512BW_NATIVE)
-    return _mm512_sra_epi16(a, count);
-  #else
-    simde__m512i_private
-      r_,
-      a_ = simde__m512i_to_private(a);
+simde__m512i simde_mm512_sra_epi16(simde__m512i a, simde__m128i count) {
+#if defined(SIMDE_X86_AVX512BW_NATIVE)
+  return _mm512_sra_epi16(a, count);
+#else
+  simde__m512i_private r_, a_ = simde__m512i_to_private(a);
 
-    #if SIMDE_NATURAL_VECTOR_SIZE_LE(256)
-      for (size_t i = 0 ; i < (sizeof(r_.m256i) / sizeof(r_.m256i[0])) ; i++) {
-        r_.m256i[i] = simde_mm256_sra_epi16(a_.m256i[i], count);
-      }
-    #else
-      simde__m128i_private
-        count_ = simde__m128i_to_private(count);
-      uint64_t shift = HEDLEY_STATIC_CAST(uint64_t, count_.i64[0]);
+#if SIMDE_NATURAL_VECTOR_SIZE_LE(256)
+  for (size_t i = 0; i < (sizeof(r_.m256i) / sizeof(r_.m256i[0])); i++) {
+    r_.m256i[i] = simde_mm256_sra_epi16(a_.m256i[i], count);
+  }
+#else
+  simde__m128i_private count_ = simde__m128i_to_private(count);
+  uint64_t shift = HEDLEY_STATIC_CAST(uint64_t, count_.i64[0]);
 
-      if (shift > 15) shift = 15;
+  if (shift > 15) shift = 15;
 
-      #if defined(SIMDE_VECTOR_SUBSCRIPT_SCALAR)
-        r_.i16 = a_.i16 >> HEDLEY_STATIC_CAST(int16_t, shift);
-      #else
-        SIMDE_VECTORIZE
-        for (size_t i = 0 ; i < (sizeof(r_.i16) / sizeof(r_.i16[0])) ; i++) {
-          r_.i16[i] = a_.i16[i] >> shift;
-        }
-      #endif
-    #endif
+#if defined(SIMDE_VECTOR_SUBSCRIPT_SCALAR)
+  r_.i16 = a_.i16 >> HEDLEY_STATIC_CAST(int16_t, shift);
+#else
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.i16) / sizeof(r_.i16[0])); i++) {
+    r_.i16[i] = a_.i16[i] >> shift;
+  }
+#endif
+#endif
 
-    return simde__m512i_from_private(r_);
-  #endif
+  return simde__m512i_from_private(r_);
+#endif
 }
 #if defined(SIMDE_X86_AVX512BW_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_sra_epi16
-  #define _mm512_sra_epi16(a, count) simde_mm512_sra_epi16(a, count)
+#undef _mm512_sra_epi16
+#define _mm512_sra_epi16(a, count) simde_mm512_sra_epi16(a, count)
 #endif
 
 SIMDE_END_DECLS_

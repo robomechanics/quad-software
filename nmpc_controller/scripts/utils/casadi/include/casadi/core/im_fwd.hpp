@@ -18,7 +18,8 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
 
@@ -28,8 +29,8 @@
 
 namespace casadi {
 
-  typedef Matrix<casadi_int> IM;
+typedef Matrix<casadi_int> IM;
 
-} // namespace casadi
+}  // namespace casadi
 
-#endif // CASADI_IM_FWD_HPP
+#endif  // CASADI_IM_FWD_HPP

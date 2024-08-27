@@ -14,19 +14,18 @@
   This moves the bounds information for y onto x, making y free and allowing
   us to substitute it away.
   \verbatim
-	   a x + b y = c
-	   l1 <= x <= u1
-	   l2 <= y <= u2	==>
-	  
-	   l2 <= (c - a x) / b <= u2
-	   b/-a > 0 ==> (b l2 - c) / -a <= x <= (b u2 - c) / -a
-	   b/-a < 0 ==> (b u2 - c) / -a <= x <= (b l2 - c) / -a
+           a x + b y = c
+           l1 <= x <= u1
+           l2 <= y <= u2	==>
+
+           l2 <= (c - a x) / b <= u2
+           b/-a > 0 ==> (b l2 - c) / -a <= x <= (b u2 - c) / -a
+           b/-a < 0 ==> (b u2 - c) / -a <= x <= (b l2 - c) / -a
   \endverbatim
 */
 class doubleton_action : public CoinPresolveAction {
-public:
+ public:
   struct action {
-
     double clox;
     double cupx;
     double costx;
@@ -50,21 +49,16 @@ public:
   const int nactions_;
   const action *const actions_;
 
-private:
-  doubleton_action(int nactions,
-    const action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-  {
-  }
+ private:
+  doubleton_action(int nactions, const action *actions,
+                   const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nactions_(nactions), actions_(actions) {}
 
-public:
+ public:
   const char *name() const { return ("doubleton_action"); }
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *,
-    const CoinPresolveAction *next);
+                                            const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -73,4 +67,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

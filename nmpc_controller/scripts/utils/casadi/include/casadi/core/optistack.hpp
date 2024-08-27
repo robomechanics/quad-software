@@ -18,15 +18,16 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
 
 #ifndef CASADI_OPTISTACK_HPP
 #define CASADI_OPTISTACK_HPP
 
-#include "function.hpp"
 #include "callback.hpp"
+#include "function.hpp"
 
 namespace casadi {
 
@@ -86,43 +87,48 @@ class OptiCallback;
 
     \identifier{16} */
 class CASADI_EXPORT Opti
-  : public SWIG_IF_ELSE(PrintableCommon, Printable<Opti>),
-  public SharedObject {
+    : public SWIG_IF_ELSE(PrintableCommon, Printable<Opti>),
+      public SharedObject {
   friend class InternalOptiCallback;
-public:
 
+ public:
   /** \brief Create Opti Context
-   * 
+   *
    * \param[in] problem_type of optimization 'nlp' or 'conic' (default nlp)
 
       \identifier{17} */
-  Opti(const std::string& problem_type="nlp");
+  Opti(const std::string& problem_type = "nlp");
 
   /** \brief Create a decision variable (symbol)
   *
   * The order of creation matters.
   * The order will be reflected in the optimization problem.
-  * It is not required for decision variables to actualy appear in the optimization problem.
+  * It is not required for decision variables to actualy appear in the
+  optimization problem.
   *
   * \param[in] n number of rows (default 1)
   * \param[in] m number of columnss (default 1)
   * \param[in] attribute: 'full' (default) or 'symmetric'
 
       \identifier{18} */
-  MX variable(casadi_int n=1, casadi_int m=1, const std::string& attribute="full");
+  MX variable(casadi_int n = 1, casadi_int m = 1,
+              const std::string& attribute = "full");
 
   /** \brief Create a parameter (symbol); fixed during optimization
   *
   * The order of creation does not matter.
-  * It is not required for parameter to actualy appear in the optimization problem.
-  * Parameters that do appear, must be given a value before the problem can be solved.
+  * It is not required for parameter to actualy appear in the optimization
+  problem.
+  * Parameters that do appear, must be given a value before the problem can be
+  solved.
   *
   * \param[in] n number of rows (default 1)
   * \param[in] m number of columnss (default 1)
   * \param[in] attribute: 'full' (default) or 'symmetric'
 
       \identifier{19} */
-  MX parameter(casadi_int n=1, casadi_int m=1, const std::string& attribute="full");
+  MX parameter(casadi_int n = 1, casadi_int m = 1,
+               const std::string& attribute = "full");
 
   /** \brief Set objective
   *
@@ -155,7 +161,8 @@ public:
   *
   * Related functionalities:
   *  - opti.lbg,opti.g,opti.ubg represent the vector of flattened constraints
-  *  - opti.debug.show_infeasibilities() may be used to inspect which constraints are violated
+  *  - opti.debug.show_infeasibilities() may be used to inspect which
+  constraints are violated
   *
       \identifier{1b} */
   void subject_to(const MX& g);
@@ -175,17 +182,16 @@ public:
   *            No stability can be guaranteed about this part of the API
 
       \identifier{1c} */
-  void solver(const std::string& solver,
-              const Dict& plugin_options=Dict(),
-              const Dict& solver_options=Dict());
+  void solver(const std::string& solver, const Dict& plugin_options = Dict(),
+              const Dict& solver_options = Dict());
 
   /// @{
   /** Set initial guess for decision variables
-  * \verbatim
-  * opti.set_initial(x, 2)
-  * opti.set_initial(10*x(1), 2)
-  * \endverbatim
-  */
+   * \verbatim
+   * opti.set_initial(x, 2)
+   * opti.set_initial(10*x(1), 2)
+   * \endverbatim
+   */
   void set_initial(const MX& x, const DM& v);
   void set_initial(const std::vector<MX>& assignments);
   /// @}
@@ -204,7 +210,7 @@ public:
   OptiSol solve();
 
   /** \brief Crunch the numbers; solve the problem
-   * 
+   *
    * Allows the solver to return without error when
    * an iteration or time limit is reached
 
@@ -213,16 +219,19 @@ public:
 
   /// @{
   /** Obtain value of expression at the current value
-  *
-  * In regular mode, teh current value is the converged solution
-  * In debug mode, the value can be non-converged
-  *
-  * \param[in] values Optional assignment expressions (e.g. x==3)
-  *            to overrule the current value
-  */
-  native_DM value(const MX& x, const std::vector<MX>& values=std::vector<MX>()) const;
-  native_DM value(const DM& x, const std::vector<MX>& values=std::vector<MX>()) const;
-  native_DM value(const SX& x, const std::vector<MX>& values=std::vector<MX>()) const;
+   *
+   * In regular mode, teh current value is the converged solution
+   * In debug mode, the value can be non-converged
+   *
+   * \param[in] values Optional assignment expressions (e.g. x==3)
+   *            to overrule the current value
+   */
+  native_DM value(const MX& x,
+                  const std::vector<MX>& values = std::vector<MX>()) const;
+  native_DM value(const DM& x,
+                  const std::vector<MX>& values = std::vector<MX>()) const;
+  native_DM value(const SX& x,
+                  const std::vector<MX>& values = std::vector<MX>()) const;
   /// @}
 
   /** \brief Get statistics
@@ -315,32 +324,33 @@ public:
 
   /// @{
   /** \brief Create a CasADi Function from the Opti solver
-   * 
+   *
    * \param[in] name Name of the resulting CasADi Function
    * \param[in] args List of parameters and decision/dual variables
-   *                (which can be given an initial guess) with the resulting Function
-   * \param[in] res List of expressions that will get evaluated at the optimal solution
+   *                (which can be given an initial guess) with the resulting
+   Function
+   * \param[in] res List of expressions that will get evaluated at the optimal
+   solution
    * \param[in] opts Standard CasADi Funcion options
 
       \identifier{1j} */
-  Function to_function(const std::string& name,
-      const std::vector<MX>& args, const std::vector<MX>& res,
-      const Dict& opts = Dict());
+  Function to_function(const std::string& name, const std::vector<MX>& args,
+                       const std::vector<MX>& res, const Dict& opts = Dict());
+
+  Function to_function(const std::string& name, const std::vector<MX>& args,
+                       const std::vector<MX>& res,
+                       const std::vector<std::string>& name_in,
+                       const std::vector<std::string>& name_out,
+                       const Dict& opts = Dict());
 
   Function to_function(const std::string& name,
-      const std::vector<MX>& args, const std::vector<MX>& res,
-      const std::vector<std::string>& name_in,
-      const std::vector<std::string>& name_out,
-      const Dict& opts = Dict());
-
-  Function to_function(const std::string& name,
-      const std::map<std::string, MX>& dict,
-      const std::vector<std::string>& name_in,
-      const std::vector<std::string>& name_out,
-      const Dict& opts = Dict());
+                       const std::map<std::string, MX>& dict,
+                       const std::vector<std::string>& name_in,
+                       const std::vector<std::string>& name_out,
+                       const Dict& opts = Dict());
   /// @}
 
-  #ifndef SWIGMATLAB
+#ifndef SWIGMATLAB
   /** \brief Construct a double inequality
   *
   * Constructs:  lb(p) <= g(x,p) <= ub(p)
@@ -348,12 +358,15 @@ public:
   * Python prohibits such syntax directly
 
       \identifier{1k} */
-  static MX bounded(const MX& lb, const MX& expr, const MX& ub) { return (lb<=expr)<= ub; }
-  #endif
+  static MX bounded(const MX& lb, const MX& expr, const MX& ub) {
+    return (lb <= expr) <= ub;
+  }
+#endif
 
   /** \brief Get a copy with advanced functionality
    *
-   * You get access to more methods, but you have no guarantees about API stability
+   * You get access to more methods, but you have no guarantees about API
+   stability
    *
    * The copy is effectively a deep copy:
    * Updating the state of the copy does not update the original.
@@ -363,7 +376,8 @@ public:
 
   /** \brief Get a copy with advanced functionality
    *
-   * You get access to more methods, but you have no guarantees about API stability
+   * You get access to more methods, but you have no guarantees about API
+   stability
    *
    * The copy is effectively a deep copy:
    * Updating the state of the copy does not update the original.
@@ -394,10 +408,10 @@ public:
   std::string type_name() const { return "Opti"; }
 
   ///  Print representation
-  void disp(std::ostream& stream, bool more=false) const;
+  void disp(std::ostream& stream, bool more = false) const;
 
   /// Get string representation
-  std::string get_str(bool more=false) const;
+  std::string get_str(bool more = false) const;
 
   ///@{
   /** \brief Helper methods for callback()
@@ -434,58 +448,56 @@ public:
 
   Opti(OptiNode* node);
 
-#endif // SWIG
-
+#endif  // SWIG
 };
 
-  enum ConstraintType {
-    OPTI_GENERIC_EQUALITY,  // g1(x,p) == g2(x,p)
-    OPTI_GENERIC_INEQUALITY,  // g1(x,p) <= g2(x,p)
-    OPTI_EQUALITY, // g(x,p) == bound(p)
-    OPTI_INEQUALITY,  // g(x,p) <= bound(p)
-    OPTI_DOUBLE_INEQUALITY,  // lb(p) <= g(x,p) <= ub(p)
-    OPTI_PSD, // A(x,p) >= b(p)
-    OPTI_UNKNOWN};
-  enum VariableType {
-    OPTI_VAR, // variable
-    OPTI_PAR,  // parameter
-    OPTI_DUAL_G // dual
-  };
+enum ConstraintType {
+  OPTI_GENERIC_EQUALITY,    // g1(x,p) == g2(x,p)
+  OPTI_GENERIC_INEQUALITY,  // g1(x,p) <= g2(x,p)
+  OPTI_EQUALITY,            // g(x,p) == bound(p)
+  OPTI_INEQUALITY,          // g(x,p) <= bound(p)
+  OPTI_DOUBLE_INEQUALITY,   // lb(p) <= g(x,p) <= ub(p)
+  OPTI_PSD,                 // A(x,p) >= b(p)
+  OPTI_UNKNOWN
+};
+enum VariableType {
+  OPTI_VAR,    // variable
+  OPTI_PAR,    // parameter
+  OPTI_DUAL_G  // dual
+};
 
-  struct IndexAbstraction {
-    IndexAbstraction() : start(0), stop(0) {}
-    casadi_int start;
-    casadi_int stop;
-  };
-  struct MetaCon : IndexAbstraction {
-    MetaCon() :  n(1), flipped(false) {}
-    MX original;  // original expression
-    MX canon; // Canonical expression
-    ConstraintType type;
-    MX lb;
-    MX ub;
-    casadi_int n;
-    bool flipped;
-    MX dual_canon;
-    MX dual;
-    Dict extra;
-  };
-  struct MetaVar : IndexAbstraction {
-    std::string attribute;
-    casadi_int n;
-    casadi_int m;
-    VariableType type;
-    casadi_int count;
-    casadi_int i;
-    casadi_int active_i;
-    Dict extra;
-  };
-
+struct IndexAbstraction {
+  IndexAbstraction() : start(0), stop(0) {}
+  casadi_int start;
+  casadi_int stop;
+};
+struct MetaCon : IndexAbstraction {
+  MetaCon() : n(1), flipped(false) {}
+  MX original;  // original expression
+  MX canon;     // Canonical expression
+  ConstraintType type;
+  MX lb;
+  MX ub;
+  casadi_int n;
+  bool flipped;
+  MX dual_canon;
+  MX dual;
+  Dict extra;
+};
+struct MetaVar : IndexAbstraction {
+  std::string attribute;
+  casadi_int n;
+  casadi_int m;
+  VariableType type;
+  casadi_int count;
+  casadi_int i;
+  casadi_int active_i;
+  Dict extra;
+};
 
 class OptiCallback {
-public:
-  OptiCallback() {
-  }
+ public:
+  OptiCallback() {}
   OptiCallback(const OptiCallback& obj) {
     casadi_error("Callback objects cannot be copied");
   }
@@ -497,8 +509,8 @@ public:
 
 class CASADI_EXPORT OptiAdvanced : public Opti {
   friend class InternalOptiCallback;
-public:
 
+ public:
   OptiAdvanced(const Opti& x);
 
   /** \brief Destructor
@@ -506,11 +518,11 @@ public:
       \identifier{1t} */
   ~OptiAdvanced() {}
 
-
   /// Get the underlying CasADi solver of the Opti stack
   Function casadi_solver() const;
 
-  /// return true if expression is only dependant on Opti parameters, not variables
+  /// return true if expression is only dependant on Opti parameters, not
+  /// variables
   bool is_parametric(const MX& expr) const;
 
   /// @{
@@ -550,9 +562,9 @@ public:
 
   std::string x_describe(casadi_index i) const;
   std::string g_describe(casadi_index i) const;
-  std::string describe(const MX& x, casadi_index indent=0) const;
+  std::string describe(const MX& x, casadi_index indent = 0) const;
 
-  void show_infeasibilities(double tol=0) const;
+  void show_infeasibilities(double tol = 0) const;
 
   void solve_prepare();
   DMDict solve_actual(const DMDict& args);
@@ -567,20 +579,19 @@ public:
 
   void assert_empty() const;
 
-
   /// Fix the structure of the optimization problem
   void bake();
 
   bool problem_dirty_;
-  void mark_problem_dirty(bool flag=true);
+  void mark_problem_dirty(bool flag = true);
   bool problem_dirty() const;
 
   bool solver_dirty_;
-  void mark_solver_dirty(bool flag=true);
+  void mark_solver_dirty(bool flag = true);
   bool solver_dirty() const;
 
   bool solved_;
-  void mark_solved(bool flag=true);
+  void mark_solved(bool flag = true);
   bool solved() const;
 
   void assert_solved() const;
@@ -588,7 +599,7 @@ public:
 
   casadi_int instance_number() const;
 
-protected:
+ protected:
   OptiAdvanced() {}
 };
 
@@ -602,46 +613,50 @@ protected:
       \author Joris Gillis, Erik Lambrechts
 
     \identifier{1v} */
-class CASADI_EXPORT OptiSol : public SWIG_IF_ELSE(PrintableCommon, Printable<OptiAdvanced>) {
+class CASADI_EXPORT OptiSol
+    : public SWIG_IF_ELSE(PrintableCommon, Printable<OptiAdvanced>) {
   friend class OptiNode;
-  public:
-    std::string type_name() const {return "OptiSol";}
-    void disp(std::ostream& stream, bool more=false) const;
-    std::string get_str(bool more=false) const;
-    /// @{
-    /** Obtain value of expression at the current value
-    *
-    * In regular mode, teh current value is the converged solution
-    * In debug mode, the value can be non-converged
-    *
-    * \param[in] values Optional assignment expressions (e.g. x==3)
-    *            to overrule the current value
-    */
-    native_DM value(const MX& x, const std::vector<MX>& values=std::vector<MX>()) const;
-    native_DM value(const DM& x, const std::vector<MX>& values=std::vector<MX>()) const;
-    native_DM value(const SX& x, const std::vector<MX>& values=std::vector<MX>()) const;
-    /// @}
 
-    /// get assignment expressions for the optimal solution
-    std::vector<MX> value_variables() const;
-    std::vector<MX> value_parameters() const;
+ public:
+  std::string type_name() const { return "OptiSol"; }
+  void disp(std::ostream& stream, bool more = false) const;
+  std::string get_str(bool more = false) const;
+  /// @{
+  /** Obtain value of expression at the current value
+   *
+   * In regular mode, teh current value is the converged solution
+   * In debug mode, the value can be non-converged
+   *
+   * \param[in] values Optional assignment expressions (e.g. x==3)
+   *            to overrule the current value
+   */
+  native_DM value(const MX& x,
+                  const std::vector<MX>& values = std::vector<MX>()) const;
+  native_DM value(const DM& x,
+                  const std::vector<MX>& values = std::vector<MX>()) const;
+  native_DM value(const SX& x,
+                  const std::vector<MX>& values = std::vector<MX>()) const;
+  /// @}
 
-    /** \brief Get statistics
-    *
-    * nlpsol stats are passed as-is.
-    * No stability can be guaranteed about this part of the API
+  /// get assignment expressions for the optimal solution
+  std::vector<MX> value_variables() const;
+  std::vector<MX> value_parameters() const;
 
-        \identifier{1w} */
-    Dict stats() const;
+  /** \brief Get statistics
+  *
+  * nlpsol stats are passed as-is.
+  * No stability can be guaranteed about this part of the API
 
-    Opti opti() const { return optistack_; } // NOLINT(cppcoreguidelines-slicing)
+      \identifier{1w} */
+  Dict stats() const;
 
-  protected:
-    OptiSol(const Opti& opti);
-    OptiAdvanced optistack_;
+  Opti opti() const { return optistack_; }  // NOLINT(cppcoreguidelines-slicing)
+
+ protected:
+  OptiSol(const Opti& opti);
+  OptiAdvanced optistack_;
 };
 
+}  // namespace casadi
 
-} // namespace casadi
-
-#endif // CASADI_OPTI_HPP
+#endif  // CASADI_OPTI_HPP

@@ -51,18 +51,14 @@ class dupcol_action : public CoinPresolveAction {
   const action *const actions_;
 
   dupcol_action(int nactions, const action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-  {
-  }
+                const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nactions_(nactions), actions_(actions) {}
 
-public:
+ public:
   const char *name() const;
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next);
+                                            const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -91,29 +87,26 @@ class duprow_action : public CoinPresolveAction {
     double ubound;
   };
 
-  //const int nactions_;
-  //const action *const actions_;
+  // const int nactions_;
+  // const action *const actions_;
 
   duprow_action()
-    : CoinPresolveAction(NULL)
-    //, nactions_(0)
-    //, actions_(NULL)
-  {
-  }
-  duprow_action(int nactions,
-    const action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    //, nactions_(nactions)
-    //, actions_(actions)
-  {
-  }
+      : CoinPresolveAction(NULL)
+  //, nactions_(0)
+  //, actions_(NULL)
+  {}
+  duprow_action(int nactions, const action *actions,
+                const CoinPresolveAction *next)
+      : CoinPresolveAction(next)
+  //, nactions_(nactions)
+  //, actions_(actions)
+  {}
 
-public:
+ public:
   const char *name() const;
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next);
+                                            const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -127,29 +120,26 @@ class duprow3_action : public CoinPresolveAction {
     double ubound;
   };
 
-  //const int nactions_;
-  //const action *const actions_;
+  // const int nactions_;
+  // const action *const actions_;
 
   duprow3_action()
-    : CoinPresolveAction(NULL)
-    //, nactions_(0)
-    //, actions_(NULL)
-  {
-  }
-  duprow3_action(int nactions,
-    const action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    //, nactions_(nactions)
-    //, actions_(actions)
-  {
-  }
+      : CoinPresolveAction(NULL)
+  //, nactions_(0)
+  //, actions_(NULL)
+  {}
+  duprow3_action(int nactions, const action *actions,
+                 const CoinPresolveAction *next)
+      : CoinPresolveAction(next)
+  //, nactions_(nactions)
+  //, actions_(actions)
+  {}
 
-public:
+ public:
   const char *name() const;
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next);
+                                            const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -172,7 +162,7 @@ class gubrow_action : public CoinPresolveAction {
     // last is row itself
     int *deletedRow;
     double *rowels;
-    int *indices; // indices in gub row
+    int *indices;  // indices in gub row
     int nDrop;
     int ninrow;
   };
@@ -180,21 +170,16 @@ class gubrow_action : public CoinPresolveAction {
   const int nactions_;
   const action *const actions_;
 
-  //gubrow_action():CoinPresolveAction(NULL),nactions_(0),actions_(NULL) {}
-  gubrow_action(int nactions,
-    const action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-  {
-  }
+  // gubrow_action():CoinPresolveAction(NULL),nactions_(0),actions_(NULL) {}
+  gubrow_action(int nactions, const action *actions,
+                const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nactions_(nactions), actions_(actions) {}
 
-public:
+ public:
   const char *name() const;
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next);
+                                            const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -205,7 +190,7 @@ public:
     \brief Detect interesting 2 by 2 blocks
 
     If a variable has two entries and for each row there are only
-    two entries with same other variable then we can get rid of 
+    two entries with same other variable then we can get rid of
     one constraint and modify costs.
 
     This is a work in progress - I need more examples
@@ -227,26 +212,16 @@ class twoxtwo_action : public CoinPresolveAction {
   const int nactions_;
   const action *const actions_;
 
-  twoxtwo_action()
-    : CoinPresolveAction(NULL)
-    , nactions_(0)
-    , actions_(NULL)
-  {
-  }
-  twoxtwo_action(int nactions,
-    const action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-  {
-  }
+  twoxtwo_action() : CoinPresolveAction(NULL), nactions_(0), actions_(NULL) {}
+  twoxtwo_action(int nactions, const action *actions,
+                 const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nactions_(nactions), actions_(actions) {}
 
-public:
+ public:
   const char *name() const;
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next);
+                                            const CoinPresolveAction *next);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
@@ -256,4 +231,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

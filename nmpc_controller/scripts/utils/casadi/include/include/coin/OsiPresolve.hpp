@@ -41,7 +41,7 @@ class CoinPresolveAction;
   care of creating a clone properly loaded with the presolved problem and ready
   for optimization. After optimization, it will apply postsolve
   transformations and load the result back into \c origModel.
-  
+
   Assuming a problem has been loaded into an
   \c OsiSolverInterface \c origModel, a bare-bones application looks like this:
   \code
@@ -57,7 +57,7 @@ class CoinPresolveAction;
 */
 
 class OsiPresolve {
-public:
+ public:
   /// Default constructor (empty object)
   OsiPresolve();
 
@@ -78,23 +78,23 @@ public:
 
     This should be paired with postsolve(). It is up to the client to
     destroy the returned OsiSolverInterface, <i>after</i> calling postsolve().
-    
+
     This method is virtual. Override this method if you need to customize
     the steps of creating a model to apply presolve transformations.
 
     In some sense, a wrapper for presolve(CoinPresolveMatrix*).
   */
   virtual OsiSolverInterface *presolvedModel(OsiSolverInterface &origModel,
-    double feasibilityTolerance = 0.0,
-    bool keepIntegers = true,
-    int numberPasses = 5,
-    const char *prohibited = NULL,
-    bool doStatus = true,
-    const char *rowProhibited = NULL);
+                                             double feasibilityTolerance = 0.0,
+                                             bool keepIntegers = true,
+                                             int numberPasses = 5,
+                                             const char *prohibited = NULL,
+                                             bool doStatus = true,
+                                             const char *rowProhibited = NULL);
 
   /*! \brief Restate the solution to the presolved problem in terms of the
-	     original problem and load it into the original model.
-  
+             original problem and load it into the original model.
+
     postsolve() restates the solution in terms of the original problem and
     updates the original OsiSolverInterface supplied to presolvedModel().  If
     the problem has not been solved to optimality, there are no guarantees.
@@ -127,38 +127,26 @@ public:
   const int *originalRows() const;
 
   /// Return number of rows in original model
-  inline int getNumRows() const
-  {
-    return nrows_;
-  }
+  inline int getNumRows() const { return nrows_; }
 
   /// Return number of columns in original model
-  inline int getNumCols() const
-  {
-    return ncols_;
-  }
+  inline int getNumCols() const { return ncols_; }
 
   /** "Magic" number. If this is non-zero then any elements with this value
       may change and so presolve is very limited in what can be done
       to the row and column.  This is for non-linear problems.
   */
-  inline void setNonLinearValue(double value)
-  {
-    nonLinearValue_ = value;
-  }
-  inline double nonLinearValue() const
-  {
-    return nonLinearValue_;
-  }
+  inline void setNonLinearValue(double value) { nonLinearValue_ = value; }
+  inline double nonLinearValue() const { return nonLinearValue_; }
   /*! \brief Fine control over presolve actions
-  
+
     Set/clear the following bits to allow or suppress actions:
       - 0x01 allow duplicate column processing on integer columns
-	     and dual stuff on integers
+             and dual stuff on integers
       - 0x02 switch off actions which can change +1 to something else
-      	     (doubleton, tripleton, implied free)
+             (doubleton, tripleton, implied free)
       - 0x04 allow transfer of costs from singletons and between integer
-      	     variables (when advantageous)
+             variables (when advantageous)
       - 0x08 do not allow x+y+z=1 transform
       - 0x10 allow actions that don't easily unroll
       - 0x20 allow dubious gub element reduction
@@ -168,22 +156,17 @@ public:
     what's meant by `dual stuff on integers'.
     -- lh, 110605 --
   */
-  inline void setPresolveActions(int action)
-  {
+  inline void setPresolveActions(int action) {
     presolveActions_ = (presolveActions_ & 0xffff0000) | (action & 0xffff);
   }
   /// Get presolved model
-  inline OsiSolverInterface *presolvedModel() const
-  {
-    return presolvedModel_;
-  }
+  inline OsiSolverInterface *presolvedModel() const { return presolvedModel_; }
   /// Set presolved model
-  inline void setPresolvedModel(OsiSolverInterface *presolvedModel)
-  {
+  inline void setPresolvedModel(OsiSolverInterface *presolvedModel) {
     presolvedModel_ = presolvedModel;
   }
 
-private:
+ private:
   /*! Original model (solver interface loaded with the original problem).
 
       Must not be destroyed until after postsolve().
@@ -191,7 +174,7 @@ private:
   OsiSolverInterface *originalModel_;
 
   /*! Presolved  model (solver interface loaded with the presolved problem)
-  
+
     Must be destroyed by the client (using delete) after postsolve().
   */
   OsiSolverInterface *presolvedModel_;
@@ -235,11 +218,11 @@ private:
   /// Number of major passes
   int numberPasses_;
 
-protected:
+ protected:
   /*! \brief Apply presolve transformations to the problem.
-  
+
     Handles the core activity of applying presolve transformations.
-    
+
     If you want to apply the individual presolve routines differently, or
     perhaps add your own to the mix, define a derived class and override
     this method
@@ -247,7 +230,7 @@ protected:
   virtual const CoinPresolveAction *presolve(CoinPresolveMatrix *prob);
 
   /*! \brief Reverse presolve transformations to recover the solution
-	     to the original problem.
+             to the original problem.
 
     Handles the core activity of applying postsolve transformations.
 
@@ -259,7 +242,7 @@ protected:
   virtual void postsolve(CoinPostsolveMatrix &prob);
 
   /*! \brief Destroys queued postsolve actions.
-  
+
     <i>E.g.</i>, when presolve() determines the problem is infeasible, so that
     it will not be necessary to actually solve the presolved problem and
     convert the result back to the original problem.
@@ -269,4 +252,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

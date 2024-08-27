@@ -79,8 +79,7 @@ enum CBC_Message {
 };
 
 class CbcMessage : public CoinMessages {
-
-public:
+ public:
   /**@name Constructors etc */
   //@{
   /** Constructor */
@@ -91,4 +90,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

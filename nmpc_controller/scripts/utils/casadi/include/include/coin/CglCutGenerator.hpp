@@ -5,9 +5,9 @@
 #ifndef CglCutGenerator_H
 #define CglCutGenerator_H
 
+#include "CglTreeInfo.hpp"
 #include "OsiCuts.hpp"
 #include "OsiSolverInterface.hpp"
-#include "CglTreeInfo.hpp"
 
 //-------------------------------------------------------------------
 //
@@ -17,12 +17,11 @@
 ///
 /** Cut Generator Base Class
 
-This is an abstract base class for generating cuts.  A specific cut 
+This is an abstract base class for generating cuts.  A specific cut
 generator will inherit from this class.
 */
 class CglCutGenerator {
-
-public:
+ public:
   /**@name Generate Cuts */
   //@{
   /** Generate cuts for the model data contained in si.
@@ -30,8 +29,7 @@ public:
   collection of cuts cs.
   */
   virtual void generateCuts(const OsiSolverInterface &si, OsiCuts &cs,
-    const CglTreeInfo info = CglTreeInfo())
-    = 0;
+                            const CglTreeInfo info = CglTreeInfo()) = 0;
   //@}
 
   /**@name Constructors and destructors */
@@ -58,7 +56,7 @@ public:
       3: Set to changed (not default) values<BR>
       4: Set to default values (redundant)<BR>
 
-      Keys 1, 2, 5, 6, 7, 8 are defined, but not applicable to 
+      Keys 1, 2, 5, 6, 7, 8 are defined, but not applicable to
       cut generators.
   */
   virtual std::string generateCpp(FILE *) { return ""; }
@@ -73,29 +71,19 @@ public:
      Get Aggressiveness - 0 = neutral, 100 is normal root node.
      Really just a hint to cut generator
   */
-  inline int getAggressiveness() const
-  {
-    return aggressive_;
-  }
+  inline int getAggressiveness() const { return aggressive_; }
 
   /**
      Set Aggressiveness - 0 = neutral, 100 is normal root node.
      Really just a hint to cut generator
   */
-  inline void setAggressiveness(int value)
-  {
-    aggressive_ = value;
-  }
+  inline void setAggressiveness(int value) { aggressive_ = value; }
   /// Set whether can do global cuts
-  inline void setGlobalCuts(bool trueOrFalse)
-  {
+  inline void setGlobalCuts(bool trueOrFalse) {
     canDoGlobalCuts_ = trueOrFalse;
   }
   /// Say whether can do global cuts
-  inline bool canDoGlobalCuts() const
-  {
-    return canDoGlobalCuts_;
-  }
+  inline bool canDoGlobalCuts() const { return canDoGlobalCuts_; }
   /**
      Returns true if may generate Row cuts in tree (rather than root node).
      Used so know if matrix will change in tree.  Really
@@ -107,14 +95,11 @@ public:
   /// Return true if needs optimal basis to do cuts
   virtual bool needsOptimalBasis() const;
   /// Return maximum length of cut in tree
-  virtual int maximumLengthOfCutInTree() const
-  {
-    return COIN_INT_MAX;
-  }
+  virtual int maximumLengthOfCutInTree() const { return COIN_INT_MAX; }
   //@}
 
   // test this class
-  //static void unitTest();
+  // static void unitTest();
 
   // private:
 
@@ -130,4 +115,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

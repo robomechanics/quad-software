@@ -18,78 +18,85 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
 
-
 #ifndef CASADI_GLOBAL_OPTIONS_HPP
 #define CASADI_GLOBAL_OPTIONS_HPP
+
+#include <casadi/core/casadi_export.h>
 
 #include <fstream>
 #include <iostream>
 
 #include "casadi/core/casadi_common.hpp"
-#include <casadi/core/casadi_export.h>
 
 namespace casadi {
 
-  /** \brief Collects global CasADi options
-  *
-  *
-  * Note to developers:  \n
-  *  - use sparingly. Global options are - in general - a rather bad idea \n
-  *  - this class must never be instantiated. Access its static members directly \n
-  *
-  *  \author Joris Gillis
-  *  \date 2012
+/** \brief Collects global CasADi options
+*
+*
+* Note to developers:  \n
+*  - use sparingly. Global options are - in general - a rather bad idea \n
+*  - this class must never be instantiated. Access its static members directly
+\n
+*
+*  \author Joris Gillis
+*  \date 2012
 
-      \identifier{23m} */
-  class CASADI_EXPORT GlobalOptions {
-    private:
-      /// No instances are allowed
-      GlobalOptions();
-    public:
+    \identifier{23m} */
+class CASADI_EXPORT GlobalOptions {
+ private:
+  /// No instances are allowed
+  GlobalOptions();
 
+ public:
 #ifndef SWIG
-      /** \brief Indicates whether simplifications should be made on the fly.
+  /** \brief Indicates whether simplifications should be made on the fly.
 
-      * e.g.   cos(-x) -> cos(x)
-      * Default: true
+  * e.g.   cos(-x) -> cos(x)
+  * Default: true
 
-          \identifier{17v} */
-      static bool simplification_on_the_fly;
+      \identifier{17v} */
+  static bool simplification_on_the_fly;
 
-      static std::string casadipath;
+  static std::string casadipath;
 
-      static std::string casadi_include_path;
+  static std::string casadi_include_path;
 
-      static bool hierarchical_sparsity;
+  static bool hierarchical_sparsity;
 
-      static casadi_int max_num_dir;
+  static casadi_int max_num_dir;
 
-      static casadi_int start_index;
+  static casadi_int start_index;
 
-#endif //SWIG
-      // Setter and getter for simplification_on_the_fly
-      static void setSimplificationOnTheFly(bool flag) { simplification_on_the_fly = flag; }
-      static bool getSimplificationOnTheFly() { return simplification_on_the_fly; }
+#endif  // SWIG
+  // Setter and getter for simplification_on_the_fly
+  static void setSimplificationOnTheFly(bool flag) {
+    simplification_on_the_fly = flag;
+  }
+  static bool getSimplificationOnTheFly() { return simplification_on_the_fly; }
 
-      // Setter and getter for hierarchical_sparsity
-      static void setHierarchicalSparsity(bool flag) { hierarchical_sparsity = flag; }
-      static bool getHierarchicalSparsity() { return hierarchical_sparsity; }
+  // Setter and getter for hierarchical_sparsity
+  static void setHierarchicalSparsity(bool flag) {
+    hierarchical_sparsity = flag;
+  }
+  static bool getHierarchicalSparsity() { return hierarchical_sparsity; }
 
-      static void setCasadiPath(const std::string & path) { casadipath = path; }
-      static std::string getCasadiPath() { return casadipath; }
+  static void setCasadiPath(const std::string& path) { casadipath = path; }
+  static std::string getCasadiPath() { return casadipath; }
 
-      static void setCasadiIncludePath(const std::string & path) { casadi_include_path = path; }
-      static std::string getCasadiIncludePath() { return casadi_include_path; }
+  static void setCasadiIncludePath(const std::string& path) {
+    casadi_include_path = path;
+  }
+  static std::string getCasadiIncludePath() { return casadi_include_path; }
 
-      static void setMaxNumDir(casadi_int ndir) { max_num_dir=ndir; }
-      static casadi_int getMaxNumDir() { return max_num_dir; }
+  static void setMaxNumDir(casadi_int ndir) { max_num_dir = ndir; }
+  static casadi_int getMaxNumDir() { return max_num_dir; }
+};
 
-  };
+}  // namespace casadi
 
-} // namespace casadi
-
-#endif // CASADI_GLOBAL_OPTIONS_HPP
+#endif  // CASADI_GLOBAL_OPTIONS_HPP

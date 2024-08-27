@@ -11,20 +11,18 @@
 #define BonPseudoCosts_H
 
 #include "OsiChooseVariable.hpp"
-namespace Bonmin
-{
+namespace Bonmin {
 
-  class PseudoCosts: public OsiPseudoCosts
-  {
-  public:
-    /** Default constructor.*/
-    PseudoCosts();
+class PseudoCosts : public OsiPseudoCosts {
+ public:
+  /** Default constructor.*/
+  PseudoCosts();
 
-    /** Copy constructor.*/
-    PseudoCosts(const PseudoCosts & rhs);
+  /** Copy constructor.*/
+  PseudoCosts(const PseudoCosts& rhs);
 
-    /** Assignment operator const version.*/
-    PseudoCosts & operator=(const PseudoCosts&rhs);
+  /** Assignment operator const version.*/
+  PseudoCosts& operator=(const PseudoCosts& rhs);
 #if 0
     /** Acces upTotalChange.*/
     inline double * upTotalChange()
@@ -80,12 +78,11 @@ namespace Bonmin
       return numberObjects_;
     }
 #endif
-    /** Add a pseudo cost information.*/
-    void addInfo(int way, double originalObj, double originalInfeas,
-        double newObj, double newInfeas, int status);
+  /** Add a pseudo cost information.*/
+  void addInfo(int way, double originalObj, double originalInfeas,
+               double newObj, double newInfeas, int status);
+};
 
-  };
-
-}/* End Bonmin namespace.*/
+}  // namespace Bonmin
 
 #endif

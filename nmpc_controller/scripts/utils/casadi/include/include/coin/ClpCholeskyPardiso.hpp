@@ -18,8 +18,7 @@ class ClpCholeskyDense;
 
 */
 class ClpCholeskyPardiso : public ClpCholeskyBase {
-
-public:
+ public:
   /**@name Virtual methods that the derived classes provides  */
   //@{
   /** Orders rows and saves pointer to matrix.and model.
@@ -27,8 +26,8 @@ public:
   virtual int order(ClpInterior *model);
   /** Does Symbolic factorization given permutation.
          This is called immediately after order.  If user provides this then
-         user must provide factorize and solve.  Otherwise the default factorization is used
-         returns non-zero if not enough memory */
+         user must provide factorize and solve.  Otherwise the default
+     factorization is used returns non-zero if not enough memory */
   virtual int symbolic();
   /** Factorize - filling in rowsDropped and returning number dropped.
          If return code negative then out of memory */
@@ -52,11 +51,11 @@ public:
   virtual ClpCholeskyBase *clone() const;
   //@}
 
-private:
+ private:
   /**@name Data members */
   //@{
   int lastNumberDropped_;
-  //MKL_INT iparm_[64];
+  // MKL_INT iparm_[64];
   //@}
 };
 
@@ -64,4 +63,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

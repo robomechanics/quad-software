@@ -13,17 +13,15 @@ namespace proxqp {
 namespace sparse {
 
 namespace preconditioner {
-enum struct Symmetry
-{
+enum struct Symmetry {
   LOWER,
   UPPER,
 };
 
 namespace detail {
-template<typename T, typename I>
-void
-rowwise_infty_norm(T* row_norm, proxsuite::linalg::sparse::MatRef<T, I> m)
-{
+template <typename T, typename I>
+void rowwise_infty_norm(T* row_norm,
+                        proxsuite::linalg::sparse::MatRef<T, I> m) {
   using namespace proxsuite::linalg::sparse::util;
 
   I const* mi = m.row_indices();
@@ -41,10 +39,9 @@ rowwise_infty_norm(T* row_norm, proxsuite::linalg::sparse::MatRef<T, I> m)
   }
 }
 
-template<typename T, typename I>
-void
-colwise_infty_norm_symhi(T* col_norm, proxsuite::linalg::sparse::MatRef<T, I> h)
-{
+template <typename T, typename I>
+void colwise_infty_norm_symhi(T* col_norm,
+                              proxsuite::linalg::sparse::MatRef<T, I> h) {
   using namespace proxsuite::linalg::sparse::util;
 
   I const* hi = h.row_indices();
@@ -71,10 +68,9 @@ colwise_infty_norm_symhi(T* col_norm, proxsuite::linalg::sparse::MatRef<T, I> h)
   }
 }
 
-template<typename T, typename I>
-void
-colwise_infty_norm_symlo(T* col_norm, proxsuite::linalg::sparse::MatRef<T, I> h)
-{
+template <typename T, typename I>
+void colwise_infty_norm_symlo(T* col_norm,
+                              proxsuite::linalg::sparse::MatRef<T, I> h) {
   using namespace proxsuite::linalg::sparse::util;
 
   I const* hi = h.row_indices();
@@ -108,17 +104,10 @@ colwise_infty_norm_symlo(T* col_norm, proxsuite::linalg::sparse::MatRef<T, I> h)
   }
 }
 
-template<typename T, typename I>
-auto
-ruiz_scale_qp_in_place( //
-  VectorViewMut<T> delta_,
-  QpViewMut<T, I> qp,
-  T epsilon,
-  isize max_iter,
-  Symmetry sym,
-  proxsuite::linalg::veg::dynstack::DynStackMut stack) -> T
-{
-
+template <typename T, typename I>
+auto ruiz_scale_qp_in_place(  //
+    VectorViewMut<T> delta_, QpViewMut<T, I> qp, T epsilon, isize max_iter,
+    Symmetry sym, proxsuite::linalg::veg::dynstack::DynStackMut stack) -> T {
   T c = 1;
   auto S = delta_.to_eigen();
 
@@ -174,9 +163,9 @@ ruiz_scale_qp_in_place( //
 
       for (isize j = 0; j < n; ++j) {
         delta(j) = T(1) / (machine_eps + sqrt(std::max({
-                                           h_infty_norm[j],
-                                           a_infty_norm[j],
-                                           c_infty_norm[j],
+                                             h_infty_norm[j],
+                                             a_infty_norm[j],
+                                             c_infty_norm[j],
                                          })));
       }
     }
@@ -319,11 +308,10 @@ ruiz_scale_qp_in_place( //
   }
   return c;
 }
-} // namespace detail
+}  // namespace detail
 
-template<typename T, typename I>
-struct RuizEquilibration
-{
+template <typename T, typename I>
+struct RuizEquilibration {
   Vec<T> delta;
   isize n;
   T c;
@@ -333,48 +321,33 @@ struct RuizEquilibration
 
   std::ostream* logger_ptr = nullptr;
 
-  RuizEquilibration(isize n_,
-                    isize n_eq_in,
-                    T epsilon_ = T(1e-3),
-                    i64 max_iter_ = 10,
-                    Symmetry sym_ = Symmetry::UPPER,
+  RuizEquilibration(isize n_, isize n_eq_in, T epsilon_ = T(1e-3),
+                    i64 max_iter_ = 10, Symmetry sym_ = Symmetry::UPPER,
                     std::ostream* logger = nullptr)
-    : delta(Vec<T>::Ones(n_ + n_eq_in))
-    , n(n_)
-    , c(1)
-    , epsilon(epsilon_)
-    , max_iter(max_iter_)
-    , sym(sym_)
-    , logger_ptr(logger)
-  {
+      : delta(Vec<T>::Ones(n_ + n_eq_in)),
+        n(n_),
+        c(1),
+        epsilon(epsilon_),
+        max_iter(max_iter_),
+        sym(sym_),
+        logger_ptr(logger) {
     delta.setOnes();
   }
 
-  static auto scale_qp_in_place_req(proxsuite::linalg::veg::Tag<T> tag,
-                                    isize n,
-                                    isize n_eq,
-                                    isize n_in)
-    -> proxsuite::linalg::veg::dynstack::StackReq
-  {
+  static auto scale_qp_in_place_req(proxsuite::linalg::veg::Tag<T> tag, isize n,
+                                    isize n_eq, isize n_in)
+      -> proxsuite::linalg::veg::dynstack::StackReq {
     return proxsuite::linalg::dense::temp_vec_req(tag, n + n_eq + n_in) &
            proxsuite::linalg::veg::dynstack::StackReq::with_len(tag, 3 * n);
   }
 
-  void scale_qp_in_place(QpViewMut<T, I> qp,
-                         bool execute_preconditioner,
-                         const isize max_iter,
-                         const T epsilon,
-                         proxsuite::linalg::veg::dynstack::DynStackMut stack)
-  {
+  void scale_qp_in_place(QpViewMut<T, I> qp, bool execute_preconditioner,
+                         const isize max_iter, const T epsilon,
+                         proxsuite::linalg::veg::dynstack::DynStackMut stack) {
     if (execute_preconditioner) {
       delta.setOnes();
-      c = detail::ruiz_scale_qp_in_place( //
-        { proxqp::from_eigen, delta },
-        qp,
-        epsilon,
-        max_iter,
-        sym,
-        stack);
+      c = detail::ruiz_scale_qp_in_place(  //
+          {proxqp::from_eigen, delta}, qp, epsilon, max_iter, sym, stack);
     } else {
       using proxsuite::linalg::sparse::util::zero_extend;
       isize n = qp.H.nrows();
@@ -476,94 +449,78 @@ struct RuizEquilibration
   }
 
   // modifies variables in place
-  void scale_primal_in_place(VectorViewMut<T> primal) const
-  {
+  void scale_primal_in_place(VectorViewMut<T> primal) const {
     primal.to_eigen().array() /= delta.array().head(n);
   }
-  void scale_dual_in_place(VectorViewMut<T> dual)
-  {
+  void scale_dual_in_place(VectorViewMut<T> dual) {
     dual.to_eigen().array() = dual.as_const().to_eigen().array() /
                               delta.tail(delta.size() - n).array() * c;
   }
 
-  void scale_dual_in_place_eq(VectorViewMut<T> dual) const
-  {
+  void scale_dual_in_place_eq(VectorViewMut<T> dual) const {
     dual.to_eigen().array() =
-      dual.as_const().to_eigen().array() /
-      delta.middleRows(n, dual.to_eigen().size()).array() * c;
+        dual.as_const().to_eigen().array() /
+        delta.middleRows(n, dual.to_eigen().size()).array() * c;
   }
-  void scale_dual_in_place_in(VectorViewMut<T> dual) const
-  {
+  void scale_dual_in_place_in(VectorViewMut<T> dual) const {
     dual.to_eigen().array() = dual.as_const().to_eigen().array() /
                               delta.tail(dual.to_eigen().size()).array() * c;
   }
 
-  void unscale_primal_in_place(VectorViewMut<T> primal) const
-  {
+  void unscale_primal_in_place(VectorViewMut<T> primal) const {
     primal.to_eigen().array() *= delta.array().head(n);
   }
-  void unscale_dual_in_place(VectorViewMut<T> dual) const
-  {
+  void unscale_dual_in_place(VectorViewMut<T> dual) const {
     dual.to_eigen().array() = dual.as_const().to_eigen().array() *
                               delta.tail(delta.size() - n).array() / c;
   }
 
-  void unscale_dual_in_place_eq(VectorViewMut<T> dual) const
-  {
+  void unscale_dual_in_place_eq(VectorViewMut<T> dual) const {
     dual.to_eigen().array() =
-      dual.as_const().to_eigen().array() *
-      delta.middleRows(n, dual.to_eigen().size()).array() / c;
+        dual.as_const().to_eigen().array() *
+        delta.middleRows(n, dual.to_eigen().size()).array() / c;
   }
 
-  void unscale_dual_in_place_in(VectorViewMut<T> dual) const
-  {
+  void unscale_dual_in_place_in(VectorViewMut<T> dual) const {
     dual.to_eigen().array() = dual.as_const().to_eigen().array() *
                               delta.tail(dual.to_eigen().size()).array() / c;
   }
   // modifies residuals in place
-  void scale_primal_residual_in_place(VectorViewMut<T> primal) const
-  {
+  void scale_primal_residual_in_place(VectorViewMut<T> primal) const {
     primal.to_eigen().array() *= delta.tail(delta.size() - n).array();
   }
 
-  void scale_primal_residual_in_place_eq(VectorViewMut<T> primal_eq) const
-  {
+  void scale_primal_residual_in_place_eq(VectorViewMut<T> primal_eq) const {
     primal_eq.to_eigen().array() *=
-      delta.middleRows(n, primal_eq.to_eigen().size()).array();
+        delta.middleRows(n, primal_eq.to_eigen().size()).array();
   }
-  void scale_primal_residual_in_place_in(VectorViewMut<T> primal_in) const
-  {
+  void scale_primal_residual_in_place_in(VectorViewMut<T> primal_in) const {
     primal_in.to_eigen().array() *=
-      delta.tail(primal_in.to_eigen().size()).array();
+        delta.tail(primal_in.to_eigen().size()).array();
   }
-  void scale_dual_residual_in_place(VectorViewMut<T> dual) const
-  {
+  void scale_dual_residual_in_place(VectorViewMut<T> dual) const {
     dual.to_eigen().array() *= delta.head(n).array() * c;
   }
-  void unscale_primal_residual_in_place(VectorViewMut<T> primal) const
-  {
+  void unscale_primal_residual_in_place(VectorViewMut<T> primal) const {
     primal.to_eigen().array() /= delta.tail(delta.size() - n).array();
   }
-  void unscale_primal_residual_in_place_eq(VectorViewMut<T> primal_eq) const
-  {
+  void unscale_primal_residual_in_place_eq(VectorViewMut<T> primal_eq) const {
     primal_eq.to_eigen().array() /=
-      delta.middleRows(n, primal_eq.to_eigen().size()).array();
+        delta.middleRows(n, primal_eq.to_eigen().size()).array();
   }
-  void unscale_primal_residual_in_place_in(VectorViewMut<T> primal_in) const
-  {
+  void unscale_primal_residual_in_place_in(VectorViewMut<T> primal_in) const {
     primal_in.to_eigen().array() /=
-      delta.tail(primal_in.to_eigen().size()).array();
+        delta.tail(primal_in.to_eigen().size()).array();
   }
-  void unscale_dual_residual_in_place(VectorViewMut<T> dual) const
-  {
+  void unscale_dual_residual_in_place(VectorViewMut<T> dual) const {
     dual.to_eigen().array() /= delta.head(n).array() * c;
   }
 };
 
-} // namespace preconditioner
+}  // namespace preconditioner
 
-} // namespace sparse
-} // namespace proxqp
-} // namespace proxsuite
+}  // namespace sparse
+}  // namespace proxqp
+}  // namespace proxsuite
 
 #endif /* end of include guard PROXSUITE_PROXQP_SPARSE_PRECOND_RUIZ_HPP */

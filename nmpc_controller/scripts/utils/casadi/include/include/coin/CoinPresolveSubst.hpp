@@ -35,7 +35,7 @@
   variables that must be reduced to column singletons.
 */
 class subst_constraint_action : public CoinPresolveAction {
-private:
+ private:
   subst_constraint_action();
   subst_constraint_action(const subst_constraint_action &rhs);
   subst_constraint_action &operator=(const subst_constraint_action &rhs);
@@ -62,42 +62,34 @@ private:
   // actions_ is owned by the class and must be deleted at destruction
   const action *const actions_;
 
-  subst_constraint_action(int nactions,
-    action *actions,
-    const CoinPresolveAction *next)
-    : CoinPresolveAction(next)
-    , nactions_(nactions)
-    , actions_(actions)
-  {
-  }
+  subst_constraint_action(int nactions, action *actions,
+                          const CoinPresolveAction *next)
+      : CoinPresolveAction(next), nactions_(nactions), actions_(actions) {}
 
-public:
+ public:
   const char *name() const;
 
   static const CoinPresolveAction *presolve(CoinPresolveMatrix *prob,
-    const int *implied_free,
-    const int *which,
-    int numberFree,
-    const CoinPresolveAction *next,
-    int fill_level);
+                                            const int *implied_free,
+                                            const int *which, int numberFree,
+                                            const CoinPresolveAction *next,
+                                            int fill_level);
   static const CoinPresolveAction *presolveX(CoinPresolveMatrix *prob,
-    const CoinPresolveAction *next,
-    int fillLevel);
+                                             const CoinPresolveAction *next,
+                                             int fillLevel);
 
   void postsolve(CoinPostsolveMatrix *prob) const;
 
   virtual ~subst_constraint_action();
 };
 
-/*static*/ void implied_bounds(const double *els,
-  const double *clo, const double *cup,
-  const int *hcol,
-  CoinBigIndex krs, CoinBigIndex kre,
-  double *maxupp, double *maxdownp,
-  int jcol,
-  double rlo, double rup,
-  double *iclb, double *icub);
+/*static*/ void implied_bounds(const double *els, const double *clo,
+                               const double *cup, const int *hcol,
+                               CoinBigIndex krs, CoinBigIndex kre,
+                               double *maxupp, double *maxdownp, int jcol,
+                               double rlo, double rup, double *iclb,
+                               double *icub);
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

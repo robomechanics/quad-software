@@ -187,7 +187,7 @@ class RunQueue {
   // SizeOrNotEmpty returns current queue size; if NeedSizeEstimate is false,
   // only whether the size is 0 is guaranteed to be correct.
   // Can be called by any thread at any time.
-  template<bool NeedSizeEstimate>
+  template <bool NeedSizeEstimate>
   unsigned SizeOrNotEmpty() const {
     // Emptiness plays critical role in thread pool blocking. So we go to great
     // effort to not produce false positives (claim non-empty queue as empty).

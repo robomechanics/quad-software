@@ -28,16 +28,15 @@
 #if !defined(SIMDE_X86_AVX512_INSERT_H)
 #define SIMDE_X86_AVX512_INSERT_H
 
-#include "types.h"
 #include "mov.h"
+#include "types.h"
 
 HEDLEY_DIAGNOSTIC_PUSH
 SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512
-simde_mm512_insertf32x4 (simde__m512 a, simde__m128 b, int imm8)
+simde__m512 simde_mm512_insertf32x4(simde__m512 a, simde__m128 b, int imm8)
     SIMDE_REQUIRE_CONSTANT_RANGE(imm8, 0, 3) {
   simde__m512_private a_ = simde__m512_to_private(a);
 
@@ -46,36 +45,43 @@ simde_mm512_insertf32x4 (simde__m512 a, simde__m128 b, int imm8)
   return simde__m512_from_private(a_);
 }
 #if defined(SIMDE_X86_AVX512F_NATIVE)
-  #define simde_mm512_insertf32x4(a, b, imm8) _mm512_insertf32x4(a, b, imm8)
+#define simde_mm512_insertf32x4(a, b, imm8) _mm512_insertf32x4(a, b, imm8)
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_insertf32x4
-  #define _mm512_insertf32x4(a, b, imm8) simde_mm512_insertf32x4(a, b, imm8)
+#undef _mm512_insertf32x4
+#define _mm512_insertf32x4(a, b, imm8) simde_mm512_insertf32x4(a, b, imm8)
 #endif
 
-#if defined(SIMDE_X86_AVX512F_NATIVE) && (!defined(HEDLEY_GCC_VERSION) || HEDLEY_GCC_VERSION_CHECK(8,0,0))
-  #define simde_mm512_mask_insertf32x4(src, k, a, b, imm8) _mm512_mask_insertf32x4(src, k, a, b, imm8)
+#if defined(SIMDE_X86_AVX512F_NATIVE) && \
+    (!defined(HEDLEY_GCC_VERSION) || HEDLEY_GCC_VERSION_CHECK(8, 0, 0))
+#define simde_mm512_mask_insertf32x4(src, k, a, b, imm8) \
+  _mm512_mask_insertf32x4(src, k, a, b, imm8)
 #else
-  #define simde_mm512_mask_insertf32x4(src, k, a, b, imm8) simde_mm512_mask_mov_ps(src, k, simde_mm512_insertf32x4(a, b, imm8))
+#define simde_mm512_mask_insertf32x4(src, k, a, b, imm8) \
+  simde_mm512_mask_mov_ps(src, k, simde_mm512_insertf32x4(a, b, imm8))
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_mask_insertf32x4
-  #define _mm512_mask_insertf32x4(src, k, a, b, imm8) simde_mm512_mask_insertf32x4(src, k, a, b, imm8)
+#undef _mm512_mask_insertf32x4
+#define _mm512_mask_insertf32x4(src, k, a, b, imm8) \
+  simde_mm512_mask_insertf32x4(src, k, a, b, imm8)
 #endif
 
-#if defined(SIMDE_X86_AVX512F_NATIVE) && (!defined(HEDLEY_GCC_VERSION) || HEDLEY_GCC_VERSION_CHECK(8,0,0))
-  #define simde_mm512_maskz_insertf32x4(k, a, b, imm8) _mm512_maskz_insertf32x4(k, a, b, imm8)
+#if defined(SIMDE_X86_AVX512F_NATIVE) && \
+    (!defined(HEDLEY_GCC_VERSION) || HEDLEY_GCC_VERSION_CHECK(8, 0, 0))
+#define simde_mm512_maskz_insertf32x4(k, a, b, imm8) \
+  _mm512_maskz_insertf32x4(k, a, b, imm8)
 #else
-  #define simde_mm512_maskz_insertf32x4(k, a, b, imm8) simde_mm512_maskz_mov_ps(k, simde_mm512_insertf32x4(a, b, imm8))
+#define simde_mm512_maskz_insertf32x4(k, a, b, imm8) \
+  simde_mm512_maskz_mov_ps(k, simde_mm512_insertf32x4(a, b, imm8))
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_maskz_insertf32x4
-  #define _mm512_maskz_insertf32x4(k, a, b, imm8) simde_mm512_maskz_insertf32x4(k, a, b, imm8)
+#undef _mm512_maskz_insertf32x4
+#define _mm512_maskz_insertf32x4(k, a, b, imm8) \
+  simde_mm512_maskz_insertf32x4(k, a, b, imm8)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512d
-simde_mm512_insertf64x4 (simde__m512d a, simde__m256d b, int imm8)
+simde__m512d simde_mm512_insertf64x4(simde__m512d a, simde__m256d b, int imm8)
     SIMDE_REQUIRE_CONSTANT_RANGE(imm8, 0, 1) {
   simde__m512d_private a_ = simde__m512d_to_private(a);
 
@@ -84,36 +90,41 @@ simde_mm512_insertf64x4 (simde__m512d a, simde__m256d b, int imm8)
   return simde__m512d_from_private(a_);
 }
 #if defined(SIMDE_X86_AVX512F_NATIVE)
-  #define simde_mm512_insertf64x4(a, b, imm8) _mm512_insertf64x4(a, b, imm8)
+#define simde_mm512_insertf64x4(a, b, imm8) _mm512_insertf64x4(a, b, imm8)
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_insertf64x4
-  #define _mm512_insertf64x4(a, b, imm8) simde_mm512_insertf64x4(a, b, imm8)
+#undef _mm512_insertf64x4
+#define _mm512_insertf64x4(a, b, imm8) simde_mm512_insertf64x4(a, b, imm8)
 #endif
 
 #if defined(SIMDE_X86_AVX512F_NATIVE)
-  #define simde_mm512_mask_insertf64x4(src, k, a, b, imm8) _mm512_mask_insertf64x4(src, k, a, b, imm8)
+#define simde_mm512_mask_insertf64x4(src, k, a, b, imm8) \
+  _mm512_mask_insertf64x4(src, k, a, b, imm8)
 #else
-  #define simde_mm512_mask_insertf64x4(src, k, a, b, imm8) simde_mm512_mask_mov_pd(src, k, simde_mm512_insertf64x4(a, b, imm8))
+#define simde_mm512_mask_insertf64x4(src, k, a, b, imm8) \
+  simde_mm512_mask_mov_pd(src, k, simde_mm512_insertf64x4(a, b, imm8))
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_mask_insertf64x4
-  #define _mm512_mask_insertf64x4(src, k, a, b, imm8) simde_mm512_mask_insertf64x4(src, k, a, b, imm8)
+#undef _mm512_mask_insertf64x4
+#define _mm512_mask_insertf64x4(src, k, a, b, imm8) \
+  simde_mm512_mask_insertf64x4(src, k, a, b, imm8)
 #endif
 
 #if defined(SIMDE_X86_AVX512F_NATIVE)
-  #define simde_mm512_maskz_insertf64x4(k, a, b, imm8) _mm512_maskz_insertf64x4(k, a, b, imm8)
+#define simde_mm512_maskz_insertf64x4(k, a, b, imm8) \
+  _mm512_maskz_insertf64x4(k, a, b, imm8)
 #else
-  #define simde_mm512_maskz_insertf64x4(k, a, b, imm8) simde_mm512_maskz_mov_pd(k, simde_mm512_insertf64x4(a, b, imm8))
+#define simde_mm512_maskz_insertf64x4(k, a, b, imm8) \
+  simde_mm512_maskz_mov_pd(k, simde_mm512_insertf64x4(a, b, imm8))
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_maskz_insertf64x4
-  #define _mm512_maskz_insertf64x4(k, a, b, imm8) simde_mm512_maskz_insertf64x4(k, a, b, imm8)
+#undef _mm512_maskz_insertf64x4
+#define _mm512_maskz_insertf64x4(k, a, b, imm8) \
+  simde_mm512_maskz_insertf64x4(k, a, b, imm8)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512i
-simde_mm512_inserti32x4 (simde__m512i a, simde__m128i b, int imm8)
+simde__m512i simde_mm512_inserti32x4(simde__m512i a, simde__m128i b, int imm8)
     SIMDE_REQUIRE_CONSTANT_RANGE(imm8, 0, 3) {
   simde__m512i_private a_ = simde__m512i_to_private(a);
 
@@ -122,36 +133,43 @@ simde_mm512_inserti32x4 (simde__m512i a, simde__m128i b, int imm8)
   return simde__m512i_from_private(a_);
 }
 #if defined(SIMDE_X86_AVX512F_NATIVE)
-  #define simde_mm512_inserti32x4(a, b, imm8) _mm512_inserti32x4(a, b, imm8)
+#define simde_mm512_inserti32x4(a, b, imm8) _mm512_inserti32x4(a, b, imm8)
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_inserti32x4
-  #define _mm512_inserti32x4(a, b, imm8) simde_mm512_inserti32x4(a, b, imm8)
+#undef _mm512_inserti32x4
+#define _mm512_inserti32x4(a, b, imm8) simde_mm512_inserti32x4(a, b, imm8)
 #endif
 
-#if defined(SIMDE_X86_AVX512F_NATIVE) && (!defined(HEDLEY_GCC_VERSION) || HEDLEY_GCC_VERSION_CHECK(8,0,0))
-  #define simde_mm512_mask_inserti32x4(src, k, a, b, imm8) _mm512_mask_inserti32x4(src, k, a, b, imm8)
+#if defined(SIMDE_X86_AVX512F_NATIVE) && \
+    (!defined(HEDLEY_GCC_VERSION) || HEDLEY_GCC_VERSION_CHECK(8, 0, 0))
+#define simde_mm512_mask_inserti32x4(src, k, a, b, imm8) \
+  _mm512_mask_inserti32x4(src, k, a, b, imm8)
 #else
-  #define simde_mm512_mask_inserti32x4(src, k, a, b, imm8) simde_mm512_mask_mov_epi32(src, k, simde_mm512_inserti32x4(a, b, imm8))
+#define simde_mm512_mask_inserti32x4(src, k, a, b, imm8) \
+  simde_mm512_mask_mov_epi32(src, k, simde_mm512_inserti32x4(a, b, imm8))
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_mask_inserti32x4
-  #define _mm512_mask_inserti32x4(src, k, a, b, imm8) simde_mm512_mask_inserti32x4(src, k, a, b, imm8)
+#undef _mm512_mask_inserti32x4
+#define _mm512_mask_inserti32x4(src, k, a, b, imm8) \
+  simde_mm512_mask_inserti32x4(src, k, a, b, imm8)
 #endif
 
-#if defined(SIMDE_X86_AVX512F_NATIVE) && (!defined(HEDLEY_GCC_VERSION) || HEDLEY_GCC_VERSION_CHECK(8,0,0))
-  #define simde_mm512_maskz_inserti32x4(k, a, b, imm8) _mm512_maskz_inserti32x4(k, a, b, imm8)
+#if defined(SIMDE_X86_AVX512F_NATIVE) && \
+    (!defined(HEDLEY_GCC_VERSION) || HEDLEY_GCC_VERSION_CHECK(8, 0, 0))
+#define simde_mm512_maskz_inserti32x4(k, a, b, imm8) \
+  _mm512_maskz_inserti32x4(k, a, b, imm8)
 #else
-  #define simde_mm512_maskz_inserti32x4(k, a, b, imm8) simde_mm512_maskz_mov_epi32(k, simde_mm512_inserti32x4(a, b, imm8))
+#define simde_mm512_maskz_inserti32x4(k, a, b, imm8) \
+  simde_mm512_maskz_mov_epi32(k, simde_mm512_inserti32x4(a, b, imm8))
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_maskz_inserti32x4
-  #define _mm512_maskz_inserti32x4(k, a, b, imm8) simde_mm512_maskz_inserti32x4(k, a, b, imm8)
+#undef _mm512_maskz_inserti32x4
+#define _mm512_maskz_inserti32x4(k, a, b, imm8) \
+  simde_mm512_maskz_inserti32x4(k, a, b, imm8)
 #endif
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512i
-simde_mm512_inserti64x4 (simde__m512i a, simde__m256i b, int imm8)
+simde__m512i simde_mm512_inserti64x4(simde__m512i a, simde__m256i b, int imm8)
     SIMDE_REQUIRE_CONSTANT_RANGE(imm8, 0, 1) {
   simde__m512i_private a_ = simde__m512i_to_private(a);
 
@@ -160,31 +178,37 @@ simde_mm512_inserti64x4 (simde__m512i a, simde__m256i b, int imm8)
   return simde__m512i_from_private(a_);
 }
 #if defined(SIMDE_X86_AVX512F_NATIVE)
-  #define simde_mm512_inserti64x4(a, b, imm8) _mm512_inserti64x4(a, b, imm8)
+#define simde_mm512_inserti64x4(a, b, imm8) _mm512_inserti64x4(a, b, imm8)
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_inserti64x4
-  #define _mm512_inserti64x4(a, b, imm8) simde_mm512_inserti64x4(a, b, imm8)
+#undef _mm512_inserti64x4
+#define _mm512_inserti64x4(a, b, imm8) simde_mm512_inserti64x4(a, b, imm8)
 #endif
 
 #if defined(SIMDE_X86_AVX512F_NATIVE)
-  #define simde_mm512_mask_inserti64x4(src, k, a, b, imm8) _mm512_mask_inserti64x4(src, k, a, b, imm8)
+#define simde_mm512_mask_inserti64x4(src, k, a, b, imm8) \
+  _mm512_mask_inserti64x4(src, k, a, b, imm8)
 #else
-  #define simde_mm512_mask_inserti64x4(src, k, a, b, imm8) simde_mm512_mask_mov_epi64(src, k, simde_mm512_inserti64x4(a, b, imm8))
+#define simde_mm512_mask_inserti64x4(src, k, a, b, imm8) \
+  simde_mm512_mask_mov_epi64(src, k, simde_mm512_inserti64x4(a, b, imm8))
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_mask_inserti64x4
-  #define _mm512_mask_inserti64x4(src, k, a, b, imm8) simde_mm512_mask_inserti64x4(src, k, a, b, imm8)
+#undef _mm512_mask_inserti64x4
+#define _mm512_mask_inserti64x4(src, k, a, b, imm8) \
+  simde_mm512_mask_inserti64x4(src, k, a, b, imm8)
 #endif
 
 #if defined(SIMDE_X86_AVX512F_NATIVE)
-  #define simde_mm512_maskz_inserti64x4(k, a, b, imm8) _mm512_maskz_inserti64x4(k, a, b, imm8)
+#define simde_mm512_maskz_inserti64x4(k, a, b, imm8) \
+  _mm512_maskz_inserti64x4(k, a, b, imm8)
 #else
-  #define simde_mm512_maskz_inserti64x4(k, a, b, imm8) simde_mm512_maskz_mov_epi64(k, simde_mm512_inserti64x4(a, b, imm8))
+#define simde_mm512_maskz_inserti64x4(k, a, b, imm8) \
+  simde_mm512_maskz_mov_epi64(k, simde_mm512_inserti64x4(a, b, imm8))
 #endif
 #if defined(SIMDE_X86_AVX512F_ENABLE_NATIVE_ALIASES)
-  #undef _mm512_maskz_inserti64x4
-  #define _mm512_maskz_inserti64x4(k, a, b, imm8) simde_mm512_maskz_inserti64x4(k, a, b, imm8)
+#undef _mm512_maskz_inserti64x4
+#define _mm512_maskz_inserti64x4(k, a, b, imm8) \
+  simde_mm512_maskz_inserti64x4(k, a, b, imm8)
 #endif
 
 SIMDE_END_DECLS_

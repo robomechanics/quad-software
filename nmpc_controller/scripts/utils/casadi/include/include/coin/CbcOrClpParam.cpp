@@ -3,29 +3,30 @@
 // Corporation and others.  All Rights Reserved.
 // This code is licensed under the terms of the Eclipse Public License (EPL).
 
-#include "CoinPragma.hpp"
-#include "CoinTime.hpp"
 #include "CbcOrClpParam.hpp"
 
-#include <string>
-#include <iostream>
 #include <cassert>
+#include <iostream>
+#include <string>
+
+#include "CoinPragma.hpp"
+#include "CoinTime.hpp"
 
 #ifdef COIN_HAS_CBC
 #ifdef COIN_HAS_CLP
-#include "OsiClpSolverInterface.hpp"
 #include "ClpSimplex.hpp"
+#include "OsiClpSolverInterface.hpp"
 #endif
 #include "CbcModel.hpp"
 #endif
 #include "CoinHelperFunctions.hpp"
 #ifdef COIN_HAS_CLP
-#include "ClpSimplex.hpp"
 #include "ClpFactorization.hpp"
+#include "ClpSimplex.hpp"
 #endif
 #ifdef COIN_HAS_READLINE
-#include <readline/readline.h>
 #include <readline/history.h>
+#include <readline/readline.h>
 #endif
 #ifdef COIN_HAS_CBC
 // from CoinSolve
@@ -57,138 +58,127 @@ static char printArray[250];
 #if FLUSH_PRINT_BUFFER > 2
 int coinFlushBufferFlag = 0;
 #endif
-void setCbcOrClpPrinting(bool yesNo)
-{
-  doPrinting = yesNo;
-}
-//#############################################################################
-// Constructors / Destructor / Assignment
-//#############################################################################
+void setCbcOrClpPrinting(bool yesNo) { doPrinting = yesNo; }
+// #############################################################################
+//  Constructors / Destructor / Assignment
+// #############################################################################
 
 //-------------------------------------------------------------------
 // Default Constructor
 //-------------------------------------------------------------------
 CbcOrClpParam::CbcOrClpParam()
-  : type_(CBC_PARAM_NOTUSED_INVALID)
-  , lowerDoubleValue_(0.0)
-  , upperDoubleValue_(0.0)
-  , lowerIntValue_(0)
-  , upperIntValue_(0)
-  , lengthName_(0)
-  , lengthMatch_(0)
-  , definedKeyWords_()
-  , name_()
-  , shortHelp_()
-  , longHelp_()
-  , action_(CBC_PARAM_NOTUSED_INVALID)
-  , currentKeyWord_(-1)
-  , display_(0)
-  , intValue_(-1)
-  , doubleValue_(-1.0)
-  , stringValue_("")
-  , whereUsed_(7)
-  , fakeKeyWord_(-1)
-  , fakeValue_(0)
-{
-}
+    : type_(CBC_PARAM_NOTUSED_INVALID),
+      lowerDoubleValue_(0.0),
+      upperDoubleValue_(0.0),
+      lowerIntValue_(0),
+      upperIntValue_(0),
+      lengthName_(0),
+      lengthMatch_(0),
+      definedKeyWords_(),
+      name_(),
+      shortHelp_(),
+      longHelp_(),
+      action_(CBC_PARAM_NOTUSED_INVALID),
+      currentKeyWord_(-1),
+      display_(0),
+      intValue_(-1),
+      doubleValue_(-1.0),
+      stringValue_(""),
+      whereUsed_(7),
+      fakeKeyWord_(-1),
+      fakeValue_(0) {}
 // Other constructors
-CbcOrClpParam::CbcOrClpParam(std::string name, std::string help,
-  double lower, double upper, CbcOrClpParameterType type,
-  int display)
-  : type_(type)
-  , lowerIntValue_(0)
-  , upperIntValue_(0)
-  , definedKeyWords_()
-  , name_(name)
-  , shortHelp_(help)
-  , longHelp_()
-  , action_(type)
-  , currentKeyWord_(-1)
-  , display_(display)
-  , intValue_(-1)
-  , doubleValue_(-1.0)
-  , stringValue_("")
-  , whereUsed_(7)
-  , fakeKeyWord_(-1)
-  , fakeValue_(0)
-{
+CbcOrClpParam::CbcOrClpParam(std::string name, std::string help, double lower,
+                             double upper, CbcOrClpParameterType type,
+                             int display)
+    : type_(type),
+      lowerIntValue_(0),
+      upperIntValue_(0),
+      definedKeyWords_(),
+      name_(name),
+      shortHelp_(help),
+      longHelp_(),
+      action_(type),
+      currentKeyWord_(-1),
+      display_(display),
+      intValue_(-1),
+      doubleValue_(-1.0),
+      stringValue_(""),
+      whereUsed_(7),
+      fakeKeyWord_(-1),
+      fakeValue_(0) {
   lowerDoubleValue_ = lower;
   upperDoubleValue_ = upper;
   gutsOfConstructor();
 }
-CbcOrClpParam::CbcOrClpParam(std::string name, std::string help,
-  int lower, int upper, CbcOrClpParameterType type,
-  int display)
-  : type_(type)
-  , lowerDoubleValue_(0.0)
-  , upperDoubleValue_(0.0)
-  , definedKeyWords_()
-  , name_(name)
-  , shortHelp_(help)
-  , longHelp_()
-  , action_(type)
-  , currentKeyWord_(-1)
-  , display_(display)
-  , intValue_(-1)
-  , doubleValue_(-1.0)
-  , stringValue_("")
-  , whereUsed_(7)
-  , fakeKeyWord_(-1)
-  , fakeValue_(0)
-{
+CbcOrClpParam::CbcOrClpParam(std::string name, std::string help, int lower,
+                             int upper, CbcOrClpParameterType type, int display)
+    : type_(type),
+      lowerDoubleValue_(0.0),
+      upperDoubleValue_(0.0),
+      definedKeyWords_(),
+      name_(name),
+      shortHelp_(help),
+      longHelp_(),
+      action_(type),
+      currentKeyWord_(-1),
+      display_(display),
+      intValue_(-1),
+      doubleValue_(-1.0),
+      stringValue_(""),
+      whereUsed_(7),
+      fakeKeyWord_(-1),
+      fakeValue_(0) {
   gutsOfConstructor();
   lowerIntValue_ = lower;
   upperIntValue_ = upper;
 }
 // Other strings will be added by append
 CbcOrClpParam::CbcOrClpParam(std::string name, std::string help,
-  std::string firstValue,
-  CbcOrClpParameterType type, int whereUsed,
-  int display)
-  : type_(type)
-  , lowerDoubleValue_(0.0)
-  , upperDoubleValue_(0.0)
-  , lowerIntValue_(0)
-  , upperIntValue_(0)
-  , definedKeyWords_()
-  , name_(name)
-  , shortHelp_(help)
-  , longHelp_()
-  , action_(type)
-  , currentKeyWord_(0)
-  , display_(display)
-  , intValue_(-1)
-  , doubleValue_(-1.0)
-  , stringValue_("")
-  , whereUsed_(whereUsed)
-  , fakeKeyWord_(-1)
-  , fakeValue_(0)
-{
+                             std::string firstValue, CbcOrClpParameterType type,
+                             int whereUsed, int display)
+    : type_(type),
+      lowerDoubleValue_(0.0),
+      upperDoubleValue_(0.0),
+      lowerIntValue_(0),
+      upperIntValue_(0),
+      definedKeyWords_(),
+      name_(name),
+      shortHelp_(help),
+      longHelp_(),
+      action_(type),
+      currentKeyWord_(0),
+      display_(display),
+      intValue_(-1),
+      doubleValue_(-1.0),
+      stringValue_(""),
+      whereUsed_(whereUsed),
+      fakeKeyWord_(-1),
+      fakeValue_(0) {
   gutsOfConstructor();
   definedKeyWords_.push_back(firstValue);
 }
 // Action
 CbcOrClpParam::CbcOrClpParam(std::string name, std::string help,
-  CbcOrClpParameterType type, int whereUsed,
-  int display)
-  : type_(type)
-  , lowerDoubleValue_(0.0)
-  , upperDoubleValue_(0.0)
-  , lowerIntValue_(0)
-  , upperIntValue_(0)
-  , definedKeyWords_()
-  , name_(name)
-  , shortHelp_(help)
-  , longHelp_()
-  , action_(type)
-  , currentKeyWord_(-1)
-  , display_(display)
-  , intValue_(-1)
-  , doubleValue_(-1.0)
-  , stringValue_("")
-  , fakeKeyWord_(-1)
-  , fakeValue_(0)
-{
+                             CbcOrClpParameterType type, int whereUsed,
+                             int display)
+    : type_(type),
+      lowerDoubleValue_(0.0),
+      upperDoubleValue_(0.0),
+      lowerIntValue_(0),
+      upperIntValue_(0),
+      definedKeyWords_(),
+      name_(name),
+      shortHelp_(help),
+      longHelp_(),
+      action_(type),
+      currentKeyWord_(-1),
+      display_(display),
+      intValue_(-1),
+      doubleValue_(-1.0),
+      stringValue_(""),
+      fakeKeyWord_(-1),
+      fakeValue_(0) {
   whereUsed_ = whereUsed;
   gutsOfConstructor();
 }
@@ -196,8 +186,7 @@ CbcOrClpParam::CbcOrClpParam(std::string name, std::string help,
 //-------------------------------------------------------------------
 // Copy constructor
 //-------------------------------------------------------------------
-CbcOrClpParam::CbcOrClpParam(const CbcOrClpParam &rhs)
-{
+CbcOrClpParam::CbcOrClpParam(const CbcOrClpParam &rhs) {
   type_ = rhs.type_;
   lowerDoubleValue_ = rhs.lowerDoubleValue_;
   upperDoubleValue_ = rhs.upperDoubleValue_;
@@ -223,16 +212,12 @@ CbcOrClpParam::CbcOrClpParam(const CbcOrClpParam &rhs)
 //-------------------------------------------------------------------
 // Destructor
 //-------------------------------------------------------------------
-CbcOrClpParam::~CbcOrClpParam()
-{
-}
+CbcOrClpParam::~CbcOrClpParam() {}
 
 //----------------------------------------------------------------
 // Assignment operator
 //-------------------------------------------------------------------
-CbcOrClpParam &
-CbcOrClpParam::operator=(const CbcOrClpParam &rhs)
-{
+CbcOrClpParam &CbcOrClpParam::operator=(const CbcOrClpParam &rhs) {
   if (this != &rhs) {
     type_ = rhs.type_;
     lowerDoubleValue_ = rhs.lowerDoubleValue_;
@@ -257,23 +242,21 @@ CbcOrClpParam::operator=(const CbcOrClpParam &rhs)
   }
   return *this;
 }
-void CbcOrClpParam::gutsOfConstructor()
-{
+void CbcOrClpParam::gutsOfConstructor() {
   std::string::size_type shriekPos = name_.find('!');
-  lengthName_ = static_cast< unsigned int >(name_.length());
+  lengthName_ = static_cast<unsigned int>(name_.length());
   if (shriekPos == std::string::npos) {
-    //does not contain '!'
+    // does not contain '!'
     lengthMatch_ = lengthName_;
   } else {
-    lengthMatch_ = static_cast< unsigned int >(shriekPos);
+    lengthMatch_ = static_cast<unsigned int>(shriekPos);
     name_ = name_.substr(0, shriekPos) + name_.substr(shriekPos + 1);
     lengthName_--;
   }
 }
 // Sets value of fake keyword to current size of keywords
-void CbcOrClpParam::setFakeKeyWord(int fakeValue)
-{
-  fakeKeyWord_ = static_cast< int >(definedKeyWords_.size());
+void CbcOrClpParam::setFakeKeyWord(int fakeValue) {
+  fakeKeyWord_ = static_cast<int>(definedKeyWords_.size());
   assert(fakeKeyWord_ > 0);
   fakeValue_ = fakeValue;
   assert(fakeValue_ >= 0);
@@ -281,8 +264,7 @@ void CbcOrClpParam::setFakeKeyWord(int fakeValue)
 /* Returns current parameter option position
    but if fake keyword returns fakeValue_
 */
-int CbcOrClpParam::currentOptionAsInteger() const
-{
+int CbcOrClpParam::currentOptionAsInteger() const {
   int fakeInteger;
   return currentOptionAsInteger(fakeInteger);
 }
@@ -290,8 +272,7 @@ int CbcOrClpParam::currentOptionAsInteger() const
    but if fake keyword returns fakeValue_ and sets
    fakeInteger to value
 */
-int CbcOrClpParam::currentOptionAsInteger(int &fakeInteger) const
-{
+int CbcOrClpParam::currentOptionAsInteger(int &fakeInteger) const {
   fakeInteger = -COIN_INT_MAX;
   if (fakeKeyWord_ < 0) {
     return currentKeyWord_;
@@ -307,29 +288,25 @@ int CbcOrClpParam::currentOptionAsInteger(int &fakeInteger) const
   }
 }
 // Returns length of name for printing
-int CbcOrClpParam::lengthMatchName() const
-{
+int CbcOrClpParam::lengthMatchName() const {
   if (lengthName_ == lengthMatch_)
     return lengthName_;
   else
     return lengthName_ + 2;
 }
 // Insert string (only valid for keywords)
-void CbcOrClpParam::append(std::string keyWord)
-{
+void CbcOrClpParam::append(std::string keyWord) {
   definedKeyWords_.push_back(keyWord);
 }
 
-int CbcOrClpParam::matches(std::string input) const
-{
+int CbcOrClpParam::matches(std::string input) const {
   // look up strings to do more elegantly
   if (input.length() > lengthName_) {
     return 0;
   } else {
     unsigned int i;
     for (i = 0; i < input.length(); i++) {
-      if (tolower(name_[i]) != tolower(input[i]))
-        break;
+      if (tolower(name_[i]) != tolower(input[i])) break;
     }
     if (i < input.length()) {
       return 0;
@@ -342,19 +319,17 @@ int CbcOrClpParam::matches(std::string input) const
   }
 }
 // Returns name which could match
-std::string
-CbcOrClpParam::matchName() const
-{
+std::string CbcOrClpParam::matchName() const {
   if (lengthMatch_ == lengthName_)
     return name_;
   else
-    return name_.substr(0, lengthMatch_) + "(" + name_.substr(lengthMatch_) + ")";
+    return name_.substr(0, lengthMatch_) + "(" + name_.substr(lengthMatch_) +
+           ")";
 }
 
 // Returns parameter option which matches (-1 if none)
-int CbcOrClpParam::parameterOption(std::string check) const
-{
-  int numberItems = static_cast< int >(definedKeyWords_.size());
+int CbcOrClpParam::parameterOption(std::string check) const {
+  int numberItems = static_cast<int>(definedKeyWords_.size());
   if (!numberItems) {
     return -1;
   } else {
@@ -366,7 +341,7 @@ int CbcOrClpParam::parameterOption(std::string check) const
       size_t length1 = thisOne.length();
       size_t length2 = length1;
       if (shriekPos != std::string::npos) {
-        //contains '!'
+        // contains '!'
         length2 = shriekPos;
         thisOne = thisOne.substr(0, shriekPos) + thisOne.substr(shriekPos + 1);
         length1 = thisOne.length();
@@ -374,8 +349,7 @@ int CbcOrClpParam::parameterOption(std::string check) const
       if (check.length() <= length1 && length2 <= check.length()) {
         unsigned int i;
         for (i = 0; i < check.length(); i++) {
-          if (tolower(thisOne[i]) != tolower(check[i]))
-            break;
+          if (tolower(thisOne[i]) != tolower(check[i])) break;
         }
         if (i < check.length()) {
           whichItem++;
@@ -389,13 +363,13 @@ int CbcOrClpParam::parameterOption(std::string check) const
     if (whichItem < numberItems) {
       return whichItem;
     } else {
-      if (fakeKeyWord_ <= 0)
-        return -1;
+      if (fakeKeyWord_ <= 0) return -1;
       // allow plus or minus
       int n;
       if (check.substr(0, 4) == "plus" || check.substr(0, 4) == "PLUS") {
         n = 4;
-      } else if (check.substr(0, 5) == "minus" || check.substr(0, 5) == "MINUS") {
+      } else if (check.substr(0, 5) == "minus" ||
+                 check.substr(0, 5) == "MINUS") {
         n = 5;
       } else {
         return -1;
@@ -406,7 +380,7 @@ int CbcOrClpParam::parameterOption(std::string check) const
         const char *start = field.c_str();
         char *endPointer = NULL;
         // check valid
-        value = static_cast< int >(strtol(start, &endPointer, 10));
+        value = static_cast<int>(strtol(start, &endPointer, 10));
         if (*endPointer != '\0') {
           return -1;
         }
@@ -421,42 +395,42 @@ int CbcOrClpParam::parameterOption(std::string check) const
   }
 }
 // Prints parameter options
-void CbcOrClpParam::printOptions() const
-{
+void CbcOrClpParam::printOptions() const {
   std::cout << "<Possible options for " << name_ << " are:";
   unsigned int it;
   for (it = 0; it < definedKeyWords_.size(); it++) {
     std::string thisOne = definedKeyWords_[it];
     std::string::size_type shriekPos = thisOne.find('!');
     if (shriekPos != std::string::npos) {
-      //contains '!'
-      thisOne = thisOne.substr(0, shriekPos) + "(" + thisOne.substr(shriekPos + 1) + ")";
+      // contains '!'
+      thisOne = thisOne.substr(0, shriekPos) + "(" +
+                thisOne.substr(shriekPos + 1) + ")";
     }
     std::cout << " " << thisOne;
   }
-  assert(currentKeyWord_ >= 0 && currentKeyWord_ < static_cast< int >(definedKeyWords_.size()));
+  assert(currentKeyWord_ >= 0 &&
+         currentKeyWord_ < static_cast<int>(definedKeyWords_.size()));
   std::string current = definedKeyWords_[currentKeyWord_];
   std::string::size_type shriekPos = current.find('!');
   if (shriekPos != std::string::npos) {
-    //contains '!'
-    current = current.substr(0, shriekPos) + "(" + current.substr(shriekPos + 1) + ")";
+    // contains '!'
+    current = current.substr(0, shriekPos) + "(" +
+              current.substr(shriekPos + 1) + ")";
   }
   std::cout << ";\n\tcurrent  " << current << ">" << std::endl;
 }
 // Print action and string
-void CbcOrClpParam::printString() const
-{
+void CbcOrClpParam::printString() const {
   if (name_ == "directory")
     std::cout << "Current working directory is " << stringValue_ << std::endl;
   else if (name_.substr(0, 6) == "printM")
     std::cout << "Current value of printMask is " << stringValue_ << std::endl;
   else
-    std::cout << "Current default (if $ as parameter) for " << name_
-              << " is " << stringValue_ << std::endl;
+    std::cout << "Current default (if $ as parameter) for " << name_ << " is "
+              << stringValue_ << std::endl;
 }
-void CoinReadPrintit(const char *input)
-{
-  int length = static_cast< int >(strlen(input));
+void CoinReadPrintit(const char *input) {
+  int length = static_cast<int>(strlen(input));
   assert(length <= 10000);
   char temp[10001];
   int i;
@@ -480,15 +454,16 @@ void CoinReadPrintit(const char *input)
   }
 }
 // Print Long help
-void CbcOrClpParam::printLongHelp() const
-{
+void CbcOrClpParam::printLongHelp() const {
   if (type_ >= 1 && type_ < 600) {
     CoinReadPrintit(longHelp_.c_str());
     if (type_ < CLP_PARAM_INT_SOLVERLOGLEVEL) {
-      printf("<Range of values is %g to %g;\n\tcurrent %g>\n", lowerDoubleValue_, upperDoubleValue_, doubleValue_);
+      printf("<Range of values is %g to %g;\n\tcurrent %g>\n",
+             lowerDoubleValue_, upperDoubleValue_, doubleValue_);
       assert(upperDoubleValue_ > lowerDoubleValue_);
     } else if (type_ < CLP_PARAM_STR_DIRECTION) {
-      printf("<Range of values is %d to %d;\n\tcurrent %d>\n", lowerIntValue_, upperIntValue_, intValue_);
+      printf("<Range of values is %d to %d;\n\tcurrent %d>\n", lowerIntValue_,
+             upperIntValue_, intValue_);
       assert(upperIntValue_ > lowerIntValue_);
     } else if (type_ < CLP_PARAM_ACTION_DIRECTORY) {
       printOptions();
@@ -496,604 +471,575 @@ void CbcOrClpParam::printLongHelp() const
   }
 }
 #ifdef COIN_HAS_CBC
-int CbcOrClpParam::setDoubleParameter(OsiSolverInterface *model, double value)
-{
+int CbcOrClpParam::setDoubleParameter(OsiSolverInterface *model, double value) {
   int returnCode;
   setDoubleParameterWithMessage(model, value, returnCode);
-  if (doPrinting && strlen(printArray))
-    std::cout << printArray << std::endl;
+  if (doPrinting && strlen(printArray)) std::cout << printArray << std::endl;
   return returnCode;
 }
 // Sets double parameter and returns printable string and error code
-const char *
-CbcOrClpParam::setDoubleParameterWithMessage(OsiSolverInterface *model, double value, int &returnCode)
-{
+const char *CbcOrClpParam::setDoubleParameterWithMessage(
+    OsiSolverInterface *model, double value, int &returnCode) {
   if (value < lowerDoubleValue_ || value > upperDoubleValue_) {
     sprintf(printArray, "%g was provided for %s - valid range is %g to %g",
-      value, name_.c_str(), lowerDoubleValue_, upperDoubleValue_);
-    std::cout << value << " was provided for " << name_ << " - valid range is " << lowerDoubleValue_ << " to " << upperDoubleValue_ << std::endl;
+            value, name_.c_str(), lowerDoubleValue_, upperDoubleValue_);
+    std::cout << value << " was provided for " << name_ << " - valid range is "
+              << lowerDoubleValue_ << " to " << upperDoubleValue_ << std::endl;
     returnCode = 1;
   } else {
     double oldValue = doubleValue_;
     doubleValue_ = value;
     switch (type_) {
-    case CLP_PARAM_DBL_DUALTOLERANCE:
-      model->getDblParam(OsiDualTolerance, oldValue);
-      model->setDblParam(OsiDualTolerance, value);
-      break;
-    case CLP_PARAM_DBL_PRIMALTOLERANCE:
-      model->getDblParam(OsiPrimalTolerance, oldValue);
-      model->setDblParam(OsiPrimalTolerance, value);
-      break;
-    default:
-      break;
+      case CLP_PARAM_DBL_DUALTOLERANCE:
+        model->getDblParam(OsiDualTolerance, oldValue);
+        model->setDblParam(OsiDualTolerance, value);
+        break;
+      case CLP_PARAM_DBL_PRIMALTOLERANCE:
+        model->getDblParam(OsiPrimalTolerance, oldValue);
+        model->setDblParam(OsiPrimalTolerance, value);
+        break;
+      default:
+        break;
     }
-    sprintf(printArray, "%s was changed from %g to %g",
-      name_.c_str(), oldValue, value);
+    sprintf(printArray, "%s was changed from %g to %g", name_.c_str(), oldValue,
+            value);
     returnCode = 0;
   }
   return printArray;
 }
 #endif
 #ifdef COIN_HAS_CLP
-int CbcOrClpParam::setDoubleParameter(ClpSimplex *model, double value)
-{
+int CbcOrClpParam::setDoubleParameter(ClpSimplex *model, double value) {
   int returnCode;
   setDoubleParameterWithMessage(model, value, returnCode);
-  if (doPrinting && strlen(printArray))
-    std::cout << printArray << std::endl;
+  if (doPrinting && strlen(printArray)) std::cout << printArray << std::endl;
   return returnCode;
 }
 // Sets int parameter and returns printable string and error code
-const char *
-CbcOrClpParam::setDoubleParameterWithMessage(ClpSimplex *model, double value, int &returnCode)
-{
+const char *CbcOrClpParam::setDoubleParameterWithMessage(ClpSimplex *model,
+                                                         double value,
+                                                         int &returnCode) {
   double oldValue = doubleValue_;
   if (value < lowerDoubleValue_ || value > upperDoubleValue_) {
     sprintf(printArray, "%g was provided for %s - valid range is %g to %g",
-      value, name_.c_str(), lowerDoubleValue_, upperDoubleValue_);
+            value, name_.c_str(), lowerDoubleValue_, upperDoubleValue_);
     returnCode = 1;
   } else {
-    sprintf(printArray, "%s was changed from %g to %g",
-      name_.c_str(), oldValue, value);
+    sprintf(printArray, "%s was changed from %g to %g", name_.c_str(), oldValue,
+            value);
     returnCode = 0;
     doubleValue_ = value;
     switch (type_) {
-    case CLP_PARAM_DBL_DUALTOLERANCE:
-      model->setDualTolerance(value);
-      break;
-    case CLP_PARAM_DBL_PRIMALTOLERANCE:
-      model->setPrimalTolerance(value);
-      break;
-    case CLP_PARAM_DBL_ZEROTOLERANCE:
-      model->setSmallElementValue(value);
-      break;
-    case CLP_PARAM_DBL_DUALBOUND:
-      model->setDualBound(value);
-      break;
-    case CLP_PARAM_DBL_PRIMALWEIGHT:
-      model->setInfeasibilityCost(value);
-      break;
+      case CLP_PARAM_DBL_DUALTOLERANCE:
+        model->setDualTolerance(value);
+        break;
+      case CLP_PARAM_DBL_PRIMALTOLERANCE:
+        model->setPrimalTolerance(value);
+        break;
+      case CLP_PARAM_DBL_ZEROTOLERANCE:
+        model->setSmallElementValue(value);
+        break;
+      case CLP_PARAM_DBL_DUALBOUND:
+        model->setDualBound(value);
+        break;
+      case CLP_PARAM_DBL_PRIMALWEIGHT:
+        model->setInfeasibilityCost(value);
+        break;
 #ifndef COIN_HAS_CBC
-    case CLP_PARAM_DBL_TIMELIMIT:
-      model->setMaximumSeconds(value);
-      break;
+      case CLP_PARAM_DBL_TIMELIMIT:
+        model->setMaximumSeconds(value);
+        break;
 #endif
-    case CLP_PARAM_DBL_OBJSCALE:
-      model->setObjectiveScale(value);
-      break;
-    case CLP_PARAM_DBL_RHSSCALE:
-      model->setRhsScale(value);
-      break;
-    case CLP_PARAM_DBL_PRESOLVETOLERANCE:
-      model->setDblParam(ClpPresolveTolerance, value);
-      break;
-    default:
-      break;
+      case CLP_PARAM_DBL_OBJSCALE:
+        model->setObjectiveScale(value);
+        break;
+      case CLP_PARAM_DBL_RHSSCALE:
+        model->setRhsScale(value);
+        break;
+      case CLP_PARAM_DBL_PRESOLVETOLERANCE:
+        model->setDblParam(ClpPresolveTolerance, value);
+        break;
+      default:
+        break;
     }
   }
   return printArray;
 }
-double
-CbcOrClpParam::doubleParameter(ClpSimplex *model) const
-{
+double CbcOrClpParam::doubleParameter(ClpSimplex *model) const {
   double value;
   switch (type_) {
 #ifndef COIN_HAS_CBC
-  case CLP_PARAM_DBL_DUALTOLERANCE:
-    value = model->dualTolerance();
-    break;
-  case CLP_PARAM_DBL_PRIMALTOLERANCE:
-    value = model->primalTolerance();
-    break;
+    case CLP_PARAM_DBL_DUALTOLERANCE:
+      value = model->dualTolerance();
+      break;
+    case CLP_PARAM_DBL_PRIMALTOLERANCE:
+      value = model->primalTolerance();
+      break;
 #endif
-  case CLP_PARAM_DBL_ZEROTOLERANCE:
-    value = model->getSmallElementValue();
-    break;
-  case CLP_PARAM_DBL_DUALBOUND:
-    value = model->dualBound();
-    break;
-  case CLP_PARAM_DBL_PRIMALWEIGHT:
-    value = model->infeasibilityCost();
-    break;
+    case CLP_PARAM_DBL_ZEROTOLERANCE:
+      value = model->getSmallElementValue();
+      break;
+    case CLP_PARAM_DBL_DUALBOUND:
+      value = model->dualBound();
+      break;
+    case CLP_PARAM_DBL_PRIMALWEIGHT:
+      value = model->infeasibilityCost();
+      break;
 #ifndef COIN_HAS_CBC
-  case CLP_PARAM_DBL_TIMELIMIT:
-    value = model->maximumSeconds();
-    break;
+    case CLP_PARAM_DBL_TIMELIMIT:
+      value = model->maximumSeconds();
+      break;
 #endif
-  case CLP_PARAM_DBL_OBJSCALE:
-    value = model->objectiveScale();
-    break;
-  case CLP_PARAM_DBL_RHSSCALE:
-    value = model->rhsScale();
-    break;
-  case CLP_PARAM_DBL_PRESOLVETOLERANCE:
-    value = model->presolveTolerance();
-    break;
-  default:
-    value = doubleValue_;
-    break;
+    case CLP_PARAM_DBL_OBJSCALE:
+      value = model->objectiveScale();
+      break;
+    case CLP_PARAM_DBL_RHSSCALE:
+      value = model->rhsScale();
+      break;
+    case CLP_PARAM_DBL_PRESOLVETOLERANCE:
+      value = model->presolveTolerance();
+      break;
+    default:
+      value = doubleValue_;
+      break;
   }
   return value;
 }
-int CbcOrClpParam::setIntParameter(ClpSimplex *model, int value)
-{
+int CbcOrClpParam::setIntParameter(ClpSimplex *model, int value) {
   int returnCode;
   setIntParameterWithMessage(model, value, returnCode);
-  if (doPrinting && strlen(printArray))
-    std::cout << printArray << std::endl;
+  if (doPrinting && strlen(printArray)) std::cout << printArray << std::endl;
   return returnCode;
 }
 // Sets int parameter and returns printable string and error code
-const char *
-CbcOrClpParam::setIntParameterWithMessage(ClpSimplex *model, int value, int &returnCode)
-{
+const char *CbcOrClpParam::setIntParameterWithMessage(ClpSimplex *model,
+                                                      int value,
+                                                      int &returnCode) {
   int oldValue = intValue_;
   if (value < lowerIntValue_ || value > upperIntValue_) {
     sprintf(printArray, "%d was provided for %s - valid range is %d to %d",
-      value, name_.c_str(), lowerIntValue_, upperIntValue_);
+            value, name_.c_str(), lowerIntValue_, upperIntValue_);
     returnCode = 1;
   } else {
     intValue_ = value;
-    sprintf(printArray, "%s was changed from %d to %d",
-      name_.c_str(), oldValue, value);
+    sprintf(printArray, "%s was changed from %d to %d", name_.c_str(), oldValue,
+            value);
     returnCode = 0;
     switch (type_) {
+      case CLP_PARAM_INT_SOLVERLOGLEVEL:
+        model->setLogLevel(value);
+        if (value > 2)
+          model->factorization()->messageLevel(8);
+        else
+          model->factorization()->messageLevel(0);
+        break;
+      case CLP_PARAM_INT_MAXFACTOR:
+        model->factorization()->maximumPivots(value);
+        break;
+      case CLP_PARAM_INT_PERTVALUE:
+        model->setPerturbation(value);
+        break;
+      case CLP_PARAM_INT_MAXITERATION:
+        model->setMaximumIterations(value);
+        break;
+      case CLP_PARAM_INT_SPECIALOPTIONS:
+        model->setSpecialOptions(value);
+        break;
+      case CLP_PARAM_INT_RANDOMSEED: {
+        if (value == 0) {
+          double time = fabs(CoinGetTimeOfDay());
+          while (time >= COIN_INT_MAX) time *= 0.5;
+          value = static_cast<int>(time);
+          sprintf(printArray, "using time of day %s was changed from %d to %d",
+                  name_.c_str(), oldValue, value);
+        }
+        model->setRandomSeed(value);
+      } break;
+      case CLP_PARAM_INT_MORESPECIALOPTIONS:
+        model->setMoreSpecialOptions(value);
+        break;
+      case CLP_PARAM_INT_VECTOR_MODE:
+        model->setVectorMode(value);
+        break;
+#ifndef COIN_HAS_CBC
+#ifdef CBC_THREAD
+      case CBC_PARAM_INT_THREADS:
+        model->setNumberThreads(value);
+        break;
+#endif
+#endif
+      default:
+        break;
+    }
+  }
+  return printArray;
+}
+int CbcOrClpParam::intParameter(ClpSimplex *model) const {
+  int value;
+  switch (type_) {
+#ifndef COIN_HAS_CBC
     case CLP_PARAM_INT_SOLVERLOGLEVEL:
-      model->setLogLevel(value);
-      if (value > 2)
-        model->factorization()->messageLevel(8);
-      else
-        model->factorization()->messageLevel(0);
+      value = model->logLevel();
       break;
+#endif
     case CLP_PARAM_INT_MAXFACTOR:
-      model->factorization()->maximumPivots(value);
+      value = model->factorization()->maximumPivots();
+      break;
       break;
     case CLP_PARAM_INT_PERTVALUE:
-      model->setPerturbation(value);
+      value = model->perturbation();
       break;
     case CLP_PARAM_INT_MAXITERATION:
-      model->setMaximumIterations(value);
+      value = model->maximumIterations();
       break;
     case CLP_PARAM_INT_SPECIALOPTIONS:
-      model->setSpecialOptions(value);
+      value = model->specialOptions();
       break;
-    case CLP_PARAM_INT_RANDOMSEED: {
-      if (value == 0) {
-        double time = fabs(CoinGetTimeOfDay());
-        while (time >= COIN_INT_MAX)
-          time *= 0.5;
-        value = static_cast< int >(time);
-        sprintf(printArray, "using time of day %s was changed from %d to %d",
-          name_.c_str(), oldValue, value);
-      }
-      model->setRandomSeed(value);
-    } break;
+    case CLP_PARAM_INT_RANDOMSEED:
+      value = model->randomNumberGenerator()->getSeed();
+      break;
     case CLP_PARAM_INT_MORESPECIALOPTIONS:
-      model->setMoreSpecialOptions(value);
+      value = model->moreSpecialOptions();
       break;
     case CLP_PARAM_INT_VECTOR_MODE:
-      model->setVectorMode(value);
+      value = model->vectorMode();
       break;
 #ifndef COIN_HAS_CBC
 #ifdef CBC_THREAD
     case CBC_PARAM_INT_THREADS:
-      model->setNumberThreads(value);
+      value = model->numberThreads();
       break;
 #endif
 #endif
     default:
+      value = intValue_;
       break;
-    }
-  }
-  return printArray;
-}
-int CbcOrClpParam::intParameter(ClpSimplex *model) const
-{
-  int value;
-  switch (type_) {
-#ifndef COIN_HAS_CBC
-  case CLP_PARAM_INT_SOLVERLOGLEVEL:
-    value = model->logLevel();
-    break;
-#endif
-  case CLP_PARAM_INT_MAXFACTOR:
-    value = model->factorization()->maximumPivots();
-    break;
-    break;
-  case CLP_PARAM_INT_PERTVALUE:
-    value = model->perturbation();
-    break;
-  case CLP_PARAM_INT_MAXITERATION:
-    value = model->maximumIterations();
-    break;
-  case CLP_PARAM_INT_SPECIALOPTIONS:
-    value = model->specialOptions();
-    break;
-  case CLP_PARAM_INT_RANDOMSEED:
-    value = model->randomNumberGenerator()->getSeed();
-    break;
-  case CLP_PARAM_INT_MORESPECIALOPTIONS:
-    value = model->moreSpecialOptions();
-    break;
-  case CLP_PARAM_INT_VECTOR_MODE:
-    value = model->vectorMode();
-    break;
-#ifndef COIN_HAS_CBC
-#ifdef CBC_THREAD
-  case CBC_PARAM_INT_THREADS:
-    value = model->numberThreads();
-    break;
-#endif
-#endif
-  default:
-    value = intValue_;
-    break;
   }
   return value;
 }
 #endif
-int CbcOrClpParam::checkDoubleParameter(double value) const
-{
+int CbcOrClpParam::checkDoubleParameter(double value) const {
   if (value < lowerDoubleValue_ || value > upperDoubleValue_) {
-    std::cout << value << " was provided for " << name_ << " - valid range is " << lowerDoubleValue_ << " to " << upperDoubleValue_ << std::endl;
+    std::cout << value << " was provided for " << name_ << " - valid range is "
+              << lowerDoubleValue_ << " to " << upperDoubleValue_ << std::endl;
     return 1;
   } else {
     return 0;
   }
 }
 #ifdef COIN_HAS_CBC
-double
-CbcOrClpParam::doubleParameter(OsiSolverInterface *model) const
-{
+double CbcOrClpParam::doubleParameter(OsiSolverInterface *model) const {
   double value = 0.0;
   switch (type_) {
-  case CLP_PARAM_DBL_DUALTOLERANCE:
-    model->getDblParam(OsiDualTolerance, value);
-    break;
-  case CLP_PARAM_DBL_PRIMALTOLERANCE:
-    model->getDblParam(OsiPrimalTolerance, value);
-    break;
-  default:
-    return doubleValue_;
-    break;
+    case CLP_PARAM_DBL_DUALTOLERANCE:
+      model->getDblParam(OsiDualTolerance, value);
+      break;
+    case CLP_PARAM_DBL_PRIMALTOLERANCE:
+      model->getDblParam(OsiPrimalTolerance, value);
+      break;
+    default:
+      return doubleValue_;
+      break;
   }
   return value;
 }
-int CbcOrClpParam::setIntParameter(OsiSolverInterface *model, int value)
-{
+int CbcOrClpParam::setIntParameter(OsiSolverInterface *model, int value) {
   int returnCode;
   setIntParameterWithMessage(model, value, returnCode);
-  if (doPrinting && strlen(printArray))
-    std::cout << printArray << std::endl;
+  if (doPrinting && strlen(printArray)) std::cout << printArray << std::endl;
   return returnCode;
 }
 // Sets int parameter and returns printable string and error code
-const char *
-CbcOrClpParam::setIntParameterWithMessage(OsiSolverInterface *model, int value, int &returnCode)
-{
+const char *CbcOrClpParam::setIntParameterWithMessage(OsiSolverInterface *model,
+                                                      int value,
+                                                      int &returnCode) {
   if (value < lowerIntValue_ || value > upperIntValue_) {
     sprintf(printArray, "%d was provided for %s - valid range is %d to %d",
-      value, name_.c_str(), lowerIntValue_, upperIntValue_);
+            value, name_.c_str(), lowerIntValue_, upperIntValue_);
     returnCode = 1;
   } else {
     int oldValue = intValue_;
     intValue_ = oldValue;
     switch (type_) {
-    case CLP_PARAM_INT_SOLVERLOGLEVEL:
-      model->messageHandler()->setLogLevel(value);
-      break;
-    default:
-      break;
+      case CLP_PARAM_INT_SOLVERLOGLEVEL:
+        model->messageHandler()->setLogLevel(value);
+        break;
+      default:
+        break;
     }
-    sprintf(printArray, "%s was changed from %d to %d",
-      name_.c_str(), oldValue, value);
+    sprintf(printArray, "%s was changed from %d to %d", name_.c_str(), oldValue,
+            value);
     returnCode = 0;
   }
   return printArray;
 }
-int CbcOrClpParam::intParameter(OsiSolverInterface *model) const
-{
+int CbcOrClpParam::intParameter(OsiSolverInterface *model) const {
   int value = 0;
   switch (type_) {
-  case CLP_PARAM_INT_SOLVERLOGLEVEL:
-    value = model->messageHandler()->logLevel();
-    break;
-  default:
-    value = intValue_;
-    break;
+    case CLP_PARAM_INT_SOLVERLOGLEVEL:
+      value = model->messageHandler()->logLevel();
+      break;
+    default:
+      value = intValue_;
+      break;
   }
   return value;
 }
-int CbcOrClpParam::setDoubleParameter(CbcModel &model, double value)
-{
+int CbcOrClpParam::setDoubleParameter(CbcModel &model, double value) {
   int returnCode = 0;
   setDoubleParameterWithMessage(model, value, returnCode);
-  if (doPrinting && strlen(printArray))
-    std::cout << printArray << std::endl;
+  if (doPrinting && strlen(printArray)) std::cout << printArray << std::endl;
   return returnCode;
 }
 // Sets double parameter and returns printable string and error code
-const char *
-CbcOrClpParam::setDoubleParameterWithMessage(CbcModel &model, double value, int &returnCode)
-{
+const char *CbcOrClpParam::setDoubleParameterWithMessage(CbcModel &model,
+                                                         double value,
+                                                         int &returnCode) {
   if (value < lowerDoubleValue_ || value > upperDoubleValue_) {
     sprintf(printArray, "%g was provided for %s - valid range is %g to %g",
-      value, name_.c_str(), lowerDoubleValue_, upperDoubleValue_);
+            value, name_.c_str(), lowerDoubleValue_, upperDoubleValue_);
     returnCode = 1;
   } else {
     double oldValue = doubleValue_;
     doubleValue_ = value;
     switch (type_) {
-    case CBC_PARAM_DBL_INFEASIBILITYWEIGHT:
-      oldValue = model.getDblParam(CbcModel::CbcInfeasibilityWeight);
-      model.setDblParam(CbcModel::CbcInfeasibilityWeight, value);
-      break;
-    case CBC_PARAM_DBL_INTEGERTOLERANCE:
-      oldValue = model.getDblParam(CbcModel::CbcIntegerTolerance);
-      model.setDblParam(CbcModel::CbcIntegerTolerance, value);
-      break;
-    case CBC_PARAM_DBL_INCREMENT:
-      oldValue = model.getDblParam(CbcModel::CbcCutoffIncrement);
-      model.setDblParam(CbcModel::CbcCutoffIncrement, value);
-    case CBC_PARAM_DBL_ALLOWABLEGAP:
-      oldValue = model.getDblParam(CbcModel::CbcAllowableGap);
-      model.setDblParam(CbcModel::CbcAllowableGap, value);
-      break;
-    case CBC_PARAM_DBL_GAPRATIO:
-      oldValue = model.getDblParam(CbcModel::CbcAllowableFractionGap);
-      model.setDblParam(CbcModel::CbcAllowableFractionGap, value);
-      break;
-    case CBC_PARAM_DBL_CUTOFF:
-      oldValue = model.getCutoff();
-      model.setCutoff(value);
-      break;
-    case CBC_PARAM_DBL_TIMELIMIT_BAB:
-      oldValue = model.getDblParam(CbcModel::CbcMaximumSeconds);
-      {
-        //OsiClpSolverInterface * clpSolver = dynamic_cast< OsiClpSolverInterface*> (model.solver());
-        //ClpSimplex * lpSolver = clpSolver->getModelPtr();
-        //lpSolver->setMaximumSeconds(value);
-        model.setDblParam(CbcModel::CbcMaximumSeconds, value);
-      }
-      break;
-    case CLP_PARAM_DBL_DUALTOLERANCE:
-    case CLP_PARAM_DBL_PRIMALTOLERANCE:
-      setDoubleParameter(model.solver(), value);
-      return 0; // to avoid message
-    default:
-      break;
+      case CBC_PARAM_DBL_INFEASIBILITYWEIGHT:
+        oldValue = model.getDblParam(CbcModel::CbcInfeasibilityWeight);
+        model.setDblParam(CbcModel::CbcInfeasibilityWeight, value);
+        break;
+      case CBC_PARAM_DBL_INTEGERTOLERANCE:
+        oldValue = model.getDblParam(CbcModel::CbcIntegerTolerance);
+        model.setDblParam(CbcModel::CbcIntegerTolerance, value);
+        break;
+      case CBC_PARAM_DBL_INCREMENT:
+        oldValue = model.getDblParam(CbcModel::CbcCutoffIncrement);
+        model.setDblParam(CbcModel::CbcCutoffIncrement, value);
+      case CBC_PARAM_DBL_ALLOWABLEGAP:
+        oldValue = model.getDblParam(CbcModel::CbcAllowableGap);
+        model.setDblParam(CbcModel::CbcAllowableGap, value);
+        break;
+      case CBC_PARAM_DBL_GAPRATIO:
+        oldValue = model.getDblParam(CbcModel::CbcAllowableFractionGap);
+        model.setDblParam(CbcModel::CbcAllowableFractionGap, value);
+        break;
+      case CBC_PARAM_DBL_CUTOFF:
+        oldValue = model.getCutoff();
+        model.setCutoff(value);
+        break;
+      case CBC_PARAM_DBL_TIMELIMIT_BAB:
+        oldValue = model.getDblParam(CbcModel::CbcMaximumSeconds);
+        {
+          // OsiClpSolverInterface * clpSolver = dynamic_cast<
+          // OsiClpSolverInterface*> (model.solver()); ClpSimplex * lpSolver =
+          // clpSolver->getModelPtr(); lpSolver->setMaximumSeconds(value);
+          model.setDblParam(CbcModel::CbcMaximumSeconds, value);
+        }
+        break;
+      case CLP_PARAM_DBL_DUALTOLERANCE:
+      case CLP_PARAM_DBL_PRIMALTOLERANCE:
+        setDoubleParameter(model.solver(), value);
+        return 0;  // to avoid message
+      default:
+        break;
     }
-    sprintf(printArray, "%s was changed from %g to %g",
-      name_.c_str(), oldValue, value);
+    sprintf(printArray, "%s was changed from %g to %g", name_.c_str(), oldValue,
+            value);
     returnCode = 0;
   }
   return printArray;
 }
-double
-CbcOrClpParam::doubleParameter(CbcModel &model) const
-{
+double CbcOrClpParam::doubleParameter(CbcModel &model) const {
   double value;
   switch (type_) {
-  case CBC_PARAM_DBL_INFEASIBILITYWEIGHT:
-    value = model.getDblParam(CbcModel::CbcInfeasibilityWeight);
-    break;
-  case CBC_PARAM_DBL_INTEGERTOLERANCE:
-    value = model.getDblParam(CbcModel::CbcIntegerTolerance);
-    break;
-  case CBC_PARAM_DBL_INCREMENT:
-    value = model.getDblParam(CbcModel::CbcCutoffIncrement);
-    break;
-  case CBC_PARAM_DBL_ALLOWABLEGAP:
-    value = model.getDblParam(CbcModel::CbcAllowableGap);
-    break;
-  case CBC_PARAM_DBL_GAPRATIO:
-    value = model.getDblParam(CbcModel::CbcAllowableFractionGap);
-    break;
-  case CBC_PARAM_DBL_CUTOFF:
-    value = model.getCutoff();
-    break;
-  case CBC_PARAM_DBL_TIMELIMIT_BAB:
-    value = model.getDblParam(CbcModel::CbcMaximumSeconds);
-    break;
-  case CLP_PARAM_DBL_DUALTOLERANCE:
-  case CLP_PARAM_DBL_PRIMALTOLERANCE:
-    value = doubleParameter(model.solver());
-    break;
-  default:
-    value = doubleValue_;
-    break;
+    case CBC_PARAM_DBL_INFEASIBILITYWEIGHT:
+      value = model.getDblParam(CbcModel::CbcInfeasibilityWeight);
+      break;
+    case CBC_PARAM_DBL_INTEGERTOLERANCE:
+      value = model.getDblParam(CbcModel::CbcIntegerTolerance);
+      break;
+    case CBC_PARAM_DBL_INCREMENT:
+      value = model.getDblParam(CbcModel::CbcCutoffIncrement);
+      break;
+    case CBC_PARAM_DBL_ALLOWABLEGAP:
+      value = model.getDblParam(CbcModel::CbcAllowableGap);
+      break;
+    case CBC_PARAM_DBL_GAPRATIO:
+      value = model.getDblParam(CbcModel::CbcAllowableFractionGap);
+      break;
+    case CBC_PARAM_DBL_CUTOFF:
+      value = model.getCutoff();
+      break;
+    case CBC_PARAM_DBL_TIMELIMIT_BAB:
+      value = model.getDblParam(CbcModel::CbcMaximumSeconds);
+      break;
+    case CLP_PARAM_DBL_DUALTOLERANCE:
+    case CLP_PARAM_DBL_PRIMALTOLERANCE:
+      value = doubleParameter(model.solver());
+      break;
+    default:
+      value = doubleValue_;
+      break;
   }
   return value;
 }
-int CbcOrClpParam::setIntParameter(CbcModel &model, int value)
-{
+int CbcOrClpParam::setIntParameter(CbcModel &model, int value) {
   int returnCode;
   setIntParameterWithMessage(model, value, returnCode);
-  if (doPrinting && strlen(printArray))
-    std::cout << printArray << std::endl;
+  if (doPrinting && strlen(printArray)) std::cout << printArray << std::endl;
   return returnCode;
 }
 // Sets int parameter and returns printable string and error code
-const char *
-CbcOrClpParam::setIntParameterWithMessage(CbcModel &model, int value, int &returnCode)
-{
+const char *CbcOrClpParam::setIntParameterWithMessage(CbcModel &model,
+                                                      int value,
+                                                      int &returnCode) {
   if (value < lowerIntValue_ || value > upperIntValue_) {
     sprintf(printArray, "%d was provided for %s - valid range is %d to %d",
-      value, name_.c_str(), lowerIntValue_, upperIntValue_);
+            value, name_.c_str(), lowerIntValue_, upperIntValue_);
     returnCode = 1;
   } else {
     printArray[0] = '\0';
-    if (value == intValue_)
-      return printArray;
+    if (value == intValue_) return printArray;
     int oldValue = intValue_;
     intValue_ = value;
     switch (type_) {
+      case CLP_PARAM_INT_LOGLEVEL:
+        oldValue = model.messageHandler()->logLevel();
+        model.messageHandler()->setLogLevel(CoinAbs(value));
+        break;
+      case CLP_PARAM_INT_SOLVERLOGLEVEL:
+        oldValue = model.solver()->messageHandler()->logLevel();
+        model.solver()->messageHandler()->setLogLevel(value);
+        break;
+      case CBC_PARAM_INT_MAXNODES:
+        oldValue = model.getIntParam(CbcModel::CbcMaxNumNode);
+        model.setIntParam(CbcModel::CbcMaxNumNode, value);
+        break;
+      case CBC_PARAM_INT_MAXSOLS:
+        oldValue = model.getIntParam(CbcModel::CbcMaxNumSol);
+        model.setIntParam(CbcModel::CbcMaxNumSol, value);
+        break;
+      case CBC_PARAM_INT_MAXSAVEDSOLS:
+        oldValue = model.maximumSavedSolutions();
+        model.setMaximumSavedSolutions(value);
+        break;
+      case CBC_PARAM_INT_STRONGBRANCHING:
+        oldValue = model.numberStrong();
+        model.setNumberStrong(value);
+        break;
+      case CBC_PARAM_INT_NUMBERBEFORE:
+        oldValue = model.numberBeforeTrust();
+        model.setNumberBeforeTrust(value);
+        break;
+      case CBC_PARAM_INT_NUMBERANALYZE:
+        oldValue = model.numberAnalyzeIterations();
+        model.setNumberAnalyzeIterations(value);
+        break;
+      case CBC_PARAM_INT_CUTPASSINTREE:
+        oldValue = model.getMaximumCutPasses();
+        model.setMaximumCutPasses(value);
+        break;
+      case CBC_PARAM_INT_CUTPASS:
+        oldValue = model.getMaximumCutPassesAtRoot();
+        model.setMaximumCutPassesAtRoot(value);
+        break;
+#ifdef COIN_HAS_CBC
+#ifdef CBC_THREAD
+      case CBC_PARAM_INT_THREADS:
+        oldValue = model.getNumberThreads();
+        model.setNumberThreads(value);
+        break;
+#endif
+      case CBC_PARAM_INT_RANDOMSEED:
+        oldValue = model.getRandomSeed();
+        model.setRandomSeed(value);
+        break;
+#endif
+      default:
+        break;
+    }
+    sprintf(printArray, "%s was changed from %d to %d", name_.c_str(), oldValue,
+            value);
+    returnCode = 0;
+  }
+  return printArray;
+}
+int CbcOrClpParam::intParameter(CbcModel &model) const {
+  int value;
+  switch (type_) {
     case CLP_PARAM_INT_LOGLEVEL:
-      oldValue = model.messageHandler()->logLevel();
-      model.messageHandler()->setLogLevel(CoinAbs(value));
+      value = model.messageHandler()->logLevel();
       break;
     case CLP_PARAM_INT_SOLVERLOGLEVEL:
-      oldValue = model.solver()->messageHandler()->logLevel();
-      model.solver()->messageHandler()->setLogLevel(value);
+      value = model.solver()->messageHandler()->logLevel();
       break;
     case CBC_PARAM_INT_MAXNODES:
-      oldValue = model.getIntParam(CbcModel::CbcMaxNumNode);
-      model.setIntParam(CbcModel::CbcMaxNumNode, value);
+      value = model.getIntParam(CbcModel::CbcMaxNumNode);
       break;
     case CBC_PARAM_INT_MAXSOLS:
-      oldValue = model.getIntParam(CbcModel::CbcMaxNumSol);
-      model.setIntParam(CbcModel::CbcMaxNumSol, value);
+      value = model.getIntParam(CbcModel::CbcMaxNumSol);
       break;
     case CBC_PARAM_INT_MAXSAVEDSOLS:
-      oldValue = model.maximumSavedSolutions();
-      model.setMaximumSavedSolutions(value);
+      value = model.maximumSavedSolutions();
       break;
     case CBC_PARAM_INT_STRONGBRANCHING:
-      oldValue = model.numberStrong();
-      model.setNumberStrong(value);
+      value = model.numberStrong();
       break;
     case CBC_PARAM_INT_NUMBERBEFORE:
-      oldValue = model.numberBeforeTrust();
-      model.setNumberBeforeTrust(value);
+      value = model.numberBeforeTrust();
       break;
     case CBC_PARAM_INT_NUMBERANALYZE:
-      oldValue = model.numberAnalyzeIterations();
-      model.setNumberAnalyzeIterations(value);
+      value = model.numberAnalyzeIterations();
       break;
     case CBC_PARAM_INT_CUTPASSINTREE:
-      oldValue = model.getMaximumCutPasses();
-      model.setMaximumCutPasses(value);
+      value = model.getMaximumCutPasses();
       break;
     case CBC_PARAM_INT_CUTPASS:
-      oldValue = model.getMaximumCutPassesAtRoot();
-      model.setMaximumCutPassesAtRoot(value);
+      value = model.getMaximumCutPassesAtRoot();
       break;
 #ifdef COIN_HAS_CBC
 #ifdef CBC_THREAD
     case CBC_PARAM_INT_THREADS:
-      oldValue = model.getNumberThreads();
-      model.setNumberThreads(value);
+      value = model.getNumberThreads();
       break;
 #endif
     case CBC_PARAM_INT_RANDOMSEED:
-      oldValue = model.getRandomSeed();
-      model.setRandomSeed(value);
+      value = model.getRandomSeed();
       break;
 #endif
     default:
+      value = intValue_;
       break;
-    }
-    sprintf(printArray, "%s was changed from %d to %d",
-      name_.c_str(), oldValue, value);
-    returnCode = 0;
-  }
-  return printArray;
-}
-int CbcOrClpParam::intParameter(CbcModel &model) const
-{
-  int value;
-  switch (type_) {
-  case CLP_PARAM_INT_LOGLEVEL:
-    value = model.messageHandler()->logLevel();
-    break;
-  case CLP_PARAM_INT_SOLVERLOGLEVEL:
-    value = model.solver()->messageHandler()->logLevel();
-    break;
-  case CBC_PARAM_INT_MAXNODES:
-    value = model.getIntParam(CbcModel::CbcMaxNumNode);
-    break;
-  case CBC_PARAM_INT_MAXSOLS:
-    value = model.getIntParam(CbcModel::CbcMaxNumSol);
-    break;
-  case CBC_PARAM_INT_MAXSAVEDSOLS:
-    value = model.maximumSavedSolutions();
-    break;
-  case CBC_PARAM_INT_STRONGBRANCHING:
-    value = model.numberStrong();
-    break;
-  case CBC_PARAM_INT_NUMBERBEFORE:
-    value = model.numberBeforeTrust();
-    break;
-  case CBC_PARAM_INT_NUMBERANALYZE:
-    value = model.numberAnalyzeIterations();
-    break;
-  case CBC_PARAM_INT_CUTPASSINTREE:
-    value = model.getMaximumCutPasses();
-    break;
-  case CBC_PARAM_INT_CUTPASS:
-    value = model.getMaximumCutPassesAtRoot();
-    break;
-#ifdef COIN_HAS_CBC
-#ifdef CBC_THREAD
-  case CBC_PARAM_INT_THREADS:
-    value = model.getNumberThreads();
-	break;
-#endif
-  case CBC_PARAM_INT_RANDOMSEED:
-    value = model.getRandomSeed();
-    break;
-#endif
-  default:
-    value = intValue_;
-    break;
   }
   return value;
 }
 #endif
 // Sets current parameter option using string
-void CbcOrClpParam::setCurrentOption(const std::string value)
-{
+void CbcOrClpParam::setCurrentOption(const std::string value) {
   int action = parameterOption(value);
-  if (action >= 0)
-    currentKeyWord_ = action;
+  if (action >= 0) currentKeyWord_ = action;
 #if FLUSH_PRINT_BUFFER > 2
-  if (name_ == "bufferedMode")
-    coinFlushBufferFlag = action;
+  if (name_ == "bufferedMode") coinFlushBufferFlag = action;
 #endif
 }
 // Sets current parameter option
-void CbcOrClpParam::setCurrentOption(int value, bool printIt)
-{
+void CbcOrClpParam::setCurrentOption(int value, bool printIt) {
   if (printIt && value != currentKeyWord_)
     std::cout << "Option for " << name_ << " changed from "
               << definedKeyWords_[currentKeyWord_] << " to "
               << definedKeyWords_[value] << std::endl;
 
 #if FLUSH_PRINT_BUFFER > 2
-  if (name_ == "bufferedMode")
-    coinFlushBufferFlag = value;
+  if (name_ == "bufferedMode") coinFlushBufferFlag = value;
 #endif
   currentKeyWord_ = value;
 }
 // Sets current parameter option and returns printable string
-const char *
-CbcOrClpParam::setCurrentOptionWithMessage(int value)
-{
+const char *CbcOrClpParam::setCurrentOptionWithMessage(int value) {
   if (value != currentKeyWord_) {
     char current[100];
     char newString[100];
-    if (currentKeyWord_ >= 0 && (fakeKeyWord_ <= 0 || currentKeyWord_ < fakeKeyWord_))
+    if (currentKeyWord_ >= 0 &&
+        (fakeKeyWord_ <= 0 || currentKeyWord_ < fakeKeyWord_))
       strcpy(current, definedKeyWords_[currentKeyWord_].c_str());
     else if (currentKeyWord_ < 0)
       sprintf(current, "minus%d", -currentKeyWord_ - 1000);
@@ -1105,11 +1051,10 @@ CbcOrClpParam::setCurrentOptionWithMessage(int value)
       sprintf(newString, "minus%d", -value - 1000);
     else
       sprintf(newString, "plus%d", value - 1000);
-    sprintf(printArray, "Option for %s changed from %s to %s",
-      name_.c_str(), current, newString);
+    sprintf(printArray, "Option for %s changed from %s to %s", name_.c_str(),
+            current, newString);
 #if FLUSH_PRINT_BUFFER > 2
-    if (name_ == "bufferedMode")
-      coinFlushBufferFlag = value;
+    if (name_ == "bufferedMode") coinFlushBufferFlag = value;
 #endif
     currentKeyWord_ = value;
   } else {
@@ -1118,94 +1063,82 @@ CbcOrClpParam::setCurrentOptionWithMessage(int value)
   return printArray;
 }
 // Sets current parameter option using string with message
-const char *
-CbcOrClpParam::setCurrentOptionWithMessage(const std::string value)
-{
+const char *CbcOrClpParam::setCurrentOptionWithMessage(
+    const std::string value) {
   int action = parameterOption(value);
   char current[100];
   printArray[0] = '\0';
   if (action >= 0) {
 #if FLUSH_PRINT_BUFFER > 2
-    if (name_ == "bufferedMode")
-      coinFlushBufferFlag = action;
+    if (name_ == "bufferedMode") coinFlushBufferFlag = action;
 #endif
-    if (action == currentKeyWord_)
-      return NULL;
-    if (currentKeyWord_ >= 0 && (fakeKeyWord_ <= 0 || currentKeyWord_ < fakeKeyWord_))
+    if (action == currentKeyWord_) return NULL;
+    if (currentKeyWord_ >= 0 &&
+        (fakeKeyWord_ <= 0 || currentKeyWord_ < fakeKeyWord_))
       strcpy(current, definedKeyWords_[currentKeyWord_].c_str());
     else if (currentKeyWord_ < 0)
       sprintf(current, "minus%d", -currentKeyWord_ - 1000);
     else
       sprintf(current, "plus%d", currentKeyWord_ - 1000);
-    sprintf(printArray, "Option for %s changed from %s to %s",
-      name_.c_str(), current, value.c_str());
+    sprintf(printArray, "Option for %s changed from %s to %s", name_.c_str(),
+            current, value.c_str());
     currentKeyWord_ = action;
   } else {
-    sprintf(printArray, "Option for %s given illegal value %s",
-      name_.c_str(), value.c_str());
+    sprintf(printArray, "Option for %s given illegal value %s", name_.c_str(),
+            value.c_str());
   }
   return printArray;
 }
-void CbcOrClpParam::setIntValue(int value)
-{
+void CbcOrClpParam::setIntValue(int value) {
   if (value < lowerIntValue_ || value > upperIntValue_) {
-    std::cout << value << " was provided for " << name_ << " - valid range is " << lowerIntValue_ << " to " << upperIntValue_ << std::endl;
+    std::cout << value << " was provided for " << name_ << " - valid range is "
+              << lowerIntValue_ << " to " << upperIntValue_ << std::endl;
   } else {
     intValue_ = value;
   }
 }
-const char *
-CbcOrClpParam::setIntValueWithMessage(int value)
-{
+const char *CbcOrClpParam::setIntValueWithMessage(int value) {
   printArray[0] = '\0';
   if (value < lowerIntValue_ || value > upperIntValue_) {
     sprintf(printArray, "%d was provided for %s - valid range is %d to %d",
-      value, name_.c_str(), lowerIntValue_, upperIntValue_);
+            value, name_.c_str(), lowerIntValue_, upperIntValue_);
   } else {
-    if (value == intValue_)
-      return NULL;
-    sprintf(printArray, "%s was changed from %d to %d",
-      name_.c_str(), intValue_, value);
+    if (value == intValue_) return NULL;
+    sprintf(printArray, "%s was changed from %d to %d", name_.c_str(),
+            intValue_, value);
     intValue_ = value;
   }
   return printArray;
 }
-void CbcOrClpParam::setDoubleValue(double value)
-{
+void CbcOrClpParam::setDoubleValue(double value) {
   if (value < lowerDoubleValue_ || value > upperDoubleValue_) {
-    std::cout << value << " was provided for " << name_ << " - valid range is " << lowerDoubleValue_ << " to " << upperDoubleValue_ << std::endl;
+    std::cout << value << " was provided for " << name_ << " - valid range is "
+              << lowerDoubleValue_ << " to " << upperDoubleValue_ << std::endl;
   } else {
     doubleValue_ = value;
   }
 }
-const char *
-CbcOrClpParam::setDoubleValueWithMessage(double value)
-{
+const char *CbcOrClpParam::setDoubleValueWithMessage(double value) {
   printArray[0] = '\0';
   if (value < lowerDoubleValue_ || value > upperDoubleValue_) {
     sprintf(printArray, "%g was provided for %s - valid range is %g to %g",
-      value, name_.c_str(), lowerDoubleValue_, upperDoubleValue_);
+            value, name_.c_str(), lowerDoubleValue_, upperDoubleValue_);
   } else {
-    if (value == doubleValue_)
-      return NULL;
-    sprintf(printArray, "%s was changed from %g to %g",
-      name_.c_str(), doubleValue_, value);
+    if (value == doubleValue_) return NULL;
+    sprintf(printArray, "%s was changed from %g to %g", name_.c_str(),
+            doubleValue_, value);
     doubleValue_ = value;
   }
   return printArray;
 }
-void CbcOrClpParam::setStringValue(std::string value)
-{
-  stringValue_ = value;
-}
+void CbcOrClpParam::setStringValue(std::string value) { stringValue_ = value; }
 static char line[1000];
 static char *where = NULL;
 extern int CbcOrClpRead_mode;
 int CbcOrClpEnvironmentIndex = -1;
 // Alternative to environment
 char *alternativeEnvironment = NULL;
-static size_t fillEnv()
-{
+static size_t fillEnv() {
 #if defined(_MSC_VER) || defined(__MSVCRT__)
   return 0;
 #else
@@ -1218,7 +1151,7 @@ static size_t fillEnv()
   size_t length = 0;
   if (environ) {
     length = strlen(environ);
-    if (CbcOrClpEnvironmentIndex < static_cast< int >(length)) {
+    if (CbcOrClpEnvironmentIndex < static_cast<int>(length)) {
       // find next non blank
       char *whereEnv = environ + CbcOrClpEnvironmentIndex;
       // munch white space
@@ -1235,7 +1168,7 @@ static size_t fillEnv()
         assert(put - line < 1000);
         whereEnv++;
       }
-      CbcOrClpEnvironmentIndex = static_cast< int >(whereEnv - environ);
+      CbcOrClpEnvironmentIndex = static_cast<int>(whereEnv - environ);
       *put = '\0';
       length = strlen(line);
     } else {
@@ -1254,9 +1187,7 @@ static size_t fillEnv()
 }
 extern FILE *CbcOrClpReadCommand;
 // Simple read stuff
-std::string
-CoinReadNextField()
-{
+std::string CoinReadNextField() {
   std::string field;
   if (!where) {
     // need new line
@@ -1267,8 +1198,7 @@ CoinReadNextField()
 
       // If the line has any text in it, save it on the history.
       if (where) {
-        if (*where)
-          add_history(where);
+        if (*where) add_history(where);
         strcpy(line, where);
         free(where);
       }
@@ -1282,8 +1212,7 @@ CoinReadNextField()
     }
     where = fgets(line, 1000, CbcOrClpReadCommand);
 #endif
-    if (!where)
-      return field; // EOF
+    if (!where) return field;  // EOF
     where = line;
     // clean image
     char *lastNonBlank = line - 1;
@@ -1299,15 +1228,13 @@ CoinReadNextField()
     *(lastNonBlank + 1) = '\0';
   }
   // munch white space
-  while (*where == ' ' || *where == '\t')
-    where++;
+  while (*where == ' ' || *where == '\t') where++;
   char *saveWhere = where;
-  while (*where != ' ' && *where != '\t' && *where != '\0')
-    where++;
+  while (*where != ' ' && *where != '\t' && *where != '\0') where++;
   if (where != saveWhere) {
     char save = *where;
     *where = '\0';
-    //convert to string
+    // convert to string
     field = saveWhere;
     *where = save;
   } else {
@@ -1317,15 +1244,14 @@ CoinReadNextField()
   return field;
 }
 
-std::string
-CoinReadGetCommand(int argc, const char *argv[])
-{
+std::string CoinReadGetCommand(int argc, const char *argv[]) {
   std::string field = "EOL";
   // say no =
   afterEquals = "";
   while (field == "EOL") {
     if (CbcOrClpRead_mode > 0) {
-      if ((CbcOrClpRead_mode < argc && argv[CbcOrClpRead_mode]) || CbcOrClpEnvironmentIndex >= 0) {
+      if ((CbcOrClpRead_mode < argc && argv[CbcOrClpRead_mode]) ||
+          CbcOrClpEnvironmentIndex >= 0) {
         if (CbcOrClpEnvironmentIndex < 0) {
           field = argv[CbcOrClpRead_mode++];
         } else {
@@ -1372,33 +1298,31 @@ CoinReadGetCommand(int argc, const char *argv[])
     afterEquals = field.substr(found + 1);
     field = field.substr(0, found);
   }
-  //std::cout<<field<<std::endl;
+  // std::cout<<field<<std::endl;
   return field;
 }
-std::string
-CoinReadGetString(int argc, const char *argv[])
-{
+std::string CoinReadGetString(int argc, const char *argv[]) {
   std::string field = "EOL";
   if (afterEquals == "") {
     if (CbcOrClpRead_mode > 0) {
       if (CbcOrClpRead_mode < argc || CbcOrClpEnvironmentIndex >= 0) {
         if (CbcOrClpEnvironmentIndex < 0) {
-	  const char * input = argv[CbcOrClpRead_mode];
-	  if (strcmp(input,"--")&&strcmp(input,"stdin")&&
-	      strcmp(input,"stdin_lp")) {
+          const char *input = argv[CbcOrClpRead_mode];
+          if (strcmp(input, "--") && strcmp(input, "stdin") &&
+              strcmp(input, "stdin_lp")) {
             field = argv[CbcOrClpRead_mode++];
           } else {
             CbcOrClpRead_mode++;
             // -- means import from stdin
-	    // but allow for other than mps files
-	    // Clp does things in different way !!
-	    if (!strcmp(input,"--"))
-	      field = "-";
-	    else if (!strcmp(input,"stdin"))
-	      field = "-";
-	    else if (!strcmp(input,"stdin_lp"))
-	      field = "-lp";
-	  }
+            // but allow for other than mps files
+            // Clp does things in different way !!
+            if (!strcmp(input, "--"))
+              field = "-";
+            else if (!strcmp(input, "stdin"))
+              field = "-";
+            else if (!strcmp(input, "stdin_lp"))
+              field = "-lp";
+          }
         } else {
           fillEnv();
           field = line;
@@ -1411,12 +1335,11 @@ CoinReadGetString(int argc, const char *argv[])
     field = afterEquals;
     afterEquals = "";
   }
-  //std::cout<<field<<std::endl;
+  // std::cout<<field<<std::endl;
   return field;
 }
 // valid 0 - okay, 1 bad, 2 not there
-int CoinReadGetIntField(int argc, const char *argv[], int *valid)
-{
+int CoinReadGetIntField(int argc, const char *argv[], int *valid) {
   std::string field = "EOL";
   if (afterEquals == "") {
     if (CbcOrClpRead_mode > 0) {
@@ -1437,7 +1360,7 @@ int CoinReadGetIntField(int argc, const char *argv[], int *valid)
     afterEquals = "";
   }
   long int value = 0;
-  //std::cout<<field<<std::endl;
+  // std::cout<<field<<std::endl;
   if (field != "EOL") {
     const char *start = field.c_str();
     char *endPointer = NULL;
@@ -1452,11 +1375,9 @@ int CoinReadGetIntField(int argc, const char *argv[], int *valid)
   } else {
     *valid = 2;
   }
-  return static_cast< int >(value);
+  return static_cast<int>(value);
 }
-double
-CoinReadGetDoubleField(int argc, const char *argv[], int *valid)
-{
+double CoinReadGetDoubleField(int argc, const char *argv[], int *valid) {
   std::string field = "EOL";
   if (afterEquals == "") {
     if (CbcOrClpRead_mode > 0) {
@@ -1477,7 +1398,7 @@ CoinReadGetDoubleField(int argc, const char *argv[], int *valid)
     afterEquals = "";
   }
   double value = 0.0;
-  //std::cout<<field<<std::endl;
+  // std::cout<<field<<std::endl;
   if (field != "EOL") {
     const char *start = field.c_str();
     char *endPointer = NULL;
@@ -1498,26 +1419,36 @@ CoinReadGetDoubleField(int argc, const char *argv[], int *valid)
   Subroutine to establish the cbc parameter array. See the description of
   class CbcOrClpParam for details. Pulled from C..Main() for clarity.
 */
-void establishParams(std::vector< CbcOrClpParam > &parameters)
-{
+void establishParams(std::vector<CbcOrClpParam> &parameters) {
   parameters.clear();
-  parameters.push_back(CbcOrClpParam("?", "For help", CBC_PARAM_GENERALQUERY, 7, 0));
-  parameters.push_back(CbcOrClpParam("???", "For help", CBC_PARAM_FULLGENERALQUERY, 7, 0));
-  parameters.push_back(CbcOrClpParam("-", "From stdin", CLP_PARAM_ACTION_STDIN, 3, 0));
+  parameters.push_back(
+      CbcOrClpParam("?", "For help", CBC_PARAM_GENERALQUERY, 7, 0));
+  parameters.push_back(
+      CbcOrClpParam("???", "For help", CBC_PARAM_FULLGENERALQUERY, 7, 0));
+  parameters.push_back(
+      CbcOrClpParam("-", "From stdin", CLP_PARAM_ACTION_STDIN, 3, 0));
 
 // some help strings that repeat for many options
-#define CUTS_LONGHELP \
-  "Value 'on' enables the cut generator and CBC will try it in the branch and cut tree (see cutDepth on how to fine tune the behavior). " \
-  "Value 'root' lets CBC run the cut generator generate only at the root node. " \
-  "Value 'ifmove' lets CBC use the cut generator in the tree if it looks as if it is doing some good and moves the objective value. " \
-  "Value 'forceon' turns on the cut generator and forces CBC to use it at every node."
-#define HEURISTICS_LONGHELP \
-  "Value 'on' means to use the heuristic in each node of the tree, i.e. after preprocessing. " \
-  "Value 'before' means use the heuristic only if option doHeuristics is used. " \
-  "Value 'both' means to use the heuristic if option doHeuristics is used and during solve."
+#define CUTS_LONGHELP                                                         \
+  "Value 'on' enables the cut generator and CBC will try it in the branch "   \
+  "and cut tree (see cutDepth on how to fine tune the behavior). "            \
+  "Value 'root' lets CBC run the cut generator generate only at the root "    \
+  "node. "                                                                    \
+  "Value 'ifmove' lets CBC use the cut generator in the tree if it looks as " \
+  "if it is doing some good and moves the objective value. "                  \
+  "Value 'forceon' turns on the cut generator and forces CBC to use it at "   \
+  "every node."
+#define HEURISTICS_LONGHELP                                                 \
+  "Value 'on' means to use the heuristic in each node of the tree, i.e. "   \
+  "after preprocessing. "                                                   \
+  "Value 'before' means use the heuristic only if option doHeuristics is "  \
+  "used. "                                                                  \
+  "Value 'both' means to use the heuristic if option doHeuristics is used " \
+  "and during solve."
 
 #if defined(ABC_INHERIT) || ABOCA_LITE
-  CbcOrClpParam paramAboca("abc", "Whether to visit Aboca", "off", CLP_PARAM_STR_ABCWANTED, 7, 0);
+  CbcOrClpParam paramAboca("abc", "Whether to visit Aboca", "off",
+                           CLP_PARAM_STR_ABCWANTED, 7, 0);
   paramAboca.append("one");
   paramAboca.append("two");
   paramAboca.append("three");
@@ -1530,69 +1461,77 @@ void establishParams(std::vector< CbcOrClpParam > &parameters)
   paramAboca.append("decide");
   paramAboca.setFakeKeyWord(10);
   paramAboca.setLonghelp(
-    "Decide whether to use A Basic Optimization Code (Accelerated?) \
+      "Decide whether to use A Basic Optimization Code (Accelerated?) \
 and whether to try going parallel!");
   parameters.push_back(paramAboca);
 #endif
   {
-    CbcOrClpParam p("allC!ommands", "Whether to print less used commands",
-      "no", CLP_PARAM_STR_ALLCOMMANDS);
+    CbcOrClpParam p("allC!ommands", "Whether to print less used commands", "no",
+                    CLP_PARAM_STR_ALLCOMMANDS);
 
     p.append("more");
     p.append("all");
     p.setLonghelp(
-      "For the sake of your sanity, only the more useful and simple commands \
+        "For the sake of your sanity, only the more useful and simple commands \
 are printed out on ?.");
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("allow!ableGap", "Stop when gap between best possible and \
+    CbcOrClpParam p("allow!ableGap",
+                    "Stop when gap between best possible and \
 best less than this",
-      0.0, COIN_DBL_MAX, CBC_PARAM_DBL_ALLOWABLEGAP);
+                    0.0, COIN_DBL_MAX, CBC_PARAM_DBL_ALLOWABLEGAP);
     p.setDoubleValue(0.0);
     p.setLonghelp(
-      "If the gap between best known solution and the best possible solution is less than this \
+        "If the gap between best known solution and the best possible solution is less than this \
 value, then the search will be terminated.  Also see ratioGap.");
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("allS!lack", "Set basis back to all slack and reset solution",
-      CLP_PARAM_ACTION_ALLSLACK, 3);
+    CbcOrClpParam p("allS!lack",
+                    "Set basis back to all slack and reset solution",
+                    CLP_PARAM_ACTION_ALLSLACK, 3);
     p.setLonghelp(
-      "Mainly useful for tuning purposes.  Normally the first dual or primal will be using an all slack \
+        "Mainly useful for tuning purposes.  Normally the first dual or primal will be using an all slack \
 basis anyway.");
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("artif!icialCost", "Costs >= this treated as artificials in feasibility pump",
-      0.0, COIN_DBL_MAX, CBC_PARAM_DBL_ARTIFICIALCOST, 1);
+    CbcOrClpParam p("artif!icialCost",
+                    "Costs >= this treated as artificials in feasibility pump",
+                    0.0, COIN_DBL_MAX, CBC_PARAM_DBL_ARTIFICIALCOST, 1);
     p.setDoubleValue(0.0);
     p.setLonghelp(
-      "A value of 0.0 means off. Otherwise, variables with costs >= this are treated as artificial variables and fixed to lower bound in feasibility pump.");
+        "A value of 0.0 means off. Otherwise, variables with costs >= this are "
+        "treated as artificial variables and fixed to lower bound in "
+        "feasibility pump.");
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("auto!Scale", "Whether to scale objective, rhs and bounds of problem if they look odd",
-      "off", CLP_PARAM_STR_AUTOSCALE, 7, 0);
+    CbcOrClpParam p("auto!Scale",
+                    "Whether to scale objective, rhs and bounds of problem if "
+                    "they look odd",
+                    "off", CLP_PARAM_STR_AUTOSCALE, 7, 0);
     p.append("on");
     p.setLonghelp(
-      "If you think you may get odd objective values or large equality rows etc then\
+        "If you think you may get odd objective values or large equality rows etc then\
  it may be worth setting this true.  It is still experimental and you may prefer\
  to use objective!Scale and rhs!Scale.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("barr!ier", "Solve using primal dual predictor corrector algorithm",
-      CLP_PARAM_ACTION_BARRIER);
+    CbcOrClpParam p("barr!ier",
+                    "Solve using primal dual predictor corrector algorithm",
+                    CLP_PARAM_ACTION_BARRIER);
     p.setLonghelp(
-      "This command solves the current model using the  primal dual predictor \
+        "This command solves the current model using the  primal dual predictor \
 corrector algorithm.  You may want to link in an alternative \
 ordering and factorization.  It will also solve models \
 with quadratic objectives.");
@@ -1600,9 +1539,9 @@ with quadratic objectives.");
   }
   {
     CbcOrClpParam p("basisI!n", "Import basis from bas file",
-      CLP_PARAM_ACTION_BASISIN, 3);
+                    CLP_PARAM_ACTION_BASISIN, 3);
     p.setLonghelp(
-      "This will read an MPS format basis file from the given file name.  It will use the default\
+        "This will read an MPS format basis file from the given file name.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to '', i.e. it must be set.  If you have libz then it can read compressed\
  files 'xxxxxxxx.gz' or xxxxxxxx.bz2.");
@@ -1610,17 +1549,17 @@ with quadratic objectives.");
   }
   {
     CbcOrClpParam p("basisO!ut", "Export basis as bas file",
-      CLP_PARAM_ACTION_BASISOUT);
+                    CLP_PARAM_ACTION_BASISOUT);
 
     p.setLonghelp(
-      "This will write an MPS format basis file to the given file name.  It will use the default\
+        "This will write an MPS format basis file to the given file name.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to 'default.bas'.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("biasLU", "Whether factorization biased towards U",
-      "UU", CLP_PARAM_STR_BIASLU, 2, 0);
+    CbcOrClpParam p("biasLU", "Whether factorization biased towards U", "UU",
+                    CLP_PARAM_STR_BIASLU, 2, 0);
 
     p.append("UX");
     p.append("LX");
@@ -1631,14 +1570,14 @@ with quadratic objectives.");
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("branch!AndCut", "Do Branch and Cut",
-      CBC_PARAM_ACTION_BAB);
+    CbcOrClpParam p("branch!AndCut", "Do Branch and Cut", CBC_PARAM_ACTION_BAB);
     p.setLonghelp(
-      "This does branch and cut.  There are many parameters which can affect the performance.  \
+        "This does branch and cut.  There are many parameters which can affect the performance.  \
 First just try with default settings and look carefully at the log file.  Did cuts help?  Did they take too long?  \
 Look at output to see which cuts were effective and then do some tuning.  You will see that the \
 options for cuts are off, on, root and ifmove, forceon.  Off is \
-obvious. " CUTS_LONGHELP " For probing, forceonbut just does fixing probing in tree - not strengthening etc.  \
+obvious. " CUTS_LONGHELP
+        " For probing, forceonbut just does fixing probing in tree - not strengthening etc.  \
 If pre-processing reduced the size of the \
 problem or strengthened many coefficients then it is probably wise to leave it on.  Switch off heuristics \
 which did not provide solutions.  The other major area to look at is the search.  Hopefully good solutions \
@@ -1650,8 +1589,9 @@ have more rounds of cuts - see passC!uts and passT!ree.");
   }
 #endif
   {
-    CbcOrClpParam p("bscale", "Whether to scale in barrier (and ordering speed)",
-      "off", CLP_PARAM_STR_BARRIERSCALE, 7, 0);
+    CbcOrClpParam p("bscale",
+                    "Whether to scale in barrier (and ordering speed)", "off",
+                    CLP_PARAM_STR_BARRIERSCALE, 7, 0);
     p.append("on");
     p.append("off1");
     p.append("on1");
@@ -1661,22 +1601,21 @@ have more rounds of cuts - see passC!uts and passT!ree.");
   }
 #if FLUSH_PRINT_BUFFER > 2
   {
-    CbcOrClpParam p("buff!eredMode", "Whether to flush print buffer",
-      "on", CLP_PARAM_STR_BUFFER_MODE);
+    CbcOrClpParam p("buff!eredMode", "Whether to flush print buffer", "on",
+                    CLP_PARAM_STR_BUFFER_MODE);
 
     p.append("off");
-    p.setLonghelp(
-      "Default is on, off switches on unbuffered output");
+    p.setLonghelp("Default is on, off switches on unbuffered output");
     p.setIntValue(0);
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("chol!esky", "Which cholesky algorithm",
-      "native", CLP_PARAM_STR_CHOLESKY, 7);
+    CbcOrClpParam p("chol!esky", "Which cholesky algorithm", "native",
+                    CLP_PARAM_STR_CHOLESKY, 7);
 
     p.append("dense");
-    //#ifdef FOREIGN_BARRIER
+    // #ifdef FOREIGN_BARRIER
 #ifdef COIN_HAS_WSMP
     p.append("fudge!Long");
     p.append("wssmp");
@@ -1705,7 +1644,7 @@ have more rounds of cuts - see passC!uts and passT!ree.");
     p.append("Pardiso_dummy");
 #endif
     p.setLonghelp(
-      "For a barrier code to be effective it needs a good Cholesky ordering and factorization.  \
+        "For a barrier code to be effective it needs a good Cholesky ordering and factorization.  \
 The native ordering and factorization is not state of the art, although acceptable.  \
 You may want to link in one from another source.  See Makefile.locations for some \
 possibilities.");
@@ -1713,22 +1652,23 @@ possibilities.");
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
- {
-    CbcOrClpParam p("clique!Cuts", "Whether to use Clique cuts",
-      "off", CBC_PARAM_STR_CLIQUECUTS);
+  {
+    CbcOrClpParam p("clique!Cuts", "Whether to use Clique cuts", "off",
+                    CBC_PARAM_STR_CLIQUECUTS);
     p.append("on");
     p.append("root");
     p.append("ifmove");
     p.append("forceOn");
     p.append("onglobal");
     p.setLonghelp(CUTS_LONGHELP
-     " Reference: https://github.com/coin-or/Cgl/wiki/CglClique");
+                  " Reference: https://github.com/coin-or/Cgl/wiki/CglClique");
 
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("combine!Solutions", "Whether to use combine solution heuristic",
-      "off", CBC_PARAM_STR_COMBINE);
+    CbcOrClpParam p("combine!Solutions",
+                    "Whether to use combine solution heuristic", "off",
+                    CBC_PARAM_STR_COMBINE);
 
     p.append("on");
     p.append("both");
@@ -1737,42 +1677,46 @@ possibilities.");
     p.append("bothquick");
     p.append("beforequick");
     p.setLonghelp(
-      "This heuristic does branch and cut on given problem by just \
+        "This heuristic does branch and cut on given problem by just \
 using variables which have appeared in one or more solutions. \
-It is obviously only tried after two or more solutions have been found. "
-      HEURISTICS_LONGHELP);
+It is obviously only tried after two or more solutions have been found. " HEURISTICS_LONGHELP);
 
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("combine2!Solutions", "Whether to use crossover solution heuristic",
-      "off", CBC_PARAM_STR_CROSSOVER2);
+    CbcOrClpParam p("combine2!Solutions",
+                    "Whether to use crossover solution heuristic", "off",
+                    CBC_PARAM_STR_CROSSOVER2);
     p.append("on");
     p.append("both");
     p.append("before");
     p.setLonghelp(
-      "This heuristic does branch and cut on the problem given by \
+        "This heuristic does branch and cut on the problem given by \
 fixing variables which have the same value in two or more solutions. \
-It obviously only tries after two or more solutions. "
-      HEURISTICS_LONGHELP);
+It obviously only tries after two or more solutions. " HEURISTICS_LONGHELP);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("constraint!fromCutoff", "Whether to use cutoff as constraint",
-      "off", CBC_PARAM_STR_CUTOFF_CONSTRAINT);
+    CbcOrClpParam p("constraint!fromCutoff",
+                    "Whether to use cutoff as constraint", "off",
+                    CBC_PARAM_STR_CUTOFF_CONSTRAINT);
 
     p.append("on");
     p.append("variable");
     p.append("forcevariable");
     p.append("conflict");
     p.setLonghelp(
-      "For some problems, cut generators and general branching work better if the problem would be infeasible if the cost is too high. "
-      "If this option is enabled, the objective function is added as a constraint which right hand side is set to the current cutoff value (objective value of best known solution)");
+        "For some problems, cut generators and general branching work better "
+        "if the problem would be infeasible if the cost is too high. "
+        "If this option is enabled, the objective function is added as a "
+        "constraint which right hand side is set to the current cutoff value "
+        "(objective value of best known solution)");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("cost!Strategy", "How to use costs for branching priorities",
-      "off", CBC_PARAM_STR_COSTSTRATEGY);
+    CbcOrClpParam p("cost!Strategy",
+                    "How to use costs for branching priorities", "off",
+                    CBC_PARAM_STR_COSTSTRATEGY);
 
     p.append("pri!orities");
     p.append("column!Order?");
@@ -1783,19 +1727,23 @@ It obviously only tries after two or more solutions. "
     p.append("nonzero");
     p.append("general!Force?");
     p.setLonghelp(
-      "Value 'priorities' assigns highest priority to variables with largest absolute cost. This primitive strategy can be surprisingly effective. "
-      "Value 'columnorder' assigns the priorities 1, 2, 3, ... with respect to the column ordering. "
-      "Value '01first' ('01last') assignes two sets of priorities such that binary variables get high (low) priority. "
-      "Value 'length' assigns high priority to variables that occur in many equations. ");
+        "Value 'priorities' assigns highest priority to variables with largest "
+        "absolute cost. This primitive strategy can be surprisingly effective. "
+        "Value 'columnorder' assigns the priorities 1, 2, 3, ... with respect "
+        "to the column ordering. "
+        "Value '01first' ('01last') assignes two sets of priorities such that "
+        "binary variables get high (low) priority. "
+        "Value 'length' assigns high priority to variables that occur in many "
+        "equations. ");
 
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("cplex!Use", "Whether to use Cplex!",
-      "off", CBC_PARAM_STR_CPX);
+    CbcOrClpParam p("cplex!Use", "Whether to use Cplex!", "off",
+                    CBC_PARAM_STR_CPX);
     p.append("on");
     p.setLonghelp(
-      " If the user has Cplex, but wants to use some of Cbc's heuristics \
+        " If the user has Cplex, but wants to use some of Cbc's heuristics \
 then you can!  If this is on, then Cbc will get to the root node and then \
 hand over to Cplex.  If heuristics find a solution this can be significantly \
 quicker.  You will probably want to switch off Cbc's cuts as Cplex thinks \
@@ -1806,10 +1754,10 @@ both.");
   }
 #endif
   {
-    CbcOrClpParam p("cpp!Generate", "Generates C++ code",
-      -1, 50000, CLP_PARAM_INT_CPP, 1);
+    CbcOrClpParam p("cpp!Generate", "Generates C++ code", -1, 50000,
+                    CLP_PARAM_INT_CPP, 1);
     p.setLonghelp(
-      "Once you like what the stand-alone solver does then this allows \
+        "Once you like what the stand-alone solver does then this allows \
 you to generate user_driver.cpp which approximates the code.  \
 0 gives simplest driver, 1 generates saves and restores, 2 \
 generates saves and restores even for variables at default value. \
@@ -1820,8 +1768,8 @@ Cbc/examples/driver4.cpp.");
   }
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("crash", "Whether to create basis for problem",
-      "off", CLP_PARAM_STR_CRASH);
+    CbcOrClpParam p("crash", "Whether to create basis for problem", "off",
+                    CLP_PARAM_STR_CRASH);
 
     p.append("on");
     p.append("so!low_halim");
@@ -1840,7 +1788,7 @@ Cbc/examples/driver4.cpp.");
     p.append("idiot7");
 #endif
     p.setLonghelp(
-      "If crash is set to 'on' and there is an all slack basis then Clp will flip or put structural\
+        "If crash is set to 'on' and there is an all slack basis then Clp will flip or put structural\
      variables into the basis with the aim of getting dual feasible.  On average, dual simplex seems to perform\
      better without it and there are alternative types of 'crash' for primal simplex, e.g. 'idiot' or 'sprint'. \
     A variant due to Solow and Halim which is as 'on' but just flips is also available.");
@@ -1848,13 +1796,15 @@ Cbc/examples/driver4.cpp.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("cross!over", "Whether to get a basic solution with the simplex algorithm after the barrier algorithm finished",
-      "on", CLP_PARAM_STR_CROSSOVER);
+    CbcOrClpParam p("cross!over",
+                    "Whether to get a basic solution with the simplex "
+                    "algorithm after the barrier algorithm finished",
+                    "on", CLP_PARAM_STR_CROSSOVER);
     p.append("off");
     p.append("maybe");
     p.append("presolve");
     p.setLonghelp(
-      "Interior point algorithms do not obtain a basic solution.\
+        "Interior point algorithms do not obtain a basic solution.\
  This option will crossover to a basic solution suitable for ranging or branch and cut.  With the current state \
 of the solver for quadratic programs it may be a good idea to switch off crossover for this case (and maybe \
 presolve as well) - the option 'maybe' does this.");
@@ -1864,27 +1814,28 @@ presolve as well) - the option 'maybe' does this.");
 #ifdef COIN_HAS_CBC
   {
     CbcOrClpParam p("csv!Statistics", "Create one line of statistics",
-      CLP_PARAM_ACTION_CSVSTATISTICS, 2, 1);
+                    CLP_PARAM_ACTION_CSVSTATISTICS, 2, 1);
     p.setLonghelp(
-      "This appends statistics to given file name.  It will use the default\
+        "This appends statistics to given file name.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to '', i.e. it must be set.  Adds header if file empty or does not exist.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("cutD!epth", "Depth in tree at which to do cuts",
-      -1, COIN_INT_MAX, CBC_PARAM_INT_CUTDEPTH);
+    CbcOrClpParam p("cutD!epth", "Depth in tree at which to do cuts", -1,
+                    COIN_INT_MAX, CBC_PARAM_INT_CUTDEPTH);
     p.setLonghelp(
-      "Cut generators may be off, on, on only at the root node, or on if they look useful. \
+        "Cut generators may be off, on, on only at the root node, or on if they look useful. \
       Setting this option to a positive value K let CBC call a cutgenerator on a node whenever the depth in the tree is a multiple of K. \
       The default of -1 lets CBC decide.");
     p.setIntValue(-1);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("cutL!ength", "Length of a cut",
-      -1, COIN_INT_MAX, CBC_PARAM_INT_CUTLENGTH);
-    p.setLonghelp("At present this only applies to Gomory cuts. -1 (default) leaves as is. \
+    CbcOrClpParam p("cutL!ength", "Length of a cut", -1, COIN_INT_MAX,
+                    CBC_PARAM_INT_CUTLENGTH);
+    p.setLonghelp(
+        "At present this only applies to Gomory cuts. -1 (default) leaves as is. \
 Any value >0 says that all cuts <= this length can be generated both at \
 root node and in tree. 0 says to use some dynamic lengths.  If value >=10,000,000 \
 then the length in tree is value%10000000 - so 10000100 means unlimited length \
@@ -1894,33 +1845,33 @@ at root and 100 in tree.");
   }
   {
     CbcOrClpParam p("cuto!ff", "Bound on the objective value for all solutions",
-      -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_CUTOFF);
+                    -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_CUTOFF);
     p.setDoubleValue(1.0e50);
     p.setLonghelp(
-      "All solutions must have a better objective value (in a minimization sense) than the value of this option.  \
+        "All solutions must have a better objective value (in a minimization sense) than the value of this option.  \
 CBC also updates this value whenever it obtains a solution to the value of \
 the objective function of the solution minus the cutoff increment.");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("cuts!OnOff", "Switches all cut generators on or off",
-      "off", CBC_PARAM_STR_CUTSSTRATEGY);
+                    "off", CBC_PARAM_STR_CUTSSTRATEGY);
     p.append("on");
     p.append("root");
     p.append("ifmove");
     p.append("forceOn");
     p.setLonghelp(
-      "This can be used to switch on or off all cut generators (apart from Reduce and Split). "
-      "Then one can turn individual ones off or on. "
-      CUTS_LONGHELP);
+        "This can be used to switch on or off all cut generators (apart from "
+        "Reduce and Split). "
+        "Then one can turn individual ones off or on. " CUTS_LONGHELP);
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("debug!In", "read valid solution from file",
-      CLP_PARAM_ACTION_DEBUG, 7, 1);
+                    CLP_PARAM_ACTION_DEBUG, 7, 1);
 
     p.setLonghelp(
-      "This will read a solution file from the given file name.  It will use the default\
+        "This will read a solution file from the given file name.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to '', i.e. it must be set.\n\n\
 If set to create it will create a file called debug.file  after search.\n\n\
@@ -1932,10 +1883,10 @@ re-run with debug set to 'debug.file'  The create case has same effect as saveSo
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("decomp!ose", "Whether to try decomposition",
-      -COIN_INT_MAX, COIN_INT_MAX, CLP_PARAM_INT_DECOMPOSE_BLOCKS, 1);
+    CbcOrClpParam p("decomp!ose", "Whether to try decomposition", -COIN_INT_MAX,
+                    COIN_INT_MAX, CLP_PARAM_INT_DECOMPOSE_BLOCKS, 1);
     p.setLonghelp(
-      "0 - off, 1 choose blocks >1 use as blocks \
+        "0 - off, 1 choose blocks >1 use as blocks \
 Dantzig Wolfe if primal, Benders if dual \
 - uses sprint pass for number of passes");
     p.setIntValue(0);
@@ -1943,10 +1894,10 @@ Dantzig Wolfe if primal, Benders if dual \
   }
 #if CLP_MULTIPLE_FACTORIZATIONS > 0
   {
-    CbcOrClpParam p("dense!Threshold", "Threshold for using dense factorization",
-      -1, 10000, CBC_PARAM_INT_DENSE, 1);
-    p.setLonghelp(
-      "If processed problem <= this use dense factorization");
+    CbcOrClpParam p("dense!Threshold",
+                    "Threshold for using dense factorization", -1, 10000,
+                    CBC_PARAM_INT_DENSE, 1);
+    p.setLonghelp("If processed problem <= this use dense factorization");
     p.setIntValue(-1);
     parameters.push_back(p);
   }
@@ -1954,12 +1905,13 @@ Dantzig Wolfe if primal, Benders if dual \
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("depth!MiniBab", "Depth at which to try mini branch-and-bound",
-      -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_DEPTHMINIBAB);
+    CbcOrClpParam p("depth!MiniBab",
+                    "Depth at which to try mini branch-and-bound",
+                    -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_DEPTHMINIBAB);
 
     p.setIntValue(-1);
     p.setLonghelp(
-      "Rather a complicated parameter but can be useful. -1 means off for large problems but on as if -12 for problems where rows+columns<500, -2 \
+        "Rather a complicated parameter but can be useful. -1 means off for large problems but on as if -12 for problems where rows+columns<500, -2 \
 means use Cplex if it is linked in.  Otherwise if negative then go into depth first complete search fast branch and bound when depth>= -value-2 \
 (so -3 will use this at depth>=1).  This mode is only switched on after 500 nodes.  If you really want to switch it off for small problems then set \
 this to -999.  If >=0 the value doesn't matter very much.  The code will do approximately 100 nodes of fast branch and bound every now and then at depth>=5.  \
@@ -1967,26 +1919,27 @@ The actual logic is too twisted to describe here.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("dextra3", "Extra double parameter 3",
-      -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_DEXTRA3, 0);
+    CbcOrClpParam p("dextra3", "Extra double parameter 3", -COIN_DBL_MAX,
+                    COIN_DBL_MAX, CBC_PARAM_DBL_DEXTRA3, 0);
     p.setDoubleValue(0.0);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("dextra4", "Extra double parameter 4",
-      -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_DEXTRA4, 0);
+    CbcOrClpParam p("dextra4", "Extra double parameter 4", -COIN_DBL_MAX,
+                    COIN_DBL_MAX, CBC_PARAM_DBL_DEXTRA4, 0);
     p.setDoubleValue(0.0);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("dextra4", "Extra double parameter 5",
-      -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_DEXTRA5, 0);
+    CbcOrClpParam p("dextra4", "Extra double parameter 5", -COIN_DBL_MAX,
+                    COIN_DBL_MAX, CBC_PARAM_DBL_DEXTRA5, 0);
     p.setDoubleValue(0.0);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("Dins", "Whether to try Distance Induced Neighborhood Search",
-      "off", CBC_PARAM_STR_DINS);
+    CbcOrClpParam p("Dins",
+                    "Whether to try Distance Induced Neighborhood Search",
+                    "off", CBC_PARAM_STR_DINS);
 
     p.append("on");
     p.append("both");
@@ -1997,29 +1950,30 @@ The actual logic is too twisted to describe here.");
   }
 #endif
   {
-    CbcOrClpParam p("direction", "Minimize or Maximize",
-      "min!imize", CLP_PARAM_STR_DIRECTION);
+    CbcOrClpParam p("direction", "Minimize or Maximize", "min!imize",
+                    CLP_PARAM_STR_DIRECTION);
     p.append("max!imize");
     p.append("zero");
     p.setLonghelp(
-      "The default is minimize - use 'direction maximize' for maximization.\n\
+        "The default is minimize - use 'direction maximize' for maximization.\n\
 You can also use the parameters 'maximize' or 'minimize'.");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("directory", "Set Default directory for import etc.",
-      CLP_PARAM_ACTION_DIRECTORY);
+                    CLP_PARAM_ACTION_DIRECTORY);
     p.setLonghelp(
-      "This sets the directory which import, export, saveModel, restoreModel etc will use.\
+        "This sets the directory which import, export, saveModel, restoreModel etc will use.\
   It is initialized to './'");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("dirSample", "Set directory where the COIN-OR sample problems are.",
-      CLP_PARAM_ACTION_DIRSAMPLE, 7, 1);
+    CbcOrClpParam p("dirSample",
+                    "Set directory where the COIN-OR sample problems are.",
+                    CLP_PARAM_ACTION_DIRSAMPLE, 7, 1);
 
     p.setLonghelp(
-      "This sets the directory where the COIN-OR sample problems reside. It is\
+        "This sets the directory where the COIN-OR sample problems reside. It is\
  used only when -unitTest is passed to clp. clp will pick up the test problems\
  from this directory.\
  It is initialized to '../../Data/Sample'");
@@ -2027,10 +1981,10 @@ You can also use the parameters 'maximize' or 'minimize'.");
   }
   {
     CbcOrClpParam p("dirNetlib", "Set directory where the netlib problems are.",
-      CLP_PARAM_ACTION_DIRNETLIB, 7, 1);
+                    CLP_PARAM_ACTION_DIRNETLIB, 7, 1);
 
     p.setLonghelp(
-      "This sets the directory where the netlib problems reside. One can get\
+        "This sets the directory where the netlib problems reside. One can get\
  the netlib problems from COIN-OR or from the main netlib site. This\
  parameter is used only when -netlib is passed to clp. clp will pick up the\
  netlib problems from this directory. If clp is built without zlib support\
@@ -2039,11 +1993,12 @@ You can also use the parameters 'maximize' or 'minimize'.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("dirMiplib", "Set directory where the miplib 2003 problems are.",
-      CBC_PARAM_ACTION_DIRMIPLIB, 7, 1);
+    CbcOrClpParam p("dirMiplib",
+                    "Set directory where the miplib 2003 problems are.",
+                    CBC_PARAM_ACTION_DIRMIPLIB, 7, 1);
 
     p.setLonghelp(
-      "This sets the directory where the miplib 2003 problems reside. One can\
+        "This sets the directory where the miplib 2003 problems reside. One can\
  get the miplib problems from COIN-OR or from the main miplib site. This\
  parameter is used only when -miplib is passed to cbc. cbc will pick up the\
  miplib problems from this directory. If cbc is built without zlib support\
@@ -2053,10 +2008,10 @@ You can also use the parameters 'maximize' or 'minimize'.");
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("diveO!pt", "Diving options",
-      -1, 200000, CBC_PARAM_INT_DIVEOPT, 1);
+    CbcOrClpParam p("diveO!pt", "Diving options", -1, 200000,
+                    CBC_PARAM_INT_DIVEOPT, 1);
     p.setLonghelp(
-      "If >2 && <20 then modify diving options - \
+        "If >2 && <20 then modify diving options - \
 	 \n\t3 only at root and if no solution,  \
 	 \n\t4 only at root and if this heuristic has not got solution, \
 	 \n\t5 decay only if no solution, \
@@ -2068,11 +2023,11 @@ You can also use the parameters 'maximize' or 'minimize'.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("diveS!olves", "Diving solve option",
-      -1, 200000, CBC_PARAM_INT_DIVEOPTSOLVES, 1);
+    CbcOrClpParam p("diveS!olves", "Diving solve option", -1, 200000,
+                    CBC_PARAM_INT_DIVEOPTSOLVES, 1);
 
     p.setLonghelp(
-      "If >0 then do up to this many solves. However, the last digit is ignored \
+        "If >0 then do up to this many solves. However, the last digit is ignored \
 and used for extra options: \
       1-3 enables fixing of satisfied integer variables (but not at bound), \
       where 1 switches this off for that dive if the dive goes infeasible, \
@@ -2081,22 +2036,23 @@ and used for extra options: \
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("DivingS!ome", "Whether to try Diving heuristics",
-      "off", CBC_PARAM_STR_DIVINGS);
+    CbcOrClpParam p("DivingS!ome", "Whether to try Diving heuristics", "off",
+                    CBC_PARAM_STR_DIVINGS);
 
     p.append("on");
     p.append("both");
     p.append("before");
     p.setLonghelp(
-      "This switches on a random diving heuristic at various times. \
-One may prefer to individually turn diving heuristics on or off. "
-      HEURISTICS_LONGHELP);
-// C - Coefficient, F - Fractional, G - Guided, L - LineSearch, P - PseudoCost, V - VectorLength.
+        "This switches on a random diving heuristic at various times. \
+One may prefer to individually turn diving heuristics on or off. " HEURISTICS_LONGHELP);
+    // C - Coefficient, F - Fractional, G - Guided, L - LineSearch, P -
+    // PseudoCost, V - VectorLength.
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("DivingC!oefficient", "Whether to try Coefficient diving heuristic",
-      "off", CBC_PARAM_STR_DIVINGC);
+    CbcOrClpParam p("DivingC!oefficient",
+                    "Whether to try Coefficient diving heuristic", "off",
+                    CBC_PARAM_STR_DIVINGC);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -2104,8 +2060,9 @@ One may prefer to individually turn diving heuristics on or off. "
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("DivingF!ractional", "Whether to try Fractional diving heuristic",
-      "off", CBC_PARAM_STR_DIVINGF);
+    CbcOrClpParam p("DivingF!ractional",
+                    "Whether to try Fractional diving heuristic", "off",
+                    CBC_PARAM_STR_DIVINGF);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -2114,7 +2071,7 @@ One may prefer to individually turn diving heuristics on or off. "
   }
   {
     CbcOrClpParam p("DivingG!uided", "Whether to try Guided diving heuristic",
-      "off", CBC_PARAM_STR_DIVINGG);
+                    "off", CBC_PARAM_STR_DIVINGG);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -2122,8 +2079,9 @@ One may prefer to individually turn diving heuristics on or off. "
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("DivingL!ineSearch", "Whether to try Linesearch diving heuristic",
-      "off", CBC_PARAM_STR_DIVINGL);
+    CbcOrClpParam p("DivingL!ineSearch",
+                    "Whether to try Linesearch diving heuristic", "off",
+                    CBC_PARAM_STR_DIVINGL);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -2131,8 +2089,9 @@ One may prefer to individually turn diving heuristics on or off. "
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("DivingP!seudoCost", "Whether to try Pseudocost diving heuristic",
-      "off", CBC_PARAM_STR_DIVINGP);
+    CbcOrClpParam p("DivingP!seudoCost",
+                    "Whether to try Pseudocost diving heuristic", "off",
+                    CBC_PARAM_STR_DIVINGP);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -2140,8 +2099,9 @@ One may prefer to individually turn diving heuristics on or off. "
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("DivingV!ectorLength", "Whether to try Vectorlength diving heuristic",
-      "off", CBC_PARAM_STR_DIVINGV);
+    CbcOrClpParam p("DivingV!ectorLength",
+                    "Whether to try Vectorlength diving heuristic", "off",
+                    CBC_PARAM_STR_DIVINGV);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -2150,9 +2110,9 @@ One may prefer to individually turn diving heuristics on or off. "
   }
   {
     CbcOrClpParam p("doH!euristic", "Do heuristics before any preprocessing",
-      CBC_PARAM_ACTION_DOHEURISTIC, 3);
+                    CBC_PARAM_ACTION_DOHEURISTIC, 3);
     p.setLonghelp(
-      "Normally heuristics are done in branch and bound.  It may be useful to do them outside. \
+        "Normally heuristics are done in branch and bound.  It may be useful to do them outside. \
 Only those heuristics with 'both' or 'before' set will run.  \
 Doing this may also set cutoff, which can help with preprocessing.");
     parameters.push_back(p);
@@ -2160,11 +2120,12 @@ Doing this may also set cutoff, which can help with preprocessing.");
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("dualB!ound", "Initially algorithm acts as if no \
+    CbcOrClpParam p("dualB!ound",
+                    "Initially algorithm acts as if no \
 gap between bounds exceeds this value",
-      1.0e-20, 1.0e12, CLP_PARAM_DBL_DUALBOUND);
+                    1.0e-20, 1.0e12, CLP_PARAM_DBL_DUALBOUND);
     p.setLonghelp(
-      "The dual algorithm in Clp is a single phase algorithm as opposed to a two phase\
+        "The dual algorithm in Clp is a single phase algorithm as opposed to a two phase\
  algorithm where you first get feasible then optimal.  If a problem has both upper and\
  lower bounds then it is trivial to get dual feasible by setting non basic variables\
  to correct bound.  If the gap between the upper and lower bounds of a variable is more\
@@ -2177,23 +2138,22 @@ gap between bounds exceeds this value",
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("dualize", "Solves dual reformulation",
-      0, 4, CLP_PARAM_INT_DUALIZE, 1);
-    p.setLonghelp(
-      "Don't even think about it.");
+    CbcOrClpParam p("dualize", "Solves dual reformulation", 0, 4,
+                    CLP_PARAM_INT_DUALIZE, 1);
+    p.setLonghelp("Don't even think about it.");
 
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("dualP!ivot", "Dual pivot choice algorithm",
-      "auto!matic", CLP_PARAM_STR_DUALPIVOT, 7, 1);
+    CbcOrClpParam p("dualP!ivot", "Dual pivot choice algorithm", "auto!matic",
+                    CLP_PARAM_STR_DUALPIVOT, 7, 1);
     p.append("dant!zig");
     p.append("partial");
     p.append("steep!est");
     p.append("PEsteep!est");
     p.append("PEdantzig");
     p.setLonghelp(
-      "The Dantzig method is simple but its use is deprecated.  Steepest is the method of choice and there\
+        "The Dantzig method is simple but its use is deprecated.  Steepest is the method of choice and there\
  are two variants which keep all weights updated but only scan a subset each iteration.\
  Partial switches this on while automatic decides at each iteration based on information\
  about the factorization.\
@@ -2203,20 +2163,21 @@ gap between bounds exceeds this value",
   }
   {
     CbcOrClpParam p("dualS!implex", "Do dual simplex algorithm",
-      CLP_PARAM_ACTION_DUALSIMPLEX);
+                    CLP_PARAM_ACTION_DUALSIMPLEX);
     p.setLonghelp(
-      "This command solves the continuous relaxation of the current model using the dual steepest edge algorithm.\
+        "This command solves the continuous relaxation of the current model using the dual steepest edge algorithm.\
 The time and iterations may be affected by settings such as presolve, scaling, crash\
  and also by dual pivot method, fake bound on variables and dual and primal tolerances.");
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("dualT!olerance", "For an optimal solution \
+    CbcOrClpParam p("dualT!olerance",
+                    "For an optimal solution \
 no dual infeasibility may exceed this value",
-      1.0e-20, COIN_DBL_MAX, CLP_PARAM_DBL_DUALTOLERANCE);
+                    1.0e-20, COIN_DBL_MAX, CLP_PARAM_DBL_DUALTOLERANCE);
     p.setLonghelp(
-      "Normally the default tolerance is fine, but one may want to increase it a\
+        "Normally the default tolerance is fine, but one may want to increase it a\
  bit if the dual simplex algorithm seems to be having a hard time.  One method which can be faster is \
 to use a large tolerance e.g. 1.0e-4 and the dual simplex algorithm and then to clean up the problem using the primal simplex algorithm with the \
 correct tolerance (remembering to switch off presolve for this final short clean up phase).");
@@ -2225,76 +2186,76 @@ correct tolerance (remembering to switch off presolve for this final short clean
 #ifdef COIN_HAS_CBC
   {
     CbcOrClpParam p("dw!Heuristic", "Whether to try Dantzig Wolfe heuristic",
-      "off", CBC_PARAM_STR_DW);
+                    "off", CBC_PARAM_STR_DW);
     p.append("on");
     p.append("both");
     p.append("before");
     p.setLonghelp(
-      "This heuristic is very very compute intensive. It tries to find a Dantzig Wolfe structure and use that. "
-      HEURISTICS_LONGHELP);
+        "This heuristic is very very compute intensive. It tries to find a "
+        "Dantzig Wolfe structure and use that. " HEURISTICS_LONGHELP);
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CLP
   {
     CbcOrClpParam p("either!Simplex", "Do dual or primal simplex algorithm",
-      CLP_PARAM_ACTION_EITHERSIMPLEX);
+                    CLP_PARAM_ACTION_EITHERSIMPLEX);
     p.setLonghelp(
-      "This command solves the continuous relaxation of the current model using the dual or primal algorithm,\
+        "This command solves the continuous relaxation of the current model using the dual or primal algorithm,\
  based on a dubious analysis of model.");
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("end", "Stops clp execution",
-      CLP_PARAM_ACTION_EXIT);
+    CbcOrClpParam p("end", "Stops clp execution", CLP_PARAM_ACTION_EXIT);
     p.setLonghelp(
-      "This stops execution ; end, exit, quit and stop are synonyms");
+        "This stops execution ; end, exit, quit and stop are synonyms");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("environ!ment", "Read commands from environment",
-      CLP_PARAM_ACTION_ENVIRONMENT, 7, 0);
+                    CLP_PARAM_ACTION_ENVIRONMENT, 7, 0);
     p.setLonghelp(
-      "This starts reading from environment variable CBC_CLP_ENVIRONMENT.");
+        "This starts reading from environment variable CBC_CLP_ENVIRONMENT.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("error!sAllowed", "Whether to allow import errors",
-      "off", CLP_PARAM_STR_ERRORSALLOWED, 3);
+    CbcOrClpParam p("error!sAllowed", "Whether to allow import errors", "off",
+                    CLP_PARAM_STR_ERRORSALLOWED, 3);
 
     p.append("on");
     p.setLonghelp(
-      "The default is not to use any model which had errors when reading the mps file.\
+        "The default is not to use any model which had errors when reading the mps file.\
   Setting this to 'on' will allow all errors from which the code can recover\
  simply by ignoring the error.  There are some errors from which the code can not recover \
 e.g. no ENDATA.  This has to be set before import i.e. -errorsAllowed on -import xxxxxx.mps.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("exit", "Stops clp execution",
-      CLP_PARAM_ACTION_EXIT);
+    CbcOrClpParam p("exit", "Stops clp execution", CLP_PARAM_ACTION_EXIT);
     p.setLonghelp(
-      "This stops the execution of Clp, end, exit, quit and stop are synonyms");
+        "This stops the execution of Clp, end, exit, quit and stop are "
+        "synonyms");
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("exper!iment", "Whether to use testing features",
-      -1, 200000, CBC_PARAM_INT_EXPERIMENT, 0);
+    CbcOrClpParam p("exper!iment", "Whether to use testing features", -1,
+                    200000, CBC_PARAM_INT_EXPERIMENT, 0);
     p.setLonghelp(
-      "Defines how adventurous you want to be in using new ideas. \
+        "Defines how adventurous you want to be in using new ideas. \
 0 then no new ideas, 1 fairly sensible, 2 a bit dubious, 3 you are on your own!");
 
     p.setIntValue(0);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("expensive!Strong", "Whether to do even more strong branching",
-      0, COIN_INT_MAX, CBC_PARAM_INT_STRONG_STRATEGY, 0);
+    CbcOrClpParam p("expensive!Strong",
+                    "Whether to do even more strong branching", 0, COIN_INT_MAX,
+                    CBC_PARAM_INT_STRONG_STRATEGY, 0);
 
     p.setLonghelp(
-      "Strategy for extra strong branching. \
+        "Strategy for extra strong branching. \
 0 is normal strong branching. \
 1, 2, 4, and 6 does strong branching on all fractional variables if \
 at the root node (1), \
@@ -2310,10 +2271,10 @@ If the values >= 100, then above rules are applied to value%100.");
 #endif
   {
     CbcOrClpParam p("export", "Export model as mps file",
-      CLP_PARAM_ACTION_EXPORT);
+                    CLP_PARAM_ACTION_EXPORT);
 
     p.setLonghelp(
-      "This will write an MPS format file to the given file name.  It will use the default\
+        "This will write an MPS format file to the given file name.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to 'default.mps'.  \
 It can be useful to get rid of the original names and go over to using Rnnnnnnn and Cnnnnnnn.  This can be done by setting 'keepnames' off before importing mps file.");
@@ -2321,30 +2282,30 @@ It can be useful to get rid of the original names and go over to using Rnnnnnnn 
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("extra1", "Extra integer parameter 1",
-      -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_EXTRA1, 0);
+    CbcOrClpParam p("extra1", "Extra integer parameter 1", -COIN_INT_MAX,
+                    COIN_INT_MAX, CBC_PARAM_INT_EXTRA1, 0);
     p.setIntValue(-1);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("extra2", "Extra integer parameter 2",
-      -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_EXTRA2, 0);
+    CbcOrClpParam p("extra2", "Extra integer parameter 2", -COIN_INT_MAX,
+                    COIN_INT_MAX, CBC_PARAM_INT_EXTRA2, 0);
     p.setIntValue(-1);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("extra3", "Extra integer parameter 3",
-      -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_EXTRA3, 0);
+    CbcOrClpParam p("extra3", "Extra integer parameter 3", -COIN_INT_MAX,
+                    COIN_INT_MAX, CBC_PARAM_INT_EXTRA3, 0);
     p.setIntValue(-1);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("extra4", "Extra integer parameter 4",
-      -1, COIN_INT_MAX, CBC_PARAM_INT_EXTRA4, 0);
+    CbcOrClpParam p("extra4", "Extra integer parameter 4", -1, COIN_INT_MAX,
+                    CBC_PARAM_INT_EXTRA4, 0);
 
     p.setIntValue(-1);
     p.setLonghelp(
-      "This switches on yet more special options!! \
+        "This switches on yet more special options!! \
 The bottom digit is a strategy when to used shadow price stuff e.g. 3 \
 means use until a solution is found.  The next two digits say what sort \
 of dual information to use.  After that it goes back to powers of 2 so -\n\
@@ -2355,27 +2316,29 @@ of dual information to use.  After that it goes back to powers of 2 so -\n\
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("extraV!ariables", "Allow creation of extra integer variables",
-      -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_EXTRA_VARIABLES, 0);
+    CbcOrClpParam p("extraV!ariables",
+                    "Allow creation of extra integer variables", -COIN_INT_MAX,
+                    COIN_INT_MAX, CBC_PARAM_INT_EXTRA_VARIABLES, 0);
     p.setIntValue(0);
     p.setLonghelp(
-      "Switches on a trivial re-formulation that introduces extra integer variables to group together variables with same cost.");
+        "Switches on a trivial re-formulation that introduces extra integer "
+        "variables to group together variables with same cost.");
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("fact!orization", "Which factorization to use",
-      "normal", CLP_PARAM_STR_FACTORIZATION);
+    CbcOrClpParam p("fact!orization", "Which factorization to use", "normal",
+                    CLP_PARAM_STR_FACTORIZATION);
     p.append("dense");
     p.append("simple");
     p.append("osl");
     p.setLonghelp(
 #ifndef ABC_INHERIT
-      "The default is to use the normal CoinFactorization, but \
+        "The default is to use the normal CoinFactorization, but \
 other choices are a dense one, OSL's, or one designed for small problems."
 #else
-      "Normally the default is to use the normal CoinFactorization, but \
+        "Normally the default is to use the normal CoinFactorization, but \
 other choices are a dense one, OSL's, or one designed for small problems. \
 However if at Aboca then the default is CoinAbcFactorization and other choices are \
 a dense one, one designed for small problems or if enabled a long factorization."
@@ -2384,37 +2347,38 @@ a dense one, one designed for small problems or if enabled a long factorization.
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("fakeB!ound", "All bounds <= this value - DEBUG",
-      1.0, 1.0e15, CLP_PARAM_ACTION_FAKEBOUND, 0);
+    CbcOrClpParam p("fakeB!ound", "All bounds <= this value - DEBUG", 1.0,
+                    1.0e15, CLP_PARAM_ACTION_FAKEBOUND, 0);
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("feas!ibilityPump", "Whether to try the Feasibility Pump heuristic",
-      "off", CBC_PARAM_STR_FPUMP);
+    CbcOrClpParam p("feas!ibilityPump",
+                    "Whether to try the Feasibility Pump heuristic", "off",
+                    CBC_PARAM_STR_FPUMP);
 
     p.append("on");
     p.append("both");
     p.append("before");
     p.setLonghelp(
-      "This heuristic is due to Fischetti, Glover, and Lodi \
+        "This heuristic is due to Fischetti, Glover, and Lodi \
 and uses a sequence of LPs to try and get an integer feasible solution. \
-Some fine tuning is available by options passFeasibilityPump and pumpTune. "
-      HEURISTICS_LONGHELP);
+Some fine tuning is available by options passFeasibilityPump and pumpTune. " HEURISTICS_LONGHELP);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("fix!OnDj", "Try heuristic based on fixing variables with \
+    CbcOrClpParam p("fix!OnDj",
+                    "Try heuristic based on fixing variables with \
 reduced costs greater than this",
-      -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_DJFIX, 1);
+                    -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_DJFIX, 1);
     p.setLonghelp(
-      "If this is set integer variables with reduced costs greater than this will be fixed \
+        "If this is set integer variables with reduced costs greater than this will be fixed \
 before branch and bound - use with extreme caution!");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("flow!CoverCuts", "Whether to use Flow Cover cuts",
-      "off", CBC_PARAM_STR_FLOWCUTS);
+    CbcOrClpParam p("flow!CoverCuts", "Whether to use Flow Cover cuts", "off",
+                    CBC_PARAM_STR_FLOWCUTS);
     p.append("on");
     p.append("root");
     p.append("ifmove");
@@ -2422,33 +2386,42 @@ before branch and bound - use with extreme caution!");
     p.append("onglobal");
     p.setFakeKeyWord(3);
     p.setLonghelp(CUTS_LONGHELP
-      " Reference: https://github.com/coin-or/Cgl/wiki/CglFlowCover"); // Can also enter testing values by plusnn (==ifmove)
+                  " Reference: "
+                  "https://github.com/coin-or/Cgl/wiki/CglFlowCover");  // Can
+                                                                        // also
+                                                                        // enter
+                                                                        // testing
+                                                                        // values
+                                                                        // by
+                                                                        // plusnn
+                                                                        // (==ifmove)
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("force!Solution", "Whether to use given solution as crash for BAB",
-      -1, 20000000, CLP_PARAM_INT_USESOLUTION);
+    CbcOrClpParam p("force!Solution",
+                    "Whether to use given solution as crash for BAB", -1,
+                    20000000, CLP_PARAM_INT_USESOLUTION);
     p.setIntValue(-1);
     p.setLonghelp(
-      "-1 off.  If 1 then tries to branch to solution given by AMPL or priorities file. \
+        "-1 off.  If 1 then tries to branch to solution given by AMPL or priorities file. \
 If 0 then just tries to set as best solution \
 If >1 then also does that many nodes on fixed problem.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("fraction!forBAB", "Fraction in feasibility pump",
-      1.0e-5, 1.1, CBC_PARAM_DBL_SMALLBAB, 1);
+    CbcOrClpParam p("fraction!forBAB", "Fraction in feasibility pump", 1.0e-5,
+                    1.1, CBC_PARAM_DBL_SMALLBAB, 1);
     p.setDoubleValue(0.5);
     p.setLonghelp(
-      "After a pass in the feasibility pump, variables which have not moved \
+        "After a pass in the feasibility pump, variables which have not moved \
 about are fixed and if the preprocessed model is smaller than this fraction of the original problem, \
 a few nodes of branch and bound are done on the reduced problem.");
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("gamma!(Delta)", "Whether to regularize barrier",
-      "off", CLP_PARAM_STR_GAMMA, 7, 1);
+    CbcOrClpParam p("gamma!(Delta)", "Whether to regularize barrier", "off",
+                    CLP_PARAM_STR_GAMMA, 7, 1);
     p.append("on");
     p.append("gamma");
     p.append("delta");
@@ -2460,8 +2433,8 @@ a few nodes of branch and bound are done on the reduced problem.");
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("GMI!Cuts", "Whether to use alternative Gomory cuts",
-      "off", CBC_PARAM_STR_GMICUTS);
+    CbcOrClpParam p("GMI!Cuts", "Whether to use alternative Gomory cuts", "off",
+                    CBC_PARAM_STR_GMICUTS);
 
     p.append("on");
     p.append("root");
@@ -2474,12 +2447,13 @@ a few nodes of branch and bound are done on the reduced problem.");
     p.append("forceLongOn");
     p.append("longendonly");
     p.setLonghelp(CUTS_LONGHELP
-      " This version is by Giacomo Nannicini and may be more robust than gomoryCuts.");
+                  " This version is by Giacomo Nannicini and may be more "
+                  "robust than gomoryCuts.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("gomory!Cuts", "Whether to use Gomory cuts",
-      "off", CBC_PARAM_STR_GOMORYCUTS);
+    CbcOrClpParam p("gomory!Cuts", "Whether to use Gomory cuts", "off",
+                    CBC_PARAM_STR_GOMORYCUTS);
 
     p.append("on");
     p.append("root");
@@ -2490,74 +2464,77 @@ a few nodes of branch and bound are done on the reduced problem.");
     p.append("forceLongOn");
     p.append("long");
     p.setLonghelp(
-      "The original cuts - beware of imitations!  Having gone out of favor, \
+        "The original cuts - beware of imitations!  Having gone out of favor, \
 they are now more fashionable as LP solvers are more robust and they interact well \
 with other cuts.  They will almost always give cuts (although in this executable \
 they are limited as to number of variables in cut).  However the cuts may be dense \
-so it is worth experimenting (Long allows any length). "
-    CUTS_LONGHELP
-    " Reference: https://github.com/coin-or/Cgl/wiki/CglGomory");
+so it is worth experimenting (Long allows any length). " CUTS_LONGHELP
+        " Reference: https://github.com/coin-or/Cgl/wiki/CglGomory");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("greedy!Heuristic", "Whether to use a greedy heuristic",
-      "off", CBC_PARAM_STR_GREEDY);
+                    "off", CBC_PARAM_STR_GREEDY);
 
     p.append("on");
     p.append("both");
     p.append("before");
-    //p.append("root");
+    // p.append("root");
     p.setLonghelp(
-      "This heuristic tries to obtain a feasible solution by just fixing a percentage of variables and then try a small branch and cut run. "
-      HEURISTICS_LONGHELP);
+        "This heuristic tries to obtain a feasible solution by just fixing a "
+        "percentage of variables and then try a small branch and cut "
+        "run. " HEURISTICS_LONGHELP);
     parameters.push_back(p);
   }
 #endif
   {
     CbcOrClpParam p("gsolu!tion", "Puts glpk solution to file",
-      CLP_PARAM_ACTION_GMPL_SOLUTION);
+                    CLP_PARAM_ACTION_GMPL_SOLUTION);
 
     p.setLonghelp(
-      "Will write a glpk solution file to the given file name.  It will use the default \
+        "Will write a glpk solution file to the given file name.  It will use the default \
 directory given by 'directory'.  A name of '$' will use the previous value for the \
 name.  This is initialized to 'stdout' (this defaults to ordinary solution if stdout). \
 If problem created from gmpl model - will do any reports.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("guess", "Guesses at good parameters", CLP_PARAM_ACTION_GUESS, 7);
+    CbcOrClpParam p("guess", "Guesses at good parameters",
+                    CLP_PARAM_ACTION_GUESS, 7);
     p.setLonghelp(
-    "This looks at model statistics and does an initial solve \
+        "This looks at model statistics and does an initial solve \
 setting some parameters which may help you to think of possibilities.");
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("heur!isticsOnOff", "Switches most primal heuristics on or off",
-      "off", CBC_PARAM_STR_HEURISTICSTRATEGY);
+    CbcOrClpParam p("heur!isticsOnOff",
+                    "Switches most primal heuristics on or off", "off",
+                    CBC_PARAM_STR_HEURISTICSTRATEGY);
     p.append("on");
     p.setLonghelp(
-      "This option can be used to switch on or off all heuristics that search for feasible solutions,\
+        "This option can be used to switch on or off all heuristics that search for feasible solutions,\
       except for the local tree search, as it dramatically alters the search.\
       Then individual heuristics can be turned off or on.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("help", "Print out version, non-standard options and some help",
-      CLP_PARAM_ACTION_HELP, 3);
+    CbcOrClpParam p("help",
+                    "Print out version, non-standard options and some help",
+                    CLP_PARAM_ACTION_HELP, 3);
     p.setLonghelp(
-      "This prints out some help to get user started.  If you have printed this then \
+        "This prints out some help to get user started.  If you have printed this then \
 you should be past that stage:-)");
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("hOp!tions", "Heuristic options",
-      -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_HOPTIONS, 1);
+    CbcOrClpParam p("hOp!tions", "Heuristic options", -COIN_INT_MAX,
+                    COIN_INT_MAX, CBC_PARAM_INT_HOPTIONS, 1);
     p.setIntValue(0);
     p.setLonghelp(
-      "Value 1 stops heuristics immediately if the allowable gap has been reached. \
+        "Value 1 stops heuristics immediately if the allowable gap has been reached. \
 Other values are for the feasibility pump - \
 2 says do exact number of passes given, \
 4 only applies if an initial cutoff has been given and says relax after 50 passes, \
@@ -2565,18 +2542,18 @@ while 8 will adapt the cutoff rhs after the first solution if it looks as if the
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("hot!StartMaxIts", "Maximum iterations on hot start",
-      0, COIN_INT_MAX, CBC_PARAM_INT_MAXHOTITS);
+    CbcOrClpParam p("hot!StartMaxIts", "Maximum iterations on hot start", 0,
+                    COIN_INT_MAX, CBC_PARAM_INT_MAXHOTITS);
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("idiot!Crash", "Whether to try idiot crash",
-      -1, COIN_INT_MAX, CLP_PARAM_INT_IDIOT);
+    CbcOrClpParam p("idiot!Crash", "Whether to try idiot crash", -1,
+                    COIN_INT_MAX, CLP_PARAM_INT_IDIOT);
 
     p.setLonghelp(
-      "This is a type of 'crash' which works well on some homogeneous problems.\
+        "This is a type of 'crash' which works well on some homogeneous problems.\
  It works best on problems with unit elements and rhs but will do something to any \
  model.  It should only be used before the primal simplex algorithm.  It can be set to -1 when the code \
  decides for itself whether to use it, 0 to switch off, or n > 0 to do n passes.");
@@ -2585,9 +2562,9 @@ while 8 will adapt the cutoff rhs after the first solution if it looks as if the
 #endif
   {
     CbcOrClpParam p("import", "Import model from mps file",
-      CLP_PARAM_ACTION_IMPORT, 3);
+                    CLP_PARAM_ACTION_IMPORT, 3);
     p.setLonghelp(
-      "This will read an MPS format file from the given file name.  It will use the default\
+        "This will read an MPS format file from the given file name.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to '', i.e. it must be set.  If you have libgz then it can read compressed\
  files 'xxxxxxxx.gz' or 'xxxxxxxx.bz2'.  \
@@ -2596,12 +2573,13 @@ If 'keepnames' is off, then names are dropped -> Rnnnnnnn and Cnnnnnnn.");
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("inc!rement", "A valid solution must be at least this \
+    CbcOrClpParam p("inc!rement",
+                    "A valid solution must be at least this \
 much better than last integer solution",
-      -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_INCREMENT);
+                    -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_INCREMENT);
 
     p.setLonghelp(
-      "Whenever a solution is found the bound on the objective value for new solutions is set to the\
+        "Whenever a solution is found the bound on the objective value for new solutions is set to the\
       objective function of the found solution (in a minimization sense) plus this.  If it is not set then CBC will try and work one out, e.g. if \
 all objective coefficients are multiples of 0.01 and only integer variables have entries in \
 the objective function, then the increment can be set to 0.01.  Be careful if setting this to a negative value!");
@@ -2609,52 +2587,55 @@ the objective function, then the increment can be set to 0.01.  Be careful if se
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("inf!easibilityWeight", "Each integer infeasibility is expected \
+    CbcOrClpParam p("inf!easibilityWeight",
+                    "Each integer infeasibility is expected \
 to cost this much",
-      0.0, COIN_DBL_MAX, CBC_PARAM_DBL_INFEASIBILITYWEIGHT, 1);
+                    0.0, COIN_DBL_MAX, CBC_PARAM_DBL_INFEASIBILITYWEIGHT, 1);
     p.setLonghelp(
-      "A primitive way of deciding which node to explore next.  Satisfying each integer infeasibility is \
+        "A primitive way of deciding which node to explore next.  Satisfying each integer infeasibility is \
 expected to cost this much.");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("initialS!olve", "Solve to continuous",
-      CLP_PARAM_ACTION_SOLVECONTINUOUS);
+                    CLP_PARAM_ACTION_SOLVECONTINUOUS);
 
     p.setLonghelp(
-      "This just solves the problem to continuous - without adding any cuts");
+        "This just solves the problem to continuous - without adding any cuts");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("integerT!olerance", "For a feasible solution \
+    CbcOrClpParam p("integerT!olerance",
+                    "For a feasible solution \
 no integer variable may be more than this away from an integer value",
-      1.0e-20, 0.5, CBC_PARAM_DBL_INTEGERTOLERANCE);
+                    1.0e-20, 0.5, CBC_PARAM_DBL_INTEGERTOLERANCE);
     p.setLonghelp(
-      "Beware of setting this smaller than the primal feasibility tolerance.");
+        "Beware of setting this smaller than the primal feasibility "
+        "tolerance.");
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("keepN!ames", "Whether to keep names from import",
-      "on", CLP_PARAM_STR_KEEPNAMES);
+    CbcOrClpParam p("keepN!ames", "Whether to keep names from import", "on",
+                    CLP_PARAM_STR_KEEPNAMES);
     p.append("off");
     p.setLonghelp(
-      "It saves space to get rid of names so if you need to you can set this to off.  \
+        "It saves space to get rid of names so if you need to you can set this to off.  \
 This needs to be set before the import of model - so -keepnames off -import xxxxx.mps.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("KKT", "Whether to use KKT factorization in barrier",
-      "off", CLP_PARAM_STR_KKT, 7, 1);
+    CbcOrClpParam p("KKT", "Whether to use KKT factorization in barrier", "off",
+                    CLP_PARAM_STR_KKT, 7, 1);
     p.append("on");
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("knapsack!Cuts", "Whether to use Knapsack cuts",
-      "off", CBC_PARAM_STR_KNAPSACKCUTS);
+    CbcOrClpParam p("knapsack!Cuts", "Whether to use Knapsack cuts", "off",
+                    CBC_PARAM_STR_KNAPSACKCUTS);
 
     p.append("on");
     p.append("root");
@@ -2662,13 +2643,14 @@ This needs to be set before the import of model - so -keepnames off -import xxxx
     p.append("forceOn");
     p.append("onglobal");
     p.append("forceandglobal");
-    p.setLonghelp(CUTS_LONGHELP
-      " Reference: https://github.com/coin-or/Cgl/wiki/CglKnapsackCover");
+    p.setLonghelp(
+        CUTS_LONGHELP
+        " Reference: https://github.com/coin-or/Cgl/wiki/CglKnapsackCover");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("lagomory!Cuts", "Whether to use Lagrangean Gomory cuts",
-      "off", CBC_PARAM_STR_LAGOMORYCUTS);
+                    "off", CBC_PARAM_STR_LAGOMORYCUTS);
     p.append("endonlyroot");
     p.append("endcleanroot");
     p.append("root");
@@ -2685,7 +2667,7 @@ This needs to be set before the import of model - so -keepnames off -import xxxx
     p.append("cleanaswellroot");
     p.append("bothaswellroot");
     p.setLonghelp(
-      "This is a gross simplification of 'A Relax-and-Cut Framework for Gomory's Mixed-Integer Cuts' \
+        "This is a gross simplification of 'A Relax-and-Cut Framework for Gomory's Mixed-Integer Cuts' \
 by Matteo Fischetti & Domenico Salvagnin.  This simplification \
 just uses original constraints while modifying objective using other cuts. \
 So you don't use messy constraints generated by Gomory etc. \
@@ -2698,7 +2680,7 @@ The length options for gomory cuts are used.");
   }
   {
     CbcOrClpParam p("latwomir!Cuts", "Whether to use Lagrangean TwoMir cuts",
-      "off", CBC_PARAM_STR_LATWOMIRCUTS);
+                    "off", CBC_PARAM_STR_LATWOMIRCUTS);
 
     p.append("endonlyroot");
     p.append("endcleanroot");
@@ -2713,73 +2695,76 @@ The length options for gomory cuts are used.");
     p.append("cleaninstead");
     p.append("bothinstead");
     p.setLonghelp(
-      "This is a Lagrangean relaxation for TwoMir cuts.  See \
+        "This is a Lagrangean relaxation for TwoMir cuts.  See \
   lagomoryCuts for description of options.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("lift!AndProjectCuts", "Whether to use Lift and Project cuts",
-      "off", CBC_PARAM_STR_LANDPCUTS);
+    CbcOrClpParam p("lift!AndProjectCuts",
+                    "Whether to use Lift and Project cuts", "off",
+                    CBC_PARAM_STR_LANDPCUTS);
 
     p.append("on");
     p.append("root");
     p.append("ifmove");
     p.append("forceOn");
-    p.setLonghelp(
-      "These cuts may be expensive to compute. "
-      CUTS_LONGHELP
-      " Reference: https://github.com/coin-or/Cgl/wiki/CglLandP");
+    p.setLonghelp("These cuts may be expensive to compute. " CUTS_LONGHELP
+                  " Reference: https://github.com/coin-or/Cgl/wiki/CglLandP");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("local!TreeSearch", "Whether to use local tree search when a solution is found",
-      "off", CBC_PARAM_STR_LOCALTREE);
+    CbcOrClpParam p("local!TreeSearch",
+                    "Whether to use local tree search when a solution is found",
+                    "off", CBC_PARAM_STR_LOCALTREE);
     p.append("on");
     p.setLonghelp(
-      "The heuristic is from Fischetti and Lodi and is not really a heuristic although it can be used as one \
+        "The heuristic is from Fischetti and Lodi and is not really a heuristic although it can be used as one \
 (with limited functionality).  It is not switched on when heuristics are switched on.");
     parameters.push_back(p);
   }
 #endif
   {
 #ifndef COIN_HAS_CBC
-    CbcOrClpParam p("log!Level", "Level of detail in Solver output",
-      -1, COIN_INT_MAX, CLP_PARAM_INT_SOLVERLOGLEVEL);
+    CbcOrClpParam p("log!Level", "Level of detail in Solver output", -1,
+                    COIN_INT_MAX, CLP_PARAM_INT_SOLVERLOGLEVEL);
     parameters.push_back(p);
 #else
-    CbcOrClpParam p("log!Level", "Level of detail in Coin branch and Cut output",
-      -63, 63, CLP_PARAM_INT_LOGLEVEL);
+    CbcOrClpParam p("log!Level",
+                    "Level of detail in Coin branch and Cut output", -63, 63,
+                    CLP_PARAM_INT_LOGLEVEL);
     p.setIntValue(1);
 #endif
     p.setLonghelp(
-      "If 0 then there should be no output in normal circumstances.  1 is probably the best\
+        "If 0 then there should be no output in normal circumstances.  1 is probably the best\
  value for most uses, while 2 and 3 give more information.");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("max!imize", "Set optimization direction to maximize",
-      CLP_PARAM_ACTION_MAXIMIZE, 7);
+                    CLP_PARAM_ACTION_MAXIMIZE, 7);
     p.setLonghelp(
-      "The default is minimize - use 'maximize' for maximization.\n\
+        "The default is minimize - use 'maximize' for maximization.\n\
 You can also use the parameters 'direction maximize'.");
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("maxF!actor", "Maximum number of iterations between \
+    CbcOrClpParam p("maxF!actor",
+                    "Maximum number of iterations between \
 refactorizations",
-      1, COIN_INT_MAX, CLP_PARAM_INT_MAXFACTOR);
+                    1, COIN_INT_MAX, CLP_PARAM_INT_MAXFACTOR);
     p.setLonghelp(
-      "If this is left at its default value of 200 then CLP will guess a\
+        "If this is left at its default value of 200 then CLP will guess a\
  value to use.  CLP may decide to re-factorize earlier for accuracy.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("maxIt!erations", "Maximum number of iterations before \
+    CbcOrClpParam p("maxIt!erations",
+                    "Maximum number of iterations before \
 stopping",
-      0, COIN_INT_MAX, CLP_PARAM_INT_MAXITERATION);
+                    0, COIN_INT_MAX, CLP_PARAM_INT_MAXITERATION);
     p.setLonghelp(
-      "This can be used for testing purposes.  The corresponding library call\n\
+        "This can be used for testing purposes.  The corresponding library call\n\
       \tsetMaximumIterations(value)\n can be useful.  If the code stops on\
  seconds or by an interrupt this will be treated as stopping on maximum iterations.  This is ignored in branchAndCut - use maxN!odes.");
     parameters.push_back(p);
@@ -2787,76 +2772,80 @@ stopping",
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("maxN!odes", "Maximum number of nodes to do",
-      -1, COIN_INT_MAX, CBC_PARAM_INT_MAXNODES);
+    CbcOrClpParam p("maxN!odes", "Maximum number of nodes to do", -1,
+                    COIN_INT_MAX, CBC_PARAM_INT_MAXNODES);
     p.setLonghelp(
-      "This is a repeatable way to limit search.  Normally using time is easier \
+        "This is a repeatable way to limit search.  Normally using time is easier \
 but then the results may not be repeatable.");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("maxSaved!Solutions", "Maximum number of solutions to save",
-      0, COIN_INT_MAX, CBC_PARAM_INT_MAXSAVEDSOLS);
-    p.setLonghelp(
-      "Number of solutions to save.");
+                    0, COIN_INT_MAX, CBC_PARAM_INT_MAXSAVEDSOLS);
+    p.setLonghelp("Number of solutions to save.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("maxSo!lutions", "Maximum number of feasible solutions to get",
-      1, COIN_INT_MAX, CBC_PARAM_INT_MAXSOLS);
+    CbcOrClpParam p("maxSo!lutions",
+                    "Maximum number of feasible solutions to get", 1,
+                    COIN_INT_MAX, CBC_PARAM_INT_MAXSOLS);
     p.setLonghelp(
-      "You may want to stop after (say) two solutions or an hour.  \
+        "You may want to stop after (say) two solutions or an hour.  \
 This is checked every node in tree, so it is possible to get more solutions from heuristics.");
     parameters.push_back(p);
   }
 #endif
   {
     CbcOrClpParam p("min!imize", "Set optimization direction to minimize",
-      CLP_PARAM_ACTION_MINIMIZE, 7);
+                    CLP_PARAM_ACTION_MINIMIZE, 7);
     p.setLonghelp(
-      "The default is minimize - use 'maximize' for maximization.\n\
+        "The default is minimize - use 'maximize' for maximization.\n\
 This should only be necessary if you have previously set maximization \
 You can also use the parameters 'direction minimize'.");
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("mipO!ptions", "Dubious options for mip",
-      0, COIN_INT_MAX, CBC_PARAM_INT_MIPOPTIONS, 0);
+    CbcOrClpParam p("mipO!ptions", "Dubious options for mip", 0, COIN_INT_MAX,
+                    CBC_PARAM_INT_MIPOPTIONS, 0);
     p.setIntValue(1057);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("more!MipOptions", "More dubious options for mip",
-      -1, COIN_INT_MAX, CBC_PARAM_INT_MOREMIPOPTIONS, 0);
+    CbcOrClpParam p("more!MipOptions", "More dubious options for mip", -1,
+                    COIN_INT_MAX, CBC_PARAM_INT_MOREMIPOPTIONS, 0);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("more2!MipOptions", "More more dubious options for mip",
-      -1, COIN_INT_MAX, CBC_PARAM_INT_MOREMOREMIPOPTIONS, 0);
+    CbcOrClpParam p("more2!MipOptions", "More more dubious options for mip", -1,
+                    COIN_INT_MAX, CBC_PARAM_INT_MOREMOREMIPOPTIONS, 0);
     p.setIntValue(0);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("mixed!IntegerRoundingCuts", "Whether to use Mixed Integer Rounding cuts",
-      "off", CBC_PARAM_STR_MIXEDCUTS);
+    CbcOrClpParam p("mixed!IntegerRoundingCuts",
+                    "Whether to use Mixed Integer Rounding cuts", "off",
+                    CBC_PARAM_STR_MIXEDCUTS);
 
     p.append("on");
     p.append("root");
     p.append("ifmove");
     p.append("forceOn");
     p.append("onglobal");
-    p.setLonghelp(CUTS_LONGHELP
-      " Reference: https://github.com/coin-or/Cgl/wiki/CglMixedIntegerRounding2");
+    p.setLonghelp(
+        CUTS_LONGHELP
+        " Reference: "
+        "https://github.com/coin-or/Cgl/wiki/CglMixedIntegerRounding2");
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("mess!ages", "Controls if Clpnnnn is printed",
-      "off", CLP_PARAM_STR_MESSAGES);
+    CbcOrClpParam p("mess!ages", "Controls if Clpnnnn is printed", "off",
+                    CLP_PARAM_STR_MESSAGES);
 
     p.append("on");
-    p.setLonghelp("The default behavior is to put out messages such as:\n\
+    p.setLonghelp(
+        "The default behavior is to put out messages such as:\n\
    Clp0005 2261  Objective 109.024 Primal infeas 944413 (758)\n\
 but this program turns this off to make it look more friendly.  It can be useful\
  to turn them back on if you want to be able to 'grep' for particular messages or if\
@@ -2865,14 +2854,15 @@ but this program turns this off to make it look more friendly.  It can be useful
   }
   {
     CbcOrClpParam p("miplib", "Do some of miplib test set",
-      CBC_PARAM_ACTION_MIPLIB, 3, 1);
+                    CBC_PARAM_ACTION_MIPLIB, 3, 1);
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
     CbcOrClpParam p("mips!tart", "reads an initial feasible solution from file",
-      CBC_PARAM_ACTION_MIPSTART);
-    p.setLonghelp("\
+                    CBC_PARAM_ACTION_MIPSTART);
+    p.setLonghelp(
+        "\
 The MIPStart allows one to enter an initial integer feasible solution \
 to CBC. Values of the main decision variables which are active (have \
 non-zero values) in this solution are specified in a text  file. The \
@@ -2916,17 +2906,18 @@ haroldo.santos@gmail.com. ");
   }
 #endif
   {
-    CbcOrClpParam p("moreS!pecialOptions", "Yet more dubious options for Simplex - see ClpSimplex.hpp",
-      0, COIN_INT_MAX, CLP_PARAM_INT_MORESPECIALOPTIONS, 0);
+    CbcOrClpParam p("moreS!pecialOptions",
+                    "Yet more dubious options for Simplex - see ClpSimplex.hpp",
+                    0, COIN_INT_MAX, CLP_PARAM_INT_MORESPECIALOPTIONS, 0);
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
     CbcOrClpParam p("moreT!une", "Yet more dubious ideas for feasibility pump",
-      0, 100000000, CBC_PARAM_INT_FPUMPTUNE2, 0);
+                    0, 100000000, CBC_PARAM_INT_FPUMPTUNE2, 0);
 
     p.setLonghelp(
-      "Yet more ideas for Feasibility Pump \n\
+        "Yet more ideas for Feasibility Pump \n\
 \t/100000 == 1 use box constraints and original obj in cleanup\n\
 \t/1000 == 1 Pump will run twice if no solution found\n\
 \t/1000 == 2 Pump will only run after root cuts if no solution found\n\
@@ -2938,11 +2929,12 @@ haroldo.santos@gmail.com. ");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("multiple!RootPasses", "Do multiple root passes to collect cuts and solutions",
-      0, COIN_INT_MAX, CBC_PARAM_INT_MULTIPLEROOTS, 0);
+    CbcOrClpParam p("multiple!RootPasses",
+                    "Do multiple root passes to collect cuts and solutions", 0,
+                    COIN_INT_MAX, CBC_PARAM_INT_MULTIPLEROOTS, 0);
     p.setIntValue(0);
     p.setLonghelp(
-      "Solve (in parallel, if enabled) the root phase this number of times, \
+        "Solve (in parallel, if enabled) the root phase this number of times, \
       each with its own different seed, and collect all solutions and cuts generated. \
       The actual format is aabbcc where aa is the number of extra passes; \
       if bb is non zero, then it is number of threads to use (otherwise uses threads setting); \
@@ -2955,56 +2947,58 @@ Andrea Lodi, Matteo Fischetti, Michele Monaci, Domenico Salvagnin, and Andrea Tr
   }
   {
     CbcOrClpParam p("naive!Heuristics", "Whether to try some stupid heuristic",
-      "off", CBC_PARAM_STR_NAIVE, 7, 1);
+                    "off", CBC_PARAM_STR_NAIVE, 7, 1);
 
     p.append("on");
     p.append("both");
     p.append("before");
     p.setLonghelp(
-      "This is naive heuristics which, e.g., fix all integers with costs to zero!. "
-      HEURISTICS_LONGHELP);
+        "This is naive heuristics which, e.g., fix all integers with costs to "
+        "zero!. " HEURISTICS_LONGHELP);
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CLP
   {
     CbcOrClpParam p("netlib", "Solve entire netlib test set",
-      CLP_PARAM_ACTION_NETLIB_EITHER, 3, 1);
+                    CLP_PARAM_ACTION_NETLIB_EITHER, 3, 1);
     p.setLonghelp(
-      "This exercises the unit test for clp and then solves the netlib test set using dual or primal.\
+        "This exercises the unit test for clp and then solves the netlib test set using dual or primal.\
 The user can set options before e.g. clp -presolve off -netlib");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("netlibB!arrier", "Solve entire netlib test set with barrier",
-      CLP_PARAM_ACTION_NETLIB_BARRIER, 3, 1);
+    CbcOrClpParam p("netlibB!arrier",
+                    "Solve entire netlib test set with barrier",
+                    CLP_PARAM_ACTION_NETLIB_BARRIER, 3, 1);
     p.setLonghelp(
-      "This exercises the unit test for clp and then solves the netlib test set using barrier.\
+        "This exercises the unit test for clp and then solves the netlib test set using barrier.\
 The user can set options before e.g. clp -kkt on -netlib");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("netlibD!ual", "Solve entire netlib test set (dual)",
-      CLP_PARAM_ACTION_NETLIB_DUAL, 3, 1);
+                    CLP_PARAM_ACTION_NETLIB_DUAL, 3, 1);
 
     p.setLonghelp(
-      "This exercises the unit test for clp and then solves the netlib test set using dual.\
+        "This exercises the unit test for clp and then solves the netlib test set using dual.\
 The user can set options before e.g. clp -presolve off -netlib");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("netlibP!rimal", "Solve entire netlib test set (primal)",
-      CLP_PARAM_ACTION_NETLIB_PRIMAL, 3, 1);
+                    CLP_PARAM_ACTION_NETLIB_PRIMAL, 3, 1);
     p.setLonghelp(
-      "This exercises the unit test for clp and then solves the netlib test set using primal.\
+        "This exercises the unit test for clp and then solves the netlib test set using primal.\
 The user can set options before e.g. clp -presolve off -netlibp");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("netlibT!une", "Solve entire netlib test set with 'best' algorithm",
-      CLP_PARAM_ACTION_NETLIB_TUNE, 3, 1);
+    CbcOrClpParam p("netlibT!une",
+                    "Solve entire netlib test set with 'best' algorithm",
+                    CLP_PARAM_ACTION_NETLIB_TUNE, 3, 1);
     p.setLonghelp(
-      "This exercises the unit test for clp and then solves the netlib test set using whatever \
+        "This exercises the unit test for clp and then solves the netlib test set using whatever \
 works best.  I know this is cheating but it also stresses the code better by doing a \
 mixture of stuff.  The best algorithm was chosen on a Linux ThinkPad using native cholesky \
 with University of Florida ordering.");
@@ -3012,9 +3006,9 @@ with University of Florida ordering.");
   }
   {
     CbcOrClpParam p("network", "Tries to make network matrix",
-      CLP_PARAM_ACTION_NETWORK, 7, 0);
+                    CLP_PARAM_ACTION_NETWORK, 7, 0);
     p.setLonghelp(
-      "Clp will go faster if the matrix can be converted to a network.  The matrix\
+        "Clp will go faster if the matrix can be converted to a network.  The matrix\
  operations may be a bit faster with more efficient storage, but the main advantage\
  comes from using a network factorization.  It will probably not be as fast as a \
 specialized network code.");
@@ -3022,11 +3016,12 @@ specialized network code.");
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("nextB!estSolution", "Prints next best saved solution to file",
-      CLP_PARAM_ACTION_NEXTBESTSOLUTION);
+    CbcOrClpParam p("nextB!estSolution",
+                    "Prints next best saved solution to file",
+                    CLP_PARAM_ACTION_NEXTBESTSOLUTION);
 
     p.setLonghelp(
-      "To write best solution, just use solution.  This prints next best (if exists) \
+        "To write best solution, just use solution.  This prints next best (if exists) \
  and then deletes it. \
  This will write a primitive solution file to the given file name.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
@@ -3034,8 +3029,10 @@ specialized network code.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("node!Strategy", "What strategy to use to select the next node from the branch and cut tree",
-      "hybrid", CBC_PARAM_STR_NODESTRATEGY);
+    CbcOrClpParam p("node!Strategy",
+                    "What strategy to use to select the next node from the "
+                    "branch and cut tree",
+                    "hybrid", CBC_PARAM_STR_NODESTRATEGY);
     p.append("fewest");
     p.append("depth");
     p.append("upfewest");
@@ -3043,7 +3040,7 @@ specialized network code.");
     p.append("updepth");
     p.append("downdepth");
     p.setLonghelp(
-      "Normally before a feasible solution is found, CBC will choose a node with fewest infeasibilities. \
+        "Normally before a feasible solution is found, CBC will choose a node with fewest infeasibilities. \
   Alternatively, one may choose tree-depth as the criterion. This requires the minimal amount of memory, but may take a long time to find the best solution.\
   Additionally, one may specify whether up or down branches must \
 be selected first (the up-down choice will carry on after a first solution has been bound). \
@@ -3052,18 +3049,19 @@ The default choice 'hybrid' does breadth first on small depth nodes and then swi
   }
   {
     CbcOrClpParam p("numberA!nalyze", "Number of analysis iterations",
-      -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_NUMBERANALYZE, 0);
+                    -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_NUMBERANALYZE,
+                    0);
     p.setLonghelp(
-      "This says how many iterations to spend at root node analyzing problem. \
+        "This says how many iterations to spend at root node analyzing problem. \
 This is a first try and will hopefully become more sophisticated.");
     parameters.push_back(p);
   }
 #endif
   {
     CbcOrClpParam p("objective!Scale", "Scale factor to apply to objective",
-      -COIN_DBL_MAX, COIN_DBL_MAX, CLP_PARAM_DBL_OBJSCALE, 1);
+                    -COIN_DBL_MAX, COIN_DBL_MAX, CLP_PARAM_DBL_OBJSCALE, 1);
     p.setLonghelp(
-      "If the objective function has some very large values, you may wish to scale them\
+        "If the objective function has some very large values, you may wish to scale them\
  internally by this amount.  It can also be set by autoscale.  It is applied after scaling.  You are unlikely to need this.");
     p.setDoubleValue(1.0);
     parameters.push_back(p);
@@ -3073,7 +3071,7 @@ This is a first try and will hopefully become more sophisticated.");
 #ifdef COIN_HAS_NTY
   {
     CbcOrClpParam p("Orbit!alBranching", "Whether to try orbital branching",
-      "off", CBC_PARAM_STR_ORBITAL);
+                    "off", CBC_PARAM_STR_ORBITAL);
     p.append("on");
     p.append("strong");
     p.append("force");
@@ -3084,7 +3082,7 @@ This is a first try and will hopefully become more sophisticated.");
     p.append("cuts");
     p.append("cutslight");
     p.setLonghelp(
-      "This switches on Orbital branching. \
+        "This switches on Orbital branching. \
 Value 'on' just adds orbital, 'strong' tries extra fixing in strong branching. \
 'cuts' just adds global cuts to break symmetry. \
 'fastish' only computes symmetry at root. \
@@ -3093,26 +3091,28 @@ Value 'on' just adds orbital, 'strong' tries extra fixing in strong branching. \
   }
 #endif
   {
-    CbcOrClpParam p("PrepN!ames", "If column names will be kept in pre-processed model",
-      "off", CBC_PARAM_STR_PREPROCNAMES);
+    CbcOrClpParam p("PrepN!ames",
+                    "If column names will be kept in pre-processed model",
+                    "off", CBC_PARAM_STR_PREPROCNAMES);
     p.append("on");
     p.setLonghelp(
-      "Normally the preprocessed model has column names replaced by new names C0000...\
+        "Normally the preprocessed model has column names replaced by new names C0000...\
 Setting this option to on keeps original names in variables which still exist in the preprocessed problem");
     parameters.push_back(p);
   }
 
   {
-    CbcOrClpParam p("outDup!licates", "takes duplicate rows etc out of integer model",
-      CLP_PARAM_ACTION_OUTDUPROWS, 7, 0);
+    CbcOrClpParam p("outDup!licates",
+                    "takes duplicate rows etc out of integer model",
+                    CLP_PARAM_ACTION_OUTDUPROWS, 7, 0);
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("output!Format", "Which output format to use",
-      1, 6, CLP_PARAM_INT_OUTPUTFORMAT);
+    CbcOrClpParam p("output!Format", "Which output format to use", 1, 6,
+                    CLP_PARAM_INT_OUTPUTFORMAT);
     p.setLonghelp(
-      "Normally export will be done using normal representation for numbers and two values\
+        "Normally export will be done using normal representation for numbers and two values\
  per line.  You may want to do just one per line (for grep or suchlike) and you may wish\
  to save with absolute accuracy using a coded version of the IEEE value. A value of 2 is normal.\
  otherwise odd values gives one value per line, even two.  Values 1,2 give normal format, 3,4\
@@ -3123,9 +3123,9 @@ values, 2 saves values, 3 with greater accuracy and 4 in IEEE.");
 #ifdef COIN_HAS_CLP
   {
     CbcOrClpParam p("para!metrics", "Import data from file and do parametrics",
-      CLP_PARAM_ACTION_PARAMETRICS, 3);
+                    CLP_PARAM_ACTION_PARAMETRICS, 3);
     p.setLonghelp(
-      "This will read a file with parametric data from the given file name \
+        "This will read a file with parametric data from the given file name \
 and then do parametrics.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to '', i.e. it must be set.  This can not read from compressed files. \
@@ -3149,29 +3149,32 @@ missing ones have value 0.0.");
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("passC!uts", "Number of rounds that cut generators are applied in the root node",
-      -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_CUTPASS);
+    CbcOrClpParam p(
+        "passC!uts",
+        "Number of rounds that cut generators are applied in the root node",
+        -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_CUTPASS);
 
     p.setIntValue(20);
     p.setLonghelp(
-      "The default is to do 100 passes if the problem has less than 500 columns, 100 passes (but \
+        "The default is to do 100 passes if the problem has less than 500 columns, 100 passes (but \
 stop if the drop in the objective function value is small) if the problem has less than 5000 columns, and 20 passes otherwise. \
 A negative value -n means that n passes are also applied if the objective does not drop.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("passF!easibilityPump", "How many passes to do in the Feasibility Pump heuristic",
-      0, 10000, CBC_PARAM_INT_FPUMPITS);
+    CbcOrClpParam p("passF!easibilityPump",
+                    "How many passes to do in the Feasibility Pump heuristic",
+                    0, 10000, CBC_PARAM_INT_FPUMPITS);
     p.setIntValue(20);
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("passP!resolve", "How many passes in presolve",
-      -200, 100, CLP_PARAM_INT_PRESOLVEPASS, 1);
+    CbcOrClpParam p("passP!resolve", "How many passes in presolve", -200, 100,
+                    CLP_PARAM_INT_PRESOLVEPASS, 1);
     p.setLonghelp(
-      "Normally Presolve does 10 passes but you may want to do less to make it\
+        "Normally Presolve does 10 passes but you may want to do less to make it\
  more lightweight or do more if improvements are still being made.  As Presolve will return\
  if nothing is being taken out, you should not normally need to use this fine tuning.");
     parameters.push_back(p);
@@ -3179,43 +3182,50 @@ A negative value -n means that n passes are also applied if the objective does n
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("passT!reeCuts", "Number of rounds that cut generators are applied in the tree",
-      -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_CUTPASSINTREE);
+    CbcOrClpParam p(
+        "passT!reeCuts",
+        "Number of rounds that cut generators are applied in the tree",
+        -COIN_INT_MAX, COIN_INT_MAX, CBC_PARAM_INT_CUTPASSINTREE);
     p.setIntValue(1);
-    p.setLonghelp("The default is to do one pass. A negative value -n means that n passes are also applied if the objective does not drop.");
+    p.setLonghelp(
+        "The default is to do one pass. A negative value -n means that n "
+        "passes are also applied if the objective does not drop.");
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("pertV!alue", "Method of perturbation",
-      -5000, 102, CLP_PARAM_INT_PERTVALUE, 1);
+    CbcOrClpParam p("pertV!alue", "Method of perturbation", -5000, 102,
+                    CLP_PARAM_INT_PERTVALUE, 1);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("perturb!ation", "Whether to perturb the problem",
-      "on", CLP_PARAM_STR_PERTURBATION);
+    CbcOrClpParam p("perturb!ation", "Whether to perturb the problem", "on",
+                    CLP_PARAM_STR_PERTURBATION);
     p.append("off");
     p.setLonghelp(
-      "Perturbation helps to stop cycling, but CLP uses other measures for this.\
+        "Perturbation helps to stop cycling, but CLP uses other measures for this.\
   However, large problems and especially ones with unit elements and unit right hand sides or costs\
  benefit from perturbation.  Normally CLP tries to be intelligent, but one can switch this off.");
-  // The Clp library has this off by default.  This program has it on by default.
+    // The Clp library has this off by default.  This program has it on by
+    // default.
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("PFI", "Whether to use Product Form of Inverse in simplex",
-      "off", CLP_PARAM_STR_PFI, 7, 0);
+                    "off", CLP_PARAM_STR_PFI, 7, 0);
     p.append("on");
     p.setLonghelp(
-      "By default clp uses Forrest-Tomlin L-U update.  If you are masochistic you can switch it off.");
+        "By default clp uses Forrest-Tomlin L-U update.  If you are "
+        "masochistic you can switch it off.");
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("pivotAndC!omplement", "Whether to try Pivot and Complement heuristic",
-      "off", CBC_PARAM_STR_PIVOTANDCOMPLEMENT);
+    CbcOrClpParam p("pivotAndC!omplement",
+                    "Whether to try Pivot and Complement heuristic", "off",
+                    CBC_PARAM_STR_PIVOTANDCOMPLEMENT);
 
     p.append("on");
     p.append("both");
@@ -3225,7 +3235,7 @@ A negative value -n means that n passes are also applied if the objective does n
   }
   {
     CbcOrClpParam p("pivotAndF!ix", "Whether to try Pivot and Fix heuristic",
-      "off", CBC_PARAM_STR_PIVOTANDFIX);
+                    "off", CBC_PARAM_STR_PIVOTANDFIX);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -3236,34 +3246,36 @@ A negative value -n means that n passes are also applied if the objective does n
 #ifdef COIN_HAS_CLP
   {
     CbcOrClpParam p("plus!Minus", "Tries to make +- 1 matrix",
-      CLP_PARAM_ACTION_PLUSMINUS, 7, 0);
+                    CLP_PARAM_ACTION_PLUSMINUS, 7, 0);
     p.setLonghelp(
-      "Clp will go slightly faster if the matrix can be converted so that the elements are\
+        "Clp will go slightly faster if the matrix can be converted so that the elements are\
  not stored and are known to be unit.  The main advantage is memory use.  Clp may automatically\
  see if it can convert the problem so you should not need to use this.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("pO!ptions", "Dubious print options",
-      0, COIN_INT_MAX, CLP_PARAM_INT_PRINTOPTIONS, 1);
+    CbcOrClpParam p("pO!ptions", "Dubious print options", 0, COIN_INT_MAX,
+                    CLP_PARAM_INT_PRINTOPTIONS, 1);
     p.setIntValue(0);
     p.setLonghelp(
-      "If this is > 0 then presolve will give more information and branch and cut will give statistics");
+        "If this is > 0 then presolve will give more information and branch "
+        "and cut will give statistics");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("preO!pt", "Presolve options",
-      0, COIN_INT_MAX, CLP_PARAM_INT_PRESOLVEOPTIONS, 0);
+    CbcOrClpParam p("preO!pt", "Presolve options", 0, COIN_INT_MAX,
+                    CLP_PARAM_INT_PRESOLVEOPTIONS, 0);
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("presolve", "Whether to presolve problem",
-      "on", CLP_PARAM_STR_PRESOLVE);
+    CbcOrClpParam p("presolve", "Whether to presolve problem", "on",
+                    CLP_PARAM_STR_PRESOLVE);
     p.append("off");
     p.append("more");
     p.append("file");
-    p.setLonghelp("Presolve analyzes the model to find such things as redundant equations, equations\
+    p.setLonghelp(
+        "Presolve analyzes the model to find such things as redundant equations, equations\
  which fix some variables, equations which can be transformed into bounds, etc.  For the\
  initial solve of any problem this is worth doing unless one knows that it will have no effect.  \
 Option 'on' will normally do 5 passes, while using 'more' will do 10.  If the problem is very large one can \
@@ -3272,8 +3284,8 @@ let CLP write the original problem to file by using 'file'.");
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("preprocess", "Whether to use integer preprocessing",
-      "off", CBC_PARAM_STR_PREPROCESS);
+    CbcOrClpParam p("preprocess", "Whether to use integer preprocessing", "off",
+                    CBC_PARAM_STR_PREPROCESS);
 
     p.append("on");
     p.append("save");
@@ -3286,28 +3298,28 @@ let CLP write the original problem to file by using 'file'.");
     p.append("forcesos");
     p.append("stop!aftersaving");
     p.setLonghelp(
-      "This tries to reduce size of model in a similar way to presolve and \
+        "This tries to reduce size of model in a similar way to presolve and \
 it also tries to strengthen the model - this can be very useful and is worth trying. \
  Value 'save' saves the presolved problem to a file presolved.mps.\
  Value 'equal' will turn inequality-cliques into equalities.\
  Value 'sos' lets CBC search for rows with upper bound 1 and where all nonzero coefficients are 1 and creates special ordered sets if the sets are not overlapping and all integer variables (except for at most one) are in the sets.\
  Value 'trysos' is same as 'sos', but allows any number of integer variables outside of sets.\
- Value 'equalall' lets CBC turn all valid inequalities into equalities by adding integer slack variables."); // Value 'strategy' is as on but uses CbcStrategy.
+ Value 'equalall' lets CBC turn all valid inequalities into equalities by adding integer slack variables.");  // Value 'strategy' is as on but uses CbcStrategy.
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("preT!olerance", "Tolerance to use in presolve",
-      1.0e-20, COIN_DBL_MAX, CLP_PARAM_DBL_PRESOLVETOLERANCE);
+    CbcOrClpParam p("preT!olerance", "Tolerance to use in presolve", 1.0e-20,
+                    COIN_DBL_MAX, CLP_PARAM_DBL_PRESOLVETOLERANCE);
     p.setLonghelp(
-      "One may want to increase this tolerance if presolve says the problem is \
+        "One may want to increase this tolerance if presolve says the problem is \
 infeasible and one has awkward numbers and is sure that the problem is really feasible.");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("primalP!ivot", "Primal pivot choice algorithm",
-      "auto!matic", CLP_PARAM_STR_PRIMALPIVOT, 7, 1);
+                    "auto!matic", CLP_PARAM_STR_PRIMALPIVOT, 7, 1);
 
     p.append("exa!ct");
     p.append("dant!zig");
@@ -3318,7 +3330,7 @@ infeasible and one has awkward numbers and is sure that the problem is really fe
     p.append("PEsteep!est");
     p.append("PEdantzig");
     p.setLonghelp(
-      "The Dantzig method is simple but its use is deprecated.  Exact devex is the method of choice and there\
+        "The Dantzig method is simple but its use is deprecated.  Exact devex is the method of choice and there\
  are two variants which keep all weights updated but only scan a subset each iteration.\
  Partial switches this on while 'change' initially does 'dantzig' until the factorization\
  becomes denser.  This is still a work in progress.\
@@ -3331,10 +3343,10 @@ infeasible and one has awkward numbers and is sure that the problem is really fe
   }
   {
     CbcOrClpParam p("primalS!implex", "Do primal simplex algorithm",
-      CLP_PARAM_ACTION_PRIMALSIMPLEX);
+                    CLP_PARAM_ACTION_PRIMALSIMPLEX);
 
     p.setLonghelp(
-      "This command solves the continuous relaxation of the current model using the primal algorithm.\
+        "This command solves the continuous relaxation of the current model using the primal algorithm.\
   The default is to use exact devex.\
  The time and iterations may be affected by settings such as presolve, scaling, crash\
  and also by column selection  method, infeasibility weight and dual and primal tolerances.");
@@ -3342,34 +3354,37 @@ infeasible and one has awkward numbers and is sure that the problem is really fe
   }
 #endif
   {
-    CbcOrClpParam p("primalT!olerance", "For a feasible solution \
+    CbcOrClpParam p("primalT!olerance",
+                    "For a feasible solution \
 no primal infeasibility, i.e., constraint violation, may exceed this value",
-      1.0e-20, COIN_DBL_MAX, CLP_PARAM_DBL_PRIMALTOLERANCE);
+                    1.0e-20, COIN_DBL_MAX, CLP_PARAM_DBL_PRIMALTOLERANCE);
     p.setLonghelp(
-      "Normally the default tolerance is fine, but one may want to increase it a\
+        "Normally the default tolerance is fine, but one may want to increase it a\
  bit if the primal simplex algorithm seems to be having a hard time.");
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("primalW!eight", "Initially algorithm acts as if it \
+    CbcOrClpParam p("primalW!eight",
+                    "Initially algorithm acts as if it \
 costs this much to be infeasible",
-      1.0e-20, COIN_DBL_MAX, CLP_PARAM_DBL_PRIMALWEIGHT);
+                    1.0e-20, COIN_DBL_MAX, CLP_PARAM_DBL_PRIMALWEIGHT);
     p.setLonghelp(
-      "The primal algorithm in Clp is a single phase algorithm as opposed to a two phase\
+        "The primal algorithm in Clp is a single phase algorithm as opposed to a two phase\
  algorithm where you first get feasible then optimal.  So Clp is minimizing this weight times\
  the sum of primal infeasibilities plus the true objective function (in minimization sense).\
   Too high a value may mean more iterations, while too low a value means\
- the algorithm may iterate into the wrong directory for long and then has to increase the weight in order to get feasible."); // OSL had a heuristic to adjust bounds, maybe we need that here.
+ the algorithm may iterate into the wrong directory for long and then has to increase the weight in order to get feasible.");  // OSL had a heuristic to adjust bounds, maybe we need that here.
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("psi", "Two-dimension pricing factor for Positive Edge criterion",
-      -1.1, 1.1, CLP_PARAM_DBL_PSI);
+    CbcOrClpParam p("psi",
+                    "Two-dimension pricing factor for Positive Edge criterion",
+                    -1.1, 1.1, CLP_PARAM_DBL_PSI);
 
     p.setDoubleValue(-0.5);
     p.setLonghelp(
-      "The Positive Edge criterion has been added to \
+        "The Positive Edge criterion has been added to \
 select incoming variables to try and avoid degenerate moves. \
 Variables not in the promising set have their infeasibility weight multiplied by psi, \
 so 0.01 would mean that if there were any promising variables, then they would always be chosen, \
@@ -3384,8 +3399,8 @@ Omer, J., Towhidi, M., Soumis, F., The positive edge pricing rule for the dual s
   }
 #endif
   {
-    CbcOrClpParam p("printi!ngOptions", "Print options",
-      "normal", CLP_PARAM_STR_INTPRINT, 3);
+    CbcOrClpParam p("printi!ngOptions", "Print options", "normal",
+                    CLP_PARAM_STR_INTPRINT, 3);
     p.append("integer");
     p.append("special");
     p.append("rows");
@@ -3400,7 +3415,7 @@ Omer, J., Towhidi, M., Soumis, F., The positive edge pricing rule for the dual s
     p.append("fixint");
     p.append("fixall");
     p.setLonghelp(
-      "This changes the amount and format of printing a solution:\nnormal - nonzero column variables \n\
+        "This changes the amount and format of printing a solution:\nnormal - nonzero column variables \n\
 integer - nonzero integer column variables\n\
 special - in format suitable for OsiRowCutDebugger\n\
 rows - nonzero column variables and row activities\n\
@@ -3411,10 +3426,10 @@ Also see printMask for controlling output.");
   }
   {
     CbcOrClpParam p("printM!ask", "Control printing of solution on a  mask",
-      CLP_PARAM_ACTION_PRINTMASK, 3);
+                    CLP_PARAM_ACTION_PRINTMASK, 3);
 
     p.setLonghelp(
-      "If set then only those names which match mask are printed in a solution. \
+        "If set then only those names which match mask are printed in a solution. \
 '?' matches any character and '*' matches any set of characters. \
  The default is '' i.e. unset so all variables are printed. \
 This is only active if model has names.");
@@ -3424,9 +3439,9 @@ This is only active if model has names.");
 #ifdef COIN_HAS_CBC
   {
     CbcOrClpParam p("prio!rityIn", "Import priorities etc from file",
-      CBC_PARAM_ACTION_PRIORITYIN, 3);
+                    CBC_PARAM_ACTION_PRIORITYIN, 3);
     p.setLonghelp(
-      "This will read a file with priorities from the given file name.  It will use the default\
+        "This will read a file with priorities from the given file name.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to '', i.e. it must be set.  This can not read from compressed files. \
 File is in csv format with allowed headings - name, number, priority, direction, up, down, solution.  Exactly one of\
@@ -3435,8 +3450,8 @@ File is in csv format with allowed headings - name, number, priority, direction,
   }
 
   {
-    CbcOrClpParam p("probing!Cuts", "Whether to use Probing cuts",
-      "off", CBC_PARAM_STR_PROBINGCUTS);
+    CbcOrClpParam p("probing!Cuts", "Whether to use Probing cuts", "off",
+                    CBC_PARAM_STR_PROBINGCUTS);
     p.append("on");
     p.append("root");
     p.append("ifmove");
@@ -3447,16 +3462,18 @@ File is in csv format with allowed headings - name, number, priority, direction,
     p.append("forceOnStrong");
     p.append("forceOnButStrong");
     p.append("strongRoot");
-    p.setLonghelp(CUTS_LONGHELP
-      " Value 'forceOnBut' turns on probing and forces CBC to do probing at every node, but does only probing, not strengthening etc. \
+    p.setLonghelp(
+        CUTS_LONGHELP
+        " Value 'forceOnBut' turns on probing and forces CBC to do probing at every node, but does only probing, not strengthening etc. \
     Value 'strong' forces CBC to strongly do probing at every node, that is, also when CBC would usually turn it off because it hasn't found something. \
     Value 'forceonbutstrong' is like 'forceonstrong', but does only probing (column fixing) and turns off row strengthening, so the matrix will not change inside the branch and bound. \
     Reference: https://github.com/coin-or/Cgl/wiki/CglProbing");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("proximity!Search", "Whether to do proximity search heuristic",
-      "off", CBC_PARAM_STR_PROXIMITY);
+    CbcOrClpParam p("proximity!Search",
+                    "Whether to do proximity search heuristic", "off",
+                    CBC_PARAM_STR_PROXIMITY);
 
     p.append("on");
     p.append("both");
@@ -3467,39 +3484,41 @@ File is in csv format with allowed headings - name, number, priority, direction,
     // but allow numbers after this (returning 1)
     p.setFakeKeyWord(1);
     p.setLonghelp(
-      "This heuristic looks for a solution close to the incumbent solution (Fischetti and Monaci, 2012). \
+        "This heuristic looks for a solution close to the incumbent solution (Fischetti and Monaci, 2012). \
 The idea is to define a sub-MIP without additional constraints but with a modified objective function intended to attract the search \
 in the proximity of the incumbent. \
 The approach works well for 0-1 MIPs whose solution landscape is not too irregular (meaning the there is reasonable probability of \
 finding an improved solution by flipping a small number of binary variables), in particular when it is applied to the first heuristic solutions \
-found at the root node. "
-      HEURISTICS_LONGHELP); // Can also set different maxNode settings by plusnnnn (and are 'on'(on==30)).
+found at the root node. " HEURISTICS_LONGHELP);  // Can also set different
+                                                 // maxNode settings by plusnnnn
+                                                 // (and are 'on'(on==30)).
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("pumpC!utoff", "Fake cutoff for use in feasibility pump",
-      -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_FAKECUTOFF);
+                    -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_FAKECUTOFF);
     p.setDoubleValue(0.0);
     p.setLonghelp(
-      "A value of 0.0 means off. Otherwise, add a constraint forcing objective below this value\
+        "A value of 0.0 means off. Otherwise, add a constraint forcing objective below this value\
  in feasibility pump");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("pumpI!ncrement", "Fake increment for use in feasibility pump",
-      -COIN_DBL_MAX, COIN_DBL_MAX, CBC_PARAM_DBL_FAKEINCREMENT, 1);
+    CbcOrClpParam p("pumpI!ncrement",
+                    "Fake increment for use in feasibility pump", -COIN_DBL_MAX,
+                    COIN_DBL_MAX, CBC_PARAM_DBL_FAKEINCREMENT, 1);
     p.setDoubleValue(0.0);
     p.setLonghelp(
-      "A value of 0.0 means off. Otherwise use as absolute increment to cutoff \
+        "A value of 0.0 means off. Otherwise use as absolute increment to cutoff \
 when solution found in feasibility pump");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("pumpT!une", "Dubious ideas for feasibility pump",
-      0, 100000000, CBC_PARAM_INT_FPUMPTUNE);
+    CbcOrClpParam p("pumpT!une", "Dubious ideas for feasibility pump", 0,
+                    100000000, CBC_PARAM_INT_FPUMPTUNE);
     p.setIntValue(1003);
     p.setLonghelp(
-      "This fine tunes Feasibility Pump \n\
+        "This fine tunes Feasibility Pump \n\
 \t>=10000000 use as objective weight switch\n\
 \t>=1000000 use as accumulate switch\n\
 \t>=1000 use index+1 as number of large loops\n\
@@ -3513,27 +3532,31 @@ are fixed and a small branch and bound is tried.");
   }
 #endif
   {
-    CbcOrClpParam p("quit", "Stops clp execution",
-      CLP_PARAM_ACTION_EXIT);
+    CbcOrClpParam p("quit", "Stops clp execution", CLP_PARAM_ACTION_EXIT);
     p.setLonghelp(
-      "This stops the execution of Clp, end, exit, quit and stop are synonyms");
+        "This stops the execution of Clp, end, exit, quit and stop are "
+        "synonyms");
 
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("randomC!bcSeed", "Random seed for Cbc",
-      -1, COIN_INT_MAX, CBC_PARAM_INT_RANDOMSEED);
+    CbcOrClpParam p("randomC!bcSeed", "Random seed for Cbc", -1, COIN_INT_MAX,
+                    CBC_PARAM_INT_RANDOMSEED);
 
     p.setLonghelp(
-      "Allows initialization of the random seed for pseudo-random numbers used in heuristics such as the Feasibility Pump to decide whether to round up or down. "
-      "The special value of 0 lets Cbc use the time of the day for the initial seed.");
+        "Allows initialization of the random seed for pseudo-random numbers "
+        "used in heuristics such as the Feasibility Pump to decide whether to "
+        "round up or down. "
+        "The special value of 0 lets Cbc use the time of the day for the "
+        "initial seed.");
     p.setIntValue(-1);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("randomi!zedRounding", "Whether to try randomized rounding heuristic",
-      "off", CBC_PARAM_STR_RANDROUND);
+    CbcOrClpParam p("randomi!zedRounding",
+                    "Whether to try randomized rounding heuristic", "off",
+                    CBC_PARAM_STR_RANDROUND);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -3543,25 +3566,29 @@ are fixed and a small branch and bound is tried.");
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("randomS!eed", "Random seed for Clp",
-      0, COIN_INT_MAX, CLP_PARAM_INT_RANDOMSEED);
+    CbcOrClpParam p("randomS!eed", "Random seed for Clp", 0, COIN_INT_MAX,
+                    CLP_PARAM_INT_RANDOMSEED);
 
     p.setLonghelp(
-      "Initialization of the random seed for pseudo-random numbers used to break ties in degenerate problems. "
-      "This may yield a different continuous optimum and, in the context of Cbc, different cuts and heuristic solutions. "
-      "The special value of 0 lets CLP use the time of the day for the initial seed.");
+        "Initialization of the random seed for pseudo-random numbers used to "
+        "break ties in degenerate problems. "
+        "This may yield a different continuous optimum and, in the context of "
+        "Cbc, different cuts and heuristic solutions. "
+        "The special value of 0 lets CLP use the time of the day for the "
+        "initial seed.");
     p.setIntValue(1234567);
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("ratio!Gap", "Stop when gap between best possible and \
+    CbcOrClpParam p("ratio!Gap",
+                    "Stop when gap between best possible and \
 best known is less than this fraction of larger of two",
-      0.0, COIN_DBL_MAX, CBC_PARAM_DBL_GAPRATIO);
+                    0.0, COIN_DBL_MAX, CBC_PARAM_DBL_GAPRATIO);
     p.setDoubleValue(0.0);
     p.setLonghelp(
-      "If the gap between the best known solution and the best possible solution is less than this fraction \
+        "If the gap between the best known solution and the best possible solution is less than this fraction \
 of the objective value at the root node then the search will terminate.  See 'allowableGap' for a \
 way of using absolute value rather than fraction.");
     parameters.push_back(p);
@@ -3569,10 +3596,10 @@ way of using absolute value rather than fraction.");
 #endif
   {
     CbcOrClpParam p("restoreS!olution", "reads solution from file",
-      CLP_PARAM_ACTION_RESTORESOL);
+                    CLP_PARAM_ACTION_RESTORESOL);
 
     p.setLonghelp(
-      "This will read a binary solution file from the given file name.  It will use the default\
+        "This will read a binary solution file from the given file name.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to 'solution.file'.  This reads in a file from saveSolution");
     parameters.push_back(p);
@@ -3580,47 +3607,52 @@ way of using absolute value rather than fraction.");
 #ifdef COIN_HAS_CBC
   {
     CbcOrClpParam p("readSt!ored", "Import stored cuts from file",
-      CLP_PARAM_ACTION_STOREDFILE, 3, 0);
+                    CLP_PARAM_ACTION_STOREDFILE, 3, 0);
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("reallyO!bjectiveScale", "Scale factor to apply to objective in place",
-      -COIN_DBL_MAX, COIN_DBL_MAX, CLP_PARAM_DBL_OBJSCALE2, 0);
-    p.setLonghelp("You can set this to -1.0 to test maximization or other to stress code");
+    CbcOrClpParam p("reallyO!bjectiveScale",
+                    "Scale factor to apply to objective in place",
+                    -COIN_DBL_MAX, COIN_DBL_MAX, CLP_PARAM_DBL_OBJSCALE2, 0);
+    p.setLonghelp(
+        "You can set this to -1.0 to test maximization or other to stress "
+        "code");
     p.setDoubleValue(1.0);
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("reallyS!cale", "Scales model in place",
-      CLP_PARAM_ACTION_REALLY_SCALE, 7, 0);
+                    CLP_PARAM_ACTION_REALLY_SCALE, 7, 0);
     parameters.push_back(p);
   }
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("reduce!AndSplitCuts", "Whether to use Reduce-and-Split cuts",
-      "off", CBC_PARAM_STR_REDSPLITCUTS);
+    CbcOrClpParam p("reduce!AndSplitCuts",
+                    "Whether to use Reduce-and-Split cuts", "off",
+                    CBC_PARAM_STR_REDSPLITCUTS);
 
     p.append("on");
     p.append("root");
     p.append("ifmove");
     p.append("forceOn");
     p.setLonghelp(
-      "These cuts may be expensive to generate. "
-      CUTS_LONGHELP
-      " Reference: https://github.com/coin-or/Cgl/wiki/CglRedSplit");
+        "These cuts may be expensive to generate. " CUTS_LONGHELP
+        " Reference: https://github.com/coin-or/Cgl/wiki/CglRedSplit");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("reduce2!AndSplitCuts", "Whether to use Reduce-and-Split cuts - style 2",
-      "off", CBC_PARAM_STR_REDSPLIT2CUTS);
+    CbcOrClpParam p("reduce2!AndSplitCuts",
+                    "Whether to use Reduce-and-Split cuts - style 2", "off",
+                    CBC_PARAM_STR_REDSPLIT2CUTS);
     p.append("on");
     p.append("root");
     p.append("longOn");
     p.append("longRoot");
-    p.setLonghelp("This switches on reduce and split  cuts (either at root or in entire tree). \
+    p.setLonghelp(
+        "This switches on reduce and split  cuts (either at root or in entire tree). \
 This version is by Giacomo Nannicini based on Francois Margot's version. \
 Standard setting only uses rows in tableau <= 256, long uses all. \
 These cuts may be expensive to generate. \
@@ -3628,14 +3660,16 @@ See option cuts for more information on the possible values.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("residual!CapacityCuts", "Whether to use Residual Capacity cuts",
-      "off", CBC_PARAM_STR_RESIDCUTS);
+    CbcOrClpParam p("residual!CapacityCuts",
+                    "Whether to use Residual Capacity cuts", "off",
+                    CBC_PARAM_STR_RESIDCUTS);
     p.append("on");
     p.append("root");
     p.append("ifmove");
     p.append("forceOn");
-    p.setLonghelp(CUTS_LONGHELP
-      " Reference: https://github.com/coin-or/Cgl/wiki/CglResidualCapacity");
+    p.setLonghelp(
+        CUTS_LONGHELP
+        " Reference: https://github.com/coin-or/Cgl/wiki/CglResidualCapacity");
 
     parameters.push_back(p);
   }
@@ -3643,9 +3677,9 @@ See option cuts for more information on the possible values.");
 #ifdef COIN_HAS_CLP
   {
     CbcOrClpParam p("restore!Model", "Restore model from binary file",
-      CLP_PARAM_ACTION_RESTORE, 7, 1);
+                    CLP_PARAM_ACTION_RESTORE, 7, 1);
     p.setLonghelp(
-      "This reads data save by saveModel from the given file.  It will use the default\
+        "This reads data save by saveModel from the given file.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to 'default.prob'.");
 
@@ -3653,16 +3687,15 @@ See option cuts for more information on the possible values.");
   }
   {
     CbcOrClpParam p("reverse", "Reverses sign of objective",
-      CLP_PARAM_ACTION_REVERSE, 7, 0);
-    p.setLonghelp(
-      "Useful for testing if maximization works correctly");
+                    CLP_PARAM_ACTION_REVERSE, 7, 0);
+    p.setLonghelp("Useful for testing if maximization works correctly");
     parameters.push_back(p);
   }
   {
     CbcOrClpParam p("rhs!Scale", "Scale factor to apply to rhs and bounds",
-      -COIN_DBL_MAX, COIN_DBL_MAX, CLP_PARAM_DBL_RHSSCALE, 0);
+                    -COIN_DBL_MAX, COIN_DBL_MAX, CLP_PARAM_DBL_RHSSCALE, 0);
     p.setLonghelp(
-      "If the rhs or bounds have some very large meaningful values, you may wish to scale them\
+        "If the rhs or bounds have some very large meaningful values, you may wish to scale them\
  internally by this amount.  It can also be set by autoscale.  This should not be needed.");
     p.setDoubleValue(1.0);
     parameters.push_back(p);
@@ -3670,8 +3703,9 @@ See option cuts for more information on the possible values.");
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("Rens", "Whether to try Relaxation Enforced Neighborhood Search",
-      "off", CBC_PARAM_STR_RENS);
+    CbcOrClpParam p("Rens",
+                    "Whether to try Relaxation Enforced Neighborhood Search",
+                    "off", CBC_PARAM_STR_RENS);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -3682,12 +3716,14 @@ See option cuts for more information on the possible values.");
     p.append("djbefore");
     p.append("usesolution");
     p.setLonghelp(HEURISTICS_LONGHELP
-      " Value 'on' just does 50 nodes. 200, 1000, and 10000 does that many nodes.");
+                  " Value 'on' just does 50 nodes. 200, 1000, and 10000 does "
+                  "that many nodes.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("Rins", "Whether to try Relaxed Induced Neighborhood Search",
-      "off", CBC_PARAM_STR_RINS);
+    CbcOrClpParam p("Rins",
+                    "Whether to try Relaxed Induced Neighborhood Search", "off",
+                    CBC_PARAM_STR_RINS);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -3696,8 +3732,9 @@ See option cuts for more information on the possible values.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("round!ingHeuristic", "Whether to use simple (but effective) Rounding heuristic",
-      "off", CBC_PARAM_STR_ROUNDING);
+    CbcOrClpParam p("round!ingHeuristic",
+                    "Whether to use simple (but effective) Rounding heuristic",
+                    "off", CBC_PARAM_STR_ROUNDING);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -3707,9 +3744,9 @@ See option cuts for more information on the possible values.");
 #endif
   {
     CbcOrClpParam p("saveM!odel", "Save model to binary file",
-      CLP_PARAM_ACTION_SAVE, 7, 1);
+                    CLP_PARAM_ACTION_SAVE, 7, 1);
     p.setLonghelp(
-      "This will save the problem to the given file name for future use\
+        "This will save the problem to the given file name for future use\
  by restoreModel.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to 'default.prob'.");
@@ -3717,10 +3754,10 @@ See option cuts for more information on the possible values.");
   }
   {
     CbcOrClpParam p("saveS!olution", "saves solution to file",
-      CLP_PARAM_ACTION_SAVESOL);
+                    CLP_PARAM_ACTION_SAVESOL);
 
     p.setLonghelp(
-      "This will write a binary solution file to the given file name.  It will use the default\
+        "This will write a binary solution file to the given file name.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to 'solution.file'.  To read the file use fread(int) twice to pick up number of rows \
 and columns, then fread(double) to pick up objective value, then pick up row activities, row duals, column \
@@ -3729,56 +3766,61 @@ If name contains '_fix_read_' then does not write but reads and will fix all var
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("scal!ing", "Whether to scale problem",
-      "off", CLP_PARAM_STR_SCALING);
+    CbcOrClpParam p("scal!ing", "Whether to scale problem", "off",
+                    CLP_PARAM_STR_SCALING);
     p.append("equi!librium");
     p.append("geo!metric");
     p.append("auto!matic");
     p.append("dynamic");
     p.append("rows!only");
     p.setLonghelp(
-      "Scaling can help in solving problems which might otherwise fail because of lack of\
+        "Scaling can help in solving problems which might otherwise fail because of lack of\
  accuracy.  It can also reduce the number of iterations.  It is not applied if the range\
  of elements is small.  When the solution is evaluated in the unscaled problem, it is possible that small primal and/or\
  dual infeasibilities occur. "
- "Option 'equilibrium' uses the largest element for scaling. "
- "Option 'geometric' uses the squareroot of the product of largest and smallest element. "
- "Option 'auto' let CLP choose a method that gives the best ratio of the largest element to the smallest one.");
-    p.setCurrentOption(3); // say auto
+        "Option 'equilibrium' uses the largest element for scaling. "
+        "Option 'geometric' uses the squareroot of the product of largest and "
+        "smallest element. "
+        "Option 'auto' let CLP choose a method that gives the best ratio of "
+        "the largest element to the smallest one.");
+    p.setCurrentOption(3);  // say auto
     parameters.push_back(p);
   }
 #ifndef COIN_HAS_CBC
   {
-    CbcOrClpParam p("sec!onds", "Maximum seconds",
-      -1.0, COIN_DBL_MAX, CLP_PARAM_DBL_TIMELIMIT);
+    CbcOrClpParam p("sec!onds", "Maximum seconds", -1.0, COIN_DBL_MAX,
+                    CLP_PARAM_DBL_TIMELIMIT);
 
-    p.setLonghelp("After this many seconds clp will act as if maximum iterations had been reached \
+    p.setLonghelp(
+        "After this many seconds clp will act as if maximum iterations had been reached \
 (if value >=0).");
     parameters.push_back(p);
   }
 #else
   {
-    CbcOrClpParam p("sec!onds", "maximum seconds",
-      -1.0, COIN_DBL_MAX, CBC_PARAM_DBL_TIMELIMIT_BAB);
+    CbcOrClpParam p("sec!onds", "maximum seconds", -1.0, COIN_DBL_MAX,
+                    CBC_PARAM_DBL_TIMELIMIT_BAB);
     p.setLonghelp(
-      "After this many seconds coin solver will act as if maximum nodes had been reached.");
+        "After this many seconds coin solver will act as if maximum nodes had "
+        "been reached.");
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("sleep", "for debug",
-      CLP_PARAM_ACTION_DUMMY, 7, 0);
+    CbcOrClpParam p("sleep", "for debug", CLP_PARAM_ACTION_DUMMY, 7, 0);
 
     p.setLonghelp(
-      "If passed to solver fom ampl, then ampl will wait so that you can copy .nl file for debug.");
+        "If passed to solver fom ampl, then ampl will wait so that you can "
+        "copy .nl file for debug.");
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("slow!cutpasses", "Maximum number of rounds for slower cut generators",
-      -1, COIN_INT_MAX, CBC_PARAM_INT_MAX_SLOW_CUTS);
+    CbcOrClpParam p("slow!cutpasses",
+                    "Maximum number of rounds for slower cut generators", -1,
+                    COIN_INT_MAX, CBC_PARAM_INT_MAX_SLOW_CUTS);
     p.setLonghelp(
-      "Some cut generators are fairly slow - this limits the number of times they are tried.\
+        "Some cut generators are fairly slow - this limits the number of times they are tried.\
       The cut generators identified as 'may be slow' at present are Lift and project cuts and both versions of Reduce and Split cuts.");
     p.setIntValue(10);
     parameters.push_back(p);
@@ -3786,19 +3828,19 @@ If name contains '_fix_read_' then does not write but reads and will fix all var
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("slp!Value", "Number of slp passes before primal",
-      -50000, 50000, CLP_PARAM_INT_SLPVALUE, 1);
+    CbcOrClpParam p("slp!Value", "Number of slp passes before primal", -50000,
+                    50000, CLP_PARAM_INT_SLPVALUE, 1);
     p.setLonghelp(
-      "If you are solving a quadratic problem using primal then it may be helpful to do some \
+        "If you are solving a quadratic problem using primal then it may be helpful to do some \
 sequential Lps to get a good approximate solution.");
     parameters.push_back(p);
   }
 #if CLP_MULTIPLE_FACTORIZATIONS > 0
   {
-    CbcOrClpParam p("small!Factorization", "Threshold for using small factorization",
-      -1, 10000, CBC_PARAM_INT_SMALLFACT, 1);
-    p.setLonghelp(
-      "If processed problem <= this use small factorization");
+    CbcOrClpParam p("small!Factorization",
+                    "Threshold for using small factorization", -1, 10000,
+                    CBC_PARAM_INT_SMALLFACT, 1);
+    p.setLonghelp("If processed problem <= this use small factorization");
     p.setIntValue(-1);
     parameters.push_back(p);
   }
@@ -3806,9 +3848,9 @@ sequential Lps to get a good approximate solution.");
 #endif
   {
     CbcOrClpParam p("solu!tion", "Prints solution to file",
-      CLP_PARAM_ACTION_SOLUTION);
+                    CLP_PARAM_ACTION_SOLUTION);
     p.setLonghelp(
-      "This will write a primitive solution file to the given file name.  It will use the default\
+        "This will write a primitive solution file to the given file name.  It will use the default\
  directory given by 'directory'.  A name of '$' will use the previous value for the name.  This\
  is initialized to 'stdout'.  The amount of output can be varied using printi!ngOptions or printMask.");
     parameters.push_back(p);
@@ -3816,39 +3858,40 @@ sequential Lps to get a good approximate solution.");
 #ifdef COIN_HAS_CLP
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("solv!e", "Solve problem",
-      CBC_PARAM_ACTION_BAB);
-         p.setLonghelp(
-          "If there are no integer variables then this just solves LP.  If there are integer variables \
-this does branch and cut." );
-         parameters.push_back( p );
+    CbcOrClpParam p("solv!e", "Solve problem", CBC_PARAM_ACTION_BAB);
+    p.setLonghelp(
+        "If there are no integer variables then this just solves LP.  If there are integer variables \
+this does branch and cut.");
+    parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("sosO!ptions", "Whether to use SOS from AMPL",  "off", CBC_PARAM_STR_SOS);
+    CbcOrClpParam p("sosO!ptions", "Whether to use SOS from AMPL", "off",
+                    CBC_PARAM_STR_SOS);
     p.append("on");
     p.setCurrentOption("on");
-         p.setLonghelp(
-          "Normally if AMPL says there are SOS variables they should be used, but sometime sthey should\
- be turned off - this does so." );
-         parameters.push_back( p );
+    p.setLonghelp(
+        "Normally if AMPL says there are SOS variables they should be used, but sometime sthey should\
+ be turned off - this does so.");
+    parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("slog!Level", "Level of detail in (LP) Solver output", -1, 63, CLP_PARAM_INT_SOLVERLOGLEVEL);
+    CbcOrClpParam p("slog!Level", "Level of detail in (LP) Solver output", -1,
+                    63, CLP_PARAM_INT_SOLVERLOGLEVEL);
     p.setLonghelp(
-      "If 0 then there should be no output in normal circumstances.  1 is probably the best\
+        "If 0 then there should be no output in normal circumstances.  1 is probably the best\
  value for most uses, while 2 and 3 give more information.  This parameter is only used inside MIP - for Clp use 'log'");
     parameters.push_back(p);
   }
   {
-     // Due to James Howey
-     CbcOrClpParam p("sosP!rioritize", "How to deal with SOS priorities",
-       "off", CBC_PARAM_STR_SOSPRIORITIZE);
-     p.append("high");
-     p.append("low");
-     p.append("orderhigh");
-     p.append("orderlow");
-     p.setLonghelp(
-       "This sets priorities for SOS.  Values 'high' and 'low' just set a priority \
+    // Due to James Howey
+    CbcOrClpParam p("sosP!rioritize", "How to deal with SOS priorities", "off",
+                    CBC_PARAM_STR_SOSPRIORITIZE);
+    p.append("high");
+    p.append("low");
+    p.append("orderhigh");
+    p.append("orderlow");
+    p.setLonghelp(
+        "This sets priorities for SOS.  Values 'high' and 'low' just set a priority \
     relative to the for integer variables.  Value 'orderhigh' gives first highest priority to the first SOS and integer variables \
     a low priority.  Value 'orderlow' gives integer variables a high priority then SOS in order.");
     parameters.push_back(p);
@@ -3857,9 +3900,8 @@ this does branch and cut." );
   // allow solve as synonym for possible dual
   {
     CbcOrClpParam p("solv!e", "Solve problem using dual simplex (probably)",
-      CLP_PARAM_ACTION_EITHERSIMPLEX);
-    p.setLonghelp(
-      "Just so can use solve for clp as well as in cbc");
+                    CLP_PARAM_ACTION_EITHERSIMPLEX);
+    p.setLonghelp("Just so can use solve for clp as well as in cbc");
     parameters.push_back(p);
   }
 #endif
@@ -3867,20 +3909,21 @@ this does branch and cut." );
 #ifdef COIN_HAS_CLP
   {
     CbcOrClpParam p("spars!eFactor", "Whether factorization treated as sparse",
-      "on", CLP_PARAM_STR_SPARSEFACTOR, 7, 0);
+                    "on", CLP_PARAM_STR_SPARSEFACTOR, 7, 0);
     p.append("off");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("special!Options", "Dubious options for Simplex - see ClpSimplex.hpp",
-      0, COIN_INT_MAX, CLP_PARAM_INT_SPECIALOPTIONS, 0);
+    CbcOrClpParam p("special!Options",
+                    "Dubious options for Simplex - see ClpSimplex.hpp", 0,
+                    COIN_INT_MAX, CLP_PARAM_INT_SPECIALOPTIONS, 0);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("sprint!Crash", "Whether to try sprint crash",
-      -1, COIN_INT_MAX, CLP_PARAM_INT_SPRINT);
+    CbcOrClpParam p("sprint!Crash", "Whether to try sprint crash", -1,
+                    COIN_INT_MAX, CLP_PARAM_INT_SPRINT);
     p.setLonghelp(
-      "For long and thin problems this method may solve a series of small problems\
+        "For long and thin problems this method may solve a series of small problems\
  created by taking a subset of the columns.  The idea as 'Sprint' was introduced by J. Forrest after\
  an LP code of that name of the 60's which tried the same tactic (not totally successfully).\
   CPLEX calls it 'sifting'.  -1 lets CLP automatically choose the number of passes, 0 is off, n is number of passes");
@@ -3888,51 +3931,53 @@ this does branch and cut." );
   }
   {
     CbcOrClpParam p("stat!istics", "Print some statistics",
-      CLP_PARAM_ACTION_STATISTICS);
+                    CLP_PARAM_ACTION_STATISTICS);
     p.setLonghelp(
-      "This command prints some statistics for the current model.\
+        "This command prints some statistics for the current model.\
  If log level >1 then more is printed.\
  These are for presolved model if presolve on (and unscaled).");
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("stop", "Stops clp execution",
-      CLP_PARAM_ACTION_EXIT);
+    CbcOrClpParam p("stop", "Stops clp execution", CLP_PARAM_ACTION_EXIT);
     p.setLonghelp(
-      "This stops the execution of Clp, end, exit, quit and stop are synonyms");
+        "This stops the execution of Clp, end, exit, quit and stop are "
+        "synonyms");
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("strat!egy", "Switches on groups of features",
-      0, 2, CBC_PARAM_INT_STRATEGY);
+    CbcOrClpParam p("strat!egy", "Switches on groups of features", 0, 2,
+                    CBC_PARAM_INT_STRATEGY);
     p.setLonghelp(
-      "This turns on newer features. \
+        "This turns on newer features. \
 Use 0 for easy problems, 1 is default, 2 is aggressive. \
 1 uses Gomory cuts with a tolerance of 0.01 at the root node, \
 does a possible restart after 100 nodes if many variables could be fixed, \
 activates a diving and RINS heuristic, and makes the feasibility pump \
-more aggressive."); // This does not apply to unit tests (where 'experiment' may have similar effects
+more aggressive.");  // This does not apply to unit tests (where 'experiment'
+                     // may have similar effects
     p.setIntValue(1);
     parameters.push_back(p);
   }
 #ifdef CBC_KEEP_DEPRECATED
   {
     CbcOrClpParam p("strengthen", "Create strengthened problem",
-      CBC_PARAM_ACTION_STRENGTHEN, 3);
+                    CBC_PARAM_ACTION_STRENGTHEN, 3);
     p.setLonghelp(
-      "This creates a new problem by applying the root node cuts.  All tight constraints \
+        "This creates a new problem by applying the root node cuts.  All tight constraints \
 will be in resulting problem");
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("strong!Branching", "Number of variables to look at in strong branching",
-      0, COIN_INT_MAX, CBC_PARAM_INT_STRONGBRANCHING);
+    CbcOrClpParam p("strong!Branching",
+                    "Number of variables to look at in strong branching", 0,
+                    COIN_INT_MAX, CBC_PARAM_INT_STRONGBRANCHING);
     p.setIntValue(20);
     p.setLonghelp(
-      "In order to decide which variable to branch on, the code will choose up to this number \
+        "In order to decide which variable to branch on, the code will choose up to this number \
 of unsatisfied variables to try minimal up and down branches on.  Then the most effective one is chosen. \
 If a variable is branched on many times then the previous average up and down costs may be used - \
 see also option trustPseudoCosts.");
@@ -3941,10 +3986,11 @@ see also option trustPseudoCosts.");
 #endif
 #ifdef COIN_HAS_CLP
   {
-    CbcOrClpParam p("subs!titution", "How long a column to substitute for in presolve",
-      0, 10000, CLP_PARAM_INT_SUBSTITUTION, 0);
+    CbcOrClpParam p("subs!titution",
+                    "How long a column to substitute for in presolve", 0, 10000,
+                    CLP_PARAM_INT_SUBSTITUTION, 0);
     p.setLonghelp(
-      "Normally Presolve gets rid of 'free' variables when there are no more than 3 \
+        "Normally Presolve gets rid of 'free' variables when there are no more than 3 \
  coefficients in a row.  If you increase this, the number of rows may decrease but the number of \
  coefficients may increase.");
     parameters.push_back(p);
@@ -3952,18 +3998,18 @@ see also option trustPseudoCosts.");
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("testO!si", "Test OsiObject stuff",
-      -1, COIN_INT_MAX, CBC_PARAM_INT_TESTOSI, 0);
+    CbcOrClpParam p("testO!si", "Test OsiObject stuff", -1, COIN_INT_MAX,
+                    CBC_PARAM_INT_TESTOSI, 0);
     parameters.push_back(p);
   }
 #endif
 #ifdef CBC_THREAD
   {
-    CbcOrClpParam p("thread!s", "Number of threads to try and use",
-      -100, 100000, CBC_PARAM_INT_THREADS, 1);
+    CbcOrClpParam p("thread!s", "Number of threads to try and use", -100,
+                    100000, CBC_PARAM_INT_THREADS, 1);
     p.setIntValue(0);
     p.setLonghelp(
-      "To use multiple threads, set threads to number wanted.  It may be better \
+        "To use multiple threads, set threads to number wanted.  It may be better \
 to use one or two more than number of cpus available.  If 100+n then n threads and \
 search is repeatable (maybe be somewhat slower), \
 if 200+n use threads for root cuts, 400+n threads used in sub-trees.");
@@ -3972,11 +4018,11 @@ if 200+n use threads for root cuts, 400+n threads used in sub-trees.");
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("tighten!Factor", "Tighten bounds using this times largest \
+    CbcOrClpParam p("tighten!Factor",
+                    "Tighten bounds using this times largest \
 activity at continuous solution",
-      1.0e-3, COIN_DBL_MAX, CBC_PARAM_DBL_TIGHTENFACTOR, 0);
-    p.setLonghelp(
-      "This sleazy trick can help on some problems.");
+                    1.0e-3, COIN_DBL_MAX, CBC_PARAM_DBL_TIGHTENFACTOR, 0);
+    p.setLonghelp("This sleazy trick can help on some problems.");
     parameters.push_back(p);
   }
 
@@ -3984,25 +4030,26 @@ activity at continuous solution",
 #ifdef COIN_HAS_CLP
   {
     CbcOrClpParam p("tightLP", "Poor person's preSolve for now",
-      CLP_PARAM_ACTION_TIGHTEN, 7, 0);
+                    CLP_PARAM_ACTION_TIGHTEN, 7, 0);
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("timeM!ode", "Whether to use CPU or elapsed time",
-      "cpu", CLP_PARAM_STR_TIME_MODE);
+    CbcOrClpParam p("timeM!ode", "Whether to use CPU or elapsed time", "cpu",
+                    CLP_PARAM_STR_TIME_MODE);
     p.append("elapsed");
     p.setLonghelp(
-      "cpu uses CPU time for stopping, while elapsed uses elapsed time. \
+        "cpu uses CPU time for stopping, while elapsed uses elapsed time. \
 (On Windows, elapsed time is always used).");
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("trust!PseudoCosts", "Number of branches before we trust pseudocosts",
-      -3, COIN_INT_MAX, CBC_PARAM_INT_NUMBERBEFORE);
+    CbcOrClpParam p("trust!PseudoCosts",
+                    "Number of branches before we trust pseudocosts", -3,
+                    COIN_INT_MAX, CBC_PARAM_INT_NUMBERBEFORE);
     p.setLonghelp(
-      "Using strong branching computes pseudo-costs.  This parameter determines after how many branches for a variable we just \
+        "Using strong branching computes pseudo-costs.  This parameter determines after how many branches for a variable we just \
 trust the pseudo costs and do not do any more strong branching.");
     p.setIntValue(10);
     parameters.push_back(p);
@@ -4010,10 +4057,11 @@ trust the pseudo costs and do not do any more strong branching.");
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("tune!PreProcess", "Dubious tuning parameters for preprocessing",
-      0, COIN_INT_MAX, CLP_PARAM_INT_PROCESSTUNE, 1);
+    CbcOrClpParam p("tune!PreProcess",
+                    "Dubious tuning parameters for preprocessing", 0,
+                    COIN_INT_MAX, CLP_PARAM_INT_PROCESSTUNE, 1);
     p.setLonghelp(
-      "Format aabbcccc - \n If aa then this is number of major passes (i.e. with presolve) \n \
+        "Format aabbcccc - \n If aa then this is number of major passes (i.e. with presolve) \n \
 If bb and bb>0 then this is number of minor passes (if unset or 0 then 10) \n \
 cccc is bit set \n 0 - 1 Heavy probing \n 1 - 2 Make variables integer if possible (if obj value)\n \
 2 - 4 As above but even if zero objective value\n \
@@ -4025,8 +4073,9 @@ cccc is bit set \n 0 - 1 Heavy probing \n 1 - 2 Make variables integer if possib
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("two!MirCuts", "Whether to use Two phase Mixed Integer Rounding cuts",
-      "off", CBC_PARAM_STR_TWOMIRCUTS);
+    CbcOrClpParam p("two!MirCuts",
+                    "Whether to use Two phase Mixed Integer Rounding cuts",
+                    "off", CBC_PARAM_STR_TWOMIRCUTS);
     p.append("on");
     p.append("root");
     p.append("ifmove");
@@ -4035,31 +4084,30 @@ cccc is bit set \n 0 - 1 Heavy probing \n 1 - 2 Make variables integer if possib
     p.append("forceandglobal");
     p.append("forceLongOn");
     p.setLonghelp(CUTS_LONGHELP
-      " Reference: https://github.com/coin-or/Cgl/wiki/CglTwomir");
+                  " Reference: https://github.com/coin-or/Cgl/wiki/CglTwomir");
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("unitTest", "Do unit test",
-      CLP_PARAM_ACTION_UNITTEST, 3, 1);
-    p.setLonghelp(
-      "This exercises the unit test for clp");
+    CbcOrClpParam p("unitTest", "Do unit test", CLP_PARAM_ACTION_UNITTEST, 3,
+                    1);
+    p.setLonghelp("This exercises the unit test for clp");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("userClp", "Hand coded Clp stuff",
-      CLP_PARAM_ACTION_USERCLP, 0, 0);
+    CbcOrClpParam p("userClp", "Hand coded Clp stuff", CLP_PARAM_ACTION_USERCLP,
+                    0, 0);
     p.setLonghelp(
-      "There are times e.g. when using AMPL interface when you may wish to do something unusual.  \
+        "There are times e.g. when using AMPL interface when you may wish to do something unusual.  \
 Look for USERCLP in main driver and modify sample code.");
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("userCbc", "Hand coded Cbc stuff",
-      CBC_PARAM_ACTION_USERCBC, 0, 0);
+    CbcOrClpParam p("userCbc", "Hand coded Cbc stuff", CBC_PARAM_ACTION_USERCBC,
+                    0, 0);
     p.setLonghelp(
-      "There are times e.g. when using AMPL interface when you may wish to do something unusual.  \
+        "There are times e.g. when using AMPL interface when you may wish to do something unusual.  \
 Look for USERCBC in main driver and modify sample code. \
 It is possible you can get same effect by using example driver4.cpp.");
     parameters.push_back(p);
@@ -4067,10 +4115,10 @@ It is possible you can get same effect by using example driver4.cpp.");
 #endif
 #ifdef COIN_AVX2
   {
-    CbcOrClpParam p("vector!Mode", "Try and use vector instructions",
-      0, 11, CLP_PARAM_INT_VECTOR_MODE);
+    CbcOrClpParam p("vector!Mode", "Try and use vector instructions", 0, 11,
+                    CLP_PARAM_INT_VECTOR_MODE);
     p.setLonghelp(
-      "At present only for Intel architectures - but could be extended.  \
+        "At present only for Intel architectures - but could be extended.  \
 Uses avx2 or avx512 instructions. Uses different storage for matrix - can be \
 of benefit without instruction set on some problems.  \
 Being lazy I have used 10 to switch on a pool matrix (11 may come later)");
@@ -4080,8 +4128,9 @@ Being lazy I have used 10 to switch on a pool matrix (11 may come later)");
 #endif
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("Vnd!VariableNeighborhoodSearch", "Whether to try Variable Neighborhood Search",
-      "off", CBC_PARAM_STR_VND);
+    CbcOrClpParam p("Vnd!VariableNeighborhoodSearch",
+                    "Whether to try Variable Neighborhood Search", "off",
+                    CBC_PARAM_STR_VND);
     p.append("on");
     p.append("both");
     p.append("before");
@@ -4091,49 +4140,51 @@ Being lazy I have used 10 to switch on a pool matrix (11 may come later)");
   }
 #endif
   {
-    CbcOrClpParam p("vector", "Whether to use vector? Form of matrix in simplex",
-      "off", CLP_PARAM_STR_VECTOR, 7, 0);
+    CbcOrClpParam p("vector",
+                    "Whether to use vector? Form of matrix in simplex", "off",
+                    CLP_PARAM_STR_VECTOR, 7, 0);
     p.append("on");
     p.setLonghelp(
-      "If this is on ClpPackedMatrix uses extra column copy in odd format.");
+        "If this is on ClpPackedMatrix uses extra column copy in odd format.");
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("verbose", "Switches on longer help on single ?",
-      0, 31, CLP_PARAM_INT_VERBOSE, 0);
+    CbcOrClpParam p("verbose", "Switches on longer help on single ?", 0, 31,
+                    CLP_PARAM_INT_VERBOSE, 0);
     p.setLonghelp(
-      "Set to 1 to get short help with ? list, 2 to get long help, 3 for both.  (add 4 to just get ampl ones).");
+        "Set to 1 to get short help with ? list, 2 to get long help, 3 for "
+        "both.  (add 4 to just get ampl ones).");
     p.setIntValue(0);
     parameters.push_back(p);
   }
 #ifdef COIN_HAS_CBC
   {
-    CbcOrClpParam p("vub!heuristic", "Type of VUB heuristic",
-      -2, 20, CBC_PARAM_INT_VUBTRY, 0);
-    p.setLonghelp(
-      "This heuristic tries and fix some integer variables.");
+    CbcOrClpParam p("vub!heuristic", "Type of VUB heuristic", -2, 20,
+                    CBC_PARAM_INT_VUBTRY, 0);
+    p.setLonghelp("This heuristic tries and fix some integer variables.");
     p.setIntValue(-1);
     parameters.push_back(p);
   }
   {
-    CbcOrClpParam p("zero!HalfCuts", "Whether to use zero half cuts",
-      "off", CBC_PARAM_STR_ZEROHALFCUTS);
+    CbcOrClpParam p("zero!HalfCuts", "Whether to use zero half cuts", "off",
+                    CBC_PARAM_STR_ZEROHALFCUTS);
     p.append("on");
     p.append("root");
     p.append("ifmove");
     p.append("forceOn");
     p.append("onglobal");
     p.setLonghelp(CUTS_LONGHELP
-      " This implementation was written by Alberto Caprara.");
+                  " This implementation was written by Alberto Caprara.");
     parameters.push_back(p);
   }
 #endif
   {
-    CbcOrClpParam p("zeroT!olerance", "Kill all coefficients \
+    CbcOrClpParam p("zeroT!olerance",
+                    "Kill all coefficients \
 whose absolute value is less than this value",
-      1.0e-100, 1.0e-5, CLP_PARAM_DBL_ZEROTOLERANCE);
+                    1.0e-100, 1.0e-5, CLP_PARAM_DBL_ZEROTOLERANCE);
     p.setLonghelp(
-      "This applies to reading mps files (and also lp files \
+        "This applies to reading mps files (and also lp files \
 if KILL_ZERO_READLP defined)");
     p.setDoubleValue(1.0e-20);
     parameters.push_back(p);
@@ -4141,21 +4192,18 @@ if KILL_ZERO_READLP defined)");
 }
 // Given a parameter type - returns its number in list
 int whichParam(const CbcOrClpParameterType &name,
-  const std::vector< CbcOrClpParam > &parameters)
-{
+               const std::vector<CbcOrClpParam> &parameters) {
   for (int i = 0; i < (int)parameters.size(); i++) {
-    if (parameters[i].type() == name)
-      return i;
+    if (parameters[i].type() == name) return i;
   }
-  return std::numeric_limits< int >::max(); // should not arrive here
+  return std::numeric_limits<int>::max();  // should not arrive here
 }
 #ifdef COIN_HAS_CLP
 /* Restore a solution from file.
    mode 0 normal, 1 swap rows and columns and primal and dual
    if 2 set then also change signs
 */
-void restoreSolution(ClpSimplex *lpSolver, std::string fileName, int mode)
-{
+void restoreSolution(ClpSimplex *lpSolver, std::string fileName, int mode) {
   FILE *fp = fopen(fileName.c_str(), "rb");
   if (fp) {
     int numberRows = lpSolver->numberRows();
@@ -4165,14 +4213,11 @@ void restoreSolution(ClpSimplex *lpSolver, std::string fileName, int mode)
     double objectiveValue;
     size_t nRead;
     nRead = fread(&numberRowsFile, sizeof(int), 1, fp);
-    if (nRead != 1)
-      throw("Error in fread");
+    if (nRead != 1) throw("Error in fread");
     nRead = fread(&numberColumnsFile, sizeof(int), 1, fp);
-    if (nRead != 1)
-      throw("Error in fread");
+    if (nRead != 1) throw("Error in fread");
     nRead = fread(&objectiveValue, sizeof(double), 1, fp);
-    if (nRead != 1)
-      throw("Error in fread");
+    if (nRead != 1) throw("Error in fread");
     double *dualRowSolution = lpSolver->dualRowSolution();
     double *primalRowSolution = lpSolver->primalRowSolution();
     double *dualColumnSolution = lpSolver->dualColumnSolution();
@@ -4196,34 +4241,33 @@ void restoreSolution(ClpSimplex *lpSolver, std::string fileName, int mode)
       lpSolver->setObjectiveValue(objectiveValue);
       if (numberRows == numberRowsFile && numberColumns == numberColumnsFile) {
         nRead = fread(primalRowSolution, sizeof(double), numberRows, fp);
-        if (nRead != static_cast< size_t >(numberRows))
-          throw("Error in fread");
+        if (nRead != static_cast<size_t>(numberRows)) throw("Error in fread");
         nRead = fread(dualRowSolution, sizeof(double), numberRows, fp);
-        if (nRead != static_cast< size_t >(numberRows))
-          throw("Error in fread");
+        if (nRead != static_cast<size_t>(numberRows)) throw("Error in fread");
         nRead = fread(primalColumnSolution, sizeof(double), numberColumns, fp);
-        if (nRead != static_cast< size_t >(numberColumns))
+        if (nRead != static_cast<size_t>(numberColumns))
           throw("Error in fread");
         nRead = fread(dualColumnSolution, sizeof(double), numberColumns, fp);
-        if (nRead != static_cast< size_t >(numberColumns))
+        if (nRead != static_cast<size_t>(numberColumns))
           throw("Error in fread");
       } else {
-        std::cout << "Mismatch on rows and/or columns - truncating" << std::endl;
+        std::cout << "Mismatch on rows and/or columns - truncating"
+                  << std::endl;
         double *temp = new double[CoinMax(numberRowsFile, numberColumnsFile)];
         nRead = fread(temp, sizeof(double), numberRowsFile, fp);
-        if (nRead != static_cast< size_t >(numberRowsFile))
+        if (nRead != static_cast<size_t>(numberRowsFile))
           throw("Error in fread");
         CoinMemcpyN(temp, numberRows, primalRowSolution);
         nRead = fread(temp, sizeof(double), numberRowsFile, fp);
-        if (nRead != static_cast< size_t >(numberRowsFile))
+        if (nRead != static_cast<size_t>(numberRowsFile))
           throw("Error in fread");
         CoinMemcpyN(temp, numberRows, dualRowSolution);
         nRead = fread(temp, sizeof(double), numberColumnsFile, fp);
-        if (nRead != static_cast< size_t >(numberColumnsFile))
+        if (nRead != static_cast<size_t>(numberColumnsFile))
           throw("Error in fread");
         CoinMemcpyN(temp, numberColumns, primalColumnSolution);
         nRead = fread(temp, sizeof(double), numberColumnsFile, fp);
-        if (nRead != static_cast< size_t >(numberColumnsFile))
+        if (nRead != static_cast<size_t>(numberColumnsFile))
           throw("Error in fread");
         CoinMemcpyN(temp, numberColumns, dualColumnSolution);
         delete[] temp;
@@ -4246,12 +4290,11 @@ void restoreSolution(ClpSimplex *lpSolver, std::string fileName, int mode)
   }
 }
 // Dump a solution to file
-void saveSolution(const ClpSimplex *lpSolver, std::string fileName)
-{
+void saveSolution(const ClpSimplex *lpSolver, std::string fileName) {
   if (strstr(fileName.c_str(), "_fix_read_")) {
     FILE *fp = fopen(fileName.c_str(), "rb");
     if (fp) {
-      ClpSimplex *solver = const_cast< ClpSimplex * >(lpSolver);
+      ClpSimplex *solver = const_cast<ClpSimplex *>(lpSolver);
       restoreSolution(solver, fileName, 0);
       // fix all
       int logLevel = solver->logLevel();
@@ -4264,13 +4307,13 @@ void saveSolution(const ClpSimplex *lpSolver, std::string fileName)
         double value = primalColumnSolution[iColumn];
         if (value > columnUpper[iColumn]) {
           if (value > columnUpper[iColumn] + 1.0e-6 && logLevel > 1)
-            printf("%d value of %g - bounds %g %g\n",
-              iColumn, value, columnLower[iColumn], columnUpper[iColumn]);
+            printf("%d value of %g - bounds %g %g\n", iColumn, value,
+                   columnLower[iColumn], columnUpper[iColumn]);
           value = columnUpper[iColumn];
         } else if (value < columnLower[iColumn]) {
           if (value < columnLower[iColumn] - 1.0e-6 && logLevel > 1)
-            printf("%d value of %g - bounds %g %g\n",
-              iColumn, value, columnLower[iColumn], columnUpper[iColumn]);
+            printf("%d value of %g - bounds %g %g\n", iColumn, value,
+                   columnLower[iColumn], columnUpper[iColumn]);
           value = columnLower[iColumn];
         }
         columnLower[iColumn] = value;
@@ -4286,30 +4329,23 @@ void saveSolution(const ClpSimplex *lpSolver, std::string fileName)
     double objectiveValue = lpSolver->objectiveValue();
     size_t nWrite;
     nWrite = fwrite(&numberRows, sizeof(int), 1, fp);
-    if (nWrite != 1)
-      throw("Error in fwrite");
+    if (nWrite != 1) throw("Error in fwrite");
     nWrite = fwrite(&numberColumns, sizeof(int), 1, fp);
-    if (nWrite != 1)
-      throw("Error in fwrite");
+    if (nWrite != 1) throw("Error in fwrite");
     nWrite = fwrite(&objectiveValue, sizeof(double), 1, fp);
-    if (nWrite != 1)
-      throw("Error in fwrite");
+    if (nWrite != 1) throw("Error in fwrite");
     double *dualRowSolution = lpSolver->dualRowSolution();
     double *primalRowSolution = lpSolver->primalRowSolution();
     nWrite = fwrite(primalRowSolution, sizeof(double), numberRows, fp);
-    if (nWrite != static_cast< size_t >(numberRows))
-      throw("Error in fwrite");
+    if (nWrite != static_cast<size_t>(numberRows)) throw("Error in fwrite");
     nWrite = fwrite(dualRowSolution, sizeof(double), numberRows, fp);
-    if (nWrite != static_cast< size_t >(numberRows))
-      throw("Error in fwrite");
+    if (nWrite != static_cast<size_t>(numberRows)) throw("Error in fwrite");
     double *dualColumnSolution = lpSolver->dualColumnSolution();
     double *primalColumnSolution = lpSolver->primalColumnSolution();
     nWrite = fwrite(primalColumnSolution, sizeof(double), numberColumns, fp);
-    if (nWrite != static_cast< size_t >(numberColumns))
-      throw("Error in fwrite");
+    if (nWrite != static_cast<size_t>(numberColumns)) throw("Error in fwrite");
     nWrite = fwrite(dualColumnSolution, sizeof(double), numberColumns, fp);
-    if (nWrite != static_cast< size_t >(numberColumns))
-      throw("Error in fwrite");
+    if (nWrite != static_cast<size_t>(numberColumns)) throw("Error in fwrite");
     fclose(fp);
   } else {
     std::cout << "Unable to open file " << fileName << std::endl;
@@ -4318,4 +4354,4 @@ void saveSolution(const ClpSimplex *lpSolver, std::string fileName)
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

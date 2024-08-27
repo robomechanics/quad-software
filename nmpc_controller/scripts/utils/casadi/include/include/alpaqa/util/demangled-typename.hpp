@@ -1,7 +1,6 @@
 #pragma once
 
 #include <alpaqa/export.hpp>
-
 #include <string>
 #include <typeinfo>
 

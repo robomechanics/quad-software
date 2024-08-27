@@ -116,13 +116,13 @@ class PointerMapper {
      * checking
      */
     virtual_pointer_t(const void *ptr)
-        : m_contents(reinterpret_cast<base_ptr_t>(ptr)){};
+        : m_contents(reinterpret_cast<base_ptr_t>(ptr)) {};
 
     /**
      * Creates a virtual_pointer_t from the given integer
      * number
      */
-    virtual_pointer_t(base_ptr_t u) : m_contents(u){};
+    virtual_pointer_t(base_ptr_t u) : m_contents(u) {};
   };
 
   /* Definition of a null pointer
@@ -203,7 +203,6 @@ class PointerMapper {
     if (this->count() == 0) {
       m_pointerMap.clear();
       EIGEN_THROW_X(std::out_of_range("There are no pointers allocated\n"));
-
     }
     if (is_nullptr(ptr)) {
       m_pointerMap.clear();
@@ -221,7 +220,6 @@ class PointerMapper {
         m_pointerMap.clear();
         EIGEN_THROW_X(
             std::out_of_range("The pointer is not registered in the map\n"));
-
       }
       --node;
     }

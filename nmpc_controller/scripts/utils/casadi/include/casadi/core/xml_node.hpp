@@ -18,19 +18,20 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_XML_NODE_HPP
 #define CASADI_XML_NODE_HPP
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
-#include "exception.hpp"
+
 #include "casadi_common.hpp"
+#include "exception.hpp"
 
 /// \cond INTERNAL
 
@@ -80,7 +81,8 @@ struct CASADI_EXPORT XmlNode {
   /** \brief Add a vector attribute
 
       \identifier{254} */
-  void set_attribute(const std::string& att_name, const std::vector<casadi_int>& att);
+  void set_attribute(const std::string& att_name,
+                     const std::vector<casadi_int>& att);
 
   /** \brief  Names of children
 
@@ -95,11 +97,12 @@ struct CASADI_EXPORT XmlNode {
   /** \brief  Get an attribute by its name
 
       \identifier{vg} */
-  template<typename T>
+  template <typename T>
   T attribute(const std::string& att_name) const {
     // Find the attribute, if any
     auto it = this->attributes.find(att_name);
-    casadi_assert(it != this->attributes.end(), "Could not find attribute " + att_name);
+    casadi_assert(it != this->attributes.end(),
+                  "Could not find attribute " + att_name);
     // Attribute found, read it
     T ret;
     read(it->second, &ret);
@@ -109,7 +112,7 @@ struct CASADI_EXPORT XmlNode {
   /** \brief  Get an attribute by its name, default value if not found
 
       \identifier{vh} */
-  template<typename T>
+  template <typename T>
   T attribute(const std::string& att_name, const T& def_att) const {
     // Find the attribute, if any
     auto it = this->attributes.find(att_name);
@@ -127,12 +130,12 @@ struct CASADI_EXPORT XmlNode {
   /** \brief  Get a reference to a child by its index
 
       \identifier{vi} */
-  const XmlNode& operator[](size_t i) const { return this->children.at(i);}
+  const XmlNode& operator[](size_t i) const { return this->children.at(i); }
 
   /** \brief  Get a reference to a child by its index
 
       \identifier{vj} */
-  XmlNode& operator[](size_t i) { return this->children.at(i);}
+  XmlNode& operator[](size_t i) { return this->children.at(i); }
 
   /** \brief  Get a reference to a child by its name
 
@@ -152,13 +155,15 @@ struct CASADI_EXPORT XmlNode {
   /** \brief  Get the number of children
 
       \identifier{vn} */
-  size_t size() const { return this->children.size();}
+  size_t size() const { return this->children.size(); }
 
   /** \brief  Get value of text field
 
       \identifier{vo} */
-  template<typename T>
-  void get(T* val) const { read(this->text, val);}
+  template <typename T>
+  void get(T* val) const {
+    read(this->text, val);
+  }
 
   /** \brief  Read the string value of a string (i.e. copy)
 
@@ -193,15 +198,16 @@ struct CASADI_EXPORT XmlNode {
   /** \brief Print to stream
 
       \identifier{vv} */
-  CASADI_EXPORT friend std::ostream& operator<<(std::ostream &stream, const XmlNode& node);
+  CASADI_EXPORT friend std::ostream& operator<<(std::ostream& stream,
+                                                const XmlNode& node);
 
   /** \brief  Dump representation
 
       \identifier{vw} */
-  void dump(std::ostream &stream, casadi_int indent = 0) const;
+  void dump(std::ostream& stream, casadi_int indent = 0) const;
 };
 
-} // namespace casadi
+}  // namespace casadi
 /// \endcond
 
-#endif // CASADI_XML_NODE_HPP
+#endif  // CASADI_XML_NODE_HPP

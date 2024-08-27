@@ -9,7 +9,7 @@
 
 #include "CglCutGenerator.hpp"
 
-/** AllDifferent Cut Generator Class 
+/** AllDifferent Cut Generator Class
     This has a number of sets.  All the members in each set are general integer
     variables which have to be different from all others in the set.
 
@@ -18,47 +18,39 @@
     At present it is very primitive compared to proper CSP implementations
  */
 class CglAllDifferent : public CglCutGenerator {
- 
-public:
-    
-  
+ public:
   /**@name Generate Cuts */
   //@{
   /** This fixes (or reduces bounds) on sets of all different variables
-  */
-  virtual void generateCuts( const OsiSolverInterface & si, OsiCuts & cs,
-			     const CglTreeInfo info = CglTreeInfo());
+   */
+  virtual void generateCuts(const OsiSolverInterface& si, OsiCuts& cs,
+                            const CglTreeInfo info = CglTreeInfo());
   //@}
-
 
   /**@name Constructors and destructors */
   //@{
-  /// Default constructor 
-  CglAllDifferent ();
+  /// Default constructor
+  CglAllDifferent();
 
   /// Useful constructot
-  CglAllDifferent(int numberSets, const int * starts, const int * which);
- 
-  /// Copy constructor 
-  CglAllDifferent (
-    const CglAllDifferent &);
+  CglAllDifferent(int numberSets, const int* starts, const int* which);
+
+  /// Copy constructor
+  CglAllDifferent(const CglAllDifferent&);
 
   /// Clone
-  virtual CglCutGenerator * clone() const;
+  virtual CglCutGenerator* clone() const;
 
-  /// Assignment operator 
-  CglAllDifferent &
-    operator=(
-    const CglAllDifferent& rhs);
-  
-  /// Destructor 
-  virtual
-    ~CglAllDifferent ();
+  /// Assignment operator
+  CglAllDifferent& operator=(const CglAllDifferent& rhs);
+
+  /// Destructor
+  virtual ~CglAllDifferent();
   /// Create C++ lines to get to current state
-  virtual std::string generateCpp( FILE * fp);
+  virtual std::string generateCpp(FILE* fp);
 
   /// This can be used to refresh any inforamtion
-  virtual void refreshSolver(OsiSolverInterface * solver);
+  virtual void refreshSolver(OsiSolverInterface* solver);
   /**
      Returns true if may generate Row cuts in tree (rather than root node).
      Used so know if matrix will change in tree.  Really
@@ -66,28 +58,22 @@ public:
      without worrying code.
      Default is true
   */
-  virtual bool mayGenerateRowCutsInTree() const
-  { return false;}
+  virtual bool mayGenerateRowCutsInTree() const { return false; }
   //@}
   /**@name Sets and Gets */
   //@{
   /// Set log level
-  inline void setLogLevel(int value)
-  { logLevel_=value;}
+  inline void setLogLevel(int value) { logLevel_ = value; }
   /// Get log level
-  inline int getLogLevel() const
-  { return logLevel_;}
+  inline int getLogLevel() const { return logLevel_; }
   /// Set Maximum number of sets to look at at once
-  inline void setMaxLook(int value)
-  { maxLook_=value;}
+  inline void setMaxLook(int value) { maxLook_ = value; }
   /// Get Maximum number of sets to look at at once
-  inline int getMaxLook() const
-  { return maxLook_;}
+  inline int getMaxLook() const { return maxLook_; }
   //@}
-      
-private:
-  
- // Private member methods
+
+ private:
+  // Private member methods
   /**@name  */
   //@{
   //@}
@@ -105,11 +91,11 @@ private:
   /// Log level - 0 none, 1 - a bit, 2 - more details
   int logLevel_;
   /// Start of each set
-  int * start_;
+  int* start_;
   /// Members (0,1,....) not as in original model
-  int * which_;
+  int* which_;
   /// Original members
-  int * originalWhich_;
+  int* originalWhich_;
   //@}
 };
 #endif

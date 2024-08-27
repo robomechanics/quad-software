@@ -14,7 +14,7 @@
  */
 
 class CbcHeuristicVND : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicVND();
 
@@ -49,25 +49,16 @@ public:
         Sets solution values if good, sets objective value (only if good)
         This does Relaxation Induced Neighborhood Search
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
   /// This version fixes stuff and does IP
-  int solutionFix(double &objectiveValue,
-    double *newSolution,
-    const int *keep);
+  int solutionFix(double &objectiveValue, double *newSolution, const int *keep);
 
   /// Sets how often to do it
-  inline void setHowOften(int value)
-  {
-    howOften_ = value;
-  }
+  inline void setHowOften(int value) { howOften_ = value; }
   /// base solution array so we can set
-  inline double *baseSolution() const
-  {
-    return baseSolution_;
-  }
+  inline double *baseSolution() const { return baseSolution_; }
 
-protected:
+ protected:
   // Data
 
   /// Number of solutions so we can do something at solution
@@ -92,4 +83,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

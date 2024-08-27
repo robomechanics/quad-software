@@ -7,11 +7,10 @@
 #ifndef __IPSYMTMATRIX_HPP__
 #define __IPSYMTMATRIX_HPP__
 
-#include "IpUtils.hpp"
 #include "IpSymMatrix.hpp"
+#include "IpUtils.hpp"
 
-namespace Ipopt
-{
+namespace Ipopt {
 
 /* forward declarations */
 class SymTMatrixSpace;
@@ -36,143 +35,117 @@ class SymTMatrixSpace;
  *
  *  Note that the first row and column of a matrix has index 1, not 0.
  */
-class IPOPTLIB_EXPORT SymTMatrix: public SymMatrix
-{
-public:
-   /**@name Constructors / Destructors */
-   ///@{
-   /** Constructor, taking the corresponding matrix space. */
-   SymTMatrix(
-      const SymTMatrixSpace* owner_space
-   );
+class IPOPTLIB_EXPORT SymTMatrix : public SymMatrix {
+ public:
+  /**@name Constructors / Destructors */
+  ///@{
+  /** Constructor, taking the corresponding matrix space. */
+  SymTMatrix(const SymTMatrixSpace* owner_space);
 
-   /** Destructor */
-   ~SymTMatrix();
-   ///@}
+  /** Destructor */
+  ~SymTMatrix();
+  ///@}
 
-   /**@name Changing the Values.*/
-   ///@{
-   /** Set values of nonzero elements.
-    *
-    *  The values of the nonzero
-    *  elements is copied from the incoming Number array.
-    *  Important: It is assume that the order of the values in Values
-    *  corresponds to the one of Irn and Jcn given to the matrix space.
-    */
-   void SetValues(
-      const Number* Values
-   );
-   ///@}
+  /**@name Changing the Values.*/
+  ///@{
+  /** Set values of nonzero elements.
+   *
+   *  The values of the nonzero
+   *  elements is copied from the incoming Number array.
+   *  Important: It is assume that the order of the values in Values
+   *  corresponds to the one of Irn and Jcn given to the matrix space.
+   */
+  void SetValues(const Number* Values);
+  ///@}
 
-   /** @name Accessor Methods */
-   ///@{
-   /** Number of nonzero entries */
-   Index Nonzeros() const;
+  /** @name Accessor Methods */
+  ///@{
+  /** Number of nonzero entries */
+  Index Nonzeros() const;
 
-   /** Obtain pointer to the internal Index array irn_ without the
-    *  intention to change the matrix data.
-    *
-    *  @attention This does not produce a copy, and lifetime is not guaranteed!
-    */
-   const Index* Irows() const;
+  /** Obtain pointer to the internal Index array irn_ without the
+   *  intention to change the matrix data.
+   *
+   *  @attention This does not produce a copy, and lifetime is not guaranteed!
+   */
+  const Index* Irows() const;
 
-   /** Obtain pointer to the internal Index array jcn_ without the
-    *  intention to change the matrix data.
-    *
-    *  @attention This does not produce a copy, and lifetime is not guaranteed!
-    */
-   const Index* Jcols() const;
+  /** Obtain pointer to the internal Index array jcn_ without the
+   *  intention to change the matrix data.
+   *
+   *  @attention This does not produce a copy, and lifetime is not guaranteed!
+   */
+  const Index* Jcols() const;
 
-   /** Obtain pointer to the internal Number array values_ with the
-    *  intention to change the matrix data.
-    *
-    *  @attention This does not produce a copy, and lifetime is not guaranteed!
-    */
-   Number* Values();
+  /** Obtain pointer to the internal Number array values_ with the
+   *  intention to change the matrix data.
+   *
+   *  @attention This does not produce a copy, and lifetime is not guaranteed!
+   */
+  Number* Values();
 
-   /** Obtain pointer to the internal Number array values_ without the
-    *  intention to change the matrix data.
-    *
-    *  @attention This does not produce a copy, and lifetime is not guaranteed!
-    */
-   const Number* Values() const;
-   ///@}
+  /** Obtain pointer to the internal Number array values_ without the
+   *  intention to change the matrix data.
+   *
+   *  @attention This does not produce a copy, and lifetime is not guaranteed!
+   */
+  const Number* Values() const;
+  ///@}
 
-   /**@name Methods for providing copy of the matrix data */
-   ///@{
-   /** Copy the nonzero structure into provided space */
-   void FillStruct(
-      Index* Irn,
-      Index* Jcn
-   ) const;
+  /**@name Methods for providing copy of the matrix data */
+  ///@{
+  /** Copy the nonzero structure into provided space */
+  void FillStruct(Index* Irn, Index* Jcn) const;
 
-   /** Copy the value data into provided space */
-   void FillValues(
-      Number* Values
-   ) const;
-   ///@}
+  /** Copy the value data into provided space */
+  void FillValues(Number* Values) const;
+  ///@}
 
-protected:
-   /**@name Methods overloaded from matrix */
-   ///@{
-   virtual void MultVectorImpl(
-      Number        alpha,
-      const Vector& x,
-      Number        beta,
-      Vector&       y
-   ) const;
+ protected:
+  /**@name Methods overloaded from matrix */
+  ///@{
+  virtual void MultVectorImpl(Number alpha, const Vector& x, Number beta,
+                              Vector& y) const;
 
-   virtual bool HasValidNumbersImpl() const;
+  virtual bool HasValidNumbersImpl() const;
 
-   virtual void ComputeRowAMaxImpl(
-      Vector& rows_norms,
-      bool    init
-   ) const;
+  virtual void ComputeRowAMaxImpl(Vector& rows_norms, bool init) const;
 
-   virtual void PrintImpl(
-      const Journalist&  jnlst,
-      EJournalLevel      level,
-      EJournalCategory   category,
-      const std::string& name,
-      Index              indent,
-      const std::string& prefix
-   ) const;
-   ///@}
+  virtual void PrintImpl(const Journalist& jnlst, EJournalLevel level,
+                         EJournalCategory category, const std::string& name,
+                         Index indent, const std::string& prefix) const;
+  ///@}
 
-private:
-   /**@name Default Compiler Generated Methods
-    * (Hidden to avoid implicit creation/calling).
-    * These methods are not implemented and
-    * we do not want the compiler to implement
-    * them for us, so we declare them private
-    * and do not define them. This ensures that
-    * they will not be implicitly created/called.
-    */
-   ///@{
-   /** Default Constructor */
-   SymTMatrix();
+ private:
+  /**@name Default Compiler Generated Methods
+   * (Hidden to avoid implicit creation/calling).
+   * These methods are not implemented and
+   * we do not want the compiler to implement
+   * them for us, so we declare them private
+   * and do not define them. This ensures that
+   * they will not be implicitly created/called.
+   */
+  ///@{
+  /** Default Constructor */
+  SymTMatrix();
 
-   /** Copy Constructor */
-   SymTMatrix(
-      const SymTMatrix&
-   );
+  /** Copy Constructor */
+  SymTMatrix(const SymTMatrix&);
 
-   /** Default Assignment Operator */
-   void operator=(
-      const SymTMatrix&
-   );
-   ///@}
+  /** Default Assignment Operator */
+  void operator=(const SymTMatrix&);
+  ///@}
 
-   /** Copy of the owner_space ptr as a SymTMatrixSpace instead
-    *  of a MatrixSpace
-    */
-   const SymTMatrixSpace* owner_space_;
+  /** Copy of the owner_space ptr as a SymTMatrixSpace instead
+   *  of a MatrixSpace
+   */
+  const SymTMatrixSpace* owner_space_;
 
-   /** Values of nonzeros */
-   Number* values_;
+  /** Values of nonzeros */
+  Number* values_;
 
-   /** Flag for Initialization */
-   bool initialized_;
+  /** Flag for Initialization */
+  bool initialized_;
 };
 
 /** This is the matrix space for a SymTMatrix with fixed sparsity
@@ -180,96 +153,65 @@ private:
  *
  *  The sparsity structure is stored here in the matrix space.
  */
-class IPOPTLIB_EXPORT SymTMatrixSpace: public SymMatrixSpace
-{
-public:
-   /** @name Constructors / Destructors */
-   ///@{
-   /** Constructor, given the number of rows and columns (both as
-    *  dim), as well as the number of nonzeros and the position of
-    *  the nonzero elements.  Note that the counting of the nonzeros
-    *  starts a 1, i.e., iRows[i]==1 and jCols[i]==1 refers to the
-    *  first element in the first row.  This is in accordance with
-    *  the HSL data structure.  Off-diagonal elements are stored only
-    *  once.
-    */
-   SymTMatrixSpace(
-      Index        dim,
-      Index        nonZeros,
-      const Index* iRows,
-      const Index* jCols
-   );
+class IPOPTLIB_EXPORT SymTMatrixSpace : public SymMatrixSpace {
+ public:
+  /** @name Constructors / Destructors */
+  ///@{
+  /** Constructor, given the number of rows and columns (both as
+   *  dim), as well as the number of nonzeros and the position of
+   *  the nonzero elements.  Note that the counting of the nonzeros
+   *  starts a 1, i.e., iRows[i]==1 and jCols[i]==1 refers to the
+   *  first element in the first row.  This is in accordance with
+   *  the HSL data structure.  Off-diagonal elements are stored only
+   *  once.
+   */
+  SymTMatrixSpace(Index dim, Index nonZeros, const Index* iRows,
+                  const Index* jCols);
 
-   /** Destructor */
-   ~SymTMatrixSpace();
-   ///@}
+  /** Destructor */
+  ~SymTMatrixSpace();
+  ///@}
 
-   virtual SymMatrix* MakeNewSymMatrix() const
-   {
-      return MakeNewSymTMatrix();
-   }
+  virtual SymMatrix* MakeNewSymMatrix() const { return MakeNewSymTMatrix(); }
 
-   /** Method for creating a new matrix of this specific type. */
-   SymTMatrix* MakeNewSymTMatrix() const
-   {
-      return new SymTMatrix(this);
-   }
+  /** Method for creating a new matrix of this specific type. */
+  SymTMatrix* MakeNewSymTMatrix() const { return new SymTMatrix(this); }
 
-   /**@name Methods describing Matrix structure */
-   ///@{
-   /** Number of non-zeros in the sparse matrix */
-   Index Nonzeros() const
-   {
-      return nonZeros_;
-   }
+  /**@name Methods describing Matrix structure */
+  ///@{
+  /** Number of non-zeros in the sparse matrix */
+  Index Nonzeros() const { return nonZeros_; }
 
-   /** Row index of each non-zero element */
-   const Index* Irows() const
-   {
-      return iRows_;
-   }
+  /** Row index of each non-zero element */
+  const Index* Irows() const { return iRows_; }
 
-   /** Column index of each non-zero element */
-   const Index* Jcols() const
-   {
-      return jCols_;
-   }
-   ///@}
+  /** Column index of each non-zero element */
+  const Index* Jcols() const { return jCols_; }
+  ///@}
 
-private:
-   /**@name Methods called by SymTMatrix for memory management */
-   ///@{
-   /** Allocate internal storage for the SymTMatrix values */
-   Number* AllocateInternalStorage() const;
+ private:
+  /**@name Methods called by SymTMatrix for memory management */
+  ///@{
+  /** Allocate internal storage for the SymTMatrix values */
+  Number* AllocateInternalStorage() const;
 
-   /** Deallocate internal storage for the SymTMatrix values */
-   void FreeInternalStorage(
-      Number* values
-   ) const;
-   ///@}
+  /** Deallocate internal storage for the SymTMatrix values */
+  void FreeInternalStorage(Number* values) const;
+  ///@}
 
-   const Index nonZeros_;
-   Index* iRows_;
-   Index* jCols_;
+  const Index nonZeros_;
+  Index* iRows_;
+  Index* jCols_;
 
-   friend class SymTMatrix;
+  friend class SymTMatrix;
 };
 
 /* Inline Methods */
-inline Index SymTMatrix::Nonzeros() const
-{
-   return owner_space_->Nonzeros();
-}
+inline Index SymTMatrix::Nonzeros() const { return owner_space_->Nonzeros(); }
 
-inline const Index* SymTMatrix::Irows() const
-{
-   return owner_space_->Irows();
-}
+inline const Index* SymTMatrix::Irows() const { return owner_space_->Irows(); }
 
-inline const Index* SymTMatrix::Jcols() const
-{
-   return owner_space_->Jcols();
-}
+inline const Index* SymTMatrix::Jcols() const { return owner_space_->Jcols(); }
 
-} // namespace Ipopt
+}  // namespace Ipopt
 #endif

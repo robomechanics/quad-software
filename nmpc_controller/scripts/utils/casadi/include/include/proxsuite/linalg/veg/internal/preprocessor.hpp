@@ -176,259 +176,259 @@
 #define __VEG_IMPL_PP_STRINGIZE(...) #__VA_ARGS__
 
 #define __VEG_IMPL_PP_REMOVE_PAREN1(...) __VEG_IMPL_PP_REMOVE_PAREN1 __VA_ARGS__
-#define __VEG_IMPL_PP_REMOVE_PAREN2(...)                                       \
+#define __VEG_IMPL_PP_REMOVE_PAREN2(...) \
   __VEG_PP_CAT(__VEG_IMPL_PP, __VA_ARGS__)
 #define __VEG_IMPL_PP__VEG_IMPL_PP_REMOVE_PAREN1
 
-#define __VEG_IMPL_PP_REMOVE_PAREN11(...)                                      \
+#define __VEG_IMPL_PP_REMOVE_PAREN11(...) \
   __VEG_IMPL_PP_REMOVE_PAREN11 __VA_ARGS__
-#define __VEG_IMPL_PP_REMOVE_PAREN21(...)                                      \
+#define __VEG_IMPL_PP_REMOVE_PAREN21(...) \
   __VEG_PP_CAT(__VEG_IMPL_PP, __VA_ARGS__)
 #define __VEG_IMPL_PP__VEG_IMPL_PP_REMOVE_PAREN11
 
 #define __VEG_PP_MAKE_TUPLE(N) __VEG_PP_CAT2(__VEG_IMPL_PP_MAKE_TUPLE, N)
 
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_1(Macro, Data, Tuple)                     \
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_1(Macro, Data, Tuple) \
   Macro(Data, __VEG_PP_REMOVE_PAREN1(Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_2(Macro, Data, Tuple)                     \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_1(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_3(Macro, Data, Tuple)                     \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_2(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_4(Macro, Data, Tuple)                     \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_3(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_5(Macro, Data, Tuple)                     \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_4(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_6(Macro, Data, Tuple)                     \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_5(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_7(Macro, Data, Tuple)                     \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_6(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_8(Macro, Data, Tuple)                     \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_7(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_9(Macro, Data, Tuple)                     \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_8(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_10(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_9(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_11(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_10(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_12(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_11(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_13(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_12(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_14(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_13(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_15(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_14(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_16(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_15(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_17(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_16(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_18(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_17(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_19(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_18(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_20(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_19(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_21(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_20(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_22(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_21(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_23(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_22(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_24(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_23(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_25(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_24(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_26(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_25(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_27(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_26(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_28(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_27(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_29(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_28(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_30(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_29(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_31(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_30(Macro, Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_32(Macro, Data, Tuple)                    \
-  Macro(Data, __VEG_PP_HEAD Tuple)                                             \
-    __VEG_IMPL_PP_TUPLE_FOR_EACH_31(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_2(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                         \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_1(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_3(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                         \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_2(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_4(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                         \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_3(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_5(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                         \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_4(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_6(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                         \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_5(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_7(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                         \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_6(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_8(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                         \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_7(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_9(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                         \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_8(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_10(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_9(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_11(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_10(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_12(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_11(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_13(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_12(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_14(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_13(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_15(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_14(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_16(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_15(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_17(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_16(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_18(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_17(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_19(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_18(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_20(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_19(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_21(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_20(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_22(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_21(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_23(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_22(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_24(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_23(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_25(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_24(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_26(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_25(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_27(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_26(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_28(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_27(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_29(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_28(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_30(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_29(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_31(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_30(Macro, Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_32(Macro, Data, Tuple) \
+  Macro(Data, __VEG_PP_HEAD Tuple)                          \
+      __VEG_IMPL_PP_TUPLE_FOR_EACH_31(Macro, Data, (__VEG_PP_TAIL Tuple))
 
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_1(Macro, Start, Data, Tuple)            \
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_1(Macro, Start, Data, Tuple) \
   Macro(Start, Data, __VEG_PP_REMOVE_PAREN1(Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_2(Macro, Start, Data, Tuple)            \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_1(    \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_3(Macro, Start, Data, Tuple)            \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_2(    \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_4(Macro, Start, Data, Tuple)            \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_3(    \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_5(Macro, Start, Data, Tuple)            \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_4(    \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_6(Macro, Start, Data, Tuple)            \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_5(    \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_7(Macro, Start, Data, Tuple)            \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_6(    \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_8(Macro, Start, Data, Tuple)            \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_7(    \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_9(Macro, Start, Data, Tuple)            \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_8(    \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_10(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_9(    \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_11(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_10(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_12(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_11(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_13(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_12(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_14(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_13(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_15(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_14(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_16(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_15(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_17(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_16(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_18(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_17(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_19(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_18(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_20(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_19(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_21(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_20(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_22(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_21(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_23(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_22(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_24(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_23(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_25(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_24(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_26(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_25(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_27(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_26(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_28(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_27(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_29(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_28(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_30(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_29(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_31(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_30(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
-#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_32(Macro, Start, Data, Tuple)           \
-  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_31(   \
-    Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_2(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_1( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_3(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_2( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_4(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_3( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_5(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_4( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_6(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_5( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_7(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_6( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_8(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_7( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_9(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_8( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_10(Macro, Start, Data, Tuple)        \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_9( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_11(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_10( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_12(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_11( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_13(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_12( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_14(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_13( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_15(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_14( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_16(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_15( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_17(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_16( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_18(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_17( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_19(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_18( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_20(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_19( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_21(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_20( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_22(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_21( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_23(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_22( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_24(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_23( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_25(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_24( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_26(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_25( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_27(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_26( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_28(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_27( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_29(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_28( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_30(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_29( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_31(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_30( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
+#define __VEG_IMPL_PP_TUPLE_FOR_EACH_I_32(Macro, Start, Data, Tuple)         \
+  Macro(Start, Data, __VEG_PP_HEAD Tuple) __VEG_IMPL_PP_TUPLE_FOR_EACH_I_31( \
+      Macro, __VEG_IMPL_PP_INC(Start), Data, (__VEG_PP_TAIL Tuple))
 
-#define __VEG_IMPL_PP_TRANSFORM_HELPER(I, Macro_Data, Elem)                    \
-  , __VEG_PP_HEAD Macro_Data(                                                  \
-      __VEG_IMPL_PP_INC(I), __VEG_PP_TAIL Macro_Data, Elem)
+#define __VEG_IMPL_PP_TRANSFORM_HELPER(I, Macro_Data, Elem)                  \
+  , __VEG_PP_HEAD Macro_Data(__VEG_IMPL_PP_INC(I), __VEG_PP_TAIL Macro_Data, \
+                             Elem)
 
-#define __VEG_IMPL_PP_TRANSFORM_0(Macro, Data, Tuple)                          \
-  (Macro(0, Data, __VEG_PP_HEAD Tuple) __VEG_PP_TUPLE_FOR_EACH_I(              \
-    __VEG_IMPL_PP_TRANSFORM_HELPER, (Macro, Data), (__VEG_PP_TAIL Tuple)))
+#define __VEG_IMPL_PP_TRANSFORM_0(Macro, Data, Tuple)             \
+  (Macro(0, Data, __VEG_PP_HEAD Tuple) __VEG_PP_TUPLE_FOR_EACH_I( \
+      __VEG_IMPL_PP_TRANSFORM_HELPER, (Macro, Data), (__VEG_PP_TAIL Tuple)))
 
-#define __VEG_IMPL_PP_TRANSFORM_1(Macro, Data, Tuple)                          \
+#define __VEG_IMPL_PP_TRANSFORM_1(Macro, Data, Tuple) \
   (Macro(0, Data, __VEG_PP_REMOVE_PAREN1(Tuple)))
 
-#define __VEG_PP_TUPLE_FOR_EACH_I(Macro, Data, Tuple)                          \
-  __VEG_PP_CAT2(__VEG_IMPL_PP_TUPLE_FOR_EACH_I_, __VEG_PP_TUPLE_SIZE(Tuple))   \
+#define __VEG_PP_TUPLE_FOR_EACH_I(Macro, Data, Tuple)                        \
+  __VEG_PP_CAT2(__VEG_IMPL_PP_TUPLE_FOR_EACH_I_, __VEG_PP_TUPLE_SIZE(Tuple)) \
   (Macro, 0, Data, Tuple)
-#define __VEG_PP_TUPLE_FOR_EACH(Macro, Data, Tuple)                            \
-  __VEG_PP_CAT2(__VEG_IMPL_PP_TUPLE_FOR_EACH_, __VEG_PP_TUPLE_SIZE(Tuple))     \
+#define __VEG_PP_TUPLE_FOR_EACH(Macro, Data, Tuple)                        \
+  __VEG_PP_CAT2(__VEG_IMPL_PP_TUPLE_FOR_EACH_, __VEG_PP_TUPLE_SIZE(Tuple)) \
   (Macro, Data, Tuple)
 
-#define __VEG_PP_TUPLE_TRANSFORM_I(Macro, Data, Tuple)                         \
-  __VEG_PP_CAT2(__VEG_IMPL_PP_TRANSFORM_,                                      \
-                __VEG_IMPL_PP_IS_1(__VEG_PP_TUPLE_SIZE(Tuple)))                \
+#define __VEG_PP_TUPLE_TRANSFORM_I(Macro, Data, Tuple)          \
+  __VEG_PP_CAT2(__VEG_IMPL_PP_TRANSFORM_,                       \
+                __VEG_IMPL_PP_IS_1(__VEG_PP_TUPLE_SIZE(Tuple))) \
   (Macro, Data, Tuple)
 
-#define __VEG_PP_TUPLE_SIZE(Tuple)                                             \
+#define __VEG_PP_TUPLE_SIZE(Tuple) \
   __VEG_PP_ID(__VEG_IMPL_PP_VARIADIC_SIZE Tuple)
-#define __VEG_PP_SEQ_HEAD(Seq)                                                 \
+#define __VEG_PP_SEQ_HEAD(Seq) \
         __VEG_IMPL_PP_SEQ_HEAD_0 Seq)
 #define __VEG_PP_SEQ_TAIL(Seq) __VEG_IMPL_PP_CONSUME Seq
 
-#define __VEG_PP_HEAD(...)                                                     \
-  __VEG_PP_CAT2(__VEG_IMPL_PP_HEAD_,                                           \
-                __VEG_IMPL_PP_IS_1(__VEG_IMPL_PP_VARIADIC_SIZE(__VA_ARGS__)))  \
+#define __VEG_PP_HEAD(...)                                                    \
+  __VEG_PP_CAT2(__VEG_IMPL_PP_HEAD_,                                          \
+                __VEG_IMPL_PP_IS_1(__VEG_IMPL_PP_VARIADIC_SIZE(__VA_ARGS__))) \
   (__VA_ARGS__)
-#define __VEG_PP_TAIL(...)                                                     \
-  __VEG_PP_CAT2(__VEG_IMPL_PP_TAIL_,                                           \
-                __VEG_IMPL_PP_IS_1(__VEG_IMPL_PP_VARIADIC_SIZE(__VA_ARGS__)))  \
+#define __VEG_PP_TAIL(...)                                                    \
+  __VEG_PP_CAT2(__VEG_IMPL_PP_TAIL_,                                          \
+                __VEG_IMPL_PP_IS_1(__VEG_IMPL_PP_VARIADIC_SIZE(__VA_ARGS__))) \
   (__VA_ARGS__)
 
 #define __VEG_PP_STRINGIZE(...) __VEG_IMPL_PP_STRINGIZE(__VA_ARGS__)
 #define __VEG_PP_CAT(A, ...) __VEG_IMPL_PP_CAT(A, __VA_ARGS__)
 #define __VEG_PP_CAT2(A, ...) __VEG_IMPL_PP_CAT2(A, __VA_ARGS__)
 #define __VEG_PP_CAT3(A, ...) __VEG_IMPL_PP_CAT3(A, __VA_ARGS__)
-#define __VEG_PP_REMOVE_PAREN(...)                                             \
-  __VEG_IMPL_PP_REMOVE_PAREN2(                                                 \
-    __VEG_PP_ID(__VEG_IMPL_PP_REMOVE_PAREN1 __VA_ARGS__))
-#define __VEG_PP_REMOVE_PAREN1(...)                                            \
-  __VEG_IMPL_PP_REMOVE_PAREN21(                                                \
-    __VEG_PP_ID(__VEG_IMPL_PP_REMOVE_PAREN11 __VA_ARGS__))
-#define __VEG_PP_UNWRAP(...)                                                   \
+#define __VEG_PP_REMOVE_PAREN(...) \
+  __VEG_IMPL_PP_REMOVE_PAREN2(     \
+      __VEG_PP_ID(__VEG_IMPL_PP_REMOVE_PAREN1 __VA_ARGS__))
+#define __VEG_PP_REMOVE_PAREN1(...) \
+  __VEG_IMPL_PP_REMOVE_PAREN21(     \
+      __VEG_PP_ID(__VEG_IMPL_PP_REMOVE_PAREN11 __VA_ARGS__))
+#define __VEG_PP_UNWRAP(...) \
   __VEG_PP_ID(__VEG_PP_HEAD __VA_ARGS__ __VEG_PP_TAIL __VA_ARGS__)
 
 #endif /* end of include guard VEG_PREPROCESSOR_HPP_U2V3WRWYS */

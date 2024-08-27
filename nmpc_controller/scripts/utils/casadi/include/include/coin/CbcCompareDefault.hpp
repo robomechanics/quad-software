@@ -3,12 +3,12 @@
 // Corporation and others.  All Rights Reserved.
 // This code is licensed under the terms of the Eclipse Public License (EPL).
 
-//Edwin 11/25/09 carved out of CbcCompareActual
+// Edwin 11/25/09 carved out of CbcCompareActual
 
 #ifndef CbcCompareDefault_H
 #define CbcCompareDefault_H
 
-//#############################################################################
+// #############################################################################
 /*  These are alternative strategies for node traversal.
     They can take data etc for fine tuning
 
@@ -16,9 +16,9 @@
     comparison function returns true if node y is better than node x.
 
 */
-#include "CbcNode.hpp"
-#include "CbcCompareBase.hpp"
 #include "CbcCompare.hpp"
+#include "CbcCompareBase.hpp"
+#include "CbcNode.hpp"
 
 class CbcModel;
 
@@ -28,7 +28,7 @@ class CbcModel;
    less 5%
 */
 class CbcCompareDefault : public CbcCompareBase {
-public:
+ public:
   /// Default Constructor
   CbcCompareDefault();
   /// Constructor with weight
@@ -53,9 +53,8 @@ public:
   using CbcCompareBase::newSolution;
   /// This allows method to change behavior as it is called
   /// after each solution
-  virtual bool newSolution(CbcModel *model,
-    double objectiveAtContinuous,
-    int numberInfeasibilitiesAtContinuous);
+  virtual bool newSolution(CbcModel *model, double objectiveAtContinuous,
+                           int numberInfeasibilitiesAtContinuous);
   /// This allows method to change behavior
   /// Return true if want tree re-sorted
   virtual bool every1000Nodes(CbcModel *model, int numberNodes);
@@ -64,43 +63,24 @@ public:
        if -2.0 then do breadth first just for first 1000 nodes
        if -3.0 then depth first before solution
     */
-  inline double getWeight() const
-  {
-    return weight_;
-  }
-  inline void setWeight(double weight)
-  {
-    weight_ = weight;
-  }
+  inline double getWeight() const { return weight_; }
+  inline void setWeight(double weight) { weight_ = weight; }
   /// Cutoff
-  inline double getCutoff() const
-  {
-    return cutoff_;
-  }
-  inline void setCutoff(double cutoff)
-  {
-    cutoff_ = cutoff;
-  }
+  inline double getCutoff() const { return cutoff_; }
+  inline void setCutoff(double cutoff) { cutoff_ = cutoff; }
   /// Best possible solution
-  inline double getBestPossible() const
-  {
-    return bestPossible_;
-  }
-  inline void setBestPossible(double bestPossible)
-  {
+  inline double getBestPossible() const { return bestPossible_; }
+  inline void setBestPossible(double bestPossible) {
     bestPossible_ = bestPossible;
   }
   /// Depth above which want to explore first
-  inline void setBreadthDepth(int value)
-  {
-    breadthDepth_ = value;
-  }
+  inline void setBreadthDepth(int value) { breadthDepth_ = value; }
   /// Start dive
   void startDive(CbcModel *model);
   /// Clean up diving (i.e. switch off or prepare)
   void cleanDive();
 
-protected:
+ protected:
   /// Weight for each infeasibility
   double weight_;
   /// Weight for each infeasibility - computed from solution
@@ -123,7 +103,7 @@ protected:
   bool setupForDiving_;
 };
 
-#endif //CbcCompareDefault_H
+#endif  // CbcCompareDefault_H
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

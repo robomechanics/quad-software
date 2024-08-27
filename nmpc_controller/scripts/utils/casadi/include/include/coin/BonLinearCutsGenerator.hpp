@@ -10,66 +10,53 @@
 #ifndef BonLinearCutsGenerator_H
 #define BonLinearCutsGenerator_H
 
+#include <list>
+
+#include "BonBonminSetup.hpp"
+#include "BonOuterApprox.hpp"
 #include "CglCutGenerator.hpp"
 #include "CoinSmartPtr.hpp"
-#include "BonOuterApprox.hpp"
-#include "BonBonminSetup.hpp"
-#include <list>
 
 namespace Bonmin {
 class LinearCutsGenerator : public CglCutGenerator {
-   public:
-    /** Type for cut generation method with its frequency and string identification. */
-    struct CuttingMethod : public Coin::ReferencedObject 
-    {
-      int frequency;
-      std::string id;
-      CglCutGenerator * cgl;
-      bool atSolution;
-      bool normal;
-      CuttingMethod():
-          atSolution(false),
-          normal(true)
-      {}
+ public:
+  /** Type for cut generation method with its frequency and string
+   * identification. */
+  struct CuttingMethod : public Coin::ReferencedObject {
+    int frequency;
+    std::string id;
+    CglCutGenerator *cgl;
+    bool atSolution;
+    bool normal;
+    CuttingMethod() : atSolution(false), normal(true) {}
 
-      CuttingMethod(const CuttingMethod & other):
-          frequency(other.frequency),
+    CuttingMethod(const CuttingMethod &other)
+        : frequency(other.frequency),
           id(other.id),
           cgl(other.cgl),
           atSolution(other.atSolution),
-          normal(other.normal)
-      {}
-    };
-   LinearCutsGenerator():
-     CglCutGenerator(),
-     methods_(){
-   }
+          normal(other.normal) {}
+  };
+  LinearCutsGenerator() : CglCutGenerator(), methods_() {}
 
+  LinearCutsGenerator(const LinearCutsGenerator &other)
+      : CglCutGenerator(other), methods_(other.methods_) {}
 
-   LinearCutsGenerator(const LinearCutsGenerator & other):
-    CglCutGenerator(other),
-     methods_(other.methods_){
-   }
+  CglCutGenerator *clone() const { return new LinearCutsGenerator(*this); }
 
-   CglCutGenerator * clone() const {
-     return new LinearCutsGenerator(*this);
-   }
+  virtual ~LinearCutsGenerator() {}
 
-   virtual ~LinearCutsGenerator(){
-   }
+  bool needsOptimalBasis() { return false; }
 
-   bool needsOptimalBasis() { return false;}
+  void initialize(BabSetupBase &s);
 
-   void initialize(BabSetupBase& s);
+  void generateCuts(const OsiSolverInterface &solver, OsiCuts &cs,
+                    const CglTreeInfo info = CglTreeInfo());
 
-   void generateCuts(const OsiSolverInterface &solver, OsiCuts &cs,
-		     const CglTreeInfo info = CglTreeInfo());
-
-   private:
-     std::list<Coin::SmartPtr<CuttingMethod> > methods_; 
+ private:
+  std::list<Coin::SmartPtr<CuttingMethod> > methods_;
 };
 
-}/* Ends Bonmin namespace.*/
+}  // namespace Bonmin
 
 #endif
-

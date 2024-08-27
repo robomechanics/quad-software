@@ -8,18 +8,15 @@
 #ifndef PROXSUITE_SERIALIZATION_EIGEN_HPP
 #define PROXSUITE_SERIALIZATION_EIGEN_HPP
 
-#include <Eigen/Sparse>
 #include <Eigen/Dense>
-
+#include <Eigen/Sparse>
 #include <cereal/cereal.hpp>
 
 namespace cereal {
 
 // dense matrices
-template<class Archive, class Derived>
-inline void
-save(Archive& ar, Eigen::PlainObjectBase<Derived> const& m)
-{
+template <class Archive, class Derived>
+inline void save(Archive& ar, Eigen::PlainObjectBase<Derived> const& m) {
   typedef Eigen::PlainObjectBase<Derived> PlainType;
 
   Eigen::Index rows = m.rows();
@@ -29,14 +26,11 @@ save(Archive& ar, Eigen::PlainObjectBase<Derived> const& m)
   bool is_row_major = PlainType::IsRowMajor;
   ar(CEREAL_NVP(is_row_major));
 
-  for (Eigen::Index i = 0; i < m.size(); i++)
-    ar(m.data()[i]);
+  for (Eigen::Index i = 0; i < m.size(); i++) ar(m.data()[i]);
 }
 
-template<class Archive, class Derived>
-inline void
-load(Archive& ar, Eigen::PlainObjectBase<Derived>& m)
-{
+template <class Archive, class Derived>
+inline void load(Archive& ar, Eigen::PlainObjectBase<Derived>& m) {
   typedef Eigen::PlainObjectBase<Derived> PlainType;
 
   Eigen::Index rows;
@@ -48,8 +42,7 @@ load(Archive& ar, Eigen::PlainObjectBase<Derived>& m)
 
   m.resize(rows, cols);
 
-  for (Eigen::Index i = 0; i < m.size(); i++)
-    ar(m.data()[i]);
+  for (Eigen::Index i = 0; i < m.size(); i++) ar(m.data()[i]);
 
   // Account for different storage orders
   if (is_row_major != PlainType::IsRowMajor) {
@@ -62,21 +55,19 @@ load(Archive& ar, Eigen::PlainObjectBase<Derived>& m)
 }
 
 // sparse matrices
-template<class Archive, typename _Scalar, int _Options, typename _StorageIndex>
-inline void
-save(Archive& ar,
-     Eigen::SparseMatrix<_Scalar, _Options, _StorageIndex> const& m)
-{
+template <class Archive, typename _Scalar, int _Options, typename _StorageIndex>
+inline void save(
+    Archive& ar,
+    Eigen::SparseMatrix<_Scalar, _Options, _StorageIndex> const& m) {
   Eigen::Index innerSize = m.innerSize();
   Eigen::Index outerSize = m.outerSize();
   typedef typename Eigen::Triplet<_Scalar> Triplet;
   std::vector<Triplet> triplets;
 
   for (Eigen::Index i = 0; i < outerSize; ++i) {
-    for (typename Eigen::SparseMatrix<_Scalar, _Options, _StorageIndex>::
-           InnerIterator it(m, i);
-         it;
-         ++it) {
+    for (typename Eigen::SparseMatrix<_Scalar, _Options,
+                                      _StorageIndex>::InnerIterator it(m, i);
+         it; ++it) {
       triplets.push_back(Triplet(it.row(), it.col(), it.value()));
     }
   }
@@ -85,10 +76,9 @@ save(Archive& ar,
   ar(triplets);
 }
 
-template<class Archive, typename _Scalar, int _Options, typename _StorageIndex>
-inline void
-load(Archive& ar, Eigen::SparseMatrix<_Scalar, _Options, _StorageIndex>& m)
-{
+template <class Archive, typename _Scalar, int _Options, typename _StorageIndex>
+inline void load(Archive& ar,
+                 Eigen::SparseMatrix<_Scalar, _Options, _StorageIndex>& m) {
   Eigen::Index innerSize;
   Eigen::Index outerSize;
   ar(innerSize);
@@ -102,6 +92,6 @@ load(Archive& ar, Eigen::SparseMatrix<_Scalar, _Options, _StorageIndex>& m)
   m.setFromTriplets(triplets.begin(), triplets.end());
 }
 
-} // namespace cereal
+}  // namespace cereal
 
 #endif /* end of include guard PROXSUITE_SERIALIZATION_EIGEN_HPP */

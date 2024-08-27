@@ -3,12 +3,12 @@
 // Corporation and others.  All Rights Reserved.
 // This code is licensed under the terms of the Eclipse Public License (EPL).
 
-//Edwin 11/24/09 carved out of CbcCompareActual
+// Edwin 11/24/09 carved out of CbcCompareActual
 
 #ifndef CbcCompareDepth_H
 #define CbcCompareDepth_H
 
-//#############################################################################
+// #############################################################################
 /*  These are alternative strategies for node traversal.
     They can take data etc for fine tuning
 
@@ -16,13 +16,13 @@
     comparison function returns true if node y is better than node x.
 
 */
-#include "CbcNode.hpp"
-#include "CbcCompareBase.hpp"
 #include "CbcCompare.hpp"
+#include "CbcCompareBase.hpp"
+#include "CbcNode.hpp"
 class CbcModel;
 // This is default before first solution
 class CbcCompareDepth : public CbcCompareBase {
-public:
+ public:
   // Default Constructor
   CbcCompareDepth();
 
@@ -45,4 +45,4 @@ public:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

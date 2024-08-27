@@ -6,7 +6,7 @@
 #ifndef ClpObjective_H
 #define ClpObjective_H
 
-//#############################################################################
+// #############################################################################
 class ClpSimplex;
 class ClpModel;
 
@@ -16,8 +16,7 @@ Abstract Base Class for describing an objective function
 
 */
 class ClpObjective {
-
-public:
+ public:
   ///@name Stuff
   //@{
 
@@ -27,32 +26,26 @@ public:
          Uses model for scaling
          includeLinear 0 - no, 1 as is, 2 as feasible
      */
-  virtual double *gradient(const ClpSimplex *model,
-    const double *solution,
-    double &offset, bool refresh,
-    int includeLinear = 2)
-    = 0;
+  virtual double *gradient(const ClpSimplex *model, const double *solution,
+                           double &offset, bool refresh,
+                           int includeLinear = 2) = 0;
   /** Returns reduced gradient.Returns an offset (to be added to current one).
-     */
+   */
   virtual double reducedGradient(ClpSimplex *model, double *region,
-    bool useFeasibleCosts)
-    = 0;
+                                 bool useFeasibleCosts) = 0;
   /** Returns step length which gives minimum of objective for
          solution + theta * change vector up to maximum theta.
 
          arrays are numberColumns+numberRows
          Also sets current objective, predicted  and at maximumTheta
      */
-  virtual double stepLength(ClpSimplex *model,
-    const double *solution,
-    const double *change,
-    double maximumTheta,
-    double &currentObj,
-    double &predictedObj,
-    double &thetaObj)
-    = 0;
+  virtual double stepLength(ClpSimplex *model, const double *solution,
+                            const double *change, double maximumTheta,
+                            double &currentObj, double &predictedObj,
+                            double &thetaObj) = 0;
   /// Return objective value (without any ClpModel offset) (model may be NULL)
-  virtual double objectiveValue(const ClpSimplex *model, const double *solution) const = 0;
+  virtual double objectiveValue(const ClpSimplex *model,
+                                const double *solution) const = 0;
   /// Resize objective
   virtual void resize(int newNumberColumns) = 0;
   /// Delete columns in  objective
@@ -88,43 +81,28 @@ public:
          Derived classes need not provide this as it may not always make
          sense */
   virtual ClpObjective *subsetClone(int numberColumns,
-    const int *whichColumns) const;
+                                    const int *whichColumns) const;
 
   //@}
 
   ///@name Other
   //@{
   /// Returns type (above 63 is extra information)
-  inline int type() const
-  {
-    return type_;
-  }
+  inline int type() const { return type_; }
   /// Sets type (above 63 is extra information)
-  inline void setType(int value)
-  {
-    type_ = value;
-  }
+  inline void setType(int value) { type_ = value; }
   /// Whether activated
-  inline int activated() const
-  {
-    return activated_;
-  }
+  inline int activated() const { return activated_; }
   /// Set whether activated
-  inline void setActivated(int value)
-  {
-    activated_ = value;
-  }
+  inline void setActivated(int value) { activated_ = value; }
 
   /// Objective offset
-  inline double nonlinearOffset() const
-  {
-    return offset_;
-  }
+  inline double nonlinearOffset() const { return offset_; }
   //@}
 
   //---------------------------------------------------------------------------
 
-protected:
+ protected:
   ///@name Protected member data
   //@{
   /// Value of non-linear part of objective
@@ -139,4 +117,4 @@ protected:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

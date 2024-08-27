@@ -8,10 +8,10 @@
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- * 
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,17 +31,15 @@
  *  :type c_abs: trlib_flt_t, input
  *  :param c_lin: coefficinet of linear term
  *  :type c_lin: trlib_flt_t, input
- *  :param tol: tolerance that indicates if ill-conditioning present, good default may be :math:`\texttt{macheps}^{3/4}` (:c:macro:`TRLIB_EPS_POW_75`)
+ *  :param tol: tolerance that indicates if ill-conditioning present, good
+ * default may be :math:`\texttt{macheps}^{3/4}` (:c:macro:`TRLIB_EPS_POW_75`)
  *  :type tol: trlib_flt_t, input
- *  :param verbose: determines the verbosity level of output that is written to :c:data:`fout`
- *  :type verbose: trlib_int_t, input
- *  :param unicode: set to ``1`` if :c:data:`fout` can handle unicode, otherwise to ``0``
- *  :type unicode: trlib_int_t, input
- *  :param prefix: string that is printed before iteration output
- *  :type prefix: trlib_int_t, input
- *  :param fout: output stream
- *  :type fout: FILE, input
- *  :param t1: first zero, :math:`\texttt{t1} \le \texttt{t2}`
+ *  :param verbose: determines the verbosity level of output that is written to
+ * :c:data:`fout` :type verbose: trlib_int_t, input :param unicode: set to ``1``
+ * if :c:data:`fout` can handle unicode, otherwise to ``0`` :type unicode:
+ * trlib_int_t, input :param prefix: string that is printed before iteration
+ * output :type prefix: trlib_int_t, input :param fout: output stream :type
+ * fout: FILE, input :param t1: first zero, :math:`\texttt{t1} \le \texttt{t2}`
  *  :type t2: trlib_flt_t, output
  *  :param t2: second zero, :math:`\texttt{t1} \le \texttt{t2}`
  *  :type t2: trlib_flt_t, output
@@ -50,8 +48,9 @@
  *  :rtype: trlib_int_t
  */
 
-trlib_int_t trlib_quadratic_zero(trlib_flt_t c_abs, trlib_flt_t c_lin, trlib_flt_t tol,
-        trlib_int_t verbose, trlib_int_t unicode, char *prefix, FILE *fout,
-        trlib_flt_t *t1, trlib_flt_t *t2);
+trlib_int_t trlib_quadratic_zero(trlib_flt_t c_abs, trlib_flt_t c_lin,
+                                 trlib_flt_t tol, trlib_int_t verbose,
+                                 trlib_int_t unicode, char *prefix, FILE *fout,
+                                 trlib_flt_t *t1, trlib_flt_t *t2);
 
 #endif

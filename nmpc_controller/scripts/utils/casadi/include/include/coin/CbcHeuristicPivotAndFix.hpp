@@ -11,7 +11,7 @@
  */
 
 class CbcHeuristicPivotAndFix : public CbcHeuristic {
-public:
+ public:
   // Default Constructor
   CbcHeuristicPivotAndFix();
 
@@ -46,13 +46,12 @@ public:
         Sets solution values if good, sets objective value (only if good)
         needs comments
     */
-  virtual int solution(double &objectiveValue,
-    double *newSolution);
+  virtual int solution(double &objectiveValue, double *newSolution);
 
-protected:
+ protected:
 };
 
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

@@ -11,11 +11,10 @@
 #ifndef __IPEXCEPTION_HPP__
 #define __IPEXCEPTION_HPP__
 
-#include "IpUtils.hpp"
 #include "IpJournalist.hpp"
+#include "IpUtils.hpp"
 
-namespace Ipopt
-{
+namespace Ipopt {
 
 /** This is the base class for all exceptions.
  *
@@ -54,103 +53,88 @@ namespace Ipopt
  * Journalist, using the level J_ERROR and the category J_MAIN.
  *
  */
-class IPOPTLIB_EXPORT IpoptException
-{
-public:
-   /**@name Constructors/Destructors */
-   ///@{
-   /** Constructor */
-   IpoptException(
-      const std::string& msg,
-      const std::string& file_name,
-      Index              line_number,
-      const std::string& type = "IpoptException"
-   )
+class IPOPTLIB_EXPORT IpoptException {
+ public:
+  /**@name Constructors/Destructors */
+  ///@{
+  /** Constructor */
+  IpoptException(const std::string& msg, const std::string& file_name,
+                 Index line_number, const std::string& type = "IpoptException")
       : msg_(msg),
         file_name_(file_name),
         line_number_(line_number),
-        type_(type)
-   { }
+        type_(type) {}
 
-   /** Copy Constructor */
-   IpoptException(
-      const IpoptException& copy
-   )
+  /** Copy Constructor */
+  IpoptException(const IpoptException& copy)
       : msg_(copy.msg_),
         file_name_(copy.file_name_),
         line_number_(copy.line_number_),
-        type_(copy.type_)
-   { }
+        type_(copy.type_) {}
 
-   /** Default destructor */
-   virtual ~IpoptException()
-   { }
-   ///@}
+  /** Default destructor */
+  virtual ~IpoptException() {}
+  ///@}
 
-   /** Method to report the exception to a journalist */
-   void ReportException(
-      const Journalist& jnlst,
-      EJournalLevel     level = J_ERROR
-   ) const
-   {
-      jnlst.Printf(level, J_MAIN,
-                   "Exception of type: %s in file \"%s\" at line %" IPOPT_INDEX_FORMAT ":\n Exception message: %s\n", type_.c_str(), file_name_.c_str(), line_number_, msg_.c_str());
-   }
-
-   const std::string& Message() const
-   {
-      return msg_;
-   }
-
-private:
-   /**@name Default Compiler Generated Methods
-    * (Hidden to avoid implicit creation/calling).
-    *
-    * These methods are not implemented and
-    * we do not want the compiler to implement
-    * them for us, so we declare them private
-    * and do not define them. This ensures that
-    * they will not be implicitly created/called. */
-   ///@{
-   /** Default Constructor */
-   IpoptException();
-
-   /** Default Assignment Operator */
-   void operator=(
-      const IpoptException&
-   );
-   ///@}
-
-   std::string msg_;
-   std::string file_name_;
-   Index       line_number_;
-   std::string type_;
-};
-
-} // namespace Ipopt
-
-#define THROW_EXCEPTION(__except_type, __msg) \
-  throw __except_type( (__msg), (__FILE__), (__LINE__) );
-
-#define ASSERT_EXCEPTION(__condition, __except_type, __msg) \
-  if (! (__condition) ) { \
-    std::string newmsg = #__condition; \
-    newmsg += " evaluated false: "; \
-    newmsg += __msg; \
-    throw __except_type( (newmsg), (__FILE__), (__LINE__) ); \
+  /** Method to report the exception to a journalist */
+  void ReportException(const Journalist& jnlst,
+                       EJournalLevel level = J_ERROR) const {
+    jnlst.Printf(
+        level, J_MAIN,
+        "Exception of type: %s in file \"%s\" at line %" IPOPT_INDEX_FORMAT
+        ":\n Exception message: %s\n",
+        type_.c_str(), file_name_.c_str(), line_number_, msg_.c_str());
   }
 
-#define DECLARE_STD_EXCEPTION(__except_type) \
-    class IPOPTLIB_EXPORT  __except_type : public Ipopt::IpoptException \
-    { \
-    public: \
-      __except_type(const std::string& msg, const std::string& fname, Ipopt::Index line) \
-      : Ipopt::IpoptException(msg,fname,line, #__except_type) {} \
-      __except_type(const __except_type& copy) \
-      : Ipopt::IpoptException(copy) {} \
-    private: \
-       __except_type(); \
-       void operator=(const __except_type&); \
-    }
+  const std::string& Message() const { return msg_; }
+
+ private:
+  /**@name Default Compiler Generated Methods
+   * (Hidden to avoid implicit creation/calling).
+   *
+   * These methods are not implemented and
+   * we do not want the compiler to implement
+   * them for us, so we declare them private
+   * and do not define them. This ensures that
+   * they will not be implicitly created/called. */
+  ///@{
+  /** Default Constructor */
+  IpoptException();
+
+  /** Default Assignment Operator */
+  void operator=(const IpoptException&);
+  ///@}
+
+  std::string msg_;
+  std::string file_name_;
+  Index line_number_;
+  std::string type_;
+};
+
+}  // namespace Ipopt
+
+#define THROW_EXCEPTION(__except_type, __msg) \
+  throw __except_type((__msg), (__FILE__), (__LINE__));
+
+#define ASSERT_EXCEPTION(__condition, __except_type, __msg) \
+  if (!(__condition)) {                                     \
+    std::string newmsg = #__condition;                      \
+    newmsg += " evaluated false: ";                         \
+    newmsg += __msg;                                        \
+    throw __except_type((newmsg), (__FILE__), (__LINE__));  \
+  }
+
+#define DECLARE_STD_EXCEPTION(__except_type)                                  \
+  class IPOPTLIB_EXPORT __except_type : public Ipopt::IpoptException {        \
+   public:                                                                    \
+    __except_type(const std::string& msg, const std::string& fname,           \
+                  Ipopt::Index line)                                          \
+        : Ipopt::IpoptException(msg, fname, line, #__except_type) {}          \
+    __except_type(const __except_type& copy) : Ipopt::IpoptException(copy) {} \
+                                                                              \
+   private:                                                                   \
+    __except_type();                                                          \
+    void operator=(const __except_type&);                                     \
+  }
 
 #endif

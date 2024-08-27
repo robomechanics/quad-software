@@ -12,7 +12,6 @@ extern "C" {
 
 #include "sleqp/defs.h"
 #include "sleqp/export.h"
-
 #include "sleqp/pub_cmp.h"
 #include "sleqp/pub_dyn.h"
 #include "sleqp/pub_error.h"

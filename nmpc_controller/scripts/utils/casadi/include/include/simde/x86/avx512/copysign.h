@@ -28,10 +28,10 @@
 #if !defined(SIMDE_X86_AVX512_COPYSIGN_H)
 #define SIMDE_X86_AVX512_COPYSIGN_H
 
-#include "types.h"
-#include "mov.h"
 #include "and.h"
 #include "andnot.h"
+#include "mov.h"
+#include "types.h"
 #include "xor.h"
 
 HEDLEY_DIAGNOSTIC_PUSH
@@ -39,43 +39,43 @@ SIMDE_DISABLE_UNWANTED_DIAGNOSTICS
 SIMDE_BEGIN_DECLS_
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512
-simde_x_mm512_copysign_ps(simde__m512 dest, simde__m512 src) {
-  simde__m512_private
-    r_,
-    dest_ = simde__m512_to_private(dest),
-    src_ = simde__m512_to_private(src);
+simde__m512 simde_x_mm512_copysign_ps(simde__m512 dest, simde__m512 src) {
+  simde__m512_private r_, dest_ = simde__m512_to_private(dest),
+                          src_ = simde__m512_to_private(src);
 
-  #if defined(simde_math_copysignf)
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.f32) / sizeof(r_.f32[0])) ; i++) {
-      r_.f32[i] = simde_math_copysignf(dest_.f32[i], src_.f32[i]);
-    }
-  #else
-    simde__m512 sgnbit = simde_mm512_xor_ps(simde_mm512_set1_ps(SIMDE_FLOAT32_C(0.0)), simde_mm512_set1_ps(-SIMDE_FLOAT32_C(0.0)));
-    return simde_mm512_xor_ps(simde_mm512_and_ps(sgnbit, src), simde_mm512_andnot_ps(sgnbit, dest));
-  #endif
+#if defined(simde_math_copysignf)
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.f32) / sizeof(r_.f32[0])); i++) {
+    r_.f32[i] = simde_math_copysignf(dest_.f32[i], src_.f32[i]);
+  }
+#else
+  simde__m512 sgnbit =
+      simde_mm512_xor_ps(simde_mm512_set1_ps(SIMDE_FLOAT32_C(0.0)),
+                         simde_mm512_set1_ps(-SIMDE_FLOAT32_C(0.0)));
+  return simde_mm512_xor_ps(simde_mm512_and_ps(sgnbit, src),
+                            simde_mm512_andnot_ps(sgnbit, dest));
+#endif
 
   return simde__m512_from_private(r_);
 }
 
 SIMDE_FUNCTION_ATTRIBUTES
-simde__m512d
-simde_x_mm512_copysign_pd(simde__m512d dest, simde__m512d src) {
-  simde__m512d_private
-    r_,
-    dest_ = simde__m512d_to_private(dest),
-    src_ = simde__m512d_to_private(src);
+simde__m512d simde_x_mm512_copysign_pd(simde__m512d dest, simde__m512d src) {
+  simde__m512d_private r_, dest_ = simde__m512d_to_private(dest),
+                           src_ = simde__m512d_to_private(src);
 
-  #if defined(simde_math_copysign)
-    SIMDE_VECTORIZE
-    for (size_t i = 0 ; i < (sizeof(r_.f64) / sizeof(r_.f64[0])) ; i++) {
-      r_.f64[i] = simde_math_copysign(dest_.f64[i], src_.f64[i]);
-    }
-  #else
-    simde__m512d sgnbit = simde_mm512_xor_pd(simde_mm512_set1_pd(SIMDE_FLOAT64_C(0.0)), simde_mm512_set1_pd(-SIMDE_FLOAT64_C(0.0)));
-    return simde_mm512_xor_pd(simde_mm512_and_pd(sgnbit, src), simde_mm512_andnot_pd(sgnbit, dest));
-  #endif
+#if defined(simde_math_copysign)
+  SIMDE_VECTORIZE
+  for (size_t i = 0; i < (sizeof(r_.f64) / sizeof(r_.f64[0])); i++) {
+    r_.f64[i] = simde_math_copysign(dest_.f64[i], src_.f64[i]);
+  }
+#else
+  simde__m512d sgnbit =
+      simde_mm512_xor_pd(simde_mm512_set1_pd(SIMDE_FLOAT64_C(0.0)),
+                         simde_mm512_set1_pd(-SIMDE_FLOAT64_C(0.0)));
+  return simde_mm512_xor_pd(simde_mm512_and_pd(sgnbit, src),
+                            simde_mm512_andnot_pd(sgnbit, dest));
+#endif
 
   return simde__m512d_from_private(r_);
 }

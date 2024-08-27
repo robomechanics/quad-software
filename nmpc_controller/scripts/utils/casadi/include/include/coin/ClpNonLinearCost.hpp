@@ -38,35 +38,25 @@ class CoinIndexedVector;
 #define CLP_FEASIBLE 1
 #define CLP_ABOVE_UPPER 2
 #define CLP_SAME 4
-inline int originalStatus(unsigned char status)
-{
-  return (status & 15);
+inline int originalStatus(unsigned char status) { return (status & 15); }
+inline int currentStatus(unsigned char status) { return (status >> 4); }
+inline void setOriginalStatus(unsigned char &status, int value) {
+  status = static_cast<unsigned char>(status & ~15);
+  status = static_cast<unsigned char>(status | value);
 }
-inline int currentStatus(unsigned char status)
-{
-  return (status >> 4);
+inline void setCurrentStatus(unsigned char &status, int value) {
+  status = static_cast<unsigned char>(status & ~(15 << 4));
+  status = static_cast<unsigned char>(status | (value << 4));
 }
-inline void setOriginalStatus(unsigned char &status, int value)
-{
-  status = static_cast< unsigned char >(status & ~15);
-  status = static_cast< unsigned char >(status | value);
+inline void setInitialStatus(unsigned char &status) {
+  status = static_cast<unsigned char>(CLP_FEASIBLE | (CLP_SAME << 4));
 }
-inline void setCurrentStatus(unsigned char &status, int value)
-{
-  status = static_cast< unsigned char >(status & ~(15 << 4));
-  status = static_cast< unsigned char >(status | (value << 4));
-}
-inline void setInitialStatus(unsigned char &status)
-{
-  status = static_cast< unsigned char >(CLP_FEASIBLE | (CLP_SAME << 4));
-}
-inline void setSameStatus(unsigned char &status)
-{
-  status = static_cast< unsigned char >(status & ~(15 << 4));
-  status = static_cast< unsigned char >(status | (CLP_SAME << 4));
+inline void setSameStatus(unsigned char &status) {
+  status = static_cast<unsigned char>(status & ~(15 << 4));
+  status = static_cast<unsigned char>(status | (CLP_SAME << 4));
 }
 // Use second version to get more speed
-//#define FAST_CLPNON
+// #define FAST_CLPNON
 #ifndef FAST_CLPNON
 #define CLP_METHOD1 ((method_ & 1) != 0)
 #define CLP_METHOD2 ((method_ & 2) != 0)
@@ -75,9 +65,8 @@ inline void setSameStatus(unsigned char &status)
 #define CLP_METHOD2 (true)
 #endif
 class ClpNonLinearCost {
-
-public:
-public:
+ public:
+ public:
   /**@name Constructors, destructor */
   //@{
   /// Default constructor.
@@ -92,8 +81,8 @@ public:
          Last lower has to be <= upper (if == then cost ignored)
          This could obviously be changed to make more user friendly
      */
-  ClpNonLinearCost(ClpSimplex *model, const int *starts,
-    const double *lower, const double *cost);
+  ClpNonLinearCost(ClpSimplex *model, const int *starts, const double *lower,
+                   const double *cost);
   /// Destructor
   ~ClpNonLinearCost();
   // Copy
@@ -126,13 +115,11 @@ public:
          Temporary offsets may be set
          Rhs entries are increased
      */
-  void goThru(int numberInArray, double multiplier,
-    const int *index, const double *work,
-    double *rhs);
+  void goThru(int numberInArray, double multiplier, const int *index,
+              const double *work, double *rhs);
   /** Takes off last iteration (i.e. offsets closer to 0)
-     */
-  void goBack(int numberInArray, const int *index,
-    double *rhs);
+   */
+  void goBack(int numberInArray, const int *index, double *rhs);
   /** Puts back correct infeasible costs for each variable
          The input indices are row indices and need converting to sequences
          for costs.
@@ -155,8 +142,8 @@ public:
   double setOne(int sequence, double solutionValue);
   /** Sets bounds and infeasible cost and true cost for one variable
          This is for gub and column generation etc */
-  void setOne(int sequence, double solutionValue, double lowerValue, double upperValue,
-    double costValue = 0.0);
+  void setOne(int sequence, double solutionValue, double lowerValue,
+              double upperValue, double costValue = 0.0);
   /** Sets bounds and cost for outgoing variable
          may change value
          Returns direction */
@@ -166,8 +153,7 @@ public:
   /** Returns change in cost - one down if alpha >0.0, up if <0.0
          Value is current - new
       */
-  inline double changeInCost(int sequence, double alpha) const
-  {
+  inline double changeInCost(int sequence, double alpha) const {
     double returnValue = 0.0;
     if (CLP_METHOD1) {
       int iRange = whichRange_[sequence] + offset_[sequence];
@@ -177,12 +163,12 @@ public:
         returnValue = cost_[iRange] - cost_[iRange + 1];
     }
     if (CLP_METHOD2) {
-      returnValue = (alpha > 0.0) ? infeasibilityWeight_ : -infeasibilityWeight_;
+      returnValue =
+          (alpha > 0.0) ? infeasibilityWeight_ : -infeasibilityWeight_;
     }
     return returnValue;
   }
-  inline double changeUpInCost(int sequence) const
-  {
+  inline double changeUpInCost(int sequence) const {
     double returnValue = 0.0;
     if (CLP_METHOD1) {
       int iRange = whichRange_[sequence] + offset_[sequence];
@@ -196,8 +182,7 @@ public:
     }
     return returnValue;
   }
-  inline double changeDownInCost(int sequence) const
-  {
+  inline double changeDownInCost(int sequence) const {
     double returnValue = 0.0;
     if (CLP_METHOD1) {
       int iRange = whichRange_[sequence] + offset_[sequence];
@@ -212,8 +197,7 @@ public:
     return returnValue;
   }
   /// This also updates next bound
-  inline double changeInCost(int sequence, double alpha, double &rhs)
-  {
+  inline double changeInCost(int sequence, double alpha, double &rhs) {
     double returnValue = 0.0;
 #ifdef NONLIN_DEBUG
     double saveRhs = rhs;
@@ -239,8 +223,7 @@ public:
 #endif
       unsigned char iStatus = status_[sequence];
       int iWhere = currentStatus(iStatus);
-      if (iWhere == CLP_SAME)
-        iWhere = originalStatus(iStatus);
+      if (iWhere == CLP_SAME) iWhere = originalStatus(iStatus);
       // rhs always increases
       if (iWhere == CLP_FEASIBLE) {
         if (alpha > 0.0) {
@@ -272,28 +255,21 @@ public:
     return returnValue;
   }
   /// Returns current lower bound
-  inline double lower(int sequence) const
-  {
+  inline double lower(int sequence) const {
     return lower_[whichRange_[sequence] + offset_[sequence]];
   }
   /// Returns current upper bound
-  inline double upper(int sequence) const
-  {
+  inline double upper(int sequence) const {
     return lower_[whichRange_[sequence] + offset_[sequence] + 1];
   }
   /// Returns current cost
-  inline double cost(int sequence) const
-  {
+  inline double cost(int sequence) const {
     return cost_[whichRange_[sequence] + offset_[sequence]];
   }
   /// Returns full status
-  inline int fullStatus(int sequence) const
-  {
-    return status_[sequence];
-  }
+  inline int fullStatus(int sequence) const { return status_[sequence]; }
   /// Returns if changed from beginning of iteration
-  inline bool changed(int sequence) const
-  {
+  inline bool changed(int sequence) const {
     return (status_[sequence] & 64) == 0;
   }
 
@@ -302,62 +278,30 @@ public:
   /**@name Gets and sets */
   //@{
   /// Number of infeasibilities
-  inline int numberInfeasibilities() const
-  {
-    return numberInfeasibilities_;
-  }
+  inline int numberInfeasibilities() const { return numberInfeasibilities_; }
   /// Change in cost
-  inline double changeInCost() const
-  {
-    return changeCost_;
-  }
+  inline double changeInCost() const { return changeCost_; }
   /// Feasible cost
-  inline double feasibleCost() const
-  {
-    return feasibleCost_;
-  }
+  inline double feasibleCost() const { return feasibleCost_; }
   /// Feasible cost with offset and direction (i.e. for reporting)
   double feasibleReportCost() const;
   /// Sum of infeasibilities
-  inline double sumInfeasibilities() const
-  {
-    return sumInfeasibilities_;
-  }
+  inline double sumInfeasibilities() const { return sumInfeasibilities_; }
   /// Largest infeasibility
-  inline double largestInfeasibility() const
-  {
-    return largestInfeasibility_;
-  }
+  inline double largestInfeasibility() const { return largestInfeasibility_; }
   /// Average theta
-  inline double averageTheta() const
-  {
-    return averageTheta_;
-  }
-  inline void setAverageTheta(double value)
-  {
-    averageTheta_ = value;
-  }
-  inline void setChangeInCost(double value)
-  {
-    changeCost_ = value;
-  }
-  inline void setMethod(int value)
-  {
-    method_ = value;
-  }
+  inline double averageTheta() const { return averageTheta_; }
+  inline void setAverageTheta(double value) { averageTheta_ = value; }
+  inline void setChangeInCost(double value) { changeCost_ = value; }
+  inline void setMethod(int value) { method_ = value; }
   /// See if may want to look both ways
-  inline bool lookBothWays() const
-  {
-    return bothWays_;
-  }
+  inline bool lookBothWays() const { return bothWays_; }
   //@}
   ///@name Private functions to deal with infeasible regions
-  inline bool infeasible(int i) const
-  {
+  inline bool infeasible(int i) const {
     return ((infeasible_[i >> 5] >> (i & 31)) & 1) != 0;
   }
-  inline void setInfeasible(int i, bool trueFalse)
-  {
+  inline void setInfeasible(int i, bool trueFalse) {
     unsigned int &value = infeasible_[i >> 5];
     int bit = i & 31;
     if (trueFalse)
@@ -365,15 +309,12 @@ public:
     else
       value &= ~(1 << bit);
   }
-  inline unsigned char *statusArray() const
-  {
-    return status_;
-  }
+  inline unsigned char *statusArray() const { return status_; }
   /// For debug
   void validate();
   //@}
 
-private:
+ private:
   /**@name Data members */
   //@{
   /// Change in cost because of infeasibilities
@@ -429,4 +370,4 @@ private:
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

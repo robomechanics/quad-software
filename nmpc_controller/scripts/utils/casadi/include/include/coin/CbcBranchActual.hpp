@@ -7,20 +7,20 @@
 #define CbcBranchActual_H
 
 #include "CbcBranchBase.hpp"
-#include "CoinPackedMatrix.hpp"
-#include "CbcClique.hpp"
-#include "CbcSOS.hpp"
-#include "CbcSimpleInteger.hpp"
-#include "CbcNWay.hpp"
-#include "CbcSimpleIntegerPseudoCost.hpp"
 #include "CbcBranchDefaultDecision.hpp"
-#include "CbcFollowOn.hpp"
-#include "CbcFixVariable.hpp"
+#include "CbcClique.hpp"
 #include "CbcDummyBranchingObject.hpp"
+#include "CbcFixVariable.hpp"
+#include "CbcFollowOn.hpp"
 #include "CbcGeneral.hpp"
 #include "CbcGeneralDepth.hpp"
+#include "CbcNWay.hpp"
+#include "CbcSOS.hpp"
+#include "CbcSimpleInteger.hpp"
+#include "CbcSimpleIntegerPseudoCost.hpp"
 #include "CbcSubProblem.hpp"
+#include "CoinPackedMatrix.hpp"
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

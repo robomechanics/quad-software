@@ -9,25 +9,22 @@
 #define CbcSubProblem_H
 
 #ifdef COIN_HAS_CLP
-#include "ClpSimplex.hpp"
 #include "ClpNode.hpp"
+#include "ClpSimplex.hpp"
 
 /** Defines a general subproblem
     Basis will be made more compact later
 */
 class CoinWarmStartDiff;
 class CbcSubProblem {
-
-public:
+ public:
   /// Default constructor
   CbcSubProblem();
 
   /// Constructor from model
-  CbcSubProblem(const OsiSolverInterface *solver,
-    const double *lowerBefore,
-    const double *upperBefore,
-    const unsigned char *status,
-    int depth);
+  CbcSubProblem(const OsiSolverInterface *solver, const double *lowerBefore,
+                const double *upperBefore, const unsigned char *status,
+                int depth);
 
   /// Copy constructor
   CbcSubProblem(const CbcSubProblem &);
@@ -43,7 +40,7 @@ public:
   /// Apply subproblem (1=bounds, 2=basis, 3=both)
   void apply(OsiSolverInterface *model, int what = 3) const;
 
-public:
+ public:
   /// Value of objective
   double objectiveValue_;
   /// Sum of infeasibilities
@@ -65,20 +62,18 @@ public:
   int numberChangedBounds_;
   /// Number of infeasibilities
   int numberInfeasibilities_;
-  /** Status 1 bit going up on first, 2 bit set first branch infeasible on second, 4 bit redundant branch,
-	bits after 256 give reason for stopping (just last node)
-	0 - solution
-	1 - infeasible
-	2 - maximum depth
-	>2 - error or max time or something
+  /** Status 1 bit going up on first, 2 bit set first branch infeasible on
+     second, 4 bit redundant branch, bits after 256 give reason for stopping
+     (just last node) 0 - solution 1 - infeasible 2 - maximum depth >2 - error
+     or max time or something
     */
   int problemStatus_;
   /// Variable branched on
   int branchVariable_;
 };
 
-#endif //COIN_HAS_CLP
+#endif  // COIN_HAS_CLP
 #endif
 
 /* vi: softtabstop=2 shiftwidth=2 expandtab tabstop=2
-*/
+ */

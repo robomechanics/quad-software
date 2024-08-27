@@ -18,13 +18,15 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
 
-
 #ifndef CASADI_EXCEPTION_HPP
 #define CASADI_EXCEPTION_HPP
+
+#include <casadi/core/casadi_export.h>
 
 #include <chrono>
 #include <ctime>
@@ -36,23 +38,21 @@
 #include <string>
 #include <vector>
 
-#include <casadi/core/casadi_export.h>
-
 // Disable some Visual studio warnings
 #ifdef _MSC_VER
 
 // warning C4251: Need a dll interface?
-#pragma warning(disable:4251)
+#pragma warning(disable : 4251)
 
-// warning C4275: non dll-interface class 'std::exception' used as base for dll-interface
-// class 'casadi::CasadiException'
-#pragma warning(disable:4275)
+// warning C4275: non dll-interface class 'std::exception' used as base for
+// dll-interface class 'casadi::CasadiException'
+#pragma warning(disable : 4275)
 
-// warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s
-// instead
-#pragma warning(disable:4996)
+// warning C4996: 'sprintf': This function or variable may be unsafe. Consider
+// using sprintf_s instead
+#pragma warning(disable : 4996)
 
-#endif // _MSC_VER
+#endif  // _MSC_VER
 
 namespace casadi {
 
@@ -75,10 +75,9 @@ namespace casadi {
 
     \identifier{7u} */
 class CASADI_EXPORT CasadiException : public std::exception {
-  public:
+ public:
   //! \brief Default constructor
-  CasadiException() {
-  }
+  CasadiException() {}
 
   //! \brief Form message string
   explicit CasadiException(const std::string& msg) : msg_(msg) {}
@@ -87,16 +86,14 @@ class CASADI_EXPORT CasadiException : public std::exception {
   ~CasadiException() throw() {}
 
   //! \brief Display error
-  const char* what() const throw() override {
-    return msg_.c_str();
-  }
+  const char* what() const throw() override { return msg_.c_str(); }
 
-  protected:
+ protected:
   std::string msg_;
 };
 
 class CASADI_EXPORT KeyboardInterruptException : public CasadiException {
-  public:
+ public:
   //! \brief Default constructor
   KeyboardInterruptException() : CasadiException("KeyboardInterrupt") {}
   //! \brief Destructor
@@ -116,7 +113,7 @@ inline std::string trim_path(const std::string& full_path) {
 }
 
 // Current time as a string
-inline std::ostream& message_prefix(std::ostream &stream) {
+inline std::ostream& message_prefix(std::ostream& stream) {
   // CasADi prefix
   stream << "CasADi - ";
   // Get current time
@@ -125,11 +122,13 @@ inline std::ostream& message_prefix(std::ostream &stream) {
   auto local_tm = *std::localtime(&tt);  // NOLINT(runtime/threadsafe_fn)
   // Convert to YYYY-MM-DD HH:MM:SS format
   stream << local_tm.tm_year + 1900 << '-';  // YYYY-
-  stream << std::setfill('0') << std::setw(2) << local_tm.tm_mon + 1 << '-';  // MM-
+  stream << std::setfill('0') << std::setw(2) << local_tm.tm_mon + 1
+         << '-';  // MM-
   stream << std::setfill('0') << std::setw(2) << local_tm.tm_mday << ' ';  // DD
-  stream << std::setfill('0') << std::setw(2) << local_tm.tm_hour << ':';  // hh:
+  stream << std::setfill('0') << std::setw(2) << local_tm.tm_hour
+         << ':';                                                          // hh:
   stream << std::setfill('0') << std::setw(2) << local_tm.tm_min << ':';  // mm:
-  stream << std::setfill('0') << std::setw(2) << local_tm.tm_sec;  // ss
+  stream << std::setfill('0') << std::setw(2) << local_tm.tm_sec;         // ss
   return stream;
 }
 
@@ -137,14 +136,15 @@ inline std::ostream& message_prefix(std::ostream &stream) {
 #define CASADI_WHERE casadi::trim_path(__FILE__ ":" CASADI_STR(__LINE__))
 
 // Throw an exception with information about source code location
-#define casadi_error(msg, ...) \
-throw casadi::CasadiException(CASADI_WHERE + ": "\
-          + casadi::fmtstr(msg, casadi::strvec(__VA_ARGS__)))
+#define casadi_error(msg, ...)   \
+  throw casadi::CasadiException( \
+      CASADI_WHERE + ": " + casadi::fmtstr(msg, casadi::strvec(__VA_ARGS__)))
 
 // This assertion checks for illegal user inputs
-#define casadi_assert(x, msg, ...) \
-if (!(x)) casadi_error("Assertion \"" CASADI_STR(x) "\" failed:\n"\
-          + std::string(msg), __VA_ARGS__)
+#define casadi_assert(x, msg, ...)                                             \
+  if (!(x))                                                                    \
+  casadi_error("Assertion \"" CASADI_STR(x) "\" failed:\n" + std::string(msg), \
+               __VA_ARGS__)
 
 // This assertion if for internal errors caused by bugs in CasADi
 #define casadi_assert_dev(x) casadi_assert(x, "Notify the CasADi developers.")
@@ -153,15 +153,17 @@ if (!(x)) casadi_error("Assertion \"" CASADI_STR(x) "\" failed:\n"\
 #define casadi_report() casadi_error("Notify the CasADi developers.")
 
 // Issue a warning, including location in the source code
-#define casadi_warning(msg) \
-  casadi::message_prefix(casadi::uerr()) \
-    << " WARNING(\"" << msg << "\") [" << CASADI_WHERE << "]\n" << std::flush;
+#define casadi_warning(msg)                                       \
+  casadi::message_prefix(casadi::uerr())                          \
+      << " WARNING(\"" << msg << "\") [" << CASADI_WHERE << "]\n" \
+      << std::flush;
 
 // Issue a message, including location in the source code
-#define casadi_message(msg) \
-  casadi::message_prefix(casadi::uout()) \
-    << " MESSAGE(\"" << msg << "\") [" << CASADI_WHERE << "]\n" << std::flush;
+#define casadi_message(msg)                                       \
+  casadi::message_prefix(casadi::uout())                          \
+      << " MESSAGE(\"" << msg << "\") [" << CASADI_WHERE << "]\n" \
+      << std::flush;
 
-} // namespace casadi
+}  // namespace casadi
 
-#endif // CASADI_EXCEPTION_HPP
+#endif  // CASADI_EXCEPTION_HPP

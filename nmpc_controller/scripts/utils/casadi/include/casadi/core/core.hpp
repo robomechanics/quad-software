@@ -18,10 +18,10 @@
  *
  *    You should have received a copy of the GNU Lesser General Public
  *    License along with CasADi; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ * USA
  *
  */
-
 
 #ifndef CASADI_CORE_HPP
 #define CASADI_CORE_HPP
@@ -30,40 +30,40 @@
 #include "sx_elem.hpp"
 
 // Generic tools
-#include "polynomial.hpp"
+#include "casadi_meta.hpp"
 #include "casadi_misc.hpp"
 #include "global_options.hpp"
-#include "casadi_meta.hpp"
+#include "polynomial.hpp"
 
 // Matrices
-#include "sx.hpp"
 #include "dm.hpp"
 #include "im.hpp"
+#include "sx.hpp"
 
 // Matrix expressions
 #include "mx.hpp"
 
 // Functions
-#include "code_generator.hpp"
-#include "importer.hpp"
 #include "callback.hpp"
-#include "integrator.hpp"
+#include "code_generator.hpp"
 #include "conic.hpp"
-#include "nlpsol.hpp"
-#include "rootfinder.hpp"
-#include "linsol.hpp"
 #include "dple.hpp"
 #include "expm.hpp"
-#include "interpolant.hpp"
 #include "external.hpp"
+#include "importer.hpp"
+#include "integrator.hpp"
+#include "interpolant.hpp"
+#include "linsol.hpp"
+#include "nlpsol.hpp"
+#include "rootfinder.hpp"
 
 // Misc
-#include "integration_tools.hpp"
-#include "nlp_tools.hpp"
-#include "nlp_builder.hpp"
 #include "dae_builder.hpp"
-#include "xml_file.hpp"
+#include "integration_tools.hpp"
+#include "nlp_builder.hpp"
+#include "nlp_tools.hpp"
 #include "optistack.hpp"
 #include "serializer.hpp"
+#include "xml_file.hpp"
 
-#endif // CASADI_CORE_HPP
+#endif  // CASADI_CORE_HPP

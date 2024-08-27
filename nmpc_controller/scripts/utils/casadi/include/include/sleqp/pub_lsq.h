@@ -54,13 +54,10 @@
  *Jacobian \f$ J_c(x) \f$
  * @param[out]    cons_jac_nnz    The number of nonzeros of Hessian products
  **/
-typedef SLEQP_RETCODE (*SLEQP_LSQ_NONZEROS)(SleqpFunc* func,
-                                            int* residual_nnz,
-                                            int* jac_fwd_nnz,
-                                            int* jac_adj_nnz,
+typedef SLEQP_RETCODE (*SLEQP_LSQ_NONZEROS)(SleqpFunc* func, int* residual_nnz,
+                                            int* jac_fwd_nnz, int* jac_adj_nnz,
                                             int* cons_val_nnz,
-                                            int* cons_jac_nnz,
-                                            void* func_data);
+                                            int* cons_jac_nnz, void* func_data);
 
 /**
  * Evaluates the residuals \f$ r(x) \f$ at the current primal point.
@@ -86,10 +83,8 @@ typedef SLEQP_RETCODE (*SLEQP_LSQ_RESIDUALS)(SleqpFunc* func,
  *
  */
 typedef SLEQP_RETCODE (*SLEQP_LSQ_JAC_FORWARD)(
-  SleqpFunc* func,
-  const SleqpVec* forward_direction,
-  SleqpVec* product,
-  void* func_data);
+    SleqpFunc* func, const SleqpVec* forward_direction, SleqpVec* product,
+    void* func_data);
 
 /**
  * Evaluates the adjoint product of the Jacobian of the residuals at the
@@ -103,13 +98,10 @@ typedef SLEQP_RETCODE (*SLEQP_LSQ_JAC_FORWARD)(
  *
  */
 typedef SLEQP_RETCODE (*SLEQP_LSQ_JAC_ADJOINT)(
-  SleqpFunc* func,
-  const SleqpVec* adjoint_direction,
-  SleqpVec* product,
-  void* func_data);
+    SleqpFunc* func, const SleqpVec* adjoint_direction, SleqpVec* product,
+    void* func_data);
 
-typedef struct
-{
+typedef struct {
   SLEQP_FUNC_SET set_value;
   SLEQP_LSQ_NONZEROS lsq_nonzeros;
   SLEQP_LSQ_RESIDUALS lsq_residuals;
@@ -133,15 +125,10 @@ typedef struct
  * @param[in]  func_data       User-provided function data
  *
  **/
-SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE
-sleqp_lsq_func_create(SleqpFunc** fstar,
-                      SleqpLSQCallbacks* callbacks,
-                      int num_variables,
-                      int num_constraints,
-                      int num_residuals,
-                      double lm_factor,
-                      SleqpSettings* settings,
-                      void* func_data);
+SLEQP_EXPORT SLEQP_WARNUNUSED SLEQP_RETCODE sleqp_lsq_func_create(
+    SleqpFunc** fstar, SleqpLSQCallbacks* callbacks, int num_variables,
+    int num_constraints, int num_residuals, double lm_factor,
+    SleqpSettings* settings, void* func_data);
 
 /**
  * Sets the callbacks of this LSQ function to the specified ones

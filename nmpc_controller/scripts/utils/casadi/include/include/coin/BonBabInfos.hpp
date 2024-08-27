@@ -10,48 +10,41 @@
 #ifndef BonBabInfos_H
 #define BonBabInfos_H
 #include <stdlib.h>
+
 #include "BonAuxInfos.hpp"
 
-namespace Bonmin
-{
-  class Bab;
-  /** Bonmin class for passing info between components of branch-and-cuts.*/
-  class BabInfo : public Bonmin::AuxInfo
-  {
-  public:
-    /** Default constructor.*/
-    BabInfo(int type);
+namespace Bonmin {
+class Bab;
+/** Bonmin class for passing info between components of branch-and-cuts.*/
+class BabInfo : public Bonmin::AuxInfo {
+ public:
+  /** Default constructor.*/
+  BabInfo(int type);
 
-    /** Constructor from OsiBabSolver.*/
-    BabInfo(const OsiBabSolver &other);
+  /** Constructor from OsiBabSolver.*/
+  BabInfo(const OsiBabSolver &other);
 
-    /** Copy constructor.*/
-    BabInfo(const BabInfo &other);
+  /** Copy constructor.*/
+  BabInfo(const BabInfo &other);
 
-    /** Destructor.*/
-    virtual ~BabInfo();
+  /** Destructor.*/
+  virtual ~BabInfo();
 
-    /** Virtual copy constructor.*/
-    virtual OsiAuxInfo * clone() const;
+  /** Virtual copy constructor.*/
+  virtual OsiAuxInfo *clone() const;
 
-    /** Set pointer to the branch-and-bound algorithm (to access CbcModel).*/
-    void setBabPtr(Bab * babPtr)
-    {
-      babPtr_ = babPtr;
-    }
+  /** Set pointer to the branch-and-bound algorithm (to access CbcModel).*/
+  void setBabPtr(Bab *babPtr) { babPtr_ = babPtr; }
 
-    /** Pointer to the branch-and-bound algorithm (to access CbcModel).*/
-    Bab * babPtr()
-    {
-      return babPtr_;
-    }
+  /** Pointer to the branch-and-bound algorithm (to access CbcModel).*/
+  Bab *babPtr() { return babPtr_; }
 
-    bool hasSolution() const{
-      return bestSolution_ != NULL;}
-  protected:
-    /** Pointer to branch-and-bound algorithm.*/
-    Bab * babPtr_;
-  };
-}/* End namespace.*/
+  bool hasSolution() const { return bestSolution_ != NULL; }
+
+ protected:
+  /** Pointer to branch-and-bound algorithm.*/
+  Bab *babPtr_;
+};
+}  // namespace Bonmin
 
 #endif

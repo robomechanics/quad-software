@@ -1,23 +1,22 @@
 #ifndef OSQP_H
-# define OSQP_H
+#define OSQP_H
 
-# ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
-# endif // ifdef __cplusplus
+#endif  // ifdef __cplusplus
 
 /* Includes */
-# include "types.h"
-# include "util.h" // Needed for osqp_set_default_settings functions
-
+#include "types.h"
+#include "util.h"  // Needed for osqp_set_default_settings functions
 
 // Library to deal with sparse matrices enabled only if embedded not defined
-# ifndef EMBEDDED
-#  include "cs.h"
-# endif // ifndef EMBEDDED
+#ifndef EMBEDDED
+#include "cs.h"
+#endif  // ifndef EMBEDDED
 
 /********************
-* Main Solver API  *
-********************/
+ * Main Solver API  *
+ ********************/
 
 /**
  * @name Main solver API
@@ -31,8 +30,7 @@ extern "C" {
  */
 void osqp_set_default_settings(OSQPSettings *settings);
 
-
-# ifndef EMBEDDED
+#ifndef EMBEDDED
 
 /**
  * Initialize OSQP solver allocating memory.
@@ -55,9 +53,10 @@ void osqp_set_default_settings(OSQPSettings *settings);
  * @param  settings     Solver settings
  * @return              Exitflag for errors (0 if no errors)
  */
-c_int osqp_setup(OSQPWorkspace** workp, const OSQPData* data, const OSQPSettings* settings);
+c_int osqp_setup(OSQPWorkspace **workp, const OSQPData *data,
+                 const OSQPSettings *settings);
 
-# endif // #ifndef EMBEDDED
+#endif  // #ifndef EMBEDDED
 
 /**
  * Solve quadratic program
@@ -77,8 +76,7 @@ c_int osqp_setup(OSQPWorkspace** workp, const OSQPData* data, const OSQPSettings
  */
 c_int osqp_solve(OSQPWorkspace *work);
 
-
-# ifndef EMBEDDED
+#ifndef EMBEDDED
 
 /**
  * Cleanup workspace by deallocating memory
@@ -89,16 +87,15 @@ c_int osqp_solve(OSQPWorkspace *work);
  */
 c_int osqp_cleanup(OSQPWorkspace *work);
 
-# endif // ifndef EMBEDDED
+#endif  // ifndef EMBEDDED
 
 /** @} */
 
-
 /********************************************
-* Sublevel API                             *
-*                                          *
-* Edit data without performing setup again *
-********************************************/
+ * Sublevel API                             *
+ *                                          *
+ * Edit data without performing setup again *
+ ********************************************/
 
 /**
  * @name Sublevel API
@@ -111,9 +108,7 @@ c_int osqp_cleanup(OSQPWorkspace *work);
  * @param  q_new New linear cost
  * @return       Exitflag for errors and warnings
  */
-c_int osqp_update_lin_cost(OSQPWorkspace *work,
-                           const c_float *q_new);
-
+c_int osqp_update_lin_cost(OSQPWorkspace *work, const c_float *q_new);
 
 /**
  * Update lower and upper bounds in the problem constraints
@@ -122,10 +117,8 @@ c_int osqp_update_lin_cost(OSQPWorkspace *work,
  * @param  u_new New upper bound
  * @return        Exitflag: 1 if new lower bound is not <= than new upper bound
  */
-c_int osqp_update_bounds(OSQPWorkspace *work,
-                         const c_float *l_new,
+c_int osqp_update_bounds(OSQPWorkspace *work, const c_float *l_new,
                          const c_float *u_new);
-
 
 /**
  * Update lower bound in the problem constraints
@@ -133,9 +126,7 @@ c_int osqp_update_bounds(OSQPWorkspace *work,
  * @param  l_new New lower bound
  * @return        Exitflag: 1 if new lower bound is not <= than upper bound
  */
-c_int osqp_update_lower_bound(OSQPWorkspace *work,
-                              const c_float *l_new);
-
+c_int osqp_update_lower_bound(OSQPWorkspace *work, const c_float *l_new);
 
 /**
  * Update upper bound in the problem constraints
@@ -143,9 +134,7 @@ c_int osqp_update_lower_bound(OSQPWorkspace *work,
  * @param  u_new New upper bound
  * @return        Exitflag: 1 if new upper bound is not >= than lower bound
  */
-c_int osqp_update_upper_bound(OSQPWorkspace *work,
-                              const c_float *u_new);
-
+c_int osqp_update_upper_bound(OSQPWorkspace *work, const c_float *u_new);
 
 /**
  * Warm start primal and dual variables
@@ -154,10 +143,7 @@ c_int osqp_update_upper_bound(OSQPWorkspace *work,
  * @param  y    Dual variable
  * @return      Exitflag
  */
-c_int osqp_warm_start(OSQPWorkspace *work,
-                      const c_float *x,
-                      const c_float *y);
-
+c_int osqp_warm_start(OSQPWorkspace *work, const c_float *x, const c_float *y);
 
 /**
  * Warm start primal variable
@@ -165,9 +151,7 @@ c_int osqp_warm_start(OSQPWorkspace *work,
  * @param  x    Primal variable
  * @return      Exitflag
  */
-c_int osqp_warm_start_x(OSQPWorkspace *work,
-                        const c_float *x);
-
+c_int osqp_warm_start_x(OSQPWorkspace *work, const c_float *x);
 
 /**
  * Warm start dual variable
@@ -175,11 +159,9 @@ c_int osqp_warm_start_x(OSQPWorkspace *work,
  * @param  y    Dual variable
  * @return      Exitflag
  */
-c_int osqp_warm_start_y(OSQPWorkspace *work,
-                        const c_float *y);
+c_int osqp_warm_start_y(OSQPWorkspace *work, const c_float *y);
 
-
-# if EMBEDDED != 1
+#if EMBEDDED != 1
 
 /**
  * Update elements of matrix P (upper triangular)
@@ -197,11 +179,8 @@ c_int osqp_warm_start_y(OSQPWorkspace *work,
  *                                  1: P_new_n > nnzP
  *                                 <0: error in the update
  */
-c_int osqp_update_P(OSQPWorkspace *work,
-                    const c_float *Px_new,
-                    const c_int   *Px_new_idx,
-                    c_int          P_new_n);
-
+c_int osqp_update_P(OSQPWorkspace *work, const c_float *Px_new,
+                    const c_int *Px_new_idx, c_int P_new_n);
 
 /**
  * Update elements of matrix A without changing sparsity structure.
@@ -218,11 +197,8 @@ c_int osqp_update_P(OSQPWorkspace *work,
  *                                  1: A_new_n > nnzA
  *                                 <0: error in the update
  */
-c_int osqp_update_A(OSQPWorkspace *work,
-                    const c_float *Ax_new,
-                    const c_int   *Ax_new_idx,
-                    c_int          A_new_n);
-
+c_int osqp_update_A(OSQPWorkspace *work, const c_float *Ax_new,
+                    const c_int *Ax_new_idx, c_int A_new_n);
 
 /**
  * Update elements of matrix P (upper triangular) and elements of matrix A
@@ -247,13 +223,10 @@ c_int osqp_update_A(OSQPWorkspace *work,
  *                                  2: A_new_n > nnzA
  *                                 <0: error in the update
  */
-c_int osqp_update_P_A(OSQPWorkspace *work,
-                      const c_float *Px_new,
-                      const c_int   *Px_new_idx,
-                      c_int          P_new_n,
-                      const c_float *Ax_new,
-                      const c_int   *Ax_new_idx,
-                      c_int          A_new_n);
+c_int osqp_update_P_A(OSQPWorkspace *work, const c_float *Px_new,
+                      const c_int *Px_new_idx, c_int P_new_n,
+                      const c_float *Ax_new, const c_int *Ax_new_idx,
+                      c_int A_new_n);
 
 /**
  * Update rho. Limit it between RHO_MIN and RHO_MAX.
@@ -261,19 +234,16 @@ c_int osqp_update_P_A(OSQPWorkspace *work,
  * @param  rho_new      New rho setting
  * @return              Exitflag
  */
-c_int osqp_update_rho(OSQPWorkspace *work,
-                      c_float        rho_new);
+c_int osqp_update_rho(OSQPWorkspace *work, c_float rho_new);
 
-# endif // if EMBEDDED != 1
+#endif  // if EMBEDDED != 1
 
 /** @} */
-
 
 /**
  * @name Update settings
  * @{
  */
-
 
 /**
  * Update max_iter setting
@@ -281,9 +251,7 @@ c_int osqp_update_rho(OSQPWorkspace *work,
  * @param  max_iter_new New max_iter setting
  * @return              Exitflag
  */
-c_int osqp_update_max_iter(OSQPWorkspace *work,
-                           c_int          max_iter_new);
-
+c_int osqp_update_max_iter(OSQPWorkspace *work, c_int max_iter_new);
 
 /**
  * Update absolute tolernace value
@@ -291,9 +259,7 @@ c_int osqp_update_max_iter(OSQPWorkspace *work,
  * @param  eps_abs_new New absolute tolerance value
  * @return             Exitflag
  */
-c_int osqp_update_eps_abs(OSQPWorkspace *work,
-                          c_float        eps_abs_new);
-
+c_int osqp_update_eps_abs(OSQPWorkspace *work, c_float eps_abs_new);
 
 /**
  * Update relative tolernace value
@@ -301,9 +267,7 @@ c_int osqp_update_eps_abs(OSQPWorkspace *work,
  * @param  eps_rel_new New relative tolerance value
  * @return             Exitflag
  */
-c_int osqp_update_eps_rel(OSQPWorkspace *work,
-                          c_float        eps_rel_new);
-
+c_int osqp_update_eps_rel(OSQPWorkspace *work, c_float eps_rel_new);
 
 /**
  * Update primal infeasibility tolerance
@@ -311,9 +275,7 @@ c_int osqp_update_eps_rel(OSQPWorkspace *work,
  * @param  eps_prim_inf_new  New primal infeasibility tolerance
  * @return               Exitflag
  */
-c_int osqp_update_eps_prim_inf(OSQPWorkspace *work,
-                               c_float        eps_prim_inf_new);
-
+c_int osqp_update_eps_prim_inf(OSQPWorkspace *work, c_float eps_prim_inf_new);
 
 /**
  * Update dual infeasibility tolerance
@@ -321,9 +283,7 @@ c_int osqp_update_eps_prim_inf(OSQPWorkspace *work,
  * @param  eps_dual_inf_new  New dual infeasibility tolerance
  * @return               Exitflag
  */
-c_int osqp_update_eps_dual_inf(OSQPWorkspace *work,
-                               c_float        eps_dual_inf_new);
-
+c_int osqp_update_eps_dual_inf(OSQPWorkspace *work, c_float eps_dual_inf_new);
 
 /**
  * Update relaxation parameter alpha
@@ -331,9 +291,7 @@ c_int osqp_update_eps_dual_inf(OSQPWorkspace *work,
  * @param  alpha_new New relaxation parameter value
  * @return       Exitflag
  */
-c_int osqp_update_alpha(OSQPWorkspace *work,
-                        c_float        alpha_new);
-
+c_int osqp_update_alpha(OSQPWorkspace *work, c_float alpha_new);
 
 /**
  * Update warm_start setting
@@ -341,9 +299,7 @@ c_int osqp_update_alpha(OSQPWorkspace *work,
  * @param  warm_start_new New warm_start setting
  * @return                Exitflag
  */
-c_int osqp_update_warm_start(OSQPWorkspace *work,
-                             c_int          warm_start_new);
-
+c_int osqp_update_warm_start(OSQPWorkspace *work, c_int warm_start_new);
 
 /**
  * Update scaled_termination setting
@@ -352,7 +308,7 @@ c_int osqp_update_warm_start(OSQPWorkspace *work,
  * @return                      Exitflag
  */
 c_int osqp_update_scaled_termination(OSQPWorkspace *work,
-                                     c_int          scaled_termination_new);
+                                     c_int scaled_termination_new);
 
 /**
  * Update check_termination setting
@@ -361,10 +317,9 @@ c_int osqp_update_scaled_termination(OSQPWorkspace *work,
  * @return                        Exitflag
  */
 c_int osqp_update_check_termination(OSQPWorkspace *work,
-                                    c_int          check_termination_new);
+                                    c_int check_termination_new);
 
-
-# ifndef EMBEDDED
+#ifndef EMBEDDED
 
 /**
  * Update regularization parameter in polish
@@ -372,9 +327,7 @@ c_int osqp_update_check_termination(OSQPWorkspace *work,
  * @param  delta_new New regularization parameter
  * @return           Exitflag
  */
-c_int osqp_update_delta(OSQPWorkspace *work,
-                        c_float        delta_new);
-
+c_int osqp_update_delta(OSQPWorkspace *work, c_float delta_new);
 
 /**
  * Update polish setting
@@ -382,9 +335,7 @@ c_int osqp_update_delta(OSQPWorkspace *work,
  * @param  polish_new New polish setting
  * @return               Exitflag
  */
-c_int osqp_update_polish(OSQPWorkspace *work,
-                         c_int          polish_new);
-
+c_int osqp_update_polish(OSQPWorkspace *work, c_int polish_new);
 
 /**
  * Update number of iterative refinement steps in polish
@@ -393,8 +344,7 @@ c_int osqp_update_polish(OSQPWorkspace *work,
  * @return                     Exitflag
  */
 c_int osqp_update_polish_refine_iter(OSQPWorkspace *work,
-                                     c_int          polish_refine_iter_new);
-
+                                     c_int polish_refine_iter_new);
 
 /**
  * Update verbose setting
@@ -402,13 +352,11 @@ c_int osqp_update_polish_refine_iter(OSQPWorkspace *work,
  * @param  verbose_new New verbose setting
  * @return             Exitflag
  */
-c_int osqp_update_verbose(OSQPWorkspace *work,
-                          c_int          verbose_new);
+c_int osqp_update_verbose(OSQPWorkspace *work, c_int verbose_new);
 
+#endif  // #ifndef EMBEDDED
 
-# endif // #ifndef EMBEDDED
-
-# ifdef PROFILING
+#ifdef PROFILING
 
 /**
  * Update time_limit setting
@@ -416,15 +364,13 @@ c_int osqp_update_verbose(OSQPWorkspace *work,
  * @param  time_limit_new  New time_limit setting
  * @return                 Exitflag
  */
-c_int osqp_update_time_limit(OSQPWorkspace *work,
-                             c_float        time_limit_new);
-# endif // ifdef PROFILING
+c_int osqp_update_time_limit(OSQPWorkspace *work, c_float time_limit_new);
+#endif  // ifdef PROFILING
 
 /** @} */
 
-
-# ifdef __cplusplus
+#ifdef __cplusplus
 }
-# endif // ifdef __cplusplus
+#endif  // ifdef __cplusplus
 
-#endif // ifndef OSQP_H
+#endif  // ifndef OSQP_H

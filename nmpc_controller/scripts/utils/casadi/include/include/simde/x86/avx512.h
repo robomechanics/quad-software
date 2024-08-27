@@ -27,8 +27,6 @@
 #if !defined(SIMDE_X86_AVX512_H)
 #define SIMDE_X86_AVX512_H
 
-#include "avx512/types.h"
-
 #include "avx512/2intersect.h"
 #include "avx512/abs.h"
 #include "avx512/add.h"
@@ -74,16 +72,16 @@
 #include "avx512/or.h"
 #include "avx512/packs.h"
 #include "avx512/packus.h"
-#include "avx512/permutexvar.h"
 #include "avx512/permutex2var.h"
+#include "avx512/permutexvar.h"
 #include "avx512/sad.h"
 #include "avx512/set.h"
 #include "avx512/set1.h"
 #include "avx512/set4.h"
+#include "avx512/setone.h"
 #include "avx512/setr.h"
 #include "avx512/setr4.h"
 #include "avx512/setzero.h"
-#include "avx512/setone.h"
 #include "avx512/shuffle.h"
 #include "avx512/sll.h"
 #include "avx512/slli.h"
@@ -100,8 +98,9 @@
 #include "avx512/sub.h"
 #include "avx512/subs.h"
 #include "avx512/test.h"
-#include "avx512/unpacklo.h"
+#include "avx512/types.h"
 #include "avx512/unpackhi.h"
+#include "avx512/unpacklo.h"
 #include "avx512/xor.h"
 #include "avx512/xorsign.h"
 
