@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>apply_force_pkg</name>
+  <name>apply_force</name>
   <version>0.0.0</version>
-  <description>The apply_force_pkg package</description>
+  <description>The apply_force package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -49,15 +49,28 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
+
   <build_depend>geometry_msgs</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>gazebo_msgs</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+  <build_depend>quad_msgs</build_depend>
+  <build_depend>quad_utils</build_depend>
+  <build_depend>tf2</build_depend>
+  <build_depend>tf2_geometry_msgs</build_depend>
+
   <build_export_depend>geometry_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>visualization_msgs</build_export_depend>
+
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>gazebo_msgs</exec_depend>
-
+  <exec_depend>visualization_msgs</exec_depend>
+  <exec_depend>quad_msgs</exec_depend>
+  <exec_depend>quad_utils</exec_depend>
+  <exec_depend>tf2</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

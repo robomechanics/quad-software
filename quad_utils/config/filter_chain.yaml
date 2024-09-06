@@ -88,7 +88,7 @@ grid_map_filters:
     params:
       input_layer: traversability_hole_mask
       output_layer: traversability_hole_mask_filtered
-      radius: 0.075
+      radius: 0.01
 
     # Set lower threshold on traversability hole mask.
   - name: traversability_hole_mask_lower_threshold
