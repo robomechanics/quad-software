@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-ApplyForce::ApplyForce(ros::NodeHandle nh, int argc, char **argv) {
+ApplyForce::ApplyForce(ros::NodeHandle nh, int argc, char** argv) {
   nh_ = nh;
   argc_ = argc;
   argv_ = argv;
@@ -26,13 +26,13 @@ ApplyForce::ApplyForce(ros::NodeHandle nh, int argc, char **argv) {
       nh_.subscribe(robot_state_topic, 1, &ApplyForce::robotStateCallback, this,
                     ros::TransportHints().tcpNoDelay(true));
   force_marker_pub_ =
-      nh.advertise<visualization_msgs::Marker>("force_torque_markers", 10);
+      nh.advertise<visualization_msgs::Marker>("force_torque_markers", 100);
   force_client_ = nh_.serviceClient<gazebo_msgs::ApplyBodyWrench>(
       "/gazebo/apply_body_wrench");
 }
 
 void ApplyForce::robotStateCallback(
-    const quad_msgs::RobotState::ConstPtr &msg) {
+    const quad_msgs::RobotState::ConstPtr& msg) {
   last_robot_state_msg_ = *msg;
 }
 
@@ -55,38 +55,41 @@ void ApplyForce::updateForce() {
   srv.request.duration = ros::Duration(duration_sec_);  // Apply for 1 second
 
   // Create a marker for visualization
-//   visualization_msgs::Marker marker;
-  last_robot_marker_msg_.header.frame_id = "robot_1::body"; 
+  //   visualization_msgs::Marker marker;
+  last_robot_marker_msg_.header.frame_id = "robot_1_ground_truth/body";
   last_robot_marker_msg_.header.stamp = ros::Time::now();
   last_robot_marker_msg_.ns = "apply_force";
   last_robot_marker_msg_.id = 0;
-  last_robot_marker_msg_.type =
-      visualization_msgs::Marker::ARROW; 
+  last_robot_marker_msg_.type = visualization_msgs::Marker::ARROW;
   last_robot_marker_msg_.action = visualization_msgs::Marker::ADD;
-  last_robot_marker_msg_.pose.position.x = 0;  
-  last_robot_marker_msg_.pose.position.y = -0.2;
+  last_robot_marker_msg_.pose.position.x = 0;
+  last_robot_marker_msg_.pose.position.y = -0.4;
   last_robot_marker_msg_.pose.position.z = 0;
   last_robot_marker_msg_.pose.orientation.w = 1.0;
 
   // Set the scale of the arrow (length corresponds to the force magnitude)
   force_magnitude_ =
       sqrt(force_x_ * force_x_ + force_y_ * force_y_ + force_z_ * force_z_);
-  last_robot_marker_msg_.scale.x = 0.2; //force_magnitude_*0.1;  // Arrow length
-  last_robot_marker_msg_.scale.y = 0.02;               // Arrow width
-  last_robot_marker_msg_.scale.z = 0.02;               // Arrow height
+  last_robot_marker_msg_.scale.x = 0.2;  // force_magnitude_*0.1;  // Arrow length
+  last_robot_marker_msg_.scale.y = 0.02;  // Arrow width
+  last_robot_marker_msg_.scale.z = 0.02;  // Arrow height
 
   // Set the color of the arrow (e.g., red)
   last_robot_marker_msg_.color.r = 1.0;
-  last_robot_marker_msg_.color.g = 2.0;
+  last_robot_marker_msg_.color.g = 0.0;
   last_robot_marker_msg_.color.b = 0.0;
   last_robot_marker_msg_.color.a = 1.0;
+  last_robot_marker_msg_.lifetime = ros::Duration(0.2);
 
   if (force_magnitude_ != 0) {  // Avoid division by zero
     tf2::Vector3 force_vector(force_x_, force_y_, force_z_);
     force_vector.normalize();  // Normalize the force vector
 
     tf2::Quaternion orientation_quat;
-    orientation_quat.setRPY(0, 0, atan2(force_y_, force_x_)); // Set the orientation based on force direction
+    orientation_quat.setRPY(
+        0, 0,
+        atan2(force_y_,
+              force_x_));  // Set the orientation based on force direction
     orientation_quat.normalize();  // Normalize quaternion
 
     // Convert tf2 quaternion to geometry_msgs Quaternion
@@ -100,27 +103,50 @@ void ApplyForce::updateForce() {
   }
 }
 
-  // Set the direction of the arrow (aligned with the force vector)
+// Set the direction of the arrow (aligned with the force vector)
 //   if (force_magnitude_ != 0) {
 //     marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
 //       0,  // Roll
-//       atan2(force_z_, sqrt(force_x_ * force_x_ + force_y_ * force_y_)),  // Pitch
-//       atan2(force_y_, force_x_));  // Yaw
+//       atan2(force_z_, sqrt(force_x_ * force_x_ + force_y_ * force_y_)),  //
+//       Pitch atan2(force_y_, force_x_));  // Yaw
 //   }
 // }
 
 void ApplyForce::publishForce() {
   if (force_client_.call(srv)) {
+    // ROS_INFO_STREAM(last_robot_marker_msg_);
     force_marker_pub_.publish(last_robot_marker_msg_);
     //   applied_force_pub_.publish(last_robot_force_msg_);
+    // Log the applied force and set point positions
     ROS_INFO(
         "Force applied to the robot body: Force(%.2f, %.2f, %.2f) "
-        "Torque(%.2f, %.2f, %.2f)",
-        force_x_, force_y_, force_z_, torque_x_, torque_y_, torque_z_);
+        "Torque(%.2f, %.2f, %.2f) at Set Point: (%.2f, %.2f, %.2f)",
+        force_x_, force_y_, force_z_, torque_x_, torque_y_, torque_z_,
+        set_point(0), set_point(1), set_point(2));
   }
 }
 
-void ApplyForce::calculateDistance() {}
+double ApplyForce::euclideanDistance(const Eigen::Vector3d& point1,
+                                     const Eigen::Vector3d& point2) {
+  return (point2 - point1).norm();
+}
+
+bool ApplyForce::checkDistance() {
+  robot_loc = Eigen::Vector3d::Zero();
+  robot_loc << last_robot_state_msg_.body.pose.position.x,
+      last_robot_state_msg_.body.pose.position.y,
+      last_robot_state_msg_.body.pose.position.z;
+//   ROS_INFO_STREAM("POSE "<< robot_loc);
+  double dist = euclideanDistance(robot_loc, set_point);
+//   ROS_INFO_STREAM("DISTANCE" << dist);
+  if (dist >= 1.0) {
+    set_point(0) += 1;
+    // ROS_INFO_STREAM("NEW SET Point" << set_point);
+    return true;
+  } else {
+    return false;
+  }
+}
 
 void ApplyForce::spin() {
   // Initialize timing params
@@ -129,13 +155,12 @@ void ApplyForce::spin() {
   while (ros::ok()) {
     // Collect new messages on subscriber topics and publish heartbeat
     ros::spinOnce();
-
-    // Get the newest state information
-    updateForce();
-
-    // Publish the Force and Visualization to the Appropriate Topics
-    publishForce();
-
+    if (checkDistance()) {
+      // Get the newest force infomation
+      updateForce();
+      // Publish the Force and Visualization to the Appropriate Topics
+      publishForce();
+    }
     // Enforce update rate
     r.sleep();
   }

@@ -12,6 +12,7 @@
 #include <tf2/convert.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <string>
+#include <Eigen/Dense>
 
 class ApplyForce {
  public:
@@ -44,9 +45,13 @@ class ApplyForce {
    */
   void updateForce();
   /**
-   * @brief Calculates robot distance relative to a set point to deploy force
+   * @brief Calculates euclidean distance relative to a set point to deploy force
    */
-  void calculateDistance();
+  
+  double euclideanDistance(const Eigen::Vector3d& point1,
+                                     const Eigen::Vector3d& point2);
+
+  bool checkDistance();
 
   /// Nodehandle to pub to and sub from
   ros::NodeHandle nh_;
@@ -68,6 +73,10 @@ class ApplyForce {
 
   /// Most Recent Service Call of Applied Force
   gazebo_msgs::ApplyBodyWrench srv;
+
+  Eigen::Vector3d robot_loc;
+
+  Eigen::Vector3d set_point{0.0, 0.0, 0.27};
 
   double force_x_;
 
