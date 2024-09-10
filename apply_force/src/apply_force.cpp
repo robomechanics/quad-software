@@ -62,7 +62,7 @@ void ApplyForce::updateForce() {
   last_robot_marker_msg_.id = 0;
   last_robot_marker_msg_.type = visualization_msgs::Marker::ARROW;
   last_robot_marker_msg_.action = visualization_msgs::Marker::ADD;
-  last_robot_marker_msg_.pose.position.x = 0;
+  last_robot_marker_msg_.pose.position.x = 0.25;
   last_robot_marker_msg_.pose.position.y = -0.4;
   last_robot_marker_msg_.pose.position.z = 0;
   last_robot_marker_msg_.pose.orientation.w = 1.0;
@@ -70,7 +70,8 @@ void ApplyForce::updateForce() {
   // Set the scale of the arrow (length corresponds to the force magnitude)
   force_magnitude_ =
       sqrt(force_x_ * force_x_ + force_y_ * force_y_ + force_z_ * force_z_);
-  last_robot_marker_msg_.scale.x = 0.2;  // force_magnitude_*0.1;  // Arrow length
+  last_robot_marker_msg_.scale.x =
+      0.2;  // force_magnitude_*0.1;  // Arrow length
   last_robot_marker_msg_.scale.y = 0.02;  // Arrow width
   last_robot_marker_msg_.scale.z = 0.02;  // Arrow height
 
@@ -79,7 +80,7 @@ void ApplyForce::updateForce() {
   last_robot_marker_msg_.color.g = 0.0;
   last_robot_marker_msg_.color.b = 0.0;
   last_robot_marker_msg_.color.a = 1.0;
-  last_robot_marker_msg_.lifetime = ros::Duration(0.2);
+  last_robot_marker_msg_.lifetime = ros::Duration(0.1);
 
   if (force_magnitude_ != 0) {  // Avoid division by zero
     tf2::Vector3 force_vector(force_x_, force_y_, force_z_);
@@ -103,20 +104,9 @@ void ApplyForce::updateForce() {
   }
 }
 
-// Set the direction of the arrow (aligned with the force vector)
-//   if (force_magnitude_ != 0) {
-//     marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-//       0,  // Roll
-//       atan2(force_z_, sqrt(force_x_ * force_x_ + force_y_ * force_y_)),  //
-//       Pitch atan2(force_y_, force_x_));  // Yaw
-//   }
-// }
-
 void ApplyForce::publishForce() {
   if (force_client_.call(srv)) {
-    // ROS_INFO_STREAM(last_robot_marker_msg_);
     force_marker_pub_.publish(last_robot_marker_msg_);
-    //   applied_force_pub_.publish(last_robot_force_msg_);
     // Log the applied force and set point positions
     ROS_INFO(
         "Force applied to the robot body: Force(%.2f, %.2f, %.2f) "
@@ -136,12 +126,9 @@ bool ApplyForce::checkDistance() {
   robot_loc << last_robot_state_msg_.body.pose.position.x,
       last_robot_state_msg_.body.pose.position.y,
       last_robot_state_msg_.body.pose.position.z;
-//   ROS_INFO_STREAM("POSE "<< robot_loc);
   double dist = euclideanDistance(robot_loc, set_point);
-//   ROS_INFO_STREAM("DISTANCE" << dist);
   if (dist >= 1.0) {
     set_point(0) += 1;
-    // ROS_INFO_STREAM("NEW SET Point" << set_point);
     return true;
   } else {
     return false;
@@ -165,79 +152,3 @@ void ApplyForce::spin() {
     r.sleep();
   }
 }
-
-// int main(int argc, char** argv) {
-
-//   ros::ServiceClient client = nh.serviceClient<gazebo_msgs::ApplyBodyWrench>(
-//       "/gazebo/apply_body_wrench");
-//   gazebo_msgs::ApplyBodyWrench srv;
-
-//   // Apply Force to Link of Choice
-//   srv.request.body_name = "robot_1::body";  // Body is the default
-//   srv.request.reference_frame = "";
-//   srv.request.reference_point.x = 0;
-//   srv.request.reference_point.y = 0;
-//   srv.request.reference_point.z = 0;
-
-//   srv.request.wrench.force.x = force_x;
-//   srv.request.wrench.force.y = force_y;
-//   srv.request.wrench.force.z = force_z;
-//   srv.request.wrench.torque.x = torque_x;
-//   srv.request.wrench.torque.y = torque_y;
-//   srv.request.wrench.torque.z = torque_z;
-
-//   srv.request.start_time = ros::Time::now();
-//   srv.request.duration = ros::Duration(dt);  // Apply for 1 second
-
-//   ros::Publisher marker_pub =
-//       nh.advertise<visualization_msgs::Marker>("force_torque_markers", 10);
-
-//   // Create a marker for visualization
-//   visualization_msgs::Marker marker;
-//   marker.header.frame_id =
-//       "robot::body";  // Replace with your appropriate frame
-//   marker.header.stamp = ros::Time::now();
-//   marker.ns = "apply_force";
-//   marker.id = 0;
-//   marker.type =
-//       visualization_msgs::Marker::ARROW;  // Represent force as an arrow
-//   marker.action = visualization_msgs::Marker::ADD;
-//   marker.pose.position.x = srv.request.reference_point.x;
-//   marker.pose.position.y = srv.request.reference_point.y;
-//   marker.pose.position.z = srv.request.reference_point.z;
-//   marker.pose.orientation.w = 1.0;
-
-//   // Set the scale of the arrow (length corresponds to the force magnitude)
-//   double force_magnitude =
-//       sqrt(force_x * force_x + force_y * force_y + force_z * force_z);
-//   marker.scale.x = force_magnitude;  // Arrow length
-//   marker.scale.y = 0.1;              // Arrow width
-//   marker.scale.z = 0.1;              // Arrow height
-
-//   // Set the color of the arrow (e.g., red)
-//   marker.color.r = 1.0;
-//   marker.color.g = 0.0;
-//   marker.color.b = 0.0;
-//   marker.color.a = 1.0;
-
-//   // Set the direction of the arrow (aligned with the force vector)
-//   marker.pose.orientation.x = force_x / force_magnitude;
-//   marker.pose.orientation.y = force_y / force_magnitude;
-//   marker.pose.orientation.z = force_z / force_magnitude;
-
-//   //   while (ros::ok()) {
-//   if (not single) {
-//     if (client.call(srv)) {
-//       ROS_INFO(
-//           "Force applied to the robot body: Force(%.2f, %.2f, %.2f) "
-//           "Torque(%.2f, %.2f, %.2f)",
-//           force_x, force_y, force_z, torque_x, torque_y, torque_z);
-//       marker_pub.publish(marker);
-//     } else {
-//       ROS_ERROR("Failed to call service /gazebo/apply_body_wrench");
-//     }
-//   }
-//   //   }
-
-//   return 0;
-// }

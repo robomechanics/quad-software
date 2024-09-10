@@ -6,13 +6,13 @@
 #include <quad_msgs/RobotState.h>
 #include <quad_utils/ros_utils.h>
 #include <ros/ros.h>
-#include <visualization_msgs/Marker.h>
-
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/convert.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <string>
+#include <visualization_msgs/Marker.h>
+
 #include <Eigen/Dense>
+#include <string>
 
 class ApplyForce {
  public:
@@ -45,11 +45,12 @@ class ApplyForce {
    */
   void updateForce();
   /**
-   * @brief Calculates euclidean distance relative to a set point to deploy force
+   * @brief Calculates euclidean distance relative to a set point to deploy
+   * force
    */
-  
+
   double euclideanDistance(const Eigen::Vector3d& point1,
-                                     const Eigen::Vector3d& point2);
+                           const Eigen::Vector3d& point2);
 
   bool checkDistance();
 
