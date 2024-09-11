@@ -1,0 +1,24 @@
+<sdf version='1.7'>
+  <model name='spot'>
+    <frame name='base_link_joint' attached_to='body'>
+      <pose>0 0 0 0 -0 0</pose>
+    </frame>
+    <frame name='base_link' attached_to='base_link_joint'/>
+    <frame name='front_rail_joint' attached_to='body'>
+      <pose>0.223 0 0.0805 0 -0 0</pose>
+    </frame>
+    <frame name='front_rail' attached_to='front_rail_joint'/>
+    <frame name='real_rear_rail_joint' attached_to='real_front_rail'>
+      <pose>-0.415 0 0 0 -0 0</pose>
+    </frame>
+    <frame name='real_rear_rail' attached_to='real_rear_rail_joint'/>
+    <frame name='real_front_rail_joint' attached_to='body'>
+      <pose>0.2075 0 0.0805 0 -0 0</pose>
+    </frame>
+    <frame name='real_front_rail' attached_to='real_front_rail_joint'/>
+    <frame name='rear_rail_joint' attached_to='body'>
+      <pose>-0.223 0 0.0805 0 -0 0</pose>
+    </frame>
+    <frame name='rear_rail' attached_to='rear_rail_joint'/>
+  </model>
+</sdf>
