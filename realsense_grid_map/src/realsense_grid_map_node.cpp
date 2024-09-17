@@ -8,7 +8,7 @@
 #include <fstream>
 #include <filesystem>
 
-// namespace fs = std::filesystem;
+namespace fs = std::filesystem;
 
 class RealSenseGridMap {
  public:
@@ -56,6 +56,7 @@ int main(int argc, char** argv) {
     ros::spin();
     return 0;
 }
+
 
 // roslaunch realsense_grid_map quad_with_realsense.launch
 
