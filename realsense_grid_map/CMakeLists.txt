@@ -9,38 +9,28 @@ endif()
 ## Compile as C++17
 set(CMAKE_CXX_STANDARD 17)
 
-## Setup MBLINK and MAVLINK
-set(MBLINK_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../external/mblink/)
-
-message(STATUS "Using architecture ${CMAKE_SYSTEM_PROCESSOR}")
-
-if (CMAKE_SYSTEM_PROCESSOR STREQUAL "arm" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
-  set(GRMBLINK libgrmblink_tx2.a)
-else()
-  set(GRMBLINK libgrmblink_linux.a)
-endif()
-
-include_directories(${MBLINK_DIR}/include)
-link_directories(${MBLINK_DIR}/lib)
-
+## Find Eigen3
 find_package(Eigen3 REQUIRED)
+
+## Find PCL (Point Cloud Library)
+find_package(PCL REQUIRED)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
-  grid_map_cv
-  grid_map_ros
   roscpp
-  rospy
   sensor_msgs
   std_msgs
-  cv_bridge
+  pcl_conversions   # For ROS <-> PCL conversions
+  pcl_ros           # ROS PCL wrapper
+  grid_map_ros      # For grid map handling
+  grid_map_msgs     # For grid map messages
 )
 
 ###################################
 ## catkin specific configuration ##
 ###################################
 catkin_package(
-  CATKIN_DEPENDS grid_map_cv grid_map_ros roscpp rospy sensor_msgs std_msgs cv_bridge
+  CATKIN_DEPENDS roscpp sensor_msgs std_msgs pcl_conversions pcl_ros grid_map_ros grid_map_msgs
 )
 
 ###########
@@ -50,6 +40,7 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
+  ${PCL_INCLUDE_DIRS}  # Include PCL directories
 )
 
 add_executable(${PROJECT_NAME}_node src/realsense_grid_map_node.cpp)
@@ -59,6 +50,7 @@ add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catk
 
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}     # Link PCL libraries
   Eigen3::Eigen
 )
 

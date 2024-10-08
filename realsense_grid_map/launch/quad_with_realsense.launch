@@ -1,20 +1,26 @@
 <launch>
     <!-- Launch RealSense D435i Camera Node -->
-    <node name="realsense2_camera" pkg="realsense2_camera" type="realsense2_camera_node" output="screen">
-        <param name="enable_depth" type="bool" value="true"/>
-        <param name="enable_color" type="bool" value="true"/>
-        <param name="enable_imu" type="bool" value="true"/>
-        <param name="pointcloud.enable" type="bool" value="true"/>
-    </node>
+    <include file="$(find realsense2_camera)/launch/rs_d435_camera_with_model.launch">
+
+        <arg name="enable_depth" value="true"/>
+        <arg name="enable_color" value="false"/> 
+        <arg name="enable_pointcloud" value="true"/>
+        <arg name="pointcloud_texture_stream" value="RS2_STREAM_COLOR"/> 
+        <arg name="pointcloud_texture_index" value="0"/>
+
+    </include>
     
-    <!-- Spawn the robot with the depth camera -->
+
     <node name="spawn_model" pkg="gazebo_ros" type="spawn_model" args="-file $(find quad_simulator)/other/sensor_description/depth_camera/model.sdf -sdf -model depth_camera_model" />
 
-    <!-- Launch the realsense_grid_map_node -->
-    <node name="realsense_grid_map_node" pkg="realsense_grid_map" type="realsense_grid_map_node" output="screen"/>
+    <node name="realsense_grid_map_node" pkg="realsense_grid_map" type="realsense_grid_map_node" output="screen">
+        <param name="point_cloud_topic" value="/camera/depth/color/points"/>  
+        <param name="grid_resolution" value="0.1"/>  
+    </node>
 
-    <!-- Launch Quad-SDK Gazebo Simulation -->
     <include file="$(find quad_utils)/launch/quad_gazebo.launch" />
 </launch>
+
+
 
     

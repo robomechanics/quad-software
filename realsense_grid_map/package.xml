@@ -7,27 +7,38 @@
   <maintainer email="thomaslee6710@todo.todo">thomaslee6710</maintainer>
   <license>TODO</license>
 
+  <!-- Build tool dependency -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>grid_map_cv</build_depend>
+
+  <!-- Build dependencies -->
   <build_depend>grid_map_ros</build_depend>
+  <build_depend>grid_map_msgs</build_depend>  <!-- Added this line -->
   <build_depend>roscpp</build_depend>
-  <build_depend>rospy</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_depend>cv_bridge</build_depend>
-  <build_export_depend>grid_map_cv</build_export_depend>
+  <build_depend>pcl_ros</build_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <build_depend>Eigen3</build_depend>
+
+  <!-- Export dependencies for building external projects -->
   <build_export_depend>grid_map_ros</build_export_depend>
+  <build_export_depend>grid_map_msgs</build_export_depend>  
   <build_export_depend>roscpp</build_export_depend>
-  <build_export_depend>rospy</build_export_depend>
   <build_export_depend>sensor_msgs</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
-  <exec_depend>grid_map_cv</exec_depend>
+  <build_export_depend>pcl_ros</build_export_depend>
+  <build_export_depend>pcl_conversions</build_export_depend>
+  <build_export_depend>Eigen3</build_export_depend>
+
+  <!-- Execution dependencies -->
   <exec_depend>grid_map_ros</exec_depend>
+  <exec_depend>grid_map_msgs</exec_depend>  
   <exec_depend>roscpp</exec_depend>
-  <exec_depend>rospy</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>pcl_ros</exec_depend>
+  <exec_depend>pcl_conversions</exec_depend>
+  <exec_depend>Eigen3</exec_depend>
 
   <export>
   </export>
