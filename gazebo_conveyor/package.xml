@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>gazebo_conveyor</name>
+  <version>1.0.0</version>
+  <description>Plugin for gazebo, to simulate a conveyor belt.</description>
+
+  <author email="hannu.2.henttinen@samk.fi">Hannu Henttinen</author>
+  <maintainer email="hannu.2.henttinen@samk.fi">Hannu Henttinen</maintainer>
+
+
+  <!-- One license tag required, multiple allowed, one license per tag -->
+  <!-- Commonly used license strings: -->
+  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
+  <license>GPLv3</license>
+
+
+  <!-- Url tags are optional, but multiple are allowed, one per tag -->
+  <!-- Optional attribute type can be: website, bugtracker, or repository -->
+  <!-- Example: -->
+  <url type="repository">https://github.com/rokokoo/gazebo-conveyor</url>
+
+  <!-- OSRF creators of the ARIAC package -->
+  <author email="caguero@osrfoundation.org">Carlos Aguero</author>
+  <author email="dhood@osrfoundation.org">D. Hood</author>
+  <author email="william@osrfoundation.org">William Woodall</author>
+  <author email="sloretz@osrfoundation.org">Shane Loretz</author>
+
+  <!-- iiwa_control, iiwa_description, iiwa_gazebo author -->
+  <author email="salvo.virga@tum.de">Salvo Virga</author>
+
+  <!-- ur_gazebo authors -->
+  <author>Alexander Bubeck</author>
+  <author email="sedwards@swri.org">Shaun Edwards</author>
+  <author email="fxm@ipa.fhg.de">Felix Messmer</author>
+
+  <!-- ur_description authors -->
+  <author>Wim Meeussen</author>
+  <author email="kphawkins@gatech.edu">Kelsey Hawkins</author>
+  <author>Mathias Ludtke</author>
+  <author email="fxm@ipa.fhg.de">Felix Messmer</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>gazebo_plugins</depend>
+  <depend>gazebo_ros</depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+
+  <export></export>
+</package>

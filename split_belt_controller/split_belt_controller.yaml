@@ -1,5 +1,0 @@
-split_belt_controller:
-  update_rate: 500 # Hz
-  left_belt_velocity : 3.0  # m/s
-  right_belt_velocity : 5.0 # m/s 
-

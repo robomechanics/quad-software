@@ -20,12 +20,20 @@
 
   <!-- Load underbrush compliant elements -->
 
-  <param name="split_belt_sdf" textfile="$(find split_belt_description)/sdf/split_belt.sdf" />
+    <param name="split_belt_sdf" textfile="$(find split_belt_description)/sdf/split_belt_treadmill.sdf" />
+
+    <group ns="conveyor">
+        <!-- Load the SDF model as a ROS parameter -->
+        <param name="split_belt_sdf" textfile="$(find split_belt_description)/sdf/split_belt_treadmill.sdf" />
+
+        <!-- Spawn the model in Gazebo -->
+        <node name="spawn_model_belt" pkg="gazebo_ros" type="spawn_model" args="-sdf -param split_belt_sdf -model conveyor_belt" respawn="false" output="screen" />
+    </group>
 
 
   <!-- Actual experimental setup -->
   <!---->
-  <node name="spawn_split_belt" pkg="gazebo_ros" type="spawn_model" args="-sdf -param split_belt_sdf -model split_belt -x 1.0 -y -0.0 -z 0.0" output="screen"/>
+  <!-- <node name="spawn_split_belt" pkg="gazebo_ros" type="spawn_model" args="-sdf -param split_belt_sdf -model split_belt_treadmill -x 1.0 -y -0.0 -z -0.01" output="screen"/> -->
 
 
   <!-- <node name="split_belt_controller" pkg="split_belt_controller" type="split_belt_controller_node" output= "screen" /> -->

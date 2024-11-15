@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sdf version="1.6">
+  <model name="conveyor_belt">
+    <static>false</static>
+
+    <!-- Left Conveyor Belt Visual (Reduced Height and Color Changed) -->
+    <link name="belt1_visual">
+      <pose>0 0.5 0.05 0 0 0</pose>
+      <inertial>
+        <mass>50.0</mass>
+        <inertia>
+          <ixx>10.0</ixx>
+          <iyy>10.0</iyy>
+          <izz>10.0</izz>
+        </inertia>
+      </inertial>
+      <visual name="belt1_visual">
+        <geometry>
+          <box>
+            <size>10 1 0.05</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Red</name>
+          </script>
+        </material>
+      </visual>
+      <collision name="belt1_collision">
+        <geometry>
+          <box>
+            <size>10 1 0.05</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+    </link>
+
+    <joint name="belt1_joint" type="prismatic">
+      <parent>world</parent>
+      <child>belt1_moving</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-1e16</lower>
+          <upper>1e16</upper>
+        </limit>
+        <dynamics>
+          <damping>0.1</damping>
+        </dynamics>
+      </axis>
+    </joint>
+
+    <link name="belt1_moving">
+      <pose>0 0.5 0.05 0 0 0</pose>
+      <inertial>
+        <mass>10.0</mass>
+        <inertia>
+          <ixx>1.0</ixx>
+          <iyy>1.0</iyy>
+          <izz>1.0</izz>
+        </inertia>
+      </inertial>
+      <collision name="belt1_moving_collision">
+        <geometry>
+          <box>
+            <size>100 1 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Right Conveyor Belt Visual (Reduced Height and Color Changed) -->
+    <link name="belt2_visual">
+      <pose>0 -0.5 0.05 0 0 0</pose>
+      <inertial>
+        <mass>50.0</mass>
+        <inertia>
+          <ixx>10.0</ixx>
+          <iyy>10.0</iyy>
+          <izz>10.0</izz>
+        </inertia>
+      </inertial>
+      <visual name="belt2_visual">
+        <geometry>
+          <box>
+            <size>10 1 0.05</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Blue</name>
+          </script>
+        </material>
+      </visual>
+      <collision name="belt2_collision">
+        <geometry>
+          <box>
+            <size>10 1 0.05</size>
+          </box>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>0.5</mu>
+              <mu2>0.5</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+    </link>
+
+    <joint name="belt2_joint" type="prismatic">
+      <parent>world</parent>
+      <child>belt2_moving</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-1e16</lower>
+          <upper>1e16</upper>
+        </limit>
+        <dynamics>
+          <damping>0.1</damping>
+        </dynamics>
+      </axis>
+    </joint>
+
+    <link name="belt2_moving">
+      <pose>0 -0.5 0.05 0 0 0</pose>
+      <inertial>
+        <mass>10.0</mass>
+        <inertia>
+          <ixx>1.0</ixx>
+          <iyy>1.0</iyy>
+          <izz>1.0</izz>
+        </inertia>
+      </inertial>
+      <collision name="belt2_moving_collision">
+        <geometry>
+          <box>
+            <size>100 1 0.01</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Plugin for Left Conveyor Belt -->
+    <plugin name="conveyor_belt_plugin_1" filename="libROSConveyorBeltPlugin.so">
+      <robot_namespace>/belt1</robot_namespace>
+      <link>belt1_moving</link>
+      <joint>belt1_joint</joint>
+      <power>1.0</power>
+      <max_velocity>1.0</max_velocity>
+    </plugin>
+
+    <!-- Plugin for Right Conveyor Belt -->
+    <plugin name="conveyor_belt_plugin_2" filename="libROSConveyorBeltPlugin.so">
+      <robot_namespace>/belt2</robot_namespace>
+      <link>belt2_moving</link>
+      <joint>belt2_joint</joint>
+      <power>1.0</power>
+      <max_velocity>1.0</max_velocity>
+    </plugin>
+
+  </model>
+</sdf>
