@@ -70,18 +70,18 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   }
 
   // Debugging the Estimator in Sim, Start a Ground Truth Subscriber
-  if (debug){
-        state_ground_truth_sub_ = nh_.subscribe(
+  if (debug) {
+    state_ground_truth_sub_ = nh_.subscribe(
         ground_truth_topic, 1, &EKFEstimator::groundtruthCallback, this);
   }
-  
 
   // QuadKD class
   quadKD_ = std::make_shared<quad_utils::QuadKD>();
   ROS_INFO_STREAM("Initialized EKF Estimator");
 }
 
-bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_, int& control_mode_) {
+bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_,
+                              int& control_mode_) {
   ros::Time state_timestamp = ros::Time::now();
   last_joint_state_msg_.header.stamp = state_timestamp;
   last_imu_msg_.header.stamp = state_timestamp;
@@ -104,8 +104,8 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_, int&
     if (initialized) {
       // Set Start Time on Initialization
       last_time = ros::Time::now();
-      if(is_hardware_){
-      setInitialState(last_robot_state_msg_);
+      if (is_hardware_) {
+        setInitialState(last_robot_state_msg_);
       }
 
       // Initialize Filter
@@ -132,7 +132,7 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_, int&
       X_pre = X0;
       last_X = X0;
       // last_P = P;
-      ROS_INFO_STREAM(X0); // Initial Robot Pose
+      ROS_INFO_STREAM(X0);  // Initial Robot Pose
       initialized = false;
     }
     // ROS_INFO_STREAM("Initial Pose" << X.transpose());
@@ -140,13 +140,15 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_, int&
     last_robot_state_msg_ = new_state_est;
     last_robot_state_msg_.joints = last_joint_state_msg_;
     // Update Foot Positions using Forward Kinematics
-    quad_utils::fkRobotState(*quadKD_, last_robot_state_msg_);  // for(int i = 0; i < num_feet; ++i){
-  //   foot_pos_rel_world.segment(3*i, 3) = last_X.segment(3*i + 6 , 3) - body_world_pose; // Body Pose - Foot Pose is 
-  // }
+    quad_utils::fkRobotState(
+        *quadKD_, last_robot_state_msg_);  // for(int i = 0; i < num_feet; ++i){
+    //   foot_pos_rel_world.segment(3*i, 3) = last_X.segment(3*i + 6 , 3) -
+    //   body_world_pose; // Body Pose - Foot Pose is
+    // }
 
-  // std::cout << "Filter Output" << y.segment(0,12).transpose() << std::endl;
-  // std::cout << "Sanity Check" << foot_pos_rel_world.transpose() << std::endl;
-    // Consider using Filter output to see if thats more reliable
+    // std::cout << "Filter Output" << y.segment(0,12).transpose() << std::endl;
+    // std::cout << "Sanity Check" << foot_pos_rel_world.transpose() <<
+    // std::endl; Consider using Filter output to see if thats more reliable
   }
   last_joint_state_msg_.header.stamp = state_timestamp;
   quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp, "map",
@@ -192,35 +194,35 @@ void EKFEstimator::groundtruthCallback(
   // Populate gt with ground truth data to test in simulation
   gt = Eigen::VectorXd::Zero(30);
   gt << last_robot_ground_truth_.body.pose.position.x,
-          last_robot_ground_truth_.body.pose.position.y,
-          last_robot_ground_truth_.body.pose.position.z,
-          last_robot_ground_truth_.body.twist.linear.x,
-          last_robot_ground_truth_.body.twist.linear.y,
-          last_robot_ground_truth_.body.twist.linear.z,
-          last_robot_ground_truth_.feet.feet[0].position.x,
-          last_robot_ground_truth_.feet.feet[0].position.y,
-          last_robot_ground_truth_.feet.feet[0].position.z, 
-          last_robot_ground_truth_.feet.feet[1].position.x,
-          last_robot_ground_truth_.feet.feet[1].position.y,
-          last_robot_ground_truth_.feet.feet[1].position.z,
-          last_robot_ground_truth_.feet.feet[2].position.x,
-          last_robot_ground_truth_.feet.feet[2].position.y,
-          last_robot_ground_truth_.feet.feet[2].position.z,
-          last_robot_ground_truth_.feet.feet[3].position.x,
-          last_robot_ground_truth_.feet.feet[3].position.y,
-          last_robot_ground_truth_.feet.feet[3].position.z,
-          last_robot_ground_truth_.feet.feet[0].velocity.x,
-          last_robot_ground_truth_.feet.feet[0].velocity.y,
-          last_robot_ground_truth_.feet.feet[0].velocity.z, 
-          last_robot_ground_truth_.feet.feet[1].velocity.x,
-          last_robot_ground_truth_.feet.feet[1].velocity.y,
-          last_robot_ground_truth_.feet.feet[1].velocity.z,
-          last_robot_ground_truth_.feet.feet[2].velocity.x,
-          last_robot_ground_truth_.feet.feet[2].velocity.y,
-          last_robot_ground_truth_.feet.feet[2].velocity.z,
-          last_robot_ground_truth_.feet.feet[3].velocity.x,
-          last_robot_ground_truth_.feet.feet[3].velocity.y,
-          last_robot_ground_truth_.feet.feet[3].velocity.z;
+      last_robot_ground_truth_.body.pose.position.y,
+      last_robot_ground_truth_.body.pose.position.z,
+      last_robot_ground_truth_.body.twist.linear.x,
+      last_robot_ground_truth_.body.twist.linear.y,
+      last_robot_ground_truth_.body.twist.linear.z,
+      last_robot_ground_truth_.feet.feet[0].position.x,
+      last_robot_ground_truth_.feet.feet[0].position.y,
+      last_robot_ground_truth_.feet.feet[0].position.z,
+      last_robot_ground_truth_.feet.feet[1].position.x,
+      last_robot_ground_truth_.feet.feet[1].position.y,
+      last_robot_ground_truth_.feet.feet[1].position.z,
+      last_robot_ground_truth_.feet.feet[2].position.x,
+      last_robot_ground_truth_.feet.feet[2].position.y,
+      last_robot_ground_truth_.feet.feet[2].position.z,
+      last_robot_ground_truth_.feet.feet[3].position.x,
+      last_robot_ground_truth_.feet.feet[3].position.y,
+      last_robot_ground_truth_.feet.feet[3].position.z,
+      last_robot_ground_truth_.feet.feet[0].velocity.x,
+      last_robot_ground_truth_.feet.feet[0].velocity.y,
+      last_robot_ground_truth_.feet.feet[0].velocity.z,
+      last_robot_ground_truth_.feet.feet[1].velocity.x,
+      last_robot_ground_truth_.feet.feet[1].velocity.y,
+      last_robot_ground_truth_.feet.feet[1].velocity.z,
+      last_robot_ground_truth_.feet.feet[2].velocity.x,
+      last_robot_ground_truth_.feet.feet[2].velocity.y,
+      last_robot_ground_truth_.feet.feet[2].velocity.z,
+      last_robot_ground_truth_.feet.feet[3].velocity.x,
+      last_robot_ground_truth_.feet.feet[3].velocity.y,
+      last_robot_ground_truth_.feet.feet[3].velocity.z;
   // ROS_INFO_STREAM(last_robot_ground_truth_);
 }
 
@@ -284,23 +286,27 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   std::vector<double> jkVector(jk.data(), jk.data() + jk.rows() * jk.cols());
 
   // Extract Rotation Matricies
-  Eigen::Matrix3d R_w_imu = Eigen::Matrix3d::Zero(); // Rotation World frame to IMU frame
-  Eigen::Matrix3d R_imu_w = Eigen::Matrix3d::Zero(); // Rotation IMU frame to World frame
+  Eigen::Matrix3d R_w_imu =
+      Eigen::Matrix3d::Zero();  // Rotation World frame to IMU frame
+  Eigen::Matrix3d R_imu_w =
+      Eigen::Matrix3d::Zero();  // Rotation IMU frame to World frame
 
-  Eigen::Matrix3d R_b_imu = Eigen::Matrix3d::Zero(); // Static Rotation from IMU frame to Robot Body Frame
-  Eigen::Matrix3d R_imu_b = Eigen::Matrix3d::Zero(); // Static Rotation from Robot Body Frame to IMU Frame
-  Eigen::Matrix3d R_w_b = Eigen::Matrix3d::Zero(); // Rotation World frame to Robot Body frame
-  Eigen::Quaterniond qb; // Body Orientation in the World Frame
+  Eigen::Matrix3d R_b_imu =
+      Eigen::Matrix3d::Zero();  // Static Rotation from IMU frame to Robot Body
+                                // Frame
+  Eigen::Matrix3d R_imu_b =
+      Eigen::Matrix3d::Zero();  // Static Rotation from Robot Body Frame to IMU
+                                // Frame
+  Eigen::Matrix3d R_w_b =
+      Eigen::Matrix3d::Zero();  // Rotation World frame to Robot Body frame
+  Eigen::Quaterniond qb;        // Body Orientation in the World Frame
 
-  if (robot_name_ == "spirit" && is_hardware_){
+  if (robot_name_ == "spirit" && is_hardware_) {
     // IMU on Spirit is flipped pi/2 along the Z axis clockwise
     // See Ghost Documentation
-    R_b_imu << 0, -1, 0, 
-              -1, 0, 0,
-               0, 0, 1;
+    R_b_imu << 0, -1, 0, -1, 0, 0, 0, 0, 1;
     R_imu_b = R_b_imu.transpose();
-  }
-  else{ 
+  } else {
     // In Simulation or if not using Spirit assume IMU is oriented correctly
     R_b_imu = Eigen::Matrix3d::Identity(3, 3);
     R_imu_b = Eigen::Matrix3d::Identity(3, 3);
@@ -312,12 +318,13 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   R_imu_w = R_w_imu.inverse();
   R_w_b = R_w_imu * R_imu_b;
 
-
   foot_contact_states = Eigen::VectorXd::Zero(4);
   foot_contact_states.setOnes();
   for (int i = 0; i < 4; i++) {
-    float grf_upper_bound = (1.0/4)* 9.81 * 7.8; // Foot in contact
-    foot_contact_states(i) = std::min(std::max(((*last_grf_msg_).vectors[i].z) / (grf_upper_bound), 0.0), 1.0);
+    float grf_upper_bound = (1.0 / 4) * 9.81 * 7.8;  // Foot in contact
+    foot_contact_states(i) = std::min(
+        std::max(((*last_grf_msg_).vectors[i].z) / (grf_upper_bound), 0.0),
+        1.0);
   }
 
   /// Prediction Step
@@ -332,7 +339,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   this->update(jk, fk, vk, wk, qk, R_w_imu);  // Uncomment for Update Step
   // ROS_INFO_STREAM("X Update" << X.head(6).transpose());
   last_X = X;
-  last_P = P; // Issue with the output of P
+  last_P = P;  // Issue with the output of P
 
   /// publish new message
   // new_state_est.header.stamp = ros::Time::now();
@@ -343,7 +350,6 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   new_state_est.body.pose.orientation.x = qb.x();
   new_state_est.body.pose.orientation.y = qb.y();
   new_state_est.body.pose.orientation.z = qb.z();
-
 
   new_state_est.body.pose.position.x = X[0];
   new_state_est.body.pose.position.y = X[1];
@@ -375,8 +381,6 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
                            const Eigen::VectorXd& wk,
                            const Eigen::Matrix3d R_w_imu) {
-
-
   // q = Eigen::VectorXd::Zero(4);
   // q << qk.w(), qk.x(), qk.y(), qk.z();
   // //   //get better C matrix:
@@ -418,12 +422,14 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
   Q = Eigen::MatrixXd::Identity(num_state, num_state);
   Q.block<3, 3>(0, 0) = na_ * dt / 20.0 * Eigen::MatrixXd::Identity(3, 3);
   Q.block<3, 3>(3, 3) =
-      nv_ * dt *  9.81 / 20.0 * Eigen::MatrixXd::Identity(3, 3);
+      nv_ * dt * 9.81 / 20.0 * Eigen::MatrixXd::Identity(3, 3);
   // Resolve for Q depending on contact states
   for (int i = 0; i < num_feet; ++i) {
-      Q.block<3, 3>(3 * i + 6, 3 * i + 6) =
-          (1.0 + (1-foot_contact_states[i])*contact_w_) * nf_ * dt * Eigen::MatrixXd::Identity(3, 3);
-      // std::cout << "Q value" << (1.0 + (1-foot_contact_states[i])*contact_w_) * nf_ * dt << std::endl;
+    Q.block<3, 3>(3 * i + 6, 3 * i + 6) =
+        (1.0 + (1 - foot_contact_states[i]) * contact_w_) * nf_ * dt *
+        Eigen::MatrixXd::Identity(3, 3);
+    // std::cout << "Q value" << (1.0 + (1-foot_contact_states[i])*contact_w_) *
+    // nf_ * dt << std::endl;
   }
 
   // Generate Control Input U
@@ -437,11 +443,9 @@ void EKFEstimator::predict(const double& dt, const Eigen::VectorXd& fk,
 }
 
 void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
-                          const Eigen::VectorXd& vk,
-                          const Eigen::VectorXd& wk,
+                          const Eigen::VectorXd& vk, const Eigen::VectorXd& wk,
                           const Eigen::Quaterniond& qk,
                           const Eigen::Matrix3d& R_w_imu) {
-
   // debug for update step, set the predicted state to be ground truth:
   // Preallocate Space and Generate C
   Eigen::MatrixXd C(num_measure, num_state);
@@ -457,16 +461,19 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
   // Preallocate Space and Generate R
   R = Eigen::MatrixXd::Identity(num_measure, num_measure);
   for (int i = 0; i < num_feet; ++i) {
-      R.block<3, 3>(3 * i, 3 * i) =
-          nfk_ * (1.0 + (1.0 - foot_contact_states[i])*contact_w_) * Eigen::MatrixXd::Identity(3, 3);
-      R.block<3, 3>(12 + 3 * i, 12 + 3 * i) =
-          ne_ * (1.0 + (1.0 - foot_contact_states[i])*contact_w_) * Eigen::MatrixXd::Identity(3, 3);
-      R(24 + i, 24 + i) = nfh_ * (1.0 + (1.0 - foot_contact_states[i])*contact_w_);
+    R.block<3, 3>(3 * i, 3 * i) =
+        nfk_ * (1.0 + (1.0 - foot_contact_states[i]) * contact_w_) *
+        Eigen::MatrixXd::Identity(3, 3);
+    R.block<3, 3>(12 + 3 * i, 12 + 3 * i) =
+        ne_ * (1.0 + (1.0 - foot_contact_states[i]) * contact_w_) *
+        Eigen::MatrixXd::Identity(3, 3);
+    R(24 + i, 24 + i) =
+        nfh_ * (1.0 + (1.0 - foot_contact_states[i]) * contact_w_);
   }
 
   // Generate Measurement y from Kinematics, Extract Process Pos and Vel
   y = Eigen::VectorXd::Zero(num_measure);
-  Eigen::VectorXd r_pre = X_pre.segment(0,3);
+  Eigen::VectorXd r_pre = X_pre.segment(0, 3);
   Eigen::VectorXd v_pre = X_pre.segment(3, 3);
   // Eigen::VectorXd r_pre = last_X.segment(0, 3);
   // Eigen::VectorXd v_pre = last_X.segment(3, 3);
@@ -482,11 +489,13 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
   Eigen::VectorXd body_state(6);
 
   body_state << r_pre, rpy;
-  joint_state << jk, r_pre, rpy; // Change v_pre in rpy from before
+  joint_state << jk, r_pre, rpy;  // Change v_pre in rpy from before
   joint_velocity << vk;
 
   // Solve for Linear Foot Velocities in the Body Frame
-  quadKD_->getJacobianBodyAngVel(joint_state, jacobian);// Might not be the right Jacobain being calculated here
+  quadKD_->getJacobianBodyAngVel(
+      joint_state,
+      jacobian);  // Might not be the right Jacobain being calculated here
   // quadKD_->getJacobianGenCoord(joint_state, jacobian);
   // transformJacobianToBodyFrame(joint_state, jacobian);
 
@@ -496,65 +505,77 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
   Eigen::VectorXd lin_foot_vel;
 
   // lin_foot_vel = jacobian.leftCols(12) * vk;
-  // lin_foot_vel = jacobian.block(0,0,12,12)*joint_velocity; // Leg Velocities in the body frame
-  lin_foot_vel = jacobian* joint_velocity; //+  jacobian_body*body_state;
+  // lin_foot_vel = jacobian.block(0,0,12,12)*joint_velocity; // Leg Velocities
+  // in the body frame
+  lin_foot_vel = jacobian * joint_velocity;  //+  jacobian_body*body_state;
 
   // lin_foot_vel = jacobian_foot * joint_velocity + jacobian_body;
   // Exclude Pose and Orientation Compoenents
   for (int i = 0; i < num_feet; ++i) {
     // Solve for Foot Relative Positions
     Eigen::Vector3d joint_state_i;
-    Eigen::Vector3d toe_body_pos_world; // Toe Position  in the World Frame
-    Eigen::Vector3d toe_body_pos_body; // Toe Position Relative to Body in the World Frame
+    Eigen::Vector3d toe_body_pos_world;  // Toe Position  in the World Frame
+    Eigen::Vector3d
+        toe_body_pos_body;  // Toe Position Relative to Body in the World Frame
 
     toe_body_pos_world.setZero();
     toe_body_pos_body.setZero();
 
     joint_state_i = jk.segment(3 * i, 3);
-    quadKD_->worldToFootFKWorldFrame(i, r_pre, rpy, joint_state_i, toe_body_pos_world); // Foot pose in the world frame
-    quadKD_->bodyToFootFKBodyFrame(i, joint_state_i, toe_body_pos_body); // Foot Pose in the body frame
+    quadKD_->worldToFootFKWorldFrame(
+        i, r_pre, rpy, joint_state_i,
+        toe_body_pos_world);  // Foot pose in the world frame
+    quadKD_->bodyToFootFKBodyFrame(
+        i, joint_state_i, toe_body_pos_body);  // Foot Pose in the body frame
 
-    Eigen::Vector3d gt_toe_body_pos_world = gt.segment(6 + 3*i, 3)- gt.segment(0, 3);
-    // ROS_INFO_STREAM("Relative Foot Pose World Frame" << toe_body_pos_body.transpose());
-    // ROS_INFO_STREAM("GT Relative Foot Pose World  Frame" << gt_toe_body_pos_world.transpose());
+    Eigen::Vector3d gt_toe_body_pos_world =
+        gt.segment(6 + 3 * i, 3) - gt.segment(0, 3);
+    // ROS_INFO_STREAM("Relative Foot Pose World Frame" <<
+    // toe_body_pos_body.transpose()); ROS_INFO_STREAM("GT Relative Foot Pose
+    // World  Frame" << gt_toe_body_pos_world.transpose());
 
     toe_body_pos_body(2) -= foot_radius;
     // y.segment(3 * i, 3) = R_w_imu* toe_body_pos_body;
     y.segment(3 * i, 3) = toe_body_pos_body;
 
     // Solve for Foot Heights
-    y(24 + i) = (1.0 - foot_contact_states[i]) *
-                    (r_pre(2) + toe_body_pos_body(2)) +
-                foot_contact_states[i] * 0;
+    y(24 + i) =
+        (1.0 - foot_contact_states[i]) * (r_pre(2) + toe_body_pos_body(2)) +
+        foot_contact_states[i] * 0;
 
     // // Solve for Foot Relative Velocties
     Eigen::VectorXd leg_v(3);
     Eigen::MatrixXd acc;
 
-    acc = calcSkewsym(wk); // Might have to rotate this value by Spirit's offset 
-    // ROS_INFO_STREAM("Angular Component"<< R_w_imu * (acc * toe_body_pos_body));
-    // leg_v = -(lin_foot_vel.segment(3 * i, 3))- R_w_imu * (acc * toe_body_pos_body);
-    leg_v = (lin_foot_vel.segment(3 * i, 3))- R_w_imu * (acc * toe_body_pos_body);  // Temporarilt Negated the leg_v
+    acc =
+        calcSkewsym(wk);  // Might have to rotate this value by Spirit's offset
+    // ROS_INFO_STREAM("Angular Component"<< R_w_imu * (acc *
+    // toe_body_pos_body)); leg_v = -(lin_foot_vel.segment(3 * i, 3))- R_w_imu *
+    // (acc * toe_body_pos_body);
+    leg_v =
+        (lin_foot_vel.segment(3 * i, 3)) -
+        R_w_imu * (acc * toe_body_pos_body);  // Temporarilt Negated the leg_v
     // Compensation for angular velocity impact on body posiion
     // y.segment(12 + 3 * i, 3) =
     //     (*last_grf_msg_).contact_states[i] * R_w_imu * leg_v +
     //     last_X.segment(3, 3) * (1.0 - (*last_grf_msg_).contact_states[i]);
-    y.segment(12 + 3 * i, 3) =
-        (1.0 - foot_contact_states[i])*leg_v +
-        X_pre.segment(3, 3) * (foot_contact_states[i]);
+    y.segment(12 + 3 * i, 3) = (1.0 - foot_contact_states[i]) * leg_v +
+                               X_pre.segment(3, 3) * (foot_contact_states[i]);
 
-    Eigen::Vector3d relative_foot_body_vel = gt.segment(18 + 3*i, 3)- gt.segment(3, 3);
-    ROS_INFO_STREAM("Linear Foot Velocities" << lin_foot_vel.segment(3*i, 3).transpose());
+    Eigen::Vector3d relative_foot_body_vel =
+        gt.segment(18 + 3 * i, 3) - gt.segment(3, 3);
+    ROS_INFO_STREAM("Linear Foot Velocities"
+                    << lin_foot_vel.segment(3 * i, 3).transpose());
     ROS_INFO_STREAM("Calculated Leg Velocities" << leg_v.transpose());
     ROS_INFO_STREAM("GT Leg Velocities" << relative_foot_body_vel.transpose());
   }
 
   // Solve for Error between Measured Y Residual and Process Residual
   error_y = y - (C * X_pre);
-  // error_y.segment(0, 12).setZero(); // Ignore Z Position residual for debugging
-  // error_y.segment(12, 12).setZero(); // Ignore Z Velocity residual for debugging
-  // error_y.segment(24, 4).setZero(); // Ignore Z Foot Height residual for debugging
-
+  // error_y.segment(0, 12).setZero(); // Ignore Z Position residual for
+  // debugging error_y.segment(12, 12).setZero(); // Ignore Z Velocity residual
+  // for debugging error_y.segment(24, 4).setZero(); // Ignore Z Foot Height
+  // residual for debugging
 
   // std::cout << "Predict Y: " << ((C* X_pre).transpose()) << std::endl;
   // std::cout << "Update Y: " << (y.transpose()) << std::endl;
@@ -564,7 +585,7 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
 
   S = 0.5 *
       (S +
-        S.transpose());  // Ensure that the Innovation Covariance is Symmetric
+       S.transpose());  // Ensure that the Innovation Covariance is Symmetric
   Serror_y = S.fullPivHouseholderQr().solve(error_y);
 
   // EKF Filter Equations, Solve for Kalman Gain
@@ -680,25 +701,26 @@ void EKFEstimator::setNoise() {
 }
 
 Eigen::Matrix3d rpyToRotationMatrix(double roll, double pitch, double yaw) {
-    Eigen::Matrix3d R;
-    R = Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX()) *
-        Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
-        Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ());
-    return R;
+  Eigen::Matrix3d R;
+  R = Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX()) *
+      Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY()) *
+      Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ());
+  return R;
 }
 
 // Function to transform the Jacobian from world frame to body frame
-void transformJacobianToBodyFrame(const Eigen::VectorXd& state, Eigen::MatrixXd& jacobian) {
-    // Extract the roll, pitch, and yaw from the state vector
-    double roll = state(15);
-    double pitch = state(16);
-    double yaw = state(17);
+void transformJacobianToBodyFrame(const Eigen::VectorXd& state,
+                                  Eigen::MatrixXd& jacobian) {
+  // Extract the roll, pitch, and yaw from the state vector
+  double roll = state(15);
+  double pitch = state(16);
+  double yaw = state(17);
 
-    // Convert roll, pitch, yaw to rotation matrix
-    Eigen::Matrix3d R = rpyToRotationMatrix(roll, pitch, yaw);
+  // Convert roll, pitch, yaw to rotation matrix
+  Eigen::Matrix3d R = rpyToRotationMatrix(roll, pitch, yaw);
 
-    // Transform each 3x18 block of the Jacobian
-    for (int i = 0; i < 4; ++i) {
-        jacobian.block<3, 18>(3 * i, 0) = R * jacobian.block<3, 18>(3 * i, 0);
-    }
+  // Transform each 3x18 block of the Jacobian
+  for (int i = 0; i < 4; ++i) {
+    jacobian.block<3, 18>(3 * i, 0) = R * jacobian.block<3, 18>(3 * i, 0);
+  }
 }

@@ -444,19 +444,19 @@ bool RobotDriver::updateState() {
       if (estimator_id_ == "comp_filter") {
         // Update State Estimate once GRF's are being Published
         // if (grf_array_msg_.vectors[0].x != 0 && control_mode_ == READY) {
-        if (last_local_plan_msg_!= NULL && control_mode_ == READY) {
+        if (last_local_plan_msg_ != NULL && control_mode_ == READY) {
           last_joint_state_msg_.position =
               last_robot_state_msg_.joints.position;
           last_joint_state_msg_.velocity =
               last_robot_state_msg_.joints.velocity;
           // std::cout << "Before" <<std::endl;
-          // ROS_INFO_STREAM("Ground Truth"); // Add a Binary Flag to get the First Estimate
-          // ROS_INFO_STREAM(last_robot_state_msg_);
+          // ROS_INFO_STREAM("Ground Truth"); // Add a Binary Flag to get the
+          // First Estimate ROS_INFO_STREAM(last_robot_state_msg_);
           ekf_estimator_->updateOnce(estimated_state_, control_mode_);
           // std::cout << "After" <<std::endl;
-        }
-        else if(last_local_plan_msg_== NULL && control_mode_ == READY){
-          // Local Planner Not Running, but waiting for robot to fully stand in Sim
+        } else if (last_local_plan_msg_ == NULL && control_mode_ == READY) {
+          // Local Planner Not Running, but waiting for robot to fully stand in
+          // Sim
           estimated_state_ = last_robot_state_msg_;
         }
       }
