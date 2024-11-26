@@ -49,7 +49,7 @@ void EKFEstimator::init(ros::NodeHandle& nh) {
   quad_utils::loadROSParam(nh_, "/robot_driver/nf", nf_);
   quad_utils::loadROSParam(nh_, "/robot_driver/nfk", nfk_);
   quad_utils::loadROSParam(nh_, "/robot_driver/ne", ne_);
-  quad_utils::loadROSParam(nh_, "/robot_driver/ne", nfh_);
+  quad_utils::loadROSParam(nh_, "/robot_driver/nfh", nfh_);
   quad_utils::loadROSParam(nh_, "/robot_driver/P0", P0_);
   quad_utils::loadROSParam(nh_, "/robot_driver/contact_w", contact_w_);
   quad_utils::loadROSParam(nh_, "/robot_driver/thresh_out", thresh_out);
@@ -189,6 +189,39 @@ void EKFEstimator::setInitialState(
 void EKFEstimator::groundtruthCallback(
     const quad_msgs::RobotState::ConstPtr& msg) {
   last_robot_ground_truth_ = *msg;
+  // Populate gt with ground truth data to test in simulation
+  gt = Eigen::VectorXd::Zero(30);
+  gt << last_robot_ground_truth_.body.pose.position.x,
+          last_robot_ground_truth_.body.pose.position.y,
+          last_robot_ground_truth_.body.pose.position.z,
+          last_robot_ground_truth_.body.twist.linear.x,
+          last_robot_ground_truth_.body.twist.linear.y,
+          last_robot_ground_truth_.body.twist.linear.z,
+          last_robot_ground_truth_.feet.feet[0].position.x,
+          last_robot_ground_truth_.feet.feet[0].position.y,
+          last_robot_ground_truth_.feet.feet[0].position.z, 
+          last_robot_ground_truth_.feet.feet[1].position.x,
+          last_robot_ground_truth_.feet.feet[1].position.y,
+          last_robot_ground_truth_.feet.feet[1].position.z,
+          last_robot_ground_truth_.feet.feet[2].position.x,
+          last_robot_ground_truth_.feet.feet[2].position.y,
+          last_robot_ground_truth_.feet.feet[2].position.z,
+          last_robot_ground_truth_.feet.feet[3].position.x,
+          last_robot_ground_truth_.feet.feet[3].position.y,
+          last_robot_ground_truth_.feet.feet[3].position.z,
+          last_robot_ground_truth_.feet.feet[0].velocity.x,
+          last_robot_ground_truth_.feet.feet[0].velocity.y,
+          last_robot_ground_truth_.feet.feet[0].velocity.z, 
+          last_robot_ground_truth_.feet.feet[1].velocity.x,
+          last_robot_ground_truth_.feet.feet[1].velocity.y,
+          last_robot_ground_truth_.feet.feet[1].velocity.z,
+          last_robot_ground_truth_.feet.feet[2].velocity.x,
+          last_robot_ground_truth_.feet.feet[2].velocity.y,
+          last_robot_ground_truth_.feet.feet[2].velocity.z,
+          last_robot_ground_truth_.feet.feet[3].velocity.x,
+          last_robot_ground_truth_.feet.feet[3].velocity.y,
+          last_robot_ground_truth_.feet.feet[3].velocity.z;
+  // ROS_INFO_STREAM(last_robot_ground_truth_);
 }
 
 void EKFEstimator::jointEncoderCallback(
@@ -251,12 +284,12 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   std::vector<double> jkVector(jk.data(), jk.data() + jk.rows() * jk.cols());
 
   // Extract Rotation Matricies
-  Eigen::Matrix3d R_w_imu; // Rotation World frame to IMU frame
-  Eigen::Matrix3d R_imu_w; // Rotation IMU frame to World frame
+  Eigen::Matrix3d R_w_imu = Eigen::Matrix3d::Zero(); // Rotation World frame to IMU frame
+  Eigen::Matrix3d R_imu_w = Eigen::Matrix3d::Zero(); // Rotation IMU frame to World frame
 
-  Eigen::Matrix3d R_b_imu; // Static Rotation from IMU frame to Robot Body Frame
-  Eigen::Matrix3d R_imu_b; // Static Rotation from Robot Body Frame to IMU Frame
-  Eigen::Matrix3d R_w_b; // Rotation World frame to Robot Body frame
+  Eigen::Matrix3d R_b_imu = Eigen::Matrix3d::Zero(); // Static Rotation from IMU frame to Robot Body Frame
+  Eigen::Matrix3d R_imu_b = Eigen::Matrix3d::Zero(); // Static Rotation from Robot Body Frame to IMU Frame
+  Eigen::Matrix3d R_w_b = Eigen::Matrix3d::Zero(); // Rotation World frame to Robot Body frame
   Eigen::Quaterniond qb; // Body Orientation in the World Frame
 
   if (robot_name_ == "spirit" && is_hardware_){
@@ -290,14 +323,14 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   /// Prediction Step
   // std::cout << "this is X before" << X.transpose() << std::endl;
   this->predict(dt, fk, wk, R_w_imu);
-  // ROS_INFO_STREAM("X Predict" << X_pre.transpose());ndl;
+  // ROS_INFO_STREAM("X Predict" << X_pre.head(6).transpose());
   // for testing prediction step
   // X = X_pre;
   // P = P_pre;
   // last_X = X;
   /// Update Step
   this->update(jk, fk, vk, wk, qk, R_w_imu);  // Uncomment for Update Step
-  // ROS_INFO_STREAM("X Update" << X.transpose());
+  // ROS_INFO_STREAM("X Update" << X.head(6).transpose());
   last_X = X;
   last_P = P; // Issue with the output of P
 
@@ -481,8 +514,13 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
     quadKD_->worldToFootFKWorldFrame(i, r_pre, rpy, joint_state_i, toe_body_pos_world); // Foot pose in the world frame
     quadKD_->bodyToFootFKBodyFrame(i, joint_state_i, toe_body_pos_body); // Foot Pose in the body frame
 
+    Eigen::Vector3d gt_toe_body_pos_world = gt.segment(6 + 3*i, 3)- gt.segment(0, 3);
+    // ROS_INFO_STREAM("Relative Foot Pose World Frame" << toe_body_pos_body.transpose());
+    // ROS_INFO_STREAM("GT Relative Foot Pose World  Frame" << gt_toe_body_pos_world.transpose());
+
     toe_body_pos_body(2) -= foot_radius;
-    y.segment(3 * i, 3) = R_w_imu* toe_body_pos_body;
+    // y.segment(3 * i, 3) = R_w_imu* toe_body_pos_body;
+    y.segment(3 * i, 3) = toe_body_pos_body;
 
     // Solve for Foot Heights
     y(24 + i) = (1.0 - foot_contact_states[i]) *
@@ -494,7 +532,9 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
     Eigen::MatrixXd acc;
 
     acc = calcSkewsym(wk); // Might have to rotate this value by Spirit's offset 
-    leg_v = -(lin_foot_vel.segment(3 * i, 3))- R_w_imu * (acc * toe_body_pos_body); 
+    // ROS_INFO_STREAM("Angular Component"<< R_w_imu * (acc * toe_body_pos_body));
+    // leg_v = -(lin_foot_vel.segment(3 * i, 3))- R_w_imu * (acc * toe_body_pos_body);
+    leg_v = (lin_foot_vel.segment(3 * i, 3))- R_w_imu * (acc * toe_body_pos_body);  // Temporarilt Negated the leg_v
     // Compensation for angular velocity impact on body posiion
     // y.segment(12 + 3 * i, 3) =
     //     (*last_grf_msg_).contact_states[i] * R_w_imu * leg_v +
@@ -502,12 +542,22 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
     y.segment(12 + 3 * i, 3) =
         (1.0 - foot_contact_states[i])*leg_v +
         X_pre.segment(3, 3) * (foot_contact_states[i]);
+
+    Eigen::Vector3d relative_foot_body_vel = gt.segment(18 + 3*i, 3)- gt.segment(3, 3);
+    ROS_INFO_STREAM("Linear Foot Velocities" << lin_foot_vel.segment(3*i, 3).transpose());
+    ROS_INFO_STREAM("Calculated Leg Velocities" << leg_v.transpose());
+    ROS_INFO_STREAM("GT Leg Velocities" << relative_foot_body_vel.transpose());
   }
 
   // Solve for Error between Measured Y Residual and Process Residual
   error_y = y - (C * X_pre);
-  std::cout << "Predict Y: " << ((C* X_pre).transpose()) << std::endl;
-  std::cout << "Update Y: " << (y.transpose()) << std::endl;
+  // error_y.segment(0, 12).setZero(); // Ignore Z Position residual for debugging
+  // error_y.segment(12, 12).setZero(); // Ignore Z Velocity residual for debugging
+  // error_y.segment(24, 4).setZero(); // Ignore Z Foot Height residual for debugging
+
+
+  // std::cout << "Predict Y: " << ((C* X_pre).transpose()) << std::endl;
+  // std::cout << "Update Y: " << (y.transpose()) << std::endl;
 
   // Skip Update if the Innovation is too High
   S = C * P_pre * C.transpose() + R;

@@ -253,6 +253,10 @@ class EKFEstimator : public StateEstimator {
   // initial state vector (28 * 1)
   Eigen::VectorXd X0;
 
+  // ground truth state vector (18 * 1)
+  Eigen::VectorXd gt;
+
+
   // state vector (28 * 1)
   Eigen::VectorXd X;
 
