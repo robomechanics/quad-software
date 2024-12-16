@@ -564,10 +564,11 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
 
     Eigen::Vector3d relative_foot_body_vel =
         gt.segment(18 + 3 * i, 3) - gt.segment(3, 3);
-    ROS_INFO_STREAM("Linear Foot Velocities"
-                    << lin_foot_vel.segment(3 * i, 3).transpose());
-    ROS_INFO_STREAM("Calculated Leg Velocities" << leg_v.transpose());
-    ROS_INFO_STREAM("GT Leg Velocities" << relative_foot_body_vel.transpose());
+    // ROS_INFO_STREAM("Linear Foot Velocities"
+    //                 << lin_foot_vel.segment(3 * i, 3).transpose());
+    // ROS_INFO_STREAM("Calculated Leg Velocities" << leg_v.transpose());
+    // ROS_INFO_STREAM("GT Leg Velocities" <<
+    // relative_foot_body_vel.transpose());
   }
 
   // Solve for Error between Measured Y Residual and Process Residual
