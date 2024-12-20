@@ -60,6 +60,14 @@ else
     stateEstimate.jointPosition = cell2mat(cellfun(@(m) m.Joints.Position.', stateEstimateData, 'UniformOutput', 0));
     stateEstimate.jointVelocity = cell2mat(cellfun(@(m) m.Joints.Velocity.', stateEstimateData, 'UniformOutput', 0));
     stateEstimate.jointEffort = cell2mat(cellfun(@(m) m.Joints.Effort.', stateEstimateData, 'UniformOutput', 0));
+
+    num_feet = size(stateEstimateData{1}.Feet.Feet, 2);
+    for i = 1:num_feet
+        stateEstimate.footPosition{i} = cell2mat(cellfun(@(m) ...
+            [m.Feet.Feet(i).Position.X, m.Feet.Feet(i).Position.Y, m.Feet.Feet(i).Position.Z], stateEstimateData, 'UniformOutput', 0));
+        stateEstimate.footVelocity{i} = cell2mat(cellfun(@(m) ...
+            [m.Feet.Feet(i).Velocity.X, m.Feet.Feet(i).Velocity.Y, m.Feet.Feet(i).Velocity.Z], stateEstimateData, 'UniformOutput', 0));
+    end
 end
 
 % Read the ground truth data

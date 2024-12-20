@@ -139,16 +139,10 @@ bool EKFEstimator::updateOnce(quad_msgs::RobotState& last_robot_state_msg_,
     auto new_state_est = this->StepOnce();
     last_robot_state_msg_ = new_state_est;
     last_robot_state_msg_.joints = last_joint_state_msg_;
+
     // Update Foot Positions using Forward Kinematics
     quad_utils::fkRobotState(
-        *quadKD_, last_robot_state_msg_);  // for(int i = 0; i < num_feet; ++i){
-    //   foot_pos_rel_world.segment(3*i, 3) = last_X.segment(3*i + 6 , 3) -
-    //   body_world_pose; // Body Pose - Foot Pose is
-    // }
-
-    // std::cout << "Filter Output" << y.segment(0,12).transpose() << std::endl;
-    // std::cout << "Sanity Check" << foot_pos_rel_world.transpose() <<
-    // std::endl; Consider using Filter output to see if thats more reliable
+        *quadKD_, last_robot_state_msg_);
   }
   last_joint_state_msg_.header.stamp = state_timestamp;
   quad_utils::updateStateHeaders(last_robot_state_msg_, state_timestamp, "map",
@@ -278,7 +272,7 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   Eigen::Quaterniond qk(1, 0, 0, 0);
   // if there is good imu data: read data from bag file
   this->readIMU(last_imu_msg_, fk, wk, qk);
-  // qk.normalize();
+  qk.normalize();
   // Joint data reading 3 joints * 4 legs
   Eigen::VectorXd jk = Eigen::VectorXd::Zero(12);
   Eigen::VectorXd vk = Eigen::VectorXd::Zero(12);
@@ -310,9 +304,8 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
     // In Simulation or if not using Spirit assume IMU is oriented correctly
     R_b_imu = Eigen::Matrix3d::Identity(3, 3);
     R_imu_b = Eigen::Matrix3d::Identity(3, 3);
-    qb = qk;
-    qb.normalize();
   }
+  qb = qk;
 
   R_w_imu = qk.toRotationMatrix();
   R_imu_w = R_w_imu.inverse();
@@ -343,6 +336,14 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 
   /// publish new message
   // new_state_est.header.stamp = ros::Time::now();
+
+  //Test Encoder Measurements
+  // new_state_est.body.pose.position.x = last_robot_state_msg_.body.pose.position.x;
+  // new_state_est.body.pose.position.y = last_robot_state_msg_.body.pose.position.y;
+  // new_state_est.body.pose.position.z = last_robot_state_msg_.body.pose.position.z;
+  // new_state_est.body.twist.linear.x = last_robot_state_msg_.body.twist.linear.x;
+  // new_state_est.body.twist.linear.y = last_robot_state_msg_.body.twist.linear.y;
+  // new_state_est.body.twist.linear.z = last_robot_state_msg_.body.twist.linear.z;
 
   // body
   // Grab this Directly from the IMU
@@ -530,9 +531,8 @@ void EKFEstimator::update(const Eigen::VectorXd& jk, const Eigen::VectorXd& fk,
 
     Eigen::Vector3d gt_toe_body_pos_world =
         gt.segment(6 + 3 * i, 3) - gt.segment(0, 3);
-    // ROS_INFO_STREAM("Relative Foot Pose World Frame" <<
-    // toe_body_pos_body.transpose()); ROS_INFO_STREAM("GT Relative Foot Pose
-    // World  Frame" << gt_toe_body_pos_world.transpose());
+    // ROS_INFO_STREAM("Relative Foot Pose World Frame" << toe_body_pos_body.transpose()); 
+    // ROS_INFO_STREAM("GT Relative Foot Pose World  Frame" << gt_toe_body_pos_world.transpose());
 
     toe_body_pos_body(2) -= foot_radius;
     // y.segment(3 * i, 3) = R_w_imu* toe_body_pos_body;

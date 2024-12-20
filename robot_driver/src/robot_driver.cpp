@@ -452,6 +452,7 @@ bool RobotDriver::updateState() {
           // std::cout << "Before" <<std::endl;
           // ROS_INFO_STREAM("Ground Truth"); // Add a Binary Flag to get the
           // First Estimate ROS_INFO_STREAM(last_robot_state_msg_);
+          // estimated_state_ = last_robot_state_msg_;
           ekf_estimator_->updateOnce(estimated_state_, control_mode_);
           // std::cout << "After" <<std::endl;
         } else if (last_local_plan_msg_ == NULL && control_mode_ == READY) {

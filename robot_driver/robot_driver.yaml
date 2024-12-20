@@ -37,10 +37,10 @@ robot_driver:
   nv: 0.01 # noise in imu process velocity 0.02
   ng: 0.01 # noise in imu gyro 0.01
   nf: 0.01 # noise in imu process foot position 0.002
-  nfk: 0.005 # noise in forward kinematics 0.005
-  ne: 0.5 # noise in encoder velocity 0.1
-  nfh: 0.1 # noise in foot height 0.01
+  nfk: 0.001 #0.005 # noise in forward kinematics 0.005
+  ne: 0.1 # noise in encoder velocity 0.1
+  nfh: 0.001 #0.1 # noise in foot height 0.01
   P0: 3 # inital covariance value
   contact_w: 1000 # contact weight
   thresh_out: 250  # Norm Measurement Rejection Threshold, (Check for Outliers)
-  foot_radius: 0.02 # toe radius of each foot (m)
+  foot_radius: 0.019 # toe radius of each foot (m)

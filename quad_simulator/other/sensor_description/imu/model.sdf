@@ -30,7 +30,7 @@
           <bodyName>link</bodyName>
           <robotNamespace>/</robotNamespace>
           <updateRateHZ>500.0</updateRateHZ>
-          <gaussianNoise>0.01</gaussianNoise>
+          <gaussianNoise>0.00</gaussianNoise>
           <xyzOffset>0 0 0</xyzOffset>
           <rpyOffset>0 0 0</rpyOffset>
           <frameName>link</frameName>
