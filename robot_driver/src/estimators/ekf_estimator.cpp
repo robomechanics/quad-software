@@ -331,20 +331,22 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
   Eigen::Vector3d rpym;
   m.getRPY(rpym[0], rpym[1], rpym[2]);
   quadKD_->getRotationMatrix(rpym, m_rot);
+  R_w_imu = m_rot;
 
   /// Prediction Step
   // std::cout << "this is X before" << X.transpose() << std::endl;
-  this->predict(dt, fk, wk, m_rot);
+  this->predict(dt, fk, wk, R_w_imu);  // Uncomment for Prediction Step
   // ROS_INFO_STREAM("X Predict" << X_pre.head(6).transpose());
   // for testing prediction step
-  // X = X_pre;
-  // P = P_pre;
-  // last_X = X;
-  /// Update Step
-  this->update(jk, fk, vk, wk, qk, m_rot);  // Uncomment for Update Step
-  // ROS_INFO_STREAM("X Update" << X.head(6).transpose());
+  X = X_pre;
+  P = P_pre;
   last_X = X;
-  last_P = P;  // Issue with the output of P
+  last_P = P;
+  /// Update Step
+  // this->update(jk, fk, vk, wk, qk, R_w_imu);  // Uncomment for Update Step
+  // ROS_INFO_STREAM("X Update" << X.head(6).transpose());
+  // last_X = X;
+  // last_P = P;  // Issue with the output of P
 
   /// publish new message
   // new_state_est.header.stamp = ros::Time::now();

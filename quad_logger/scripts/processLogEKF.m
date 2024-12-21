@@ -77,7 +77,7 @@ nexttile
 % subplot(3,1,1);
 hold on
 plot(stateGroundTruth.time, stateGroundTruth.position(:,1), 'b-','LineWidth',2)
-plot(stateEstimate.time, stateEstimate.position(:,1), 'r-', 'LineWidth',2)
+% plot(stateEstimate.time, stateEstimate.position(:,1), 'r-', 'LineWidth',2)
 % xlim([2 7])
 % ylim([-3 3])
 title("X position")
@@ -87,7 +87,7 @@ nexttile
 % subplot(3,1,2);
 hold on
 plot(stateGroundTruth.time, stateGroundTruth.position(:,2), 'b', 'LineWidth',2 )
-plot(stateEstimate.time, stateEstimate.position(:,2), 'r-' , 'LineWidth',2)
+% plot(stateEstimate.time, stateEstimate.position(:,2), 'r-' , 'LineWidth',2)
 % xlim([2 7])
 % ylim([-1.5 1.5])
 title("Y position")
@@ -97,7 +97,7 @@ nexttile
 % subplot(3,1,3);
 hold on
 plot(stateGroundTruth.time, stateGroundTruth.position(:,3), 'b-','LineWidth',2)
-plot(stateEstimate.time, stateEstimate.position(:,3), 'r-','LineWidth',2)
+% plot(stateEstimate.time, stateEstimate.position(:,3), 'r-','LineWidth',2)
 % xlim([1 12])
 % ylim([-1.5 1.5])
 title("Z position")
