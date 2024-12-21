@@ -410,6 +410,9 @@ bool RobotDriver::updateState() {
 
     if (last_mocap_msg_ != NULL) {
       state_estimator_->loadMocapMsg(last_mocap_msg_);
+      if (estimator_id_ == "comp_filter") {
+        ekf_estimator_->loadMocapMsg(last_mocap_msg_);
+      }
       if (estimator_id_ == "ekf_filter") {
         comp_estimator_->loadMocapMsg(last_mocap_msg_);
       }

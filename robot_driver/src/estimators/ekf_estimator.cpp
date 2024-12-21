@@ -304,8 +304,9 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
     // In Simulation or if not using Spirit assume IMU is oriented correctly
     R_b_imu = Eigen::Matrix3d::Identity(3, 3);
     R_imu_b = Eigen::Matrix3d::Identity(3, 3);
+    qb = qk;
   }
-  qb = qk;
+  
 
   R_w_imu = qk.toRotationMatrix();
   R_imu_w = R_w_imu.inverse();
@@ -320,16 +321,27 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
         1.0);
   }
 
+  // Add to Help Debug using Mocap Orientation
+  Eigen::Matrix3d m_rot;
+  tf2::Quaternion qm(
+      last_mocap_msg_->pose.orientation.x, last_mocap_msg_->pose.orientation.y,
+      last_mocap_msg_->pose.orientation.z, last_mocap_msg_->pose.orientation.w);
+  qm.normalize();
+  tf2::Matrix3x3 m(qm);
+  Eigen::Vector3d rpym;
+  m.getRPY(rpym[0], rpym[1], rpym[2]);
+  quadKD_->getRotationMatrix(rpym, m_rot);
+
   /// Prediction Step
   // std::cout << "this is X before" << X.transpose() << std::endl;
-  this->predict(dt, fk, wk, R_w_imu);
+  this->predict(dt, fk, wk, m_rot);
   // ROS_INFO_STREAM("X Predict" << X_pre.head(6).transpose());
   // for testing prediction step
   // X = X_pre;
   // P = P_pre;
   // last_X = X;
   /// Update Step
-  this->update(jk, fk, vk, wk, qk, R_w_imu);  // Uncomment for Update Step
+  this->update(jk, fk, vk, wk, qk, m_rot);  // Uncomment for Update Step
   // ROS_INFO_STREAM("X Update" << X.head(6).transpose());
   last_X = X;
   last_P = P;  // Issue with the output of P
@@ -347,10 +359,10 @@ quad_msgs::RobotState EKFEstimator::StepOnce() {
 
   // body
   // Grab this Directly from the IMU
-  new_state_est.body.pose.orientation.w = qb.w();
-  new_state_est.body.pose.orientation.x = qb.x();
-  new_state_est.body.pose.orientation.y = qb.y();
-  new_state_est.body.pose.orientation.z = qb.z();
+  new_state_est.body.pose.orientation.w = qm.w();
+  new_state_est.body.pose.orientation.x = qm.x();
+  new_state_est.body.pose.orientation.y = qm.y();
+  new_state_est.body.pose.orientation.z = qm.z();
 
   new_state_est.body.pose.position.x = X[0];
   new_state_est.body.pose.position.y = X[1];

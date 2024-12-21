@@ -40,7 +40,7 @@ robot_driver:
   nfk: 0.001 #0.005 # noise in forward kinematics 0.005
   ne: 0.1 # noise in encoder velocity 0.1
   nfh: 0.001 #0.1 # noise in foot height 0.01
-  P0: 3 # inital covariance value
+  P0: 100. # inital covariance value
   contact_w: 1000 # contact weight
   thresh_out: 250  # Norm Measurement Rejection Threshold, (Check for Outliers)
   foot_radius: 0.019 # toe radius of each foot (m)

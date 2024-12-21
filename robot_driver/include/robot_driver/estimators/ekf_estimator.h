@@ -82,10 +82,17 @@ class EKFEstimator : public StateEstimator {
 
   //  private:
   /**
-   * @brief Callback function to handle new ground truth data
+   * @brief Callback function to handle new ground truth data (For Debugging in Sim)
    * @param[in] msg ground_truth_msg quad_msgs<RobotState>
    */
   void groundtruthCallback(const quad_msgs::RobotState::ConstPtr& msg);
+
+  /**
+   * @brief Callback function to handle new mocap data (For Debugging in Hardware)
+   * 
+   */
+ void mocapCallBack(const geometry_msgs::PoseStamped::ConstPtr& msg,
+                           const Eigen::Vector3d& pos);
 
   /**
    * @brief Callback function to handle new joint encoder data
@@ -393,5 +400,8 @@ class EKFEstimator : public StateEstimator {
   bool good_imu = false;
   bool good_joint_state = false;
   bool good_ground_truth_state = false;
+  
+  /// Last mocap time
+  ros::Time last_mocap_time_;
 };
 #endif  // EKF_ESTIMATOR_H
