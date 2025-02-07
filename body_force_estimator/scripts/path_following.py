@@ -64,7 +64,7 @@ def path_following():
         # Velocity commands: proportional feedback on y and yaw and integral in x
         cmd.linear.x = speed + speed_integral
         cmd.linear.y = -speed_sign*y_gain*(last_state_msg_.body.pose.position.y - y_pt)
-        cmd.angular.z = -yaw_gain*yaw_error
+        cmd.angular.z = -yaw_gain*yaw_error # PD
 
         pub.publish(cmd)
         print(cmd)
