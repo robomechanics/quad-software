@@ -32,8 +32,11 @@ def path_following():
     y_pt = 0.0 # Lateral shift
     yaw_pt = 0.0 #math.pi # Yaw angle
     y_gain = 1.0 # Lateral P gain in m/s per m (or Hz)
-    yaw_gain = 3.0 # 1.0 # Yaw P gain in rad/s per rad (or Hz)
+    yaw_kp = 3.0 # 1.0 # Yaw P gain in rad/s per rad (or Hz)
+    yaw_kd = 0.5 # 1.0 # Yaw D gain in rad/s per rad (or Hz)
     speed_i = 0.0 # Integration rate
+
+    yaw_error_last = 0.0 # Yaw error of last time step
 
     speed_integral = 0.0 # Initialize integrator
     speed_sign = (speed > 0)*1 + (speed < 0)*-1
@@ -61,10 +64,13 @@ def path_following():
         elif yaw_error < -math.pi:
             yaw_error = yaw_error + 2*math.pi
 
+        yaw_error_derivative = (yaw_error - yaw_error_last) * rate
+        yaw_error_last = yaw_error # Update yaw_error_last
+
         # Velocity commands: proportional feedback on y and yaw and integral in x
         cmd.linear.x = speed + speed_integral
         cmd.linear.y = -speed_sign*y_gain*(last_state_msg_.body.pose.position.y - y_pt)
-        cmd.angular.z = -yaw_gain*yaw_error # PD
+        cmd.angular.z = -yaw_kp*yaw_error - yaw_kd*yaw_error_derivative # PD
 
         pub.publish(cmd)
         print(cmd)
