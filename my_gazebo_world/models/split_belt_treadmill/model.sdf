@@ -1,14 +1,22 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <sdf version="1.6">
     <model name="split_belt_treadmill">
         <static>true</static>   <!-- keep the model static -->
 
         <!-- left belt -->
-        <link name="left_belt">
-            <pose>0 0.25 0.05 0 0 0</pose>
+        <link name="left_belt_visual">
+            <pose>0 0.5 0.05 0 0 0</pose>
+            <inertial>
+                <mass>50.0</mass>
+                <inertia>
+                    <ixx>10.0</ixx>
+                    <iyy>10.0</iyy>
+                    <izz>10.0</izz>
+                </inertia>
+            </inertial>
             <collosion name="left_belt_collision">
                 <geometry>
-                    <box><size>4.0 0.5 0.1</size></box>  <!-- length of X,Y,Z direction -->
+                    <box><size>10 1 0.05</size></box>  <!-- length of X,Y,Z direction -->
                 </geometry>
                 <surface>
                     <friction>
@@ -19,9 +27,9 @@
                     </friction>
                 </surface>
             </collosion>
-            <visual name="left_belt_visual">
+            <visual name="left_belt">
                 <geometry>
-                    <box><size>4.0 0.5 0.1</size></box>
+                    <box><size>10 1 0.05</size></box>
                 </geometry>
                 <material>
                     <ambient>0.0 0.0 1.0 1.0</ambient>  <!-- blue -->
@@ -30,11 +38,19 @@
         </link>
 
         <!-- right belt -->
-        <link name="right_belt">
-            <pose>0 -0.25 0.05 0 0 0</pose>
+        <link name="right_belt_visual">
+            <pose>0 -0.5 0.05 0 0 0</pose>
+            <inertial>
+                <mass>50.0</mass>
+                <inertia>
+                    <ixx>10.0</ixx>
+                    <iyy>10.0</iyy>
+                    <izz>10.0</izz>
+                </inertia>
+            </inertial>
             <collosion name="right_belt_collision">
                 <geometry>
-                    <box><size>4.0 0.5 0.1</size></box>
+                    <box><size>10 1 0.05</size></box>
                 </geometry>
                 <surface>
                     <friction>
@@ -45,9 +61,9 @@
                     </friction>
                 </surface>
             </collosion>
-            <visual name="right_belt_visual">
+            <visual name="right_belt">
                 <geometry>
-                    <box><size>4.0 0.5 0.1</size></box>
+                    <box><size>10 1 0.05</size></box>
                 </geometry>
                 <material>
                     <ambient>1.0 0.0 0.0 1.0</ambient>  <!-- red -->
@@ -55,36 +71,71 @@
             </visual>
         </link>
 
-        <!-- Define the joint so the belts can spin -->
-        <joint name="left_belt_joint" type="revolute">
+        <!-- Define the joint for moving -->
+        <joint name="left_belt_joint" type="prismatic">
             <parent>world</parent>
-            <child>left_belt</child>
+            <child>left_belt_moving</child>
             <axis>
-                <xyz>1 0 0</xyz>  <!-- spin around x -->
+                <xyz>1 0 0</xyz>  <!-- along x -->
                 <limit>
-                    <lower>-3</lower>
-                    <upper>5</upper>
+                    <lower>-1e16</lower>
+                    <upper>1e16</upper>
                 </limit>
                 <dynamics>
-                    <damping>0.0</damping>
+                    <damping>0.1</damping>
                 </dynamics>
             </axis>
         </joint>
 
-        <joint name="right_belt_joint" type="revolute">
+        <joint name="right_belt_joint" type="prismatic">
             <parent>world</parent>
-            <child>right_belt</child>
+            <child>right_belt_moving</child>
             <axis>
-                <xyz>1 0 0</xyz>  <!-- spin around x -->
+                <xyz>1 0 0</xyz>
                 <limit>
-                    <lower>-3</lower>
-                    <upper>5</upper>
+                    <lower>-1e16</lower>
+                    <upper>1e16</upper>
                 </limit>
                 <dynamics>
-                    <damping>0.0</damping>
+                    <damping>0.1</damping>
                 </dynamics>
             </axis>
         </joint>
+
+        <!-- Define the actual moving belts -->
+        <link name="left_belt_moving">
+            <pose>0 0.5 0.05 0 0 0</pose>
+            <inertial>
+                <mass>10.0</mass>
+                <inertia>
+                    <ixx>1.0</ixx>
+                    <iyy>1.0</iyy>
+                    <izz>1.0</izz>
+                </inertia>
+            </inertial>
+            <collision name="left_belt_moving_collision">
+                <geometry>
+                    <box><size>100 1 0.01</size></box>
+                </geometry>
+            </collision>
+        </link>
+
+        <link name="right_belt_moving">
+            <pose>0 -0.5 0.05 0 0 0</pose>
+            <inertial>
+                <mass>10.0</mass>
+                <inertia>
+                    <ixx>1.0</ixx>
+                    <iyy>1.0</iyy>
+                    <izz>1.0</izz>
+                </inertia>
+            </inertial>
+            <collision name="right_belt_moving_collision">
+                <geometry>
+                    <box><size>100 1 0.01</size></box>
+                </geometry>
+            </collision>
+        </link>
 
     </model>
 </sdf>
