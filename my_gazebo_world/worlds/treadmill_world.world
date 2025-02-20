@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+    <world name="treadmill_world">
+        <!-- Add the floor -->
+        <include>
+            <uri>model://ground_plane</uri>
+        </include>
+
+        <!-- Add the light -->
+        <include>
+            <uri>model://sun</uri>
+        </include>
+
+        <!-- Add the floor -->
+        <include>
+            <uri>model://split_belt_treadmill</uri>
+        </include>
+    </world>
+</sdf>
