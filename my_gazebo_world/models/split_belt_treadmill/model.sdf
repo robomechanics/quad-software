@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sdf version="1.6">
     <model name="split_belt_treadmill">
-        <static>true</static>   <!-- keep the model static -->
+        <static>false</static>   <!-- keep the model static -->
 
         <!-- left belt -->
         <link name="left_belt_visual">
@@ -14,7 +14,15 @@
                     <izz>10.0</izz>
                 </inertia>
             </inertial>
-            <collosion name="left_belt_collision">
+            <visual name="leftbelt_visual">
+                <geometry>
+                    <box><size>10 1 0.05</size></box>
+                </geometry>
+                <material>
+                    <ambient>0.0 0.0 1.0 1.0</ambient>  <!-- blue -->
+                </material>
+            </visual>
+            <collision name="left_belt_collision">
                 <geometry>
                     <box><size>10 1 0.05</size></box>  <!-- length of X,Y,Z direction -->
                 </geometry>
@@ -26,15 +34,7 @@
                         </ode>
                     </friction>
                 </surface>
-            </collosion>
-            <visual name="left_belt">
-                <geometry>
-                    <box><size>10 1 0.05</size></box>
-                </geometry>
-                <material>
-                    <ambient>0.0 0.0 1.0 1.0</ambient>  <!-- blue -->
-                </material>
-            </visual>
+            </collision>
         </link>
 
         <!-- right belt -->
@@ -48,7 +48,15 @@
                     <izz>10.0</izz>
                 </inertia>
             </inertial>
-            <collosion name="right_belt_collision">
+            <visual name="rightbelt_visual">
+                <geometry>
+                    <box><size>10 1 0.05</size></box>
+                </geometry>
+                <material>
+                    <ambient>1.0 0.0 0.0 1.0</ambient>  <!-- red -->
+                </material>
+            </visual>
+            <collision name="right_belt_collision">
                 <geometry>
                     <box><size>10 1 0.05</size></box>
                 </geometry>
@@ -60,15 +68,7 @@
                         </ode>
                     </friction>
                 </surface>
-            </collosion>
-            <visual name="right_belt">
-                <geometry>
-                    <box><size>10 1 0.05</size></box>
-                </geometry>
-                <material>
-                    <ambient>1.0 0.0 0.0 1.0</ambient>  <!-- red -->
-                </material>
-            </visual>
+            </collision>
         </link>
 
         <!-- Define the joint for moving -->
@@ -136,6 +136,25 @@
                 </geometry>
             </collision>
         </link>
+
+
+        <!-- Plugin for Left Conveyor Belt -->
+        <plugin name="conveyor_belt_plugin_1" filename="libROSConveyorBeltPlugin.so">
+            <robot_namespace>/belt1</robot_namespace>
+            <link>belt1_moving</link>
+            <joint>belt1_joint</joint>
+            <power>1.0</power>
+            <max_velocity>1.0</max_velocity>
+        </plugin>
+
+        <!-- Plugin for Right Conveyor Belt -->
+        <plugin name="conveyor_belt_plugin_2" filename="libROSConveyorBeltPlugin.so">
+            <robot_namespace>/belt2</robot_namespace>
+            <link>belt2_moving</link>
+            <joint>belt2_joint</joint>
+            <power>1.0</power>
+            <max_velocity>1.0</max_velocity>
+        </plugin>
 
     </model>
 </sdf>
