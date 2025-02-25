@@ -29,8 +29,8 @@
                 <surface>
                     <friction>
                         <ode>
-                            <mu>0.8</mu>
-                            <mu2>0.8</mu2>
+                            <mu>1.2</mu>
+                            <mu2>1.2</mu2>
                         </ode>
                     </friction>
                 </surface>
@@ -53,7 +53,7 @@
                     <box><size>10 1 0.05</size></box>
                 </geometry>
                 <material>
-                    <ambient>1.0 0.0 0.0 1.0</ambient>  <!-- red -->
+                    <ambient>0.0 1.0 0.0 1.0</ambient>  <!-- green -->
                 </material>
             </visual>
             <collision name="right_belt_collision">
@@ -63,8 +63,8 @@
                 <surface>
                     <friction>
                         <ode>
-                            <mu>0.8</mu>
-                            <mu2>0.8</mu2>
+                            <mu>1.2</mu>
+                            <mu2>1.2</mu2>
                         </ode>
                     </friction>
                 </surface>
@@ -141,19 +141,19 @@
         <!-- Plugin for Left Conveyor Belt -->
         <plugin name="conveyor_belt_plugin_1" filename="libROSConveyorBeltPlugin.so">
             <robot_namespace>/belt1</robot_namespace>
-            <link>belt1_moving</link>
-            <joint>belt1_joint</joint>
-            <power>1.0</power>
-            <max_velocity>1.0</max_velocity>
+            <link>left_belt_moving</link>
+            <joint>left_belt_joint</joint>
+            <power>0.0</power>
+            <max_velocity>3.0</max_velocity>
         </plugin>
 
         <!-- Plugin for Right Conveyor Belt -->
         <plugin name="conveyor_belt_plugin_2" filename="libROSConveyorBeltPlugin.so">
             <robot_namespace>/belt2</robot_namespace>
-            <link>belt2_moving</link>
-            <joint>belt2_joint</joint>
-            <power>1.0</power>
-            <max_velocity>1.0</max_velocity>
+            <link>right_belt_moving</link>
+            <joint>right_belt_joint</joint>
+            <power>0.0</power>
+            <max_velocity>3.0</max_velocity>
         </plugin>
 
     </model>

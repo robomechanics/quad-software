@@ -1,0 +1,40 @@
+
+<launch>
+  <arg name="gui"             default="true"/>
+  <arg name="paused"          default="false"/>
+  <arg name="live_plot"       default="false"/>
+  <arg name="world"           default="flat"/>
+  <arg name="robot_type"      default="spirit"/>
+  <arg name="controller"      default="inverse_dynamics" />
+  <arg name="namespace_1"     default="robot_1"/>
+
+
+  <include file="$(find quad_utils)/launch/quad_gazebo.launch" >
+    <arg name="gui"             value="$(arg gui)" />
+    <arg name="paused"          value="$(arg paused)" />
+    <arg name="controller"      value="$(arg controller)" />
+    <arg name="live_plot"       value="$(arg live_plot)" />
+    <arg name="world"           value="$(arg world)" />
+    <arg name="robot_type"      value="$(arg robot_type)" />
+  </include>
+
+  <!-- Load underbrush compliant elements -->
+
+    <param name="split_belt_sdf" textfile="$(find split_belt_description)/sdf/split_belt_treadmill.sdf" />
+
+    <group ns="conveyor">
+        <!-- Load the SDF model as a ROS parameter -->
+        <param name="split_belt_sdf" textfile="$(find split_belt_description)/sdf/split_belt_treadmill.sdf" />
+
+        <!-- Spawn the model in Gazebo -->
+        <node name="spawn_model_belt" pkg="gazebo_ros" type="spawn_model" args="-sdf -param split_belt_sdf -model conveyor_belt" respawn="false" output="screen" />
+    </group>
+
+
+  <!-- Actual experimental setup -->
+  <!---->
+  <!-- <node name="spawn_split_belt" pkg="gazebo_ros" type="spawn_model" args="-sdf -param split_belt_sdf -model split_belt_treadmill -x 1.0 -y -0.0 -z -0.01" output="screen"/> -->
+
+
+  <!-- <node name="split_belt_controller" pkg="split_belt_controller" type="split_belt_controller_node" output= "screen" /> -->
+</launch>
